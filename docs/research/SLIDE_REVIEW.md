@@ -1,6 +1,6 @@
 # Course slide review and source coverage
 
-Prepared 28 October 2026 for instructor review. This document records the course evidence behind the proposed application scope. It does not approve features for implementation or certify the original teaching material as error-free.
+Prepared 28 October 2026 for instructor review. Revision 2: this inventory records the full teaching sources, including some topics now excluded from the SISO LTI app. The current [architecture](../FUNCTIONAL_SPECIFICATION.md) and deeper [continuous](CONTINUOUS_EXERCISE_AUDIT.md) / [discrete](DISCRETE_EXERCISE_AUDIT.md) audits determine active exercise scope. This document records the course evidence behind the proposed application scope. It does not approve features for implementation or certify the original teaching material as error-free.
 
 ## Materials and numbering
 
