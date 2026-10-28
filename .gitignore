@@ -1,0 +1,20 @@
+# Local builds, editor state and generated scratch data
+/build/
+/out/
+/.work/
+/.cache/
+/.vs/
+/.idea/
+*.user
+*.suo
+*.obj
+*.o
+*.pdb
+__pycache__/
+.DS_Store
+Thumbs.db
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example

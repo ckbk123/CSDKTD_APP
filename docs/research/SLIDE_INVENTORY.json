@@ -1,0 +1,3785 @@
+{
+  "schema_version": 1,
+  "prepared_date": "2026-10-28",
+  "purpose": "Source metadata and slide navigation only; no slide body, notes, or media copied",
+  "path_base": "Paths are relative to the parent course directory, not the repository directory",
+  "slide_numbering": "One-based package slide order, including covers and contents",
+  "counts": {
+    "decks": 24,
+    "slides": 882,
+    "session_decks": 15,
+    "session_slides": 225,
+    "source_chapter_decks": 9,
+    "source_chapter_slides": 657
+  },
+  "decks": [
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_01_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "e40642d0581ab57363ef46d37e9864eec918d3e00da1919ab5978869627cc48b",
+      "size_bytes": 1786619,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Hệ thống điều khiển và thông tin phản hồi"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Các biến của vòng điều khiển"
+        },
+        {
+          "slide": 5,
+          "title": "Cấu trúc hở và kín"
+        },
+        {
+          "slide": 6,
+          "title": "Phân loại và lựa chọn cấu trúc"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_02_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "ce14718968c098bfa96de9f6e27776ab00ab2ac55795c583dd5b1ce16885aca3",
+      "size_bytes": 1782142,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Mô hình vật lý và hàm truyền liên tục"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Giả thiết của mô hình"
+        },
+        {
+          "slide": 5,
+          "title": "Laplace và hàm truyền"
+        },
+        {
+          "slide": 6,
+          "title": "Cực và độ lợi tĩnh"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_03_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "36d2060f5ce9344bae3982910641c3c0532e02b1110395ee28b10f53a6f4a079",
+      "size_bytes": 1781610,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Sơ đồ khối và sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Phép ghép sơ đồ khối"
+        },
+        {
+          "slide": 5,
+          "title": "Hàm truyền theo từng nguồn"
+        },
+        {
+          "slide": 6,
+          "title": "Công thức Mason"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_04_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "13be29c4ea811bf7874c05229a466a8acfeff34d6fb91b34cceb3b4a047e48f2",
+      "size_bytes": 1786549,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Mô hình trạng thái và tuyến tính hóa"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Biến trạng thái"
+        },
+        {
+          "slide": 5,
+          "title": "Quan hệ với hàm truyền"
+        },
+        {
+          "slide": 6,
+          "title": "Tuyến tính hóa cục bộ"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_05_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "b812e0624f8edd3917b431f4da9684b65949938ecebd65f0315a78bd78e72b1b",
+      "size_bytes": 1783503,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Đáp ứng thời gian và đặc tính tần số"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Đáp ứng theo thời gian"
+        },
+        {
+          "slide": 5,
+          "title": "Đáp ứng tần số"
+        },
+        {
+          "slide": 6,
+          "title": "Các khâu điển hình"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_06_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "35bb4ce9be147575b72f5f028909bb6c8e596c1bb735f94f881a8026b0d76ca8",
+      "size_bytes": 1783626,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Ổn định và tiêu chuẩn Routh Hurwitz"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Ổn định và vị trí cực"
+        },
+        {
+          "slide": 5,
+          "title": "Bảng Routh"
+        },
+        {
+          "slide": 6,
+          "title": "Miền độ lợi và trường hợp đặc biệt"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_07_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "d01f7c1ac080475cc6af7ea714fcb7108c8c679a20c8c5a3ef73c970818561fc",
+      "size_bytes": 1782061,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Sai số xác lập và chất lượng quá độ"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 5,
+          "title": "Chỉ tiêu quá độ"
+        },
+        {
+          "slide": 6,
+          "title": "Chỉ số tích phân"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_08_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "4a1797d2421b128e977537ae57313b1d82d25962269900a9c9a6a88e9c02d080",
+      "size_bytes": 1788991,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Quỹ đạo nghiệm số và hiệu chỉnh sớm trễ pha"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Quỹ đạo nghiệm số"
+        },
+        {
+          "slide": 5,
+          "title": "Tác động của cực và zero bổ sung"
+        },
+        {
+          "slide": 6,
+          "title": "Kiểm tra thiết kế đủ bậc"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_09_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "bee97c1f8ccc05a926aa0660bd5952b3928c80b036f8359519fe1767b86f0f52",
+      "size_bytes": 1791126,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Ổn định tần số và thiết kế bằng Bode"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Nyquist và ổn định kín"
+        },
+        {
+          "slide": 5,
+          "title": "Dự trữ ổn định"
+        },
+        {
+          "slide": 6,
+          "title": "Hiệu chỉnh trong miền tần số"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_10_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "933b7dfbdca88d84262a9f7810e11c29c3f9839db77063abefb42711f0b6a3ac",
+      "size_bytes": 1802306,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Thiết kế và chỉnh định PID"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Các thành phần PID"
+        },
+        {
+          "slide": 5,
+          "title": "Chỉnh định có mục đích"
+        },
+        {
+          "slide": 6,
+          "title": "Bão hòa và kiểm chứng"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_11_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "ca99647f7bb086fd45305a090c2874452118428756a8b2fd4385e9aeb213bdb4",
+      "size_bytes": 1781622,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Phản hồi trạng thái và bộ quan sát"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Khả năng điều khiển và quan sát"
+        },
+        {
+          "slide": 5,
+          "title": "Phản hồi trạng thái"
+        },
+        {
+          "slide": 6,
+          "title": "Bộ quan sát Luenberger"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_12_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "29b4c102b2309b160a3369926637a8c6ffcc3f8e95d970e5ebb37087eb9b3469",
+      "size_bytes": 1778674,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Lấy mẫu và mô hình hệ rời rạc"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Lấy mẫu và giữ mẫu"
+        },
+        {
+          "slide": 5,
+          "title": "Hàm truyền và sai phân"
+        },
+        {
+          "slide": 6,
+          "title": "Trạng thái rời rạc"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_13_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "88e698c368d7246df094f6133dbad729d0cb6b1e34722503683856331fa5cb47",
+      "size_bytes": 1781510,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Ổn định và chất lượng hệ rời rạc"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Điều kiện ổn định rời rạc"
+        },
+        {
+          "slide": 5,
+          "title": "Tiêu chuẩn Jury"
+        },
+        {
+          "slide": 6,
+          "title": "Chất lượng theo mẫu"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_14_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "cd514b90e467de34b614f443b9adc2e9fcca1dfb5cb776b41e88435a0442144f",
+      "size_bytes": 1782210,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Hiệu chỉnh và PID rời rạc"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Cấu trúc điều khiển số"
+        },
+        {
+          "slide": 5,
+          "title": "Phương trình cập nhật"
+        },
+        {
+          "slide": 6,
+          "title": "Hiệu chỉnh và giới hạn thực hiện"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tai_to_chuc_bai_giang/slides/Buoi_15_CSDKTD.pptx",
+      "collection": "15_session_course",
+      "sha256": "b88b87288397fc605f13308ba0d148bd03e47032cfb7c9b667f7a55db9793b0e",
+      "size_bytes": 1779408,
+      "slide_count": 15,
+      "title_method": "Descriptive title from slide XML text, excluding repeated header/footer",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Thiết kế trạng thái rời rạc và tổng hợp học"
+        },
+        {
+          "slide": 2,
+          "title": "Câu hỏi đầu buổi"
+        },
+        {
+          "slide": 3,
+          "title": "Tình huống kỹ thuật"
+        },
+        {
+          "slide": 4,
+          "title": "Phản hồi trạng thái rời rạc"
+        },
+        {
+          "slide": 5,
+          "title": "Quan sát trạng thái theo mẫu"
+        },
+        {
+          "slide": 6,
+          "title": "Chuỗi lập luận thiết kế"
+        },
+        {
+          "slide": 7,
+          "title": "Dữ liệu bài mẫu"
+        },
+        {
+          "slide": 8,
+          "title": "Lập luận của bài mẫu"
+        },
+        {
+          "slide": 9,
+          "title": "Nhiệm vụ nhóm MATLAB"
+        },
+        {
+          "slide": 10,
+          "title": "Mô hình Simulink"
+        },
+        {
+          "slide": 11,
+          "title": "Bằng chứng cần nộp"
+        },
+        {
+          "slide": 12,
+          "title": "Đối chiếu hai cách giải"
+        },
+        {
+          "slide": 13,
+          "title": "Hiểu lầm cần sửa"
+        },
+        {
+          "slide": 14,
+          "title": "Kiểm tra cá nhân"
+        },
+        {
+          "slide": 15,
+          "title": "Kết luận và bài tiếp theo"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong1_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "1cb07de509d3e4a68f0c78622510b442593094f7019aa6b2095ef55bc25d1708",
+      "size_bytes": 3956273,
+      "slide_count": 99,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Môn học"
+        },
+        {
+          "slide": 3,
+          "title": "Mục tiêu của môn học"
+        },
+        {
+          "slide": 4,
+          "title": "Nội dung môn học"
+        },
+        {
+          "slide": 5,
+          "title": "Tài liệu tham khảo"
+        },
+        {
+          "slide": 6,
+          "title": "Chương 1"
+        },
+        {
+          "slide": 7,
+          "title": "Nội dung chương 1"
+        },
+        {
+          "slide": 8,
+          "title": "Khái niệm về điều khiển"
+        },
+        {
+          "slide": 9,
+          "title": "Khái niệm về điều khiển"
+        },
+        {
+          "slide": 10,
+          "title": "Hệ thống điều khiển mực chất lỏng đơn giản"
+        },
+        {
+          "slide": 11,
+          "title": "Điều khiển tốc độ động cơ hơi nước"
+        },
+        {
+          "slide": 12,
+          "title": "Điều khiển tốc độ động cơ hơi nước"
+        },
+        {
+          "slide": 13,
+          "title": "Tại sao cần phải điều khiển tự động"
+        },
+        {
+          "slide": 14,
+          "title": "Các thành phần cơ bản của hệ thống điều khiển"
+        },
+        {
+          "slide": 15,
+          "title": "Đối tượng"
+        },
+        {
+          "slide": 16,
+          "title": "Cảm biến"
+        },
+        {
+          "slide": 17,
+          "title": "Bộ điều khiển"
+        },
+        {
+          "slide": 18,
+          "title": "Các bài toán cơ bản trong lĩnh vực điều khiển tự động"
+        },
+        {
+          "slide": 19,
+          "title": "Các nguyên tắc điều khiển"
+        },
+        {
+          "slide": 20,
+          "title": "Nguyên tắc 1: Nguyên tắc thông tin phản hồi"
+        },
+        {
+          "slide": 21,
+          "title": "Nguyên tắc 1: Nguyên tắc thông tin phản hồi (tt)"
+        },
+        {
+          "slide": 22,
+          "title": "Nguyên tắc 1: Nguyên tắc thông tin phản hồi (tt)"
+        },
+        {
+          "slide": 23,
+          "title": "Nguyên tắc 1: Nguyên tắc thông tin phản hồi (tt)"
+        },
+        {
+          "slide": 24,
+          "title": "Nguyên tắc 2: Nguyên tắc đa dạng tương xứng"
+        },
+        {
+          "slide": 25,
+          "title": "Nguyên tắc 3: Nguyên tắc bổ sung ngoài"
+        },
+        {
+          "slide": 26,
+          "title": "Nguyên tắc 4: Nguyên tắc dự trữ"
+        },
+        {
+          "slide": 27,
+          "title": "Nguyên tắc 5: Nguyên tắc phân cấp"
+        },
+        {
+          "slide": 28,
+          "title": "Nguyên tắc 5: Nguyên tắc phân cấp"
+        },
+        {
+          "slide": 29,
+          "title": "Nguyên tắc 5: Nguyên tắc phân cấp"
+        },
+        {
+          "slide": 30,
+          "title": "Nguyên tắc 6: Nguyên tắc cân bằng nội"
+        },
+        {
+          "slide": 31,
+          "title": "Phân loại hệ thống điều khiển"
+        },
+        {
+          "slide": 32,
+          "title": "Phân loại dựa trên mô tả toán học của hệ thống"
+        },
+        {
+          "slide": 33,
+          "title": "Phân loại dựa trên số ngõ vào – ngõ ra hệ thống"
+        },
+        {
+          "slide": 34,
+          "title": "Phân loại theo chiến lược điều khiển"
+        },
+        {
+          "slide": 35,
+          "title": "Lịch sử phát triển lý thuyết điều khiển"
+        },
+        {
+          "slide": 36,
+          "title": "Điều khiển kinh điển"
+        },
+        {
+          "slide": 37,
+          "title": "Điều khiển hiện đại"
+        },
+        {
+          "slide": 38,
+          "title": "Điều khiển thông minh"
+        },
+        {
+          "slide": 39,
+          "title": "Nội dung môn học Cơ sở điều khiển tự động"
+        },
+        {
+          "slide": 40,
+          "title": "Các môn học liên quan"
+        },
+        {
+          "slide": 41,
+          "title": "Các môn học nâng cao lý thuyết điều khiển tự động"
+        },
+        {
+          "slide": 42,
+          "title": "Một số thí dụ về các hệ thống điều khiển"
+        },
+        {
+          "slide": 43,
+          "title": "Các ứng dụng của lý thuyết điều khiển"
+        },
+        {
+          "slide": 44,
+          "title": "Hệ thống điều khiển nhiệt độä"
+        },
+        {
+          "slide": 45,
+          "title": "Hệ thống điều khiển nhiệt độä"
+        },
+        {
+          "slide": 46,
+          "title": "Hệ thống ổn định nhiệt độä"
+        },
+        {
+          "slide": 47,
+          "title": "Hệ thống điều khiển nhiệt độ theo chương trình"
+        },
+        {
+          "slide": 48,
+          "title": "Bộ điều khiển và giao tiếp người dùng"
+        },
+        {
+          "slide": 49,
+          "title": "Mạch đo nhiệt độ dùng cặp nhiệt điện (bù nhiệt dùng LM335)"
+        },
+        {
+          "slide": 50,
+          "title": "Mạch đo nhiệt độ dùng cặp nhiệt điện (bù nhiệt dùng LM35)"
+        },
+        {
+          "slide": 51,
+          "title": "Mạch công suất"
+        },
+        {
+          "slide": 52,
+          "title": "Một hệ thống điều khiển nhiệt độ thực tế"
+        },
+        {
+          "slide": 53,
+          "title": "Hệ thống điều khiển động cơ"
+        },
+        {
+          "slide": 54,
+          "title": "Hệ thống điều khiển định vị anten"
+        },
+        {
+          "slide": 55,
+          "title": "Điều khiển PID vị trí động cơ DC"
+        },
+        {
+          "slide": 56,
+          "title": "Điều khiển PID số tốc độ động cơ DC"
+        },
+        {
+          "slide": 57,
+          "title": "Một hệ thống điều khiển động cơ thực tế"
+        },
+        {
+          "slide": 58,
+          "title": "Hệ thống điều khiển mực chất lỏng"
+        },
+        {
+          "slide": 59,
+          "title": "Một thí dụ hệ thống điều khiển mực chất lỏng"
+        },
+        {
+          "slide": 60,
+          "title": "Mô hình điều khiển mực chất lỏng trong phòng thí nghiệm"
+        },
+        {
+          "slide": 61,
+          "title": "Hệ thống điều khiển độ đậm đặc bột giấy"
+        },
+        {
+          "slide": 62,
+          "title": "Hệ thống điều khiển góc cánh nâng máy bay"
+        },
+        {
+          "slide": 63,
+          "title": "Hệ thống điều khiển góc cánh nâng máy bay"
+        },
+        {
+          "slide": 64,
+          "title": "Sơ đồ khối hệ thống điều khiển góc cánh nâng máy bay"
+        },
+        {
+          "slide": 65,
+          "title": "Hệ thống điều khiển máy CNC"
+        },
+        {
+          "slide": 66,
+          "title": "Sơ đồ khối hệ thống điều khiển máy CNC"
+        },
+        {
+          "slide": 67,
+          "title": "Hệ thống chưng cất (công nghệ hóa học)"
+        },
+        {
+          "slide": 68,
+          "title": "Hệ thống điều khiển máy phát điện hơi nước"
+        },
+        {
+          "slide": 69,
+          "title": "ĐIỀU KHIỂN TỰ ĐỘNG"
+        },
+        {
+          "slide": 70,
+          "title": "Các chiến lược điều khiển"
+        },
+        {
+          "slide": 71,
+          "title": "Điều khiển ON-OFF"
+        },
+        {
+          "slide": 72,
+          "title": "Thí dụ điều khiển mực chất lỏng trong bồn chứa"
+        },
+        {
+          "slide": 73,
+          "title": "Cảm biến mức chất lỏng"
+        },
+        {
+          "slide": 74,
+          "title": "Cảm biến mức chất lỏng"
+        },
+        {
+          "slide": 75,
+          "title": "Thiết bị điều khiển"
+        },
+        {
+          "slide": 76,
+          "title": "Sơ đồ điều khiển mức chất lỏng trong bồn"
+        },
+        {
+          "slide": 77,
+          "title": "Đáp ứng của hệ thống điều khiển ON-OFF mức chất lỏng"
+        },
+        {
+          "slide": 78,
+          "title": "Thí dụ điều khiển cổng tự động"
+        },
+        {
+          "slide": 79,
+          "title": "Cảm biến vị trí"
+        },
+        {
+          "slide": 80,
+          "title": "Cảm biến vị trí"
+        },
+        {
+          "slide": 81,
+          "title": "Sơ đồ điều khiển cổng tự động"
+        },
+        {
+          "slide": 82,
+          "title": "Sơ đồ động lực điều khiển cổng tự động"
+        },
+        {
+          "slide": 83,
+          "title": "Sơ đồ động lực điều khiển cổng tự động"
+        },
+        {
+          "slide": 84,
+          "title": "Khuyết điểm"
+        },
+        {
+          "slide": 85,
+          "title": "Hệ thống điều khiển định vị anten"
+        },
+        {
+          "slide": 86,
+          "title": "Hệ thống điều khiển định vị anten: Điều khiển ON-OFF"
+        },
+        {
+          "slide": 87,
+          "title": "Hệ thống điều khiển định vị anten: Điều khiển ON-OFF"
+        },
+        {
+          "slide": 88,
+          "title": "Hệ thống phát hiện hộp sữa rỗng"
+        },
+        {
+          "slide": 89,
+          "title": "Thiết bị chấp hành: cy-lanh khí nén"
+        },
+        {
+          "slide": 90,
+          "title": "Thiết bị chấp hành: cy-lanh khí nén"
+        },
+        {
+          "slide": 91,
+          "title": "Relay thời gian (Timer)"
+        },
+        {
+          "slide": 92,
+          "title": "Sơ đồ điều khiển loại bỏ hộp sữa rỗng"
+        },
+        {
+          "slide": 93,
+          "title": "Dây chuyền đóng hộp táo"
+        },
+        {
+          "slide": 94,
+          "title": "Phát hiện táo: Cảm biến quang"
+        },
+        {
+          "slide": 95,
+          "title": "Thiết bị đếm táo: Bộ đếm (Counter)"
+        },
+        {
+          "slide": 96,
+          "title": "Dây chuyền đóng hộp táo: Sơ đồ điều khiển"
+        },
+        {
+          "slide": 97,
+          "title": "Bộ điều khiển lập trình (PLC  Programmable Logic Controller)"
+        },
+        {
+          "slide": 98,
+          "title": "Hạn chế của phương pháp điều khiển ON-OFF"
+        },
+        {
+          "slide": 99,
+          "title": "Cải thiện chất lượng khi đối tượng có quán tính?"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong2_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "09ba955969fc228668a3f67780f84f12f92ca211517c56d4698d962922c64e31",
+      "size_bytes": 1890985,
+      "slide_count": 124,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 2"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 2"
+        },
+        {
+          "slide": 4,
+          "title": "Khái niệm về mô hình toán học"
+        },
+        {
+          "slide": 5,
+          "title": "Khái niệm về mô hình toán học"
+        },
+        {
+          "slide": 6,
+          "title": "i(t)"
+        },
+        {
+          "slide": 7,
+          "title": "Một số thí dụ mô tả hệ thống bằng phương trình vi phân"
+        },
+        {
+          "slide": 8,
+          "title": "Một số thí dụ mô tả hệ thống bằng phương trình vi phân"
+        },
+        {
+          "slide": 9,
+          "title": "Một số thí dụ mô tả hệ thống bằng phương trình vi phân"
+        },
+        {
+          "slide": 10,
+          "title": "Hạn chế của mô hình toán dưới dạng phương trình vi phân"
+        },
+        {
+          "slide": 11,
+          "title": "Hàm truyền"
+        },
+        {
+          "slide": 12,
+          "title": "Phép biến đổi Laplace"
+        },
+        {
+          "slide": 13,
+          "title": "Phép biến đổi Laplace (tt)"
+        },
+        {
+          "slide": 14,
+          "title": "Phép biến đổi Laplace (tt)"
+        },
+        {
+          "slide": 15,
+          "title": "Phép biến đổi Laplace (tt)"
+        },
+        {
+          "slide": 16,
+          "title": "Phép biến đổi Laplace (tt)"
+        },
+        {
+          "slide": 17,
+          "title": "Định nghĩa hàm truyền"
+        },
+        {
+          "slide": 18,
+          "title": "Định nghĩa hàm truyền (tt)"
+        },
+        {
+          "slide": 19,
+          "title": "Hàm truyền của các phần tử"
+        },
+        {
+          "slide": 20,
+          "title": "Hệ thống điều khiển gồm 3 thành phần chính :"
+        },
+        {
+          "slide": 21,
+          "title": "Hàm truyền của các bộ điều khiển (khâu hiệu chỉnh)"
+        },
+        {
+          "slide": 22,
+          "title": "Hàm truyền của các bộ điều khiển (khâu hiệu chỉnh)"
+        },
+        {
+          "slide": 23,
+          "title": "Hàm truyền của các bộ điều khiển (khâu hiệu chỉnh)"
+        },
+        {
+          "slide": 24,
+          "title": "Hàm truyền của các bộ điều khiển (khâu hiệu chỉnh)"
+        },
+        {
+          "slide": 25,
+          "title": "Hàm truyền của các đối tượng thường gặp"
+        },
+        {
+          "slide": 26,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 27,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 28,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 29,
+          "title": "Hàm truyền của động cơ :"
+        },
+        {
+          "slide": 30,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 31,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 32,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 33,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 34,
+          "title": "Hàm truyền của các đối tượng thường gặp (tt)"
+        },
+        {
+          "slide": 35,
+          "title": "Hàm truyền của cảm biến"
+        },
+        {
+          "slide": 36,
+          "title": "Hàm truyền của hệ thống tự động"
+        },
+        {
+          "slide": 37,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 38,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 39,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 40,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 41,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 42,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 43,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 44,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 45,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 46,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 47,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 48,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 49,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 50,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 51,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 52,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 53,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 54,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 55,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 56,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 57,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 58,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 59,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 60,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 61,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 62,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 63,
+          "title": "Đại số sơ đồ khối"
+        },
+        {
+          "slide": 64,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 65,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 66,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 67,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 68,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 69,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 70,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 71,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 72,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 73,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 74,
+          "title": "Sơ đồ dòng tín hiệu"
+        },
+        {
+          "slide": 75,
+          "title": "Phương trình trạng thái"
+        },
+        {
+          "slide": 76,
+          "title": "Trạng thái của hệ thống"
+        },
+        {
+          "slide": 77,
+          "title": "Phương trình trạng thái"
+        },
+        {
+          "slide": 78,
+          "title": "Vài thí dụ về phương trình trạng thái"
+        },
+        {
+          "slide": 79,
+          "title": "Vài thí dụ về phương trình trạng thái"
+        },
+        {
+          "slide": 80,
+          "title": "Vài thí dụ về phương trình trạng thái"
+        },
+        {
+          "slide": 81,
+          "title": "Vài thí dụ về phương trình trạng thái"
+        },
+        {
+          "slide": 82,
+          "title": "Vài thí dụ về phương trình trạng thái"
+        },
+        {
+          "slide": 83,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 84,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 85,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 86,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 87,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 88,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 89,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 90,
+          "title": "Cách thành lập PTTT từ PTVP"
+        },
+        {
+          "slide": 91,
+          "title": "Thành lập PTTT từ PTVP dùng phương pháp tọa độ pha"
+        },
+        {
+          "slide": 92,
+          "title": "Thành lập PTTT từ PTVP dùng phương pháp tọa độ pha"
+        },
+        {
+          "slide": 93,
+          "title": "Thí dụ thành lập PTTT từ PTVP dùng PP tọa độ pha"
+        },
+        {
+          "slide": 94,
+          "title": "Thành lập PTTT từ sơ đồ khối"
+        },
+        {
+          "slide": 95,
+          "title": "Thành lập PTTT từ sơ đồ khối"
+        },
+        {
+          "slide": 96,
+          "title": "Thành lập PTTT từ sơ đồ khối"
+        },
+        {
+          "slide": 97,
+          "title": "Tính hàm truyền từ PTTT"
+        },
+        {
+          "slide": 98,
+          "title": "Tính hàm truyền từ PTTT"
+        },
+        {
+          "slide": 99,
+          "title": "Tính hàm truyền từ PTTT"
+        },
+        {
+          "slide": 100,
+          "title": "Nghiệm của phương trình trạng thái"
+        },
+        {
+          "slide": 101,
+          "title": "Tóm tắt quan hệ giữa các dạng mô tả toán học"
+        },
+        {
+          "slide": 102,
+          "title": "Mô hình tuyến tính hóa hệ phi tuyến"
+        },
+        {
+          "slide": 103,
+          "title": "Khái niệm về hệ phi tuyến"
+        },
+        {
+          "slide": 104,
+          "title": "Mô tả toán học hệ phi tuyến dùng phương trình vi phân"
+        },
+        {
+          "slide": 105,
+          "title": "Mô tả hệ phi tuyến dùng phương trình vi phân – Thí dụ 1"
+        },
+        {
+          "slide": 106,
+          "title": "Mô tả hệ phi tuyến dùng phương trình vi phân – Thí dụ 2"
+        },
+        {
+          "slide": 107,
+          "title": "Mô tả hệ phi tuyến dùng phương trình vi phân – Thí dụ 3"
+        },
+        {
+          "slide": 108,
+          "title": "Mô tả toán học hệ phi tuyến dùng phương trình trạng thái"
+        },
+        {
+          "slide": 109,
+          "title": "Mô tả hệ phi tuyến dùng phương trình trạng thái – Thí dụ 1"
+        },
+        {
+          "slide": 110,
+          "title": "Mô tả hệ phi tuyến dùng phương trình trạng thái – Thí dụ 2"
+        },
+        {
+          "slide": 111,
+          "title": "Điểm dừng của hệ phi tuyến"
+        },
+        {
+          "slide": 112,
+          "title": "Điểm dừng của hệ phi tuyến – Thí dụ 1"
+        },
+        {
+          "slide": 113,
+          "title": "Điểm dừng của hệ phi tuyến – Thí dụ 2"
+        },
+        {
+          "slide": 114,
+          "title": "Tuyến tính hóa hệ phi tuyến xung quanh điểm làm việc tĩnh"
+        },
+        {
+          "slide": 115,
+          "title": "Tuyến tính hóa hệ phi tuyến xung quanh điểm làm việc tĩnh"
+        },
+        {
+          "slide": 116,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 1"
+        },
+        {
+          "slide": 117,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 1 (tt)"
+        },
+        {
+          "slide": 118,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 1 (tt)"
+        },
+        {
+          "slide": 119,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 2"
+        },
+        {
+          "slide": 120,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 2 (tt)"
+        },
+        {
+          "slide": 121,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 2 (tt)"
+        },
+        {
+          "slide": 122,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 2 (tt)"
+        },
+        {
+          "slide": 123,
+          "title": "Tuyến tính hóa hệ phi tuyến – Thí dụ 2 (tt)"
+        },
+        {
+          "slide": 124,
+          "title": "Điều khiển ổn định hóa hệ phi tuyến quanh điểm làm việc tĩnh"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong3_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "d5c5c35879950c10434f6ac77a62c80143130cfc02841a7bb7b0da2615943b8f",
+      "size_bytes": 1350735,
+      "slide_count": 54,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 3"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 3"
+        },
+        {
+          "slide": 4,
+          "title": "Khái niệm đặc tính động học"
+        },
+        {
+          "slide": 5,
+          "title": "Khái niệm đặc tính động học"
+        },
+        {
+          "slide": 6,
+          "title": "Đáp ứng xung"
+        },
+        {
+          "slide": 7,
+          "title": "Đáp ứng nấc"
+        },
+        {
+          "slide": 8,
+          "title": "Thí dụ tính đáp ứng xung và đáp ứng nấc"
+        },
+        {
+          "slide": 9,
+          "title": "Khái niệm đặc tính tần số"
+        },
+        {
+          "slide": 10,
+          "title": "Khái niệm đặc tính tần số"
+        },
+        {
+          "slide": 11,
+          "title": "Đáp ứng biên độ và đáp ứng pha"
+        },
+        {
+          "slide": 12,
+          "title": "Biểu đồ Bode và biểu đồ Nyquist"
+        },
+        {
+          "slide": 13,
+          "title": "Biểu đồ Bode và biểu đồ Nyquist"
+        },
+        {
+          "slide": 14,
+          "title": "Các thông số quan trọng của đặc tính tần số"
+        },
+        {
+          "slide": 15,
+          "title": "Đặc tính động học các khâu điển hình"
+        },
+        {
+          "slide": 16,
+          "title": "Khâu tỉ lệ"
+        },
+        {
+          "slide": 17,
+          "title": "Khâu tỉ lệ"
+        },
+        {
+          "slide": 18,
+          "title": "Khâu tỉ lệ"
+        },
+        {
+          "slide": 19,
+          "title": "Khâu tích phân lý tưởng"
+        },
+        {
+          "slide": 20,
+          "title": "Khâu tích phân lý tưởng"
+        },
+        {
+          "slide": 21,
+          "title": "Khâu tích phân lý tưởng"
+        },
+        {
+          "slide": 22,
+          "title": "Khâu vi phân lý tưởng"
+        },
+        {
+          "slide": 23,
+          "title": "Khâu vi phân lý tưởng"
+        },
+        {
+          "slide": 24,
+          "title": "Khâu vi phân lý tưởng"
+        },
+        {
+          "slide": 25,
+          "title": "Khâu quán tính bậc 1"
+        },
+        {
+          "slide": 26,
+          "title": "Khâu quán tính bậc 1"
+        },
+        {
+          "slide": 27,
+          "title": "Khâu quán tính bậc 1"
+        },
+        {
+          "slide": 28,
+          "title": "Khâu quán tính bậc 1"
+        },
+        {
+          "slide": 29,
+          "title": "Khâu sớm pha bậc 1"
+        },
+        {
+          "slide": 30,
+          "title": "Khâu sớm pha bậc 1"
+        },
+        {
+          "slide": 31,
+          "title": "Khâu sớm pha bậc 1"
+        },
+        {
+          "slide": 32,
+          "title": "Khâu sớm pha bậc 1"
+        },
+        {
+          "slide": 33,
+          "title": "Khâu dao động bậc 2"
+        },
+        {
+          "slide": 34,
+          "title": "Khâu dao động bậc 2"
+        },
+        {
+          "slide": 35,
+          "title": "Khâu dao động bậc 2"
+        },
+        {
+          "slide": 36,
+          "title": "Khâu dao động bậc 2"
+        },
+        {
+          "slide": 37,
+          "title": "Khâu trì hoãn"
+        },
+        {
+          "slide": 38,
+          "title": "Khâu trể (khâu trì hoãn)"
+        },
+        {
+          "slide": 39,
+          "title": "Khâu trể (khâu trì hoãn)"
+        },
+        {
+          "slide": 40,
+          "title": "Khâu trể (khâu trì hoãn)"
+        },
+        {
+          "slide": 41,
+          "title": "Đặc tính động học của hệ thống"
+        },
+        {
+          "slide": 42,
+          "title": "Đặc tính thời gian của hệ tbống"
+        },
+        {
+          "slide": 43,
+          "title": "Nhận xét về đặc tính thời gian của hệ tbống"
+        },
+        {
+          "slide": 44,
+          "title": "Nhận xét về đặc tính thời gian của hệ tbống (tt)"
+        },
+        {
+          "slide": 45,
+          "title": "Nhận xét về đặc tính thời gian của hệ tbống (tt)"
+        },
+        {
+          "slide": 46,
+          "title": "Nhận xét về đặc tính thời gian của hệ tbống (tt)"
+        },
+        {
+          "slide": 47,
+          "title": "Nhận xét về đặc tính thời gian của hệ tbống (tt)"
+        },
+        {
+          "slide": 48,
+          "title": "Đặc tính tần số của hệ tbống"
+        },
+        {
+          "slide": 49,
+          "title": "Vẽ biểu đồ Bode gần đúng bằng đường tiệm cận"
+        },
+        {
+          "slide": 50,
+          "title": "Tiêu chuẩn ổn định tần số"
+        },
+        {
+          "slide": 51,
+          "title": "Thí dụ 1: Vẽ biểu đồ Bode gần đúng"
+        },
+        {
+          "slide": 52,
+          "title": "Thí dụ 1: Vẽ biểu đồ Bode gần đúng"
+        },
+        {
+          "slide": 53,
+          "title": "Thí dụ 2: Xác định hàm truyền dựa vào biểu đồ Bode gần đúng"
+        },
+        {
+          "slide": 54,
+          "title": "Thí dụ 2: Xác định hàm truyền dựa vào biểu đồ Bode gần đúng"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong4_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "36aab5af9fb400d5d658eab80b36eda8466e29ed00ff01a8b86f0af3bd70014c",
+      "size_bytes": 998149,
+      "slide_count": 71,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 4"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 4"
+        },
+        {
+          "slide": 4,
+          "title": "Khái niệm ổn định"
+        },
+        {
+          "slide": 5,
+          "title": "Khái niệm ổn định"
+        },
+        {
+          "slide": 6,
+          "title": "Khái niệm ổn định"
+        },
+        {
+          "slide": 7,
+          "title": "Khái niệm ổn định"
+        },
+        {
+          "slide": 8,
+          "title": "Khái niệm ổn định"
+        },
+        {
+          "slide": 9,
+          "title": "Khái niệm ổn định"
+        },
+        {
+          "slide": 10,
+          "title": "Tiêu chuẩn ổn định đại số"
+        },
+        {
+          "slide": 11,
+          "title": "Tiêu chuẩn ổn định đại số"
+        },
+        {
+          "slide": 12,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 13,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 14,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 15,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 16,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 17,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 18,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 19,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 20,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 21,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 22,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 23,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 24,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Routh"
+        },
+        {
+          "slide": 25,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Hurwitz"
+        },
+        {
+          "slide": 26,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Hurwitz"
+        },
+        {
+          "slide": 27,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Hurwitz"
+        },
+        {
+          "slide": 28,
+          "title": "Tiêu chuẩn ổn định đại số: Tiêu chuẩn Hurwitz"
+        },
+        {
+          "slide": 29,
+          "title": "Phương pháp quỹ đạo nghiệm số"
+        },
+        {
+          "slide": 30,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 31,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 32,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 33,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 34,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 35,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 36,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 37,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 38,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 39,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 40,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 41,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 42,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 43,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 44,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 45,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 46,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 47,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 48,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 49,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 50,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 51,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 52,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 53,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 54,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 55,
+          "title": "Tiêu chuẩn ổn định tần số"
+        },
+        {
+          "slide": 56,
+          "title": "Nhắc lại: Các thông số quan trọng của đặc tính tần số"
+        },
+        {
+          "slide": 57,
+          "title": "Tiêu chuẩn ổn định tần số"
+        },
+        {
+          "slide": 58,
+          "title": "Tiêu chuẩn ổn định Nyquist"
+        },
+        {
+          "slide": 59,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 1"
+        },
+        {
+          "slide": 60,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 1 (tt)"
+        },
+        {
+          "slide": 61,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 2"
+        },
+        {
+          "slide": 62,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 2 (tt)"
+        },
+        {
+          "slide": 63,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 3"
+        },
+        {
+          "slide": 64,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 3 (tt)"
+        },
+        {
+          "slide": 65,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 3 (tt)"
+        },
+        {
+          "slide": 66,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 4"
+        },
+        {
+          "slide": 67,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 4 (tt)"
+        },
+        {
+          "slide": 68,
+          "title": "Tiêu chuẩn ổn định Nyquist – Thí dụ 4 (tt)"
+        },
+        {
+          "slide": 69,
+          "title": "Tiêu chuẩn ổn định Bode"
+        },
+        {
+          "slide": 70,
+          "title": "Tiêu chuẩn ổn định Bode: Thí dụ"
+        },
+        {
+          "slide": 71,
+          "title": "Tiêu chuẩn ổn định tần số"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong5_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "b1e873ef37a876536889f1debc2439383ef7307e973b257562998a82fce7c025",
+      "size_bytes": 1290222,
+      "slide_count": 42,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 5"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 5"
+        },
+        {
+          "slide": 4,
+          "title": "Các tiêu chuẩn chất lượng"
+        },
+        {
+          "slide": 5,
+          "title": "Các tiêu chuẩn chất lượng"
+        },
+        {
+          "slide": 6,
+          "title": "Các tiêu chuẩn chất lượng"
+        },
+        {
+          "slide": 7,
+          "title": "Các tiêu chuẩn chất lượng"
+        },
+        {
+          "slide": 8,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 9,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 10,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 11,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 12,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 13,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 14,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 15,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 16,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 17,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 18,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 19,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 20,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 21,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 22,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 23,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 24,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 25,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 26,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 27,
+          "title": "Đáp ứng quá độ"
+        },
+        {
+          "slide": 28,
+          "title": "Các tiêu chuẩn tối ưu hóa đáp ứng quá độ"
+        },
+        {
+          "slide": 29,
+          "title": "Các tiêu chuẩn tối ưu hóa đáp ứng quá độ"
+        },
+        {
+          "slide": 30,
+          "title": "Các tiêu chuẩn tối ưu hóa đáp ứng quá độ"
+        },
+        {
+          "slide": 31,
+          "title": "Các tiêu chuẩn tối ưu hóa đáp ứng quá độ"
+        },
+        {
+          "slide": 32,
+          "title": "Các tiêu chuẩn tối ưu hóa đáp ứng quá độ"
+        },
+        {
+          "slide": 33,
+          "title": "Quan hệ giữa đặc tính tần số và"
+        },
+        {
+          "slide": 34,
+          "title": "Quan hệ giữa đặc tính tần số và sai số xác lập"
+        },
+        {
+          "slide": 35,
+          "title": "Quan hệ giữa đặc tính tần số và sai số xác lập"
+        },
+        {
+          "slide": 36,
+          "title": "Quan hệ giữa đặc tính tần số và chất lượng quá độ"
+        },
+        {
+          "slide": 37,
+          "title": "Quan hệ giữa đặc tính tần số và chất lượng quá độ"
+        },
+        {
+          "slide": 38,
+          "title": "Quan hệ giữa đặc tính tần số và chất lượng quá độ"
+        },
+        {
+          "slide": 39,
+          "title": "Thí dụ quan hệ giữa tần số cắt biên và thời gian quá độ"
+        },
+        {
+          "slide": 40,
+          "title": "Thí dụ quan hệ giữa tần số cắt biên và thời gian quá độ"
+        },
+        {
+          "slide": 41,
+          "title": "Thí dụ quan hệ giữa độ dự trữ pha và độ vọt lố"
+        },
+        {
+          "slide": 42,
+          "title": "Thí dụ quan hệ giữa độ dự trữ pha và độ vọt lố (tt)"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong6_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "aae3378634708d352a055f5b7744863875f8623e1506b25a4fdf4480dc8cefb3",
+      "size_bytes": 1691354,
+      "slide_count": 93,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 6"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 6"
+        },
+        {
+          "slide": 4,
+          "title": "Khái niệm"
+        },
+        {
+          "slide": 5,
+          "title": "Khái niệm"
+        },
+        {
+          "slide": 6,
+          "title": "Hiệu chỉnh nối tiếp"
+        },
+        {
+          "slide": 7,
+          "title": "Điều khiển hồi tiếp trạng thái"
+        },
+        {
+          "slide": 8,
+          "title": "Ảnh hưởng của các khâu"
+        },
+        {
+          "slide": 9,
+          "title": "Ảnh hưởng của cực"
+        },
+        {
+          "slide": 10,
+          "title": "Ảnh hưởng của zero"
+        },
+        {
+          "slide": 11,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh sớm pha"
+        },
+        {
+          "slide": 12,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh trể pha"
+        },
+        {
+          "slide": 13,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh sớm trể pha"
+        },
+        {
+          "slide": 14,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh tỉ lệ (P)"
+        },
+        {
+          "slide": 15,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh vi phân tỉ lệ (PD)"
+        },
+        {
+          "slide": 16,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh vi phân tỉ lệ (PD)"
+        },
+        {
+          "slide": 17,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh tích phân tỉ lệ (PI)"
+        },
+        {
+          "slide": 18,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh tích phân tỉ lệ (PI)"
+        },
+        {
+          "slide": 19,
+          "title": "Ảnh hưởng của khâu hiệu chỉnh vi tích phân tỉ lệ (PID)"
+        },
+        {
+          "slide": 20,
+          "title": "So sánh các khâu hiệu chỉnh PD. PI. PID"
+        },
+        {
+          "slide": 21,
+          "title": "Thiết kế hệ thống điều khiển liên tục"
+        },
+        {
+          "slide": 22,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS"
+        },
+        {
+          "slide": 23,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 24,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS"
+        },
+        {
+          "slide": 25,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 26,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 27,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 28,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 29,
+          "title": "QĐNS của hệ thống sau khi hiệu chỉnh sớm pha"
+        },
+        {
+          "slide": 30,
+          "title": "Đáp ứng của hệ thống sau khi hiệu chỉnh sớm pha"
+        },
+        {
+          "slide": 31,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh trể pha dùng QĐNS"
+        },
+        {
+          "slide": 32,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh trể pha dùng QĐNS"
+        },
+        {
+          "slide": 33,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 34,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 35,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 36,
+          "title": "QĐNS của hệ thống sau khi hiệu chỉnh trể pha"
+        },
+        {
+          "slide": 37,
+          "title": "Đáp ứng của hệ thống sau khi hiệu chỉnh trể pha"
+        },
+        {
+          "slide": 38,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS"
+        },
+        {
+          "slide": 39,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS"
+        },
+        {
+          "slide": 40,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 41,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 42,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 43,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 44,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 45,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm trể pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 46,
+          "title": "Thiết kế hệ thống điều khiển liên tục"
+        },
+        {
+          "slide": 47,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh sớm pha dùng biểu đồ Bode"
+        },
+        {
+          "slide": 48,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh sớm pha dùng biểu đồ Bode"
+        },
+        {
+          "slide": 49,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh sớm pha dùng biểu đồ Bode"
+        },
+        {
+          "slide": 50,
+          "title": "Thí dụ TK khâu hiệu chỉnh sớm pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 51,
+          "title": "Thí dụ TK khâu hiệu chỉnh sớm pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 52,
+          "title": "Thí dụ TK khâu hiệu chỉnh sớm pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 53,
+          "title": "Thí dụ TK khâu hiệu chỉnh sớm pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 54,
+          "title": "Thí dụ TK khâu hiệu chỉnh sớm pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 55,
+          "title": "Thí dụ TK khâu hiệu chỉnh sớm pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 56,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh trể pha dùng biểu đồ Bode"
+        },
+        {
+          "slide": 57,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh trể pha dùng biểu đồ Bode"
+        },
+        {
+          "slide": 58,
+          "title": "Thí dụ thiết kế khâu hiệu chỉnh trể pha dùng biểu đồ Bode"
+        },
+        {
+          "slide": 59,
+          "title": "Thí dụ TK khâu hiệu chỉnh trể pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 60,
+          "title": "Thí dụ TK khâu hiệu chỉnh trể pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 61,
+          "title": "Thí dụ TK khâu hiệu chỉnh trể pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 62,
+          "title": "Thí dụ TK khâu hiệu chỉnh trể pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 63,
+          "title": "Thí dụ TK khâu hiệu chỉnh trể pha dùng biểu đồ Bode (tt)"
+        },
+        {
+          "slide": 64,
+          "title": "Thiết kế bộ điều khiển PID"
+        },
+        {
+          "slide": 65,
+          "title": "Phương pháp Zeigler  Nichols. Trường hợp 1"
+        },
+        {
+          "slide": 66,
+          "title": "Phương pháp Zeigler  Nichols. Trường hợp 1"
+        },
+        {
+          "slide": 67,
+          "title": "Phương pháp Zeigler  Nichols. Trường hợp 1"
+        },
+        {
+          "slide": 68,
+          "title": "Phương pháp Zeigler  Nichols. Trường hợp 2"
+        },
+        {
+          "slide": 69,
+          "title": "Phương pháp Zeigler  Nichols. Trường hợp 2"
+        },
+        {
+          "slide": 70,
+          "title": "Phương pháp Zeigler  Nichols. Trường hợp 2"
+        },
+        {
+          "slide": 71,
+          "title": "Phương pháp giải tích thiết kế bộ điều khiển PID"
+        },
+        {
+          "slide": 72,
+          "title": "Phương pháp giải tích thiết kế bộ điều khiển PID"
+        },
+        {
+          "slide": 73,
+          "title": "Phương pháp giải tích thiết kế bộ điều khiển PID"
+        },
+        {
+          "slide": 74,
+          "title": "Thiết kế bộ điều khiển hồi tiếp"
+        },
+        {
+          "slide": 75,
+          "title": "Tính điều khiển được"
+        },
+        {
+          "slide": 76,
+          "title": "Điều kiện cần và đủ để hệ thống điều khiển được"
+        },
+        {
+          "slide": 77,
+          "title": "Thí dụ khảo sát tính điều khiển được"
+        },
+        {
+          "slide": 78,
+          "title": "Điều khiển hồi tiếp trạng thái"
+        },
+        {
+          "slide": 79,
+          "title": "Phương pháp phân bố cực"
+        },
+        {
+          "slide": 80,
+          "title": "Phương pháp phân bố cực"
+        },
+        {
+          "slide": 81,
+          "title": "Phương pháp phân bố cực"
+        },
+        {
+          "slide": 82,
+          "title": "Phương pháp phân bố cực"
+        },
+        {
+          "slide": 83,
+          "title": "Thiết kế bộ ước lượng trạng thái"
+        },
+        {
+          "slide": 84,
+          "title": "Khái niệm ước lượng trạng thái"
+        },
+        {
+          "slide": 85,
+          "title": "Tính quan sát được"
+        },
+        {
+          "slide": 86,
+          "title": "Điều kiện cần và đủ để hệ thống quan sát được"
+        },
+        {
+          "slide": 87,
+          "title": "Thí dụ khảo sát tính quan sát được"
+        },
+        {
+          "slide": 88,
+          "title": "Bộ quan sát trạng thái"
+        },
+        {
+          "slide": 89,
+          "title": "Thiết kế bộ quan sát trạng thái"
+        },
+        {
+          "slide": 90,
+          "title": "Trình tự thiết kế bộ quan sát Luenberger"
+        },
+        {
+          "slide": 91,
+          "title": "Thí dụ thiết kế bộ quan sát trạng thái"
+        },
+        {
+          "slide": 92,
+          "title": "Thí dụ thiết kế bộ quan sát trạng thái (tt)"
+        },
+        {
+          "slide": 93,
+          "title": "Thí dụ thiết kế bộ quan sát trạng thái (tt)"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong7_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "6bef23ddf7f0a4daf5502e92265c431473b5fbc4ab19a520148b426978285cd0",
+      "size_bytes": 590140,
+      "slide_count": 51,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 7"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 7"
+        },
+        {
+          "slide": 4,
+          "title": "Khái niệm"
+        },
+        {
+          "slide": 5,
+          "title": "Hệ thống điều khiển dùng máy tính số"
+        },
+        {
+          "slide": 6,
+          "title": "Hệ thống điều khiển rời rạc"
+        },
+        {
+          "slide": 7,
+          "title": "Lấy mẫu dữ liệu"
+        },
+        {
+          "slide": 8,
+          "title": "Khâu giữ dữ liệu"
+        },
+        {
+          "slide": 9,
+          "title": "Phép biến đổi Z"
+        },
+        {
+          "slide": 10,
+          "title": "Định nghĩa phép biến đổi Z"
+        },
+        {
+          "slide": 11,
+          "title": "Ý nghĩa của phép biến đổi Z"
+        },
+        {
+          "slide": 12,
+          "title": "Tính chất của phép biến đổi Z"
+        },
+        {
+          "slide": 13,
+          "title": "Biến đổi Z của các hàm cơ bản"
+        },
+        {
+          "slide": 14,
+          "title": "Biến đổi Z của các hàm cơ bản"
+        },
+        {
+          "slide": 15,
+          "title": "Hàm truyền của hệ rời rạc"
+        },
+        {
+          "slide": 16,
+          "title": "Tính hàm truyền từ phương trình sai phân"
+        },
+        {
+          "slide": 17,
+          "title": "Tính hàm truyền từ phương trình sai phân"
+        },
+        {
+          "slide": 18,
+          "title": "Tính hàm truyền từ phương trình sai phân - Thí dụ"
+        },
+        {
+          "slide": 19,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối"
+        },
+        {
+          "slide": 20,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 1"
+        },
+        {
+          "slide": 21,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 1"
+        },
+        {
+          "slide": 22,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 2"
+        },
+        {
+          "slide": 23,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 2"
+        },
+        {
+          "slide": 24,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 2"
+        },
+        {
+          "slide": 25,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 2"
+        },
+        {
+          "slide": 26,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 3"
+        },
+        {
+          "slide": 27,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 3"
+        },
+        {
+          "slide": 28,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 3"
+        },
+        {
+          "slide": 29,
+          "title": "Tính hàm truyền của hệ rời rạc từ sơ đồ khối. Thí dụ 3"
+        },
+        {
+          "slide": 30,
+          "title": "Phương trình trạng thái"
+        },
+        {
+          "slide": 31,
+          "title": "Khái niệm"
+        },
+        {
+          "slide": 32,
+          "title": "Thành lập PTTT từ phương trình sai phân (PTSP)"
+        },
+        {
+          "slide": 33,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 34,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 35,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 36,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 37,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 38,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 39,
+          "title": "Thành lập PTTT từ PTSP"
+        },
+        {
+          "slide": 40,
+          "title": "Thành lập PTTT từ PTSP dùng phương pháp tọa độ pha"
+        },
+        {
+          "slide": 41,
+          "title": "Thành lập PTTT từ PTSP dùng phương pháp tọa độ pha"
+        },
+        {
+          "slide": 42,
+          "title": "Thí dụ thành lập PTTT từ PTSP dùng PP tọa độ pha"
+        },
+        {
+          "slide": 43,
+          "title": "Thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 44,
+          "title": "Thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 45,
+          "title": "Thí dụ thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 46,
+          "title": "Thí dụ thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 47,
+          "title": "Thí dụ thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 48,
+          "title": "Thí dụ thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 49,
+          "title": "Thí dụ thành lập PTTT hệ rời rạc từ PTTT hệ liên tục"
+        },
+        {
+          "slide": 50,
+          "title": "Tính hàm truyền từ PTTT"
+        },
+        {
+          "slide": 51,
+          "title": "Thí dụ tính hàm truyền từ PTTT"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong8_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "cffbde480fe741a6c014e8694b9fdaf4317f93f783e37c64a566f797a169bdd6",
+      "size_bytes": 802848,
+      "slide_count": 62,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 8"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 8"
+        },
+        {
+          "slide": 4,
+          "title": "Điều kiện ổn định của hệ rời rạc"
+        },
+        {
+          "slide": 5,
+          "title": "Điều kiện ổn định của hệ rời rạc"
+        },
+        {
+          "slide": 6,
+          "title": "Phương trình đặc trưng của hệ rời rạc"
+        },
+        {
+          "slide": 7,
+          "title": "Phương pháp đánh giá tính ổn định của hệ rời rạc"
+        },
+        {
+          "slide": 8,
+          "title": "Tiêu chuẩn Routh-Hurwitz mở rộng"
+        },
+        {
+          "slide": 9,
+          "title": "Tiêu chuẩn Routh – Hurwitz mở rộng"
+        },
+        {
+          "slide": 10,
+          "title": "Thí dụ xét ổn định dùng tiêu chuẩn Routh – Hurwitz mở rộng"
+        },
+        {
+          "slide": 11,
+          "title": "Thí dụ xét ổn định dùng tiêu chuẩn Routh – Hurwitz mở rộng"
+        },
+        {
+          "slide": 12,
+          "title": "Thí dụ xét ổn định dùng tiêu chuẩn Routh – Hurwitz mở rộng"
+        },
+        {
+          "slide": 13,
+          "title": "Thí dụ xét ổn định dùng tiêu chuẩn Routh – Hurwitz mở rộng"
+        },
+        {
+          "slide": 14,
+          "title": "Tiêu chuẩn Jury"
+        },
+        {
+          "slide": 15,
+          "title": "Tiêu chuẩn Jury"
+        },
+        {
+          "slide": 16,
+          "title": "Thí dụ xét ổn định dùng tiêu chuẩn Jury"
+        },
+        {
+          "slide": 17,
+          "title": "Tiêu chuẩn Jury"
+        },
+        {
+          "slide": 18,
+          "title": "Phương trình đặc trưng"
+        },
+        {
+          "slide": 19,
+          "title": "Tiêu chuẩn Jury"
+        },
+        {
+          "slide": 20,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 21,
+          "title": "Quỹ đạo nghiệm số hệ rời rạc"
+        },
+        {
+          "slide": 22,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 23,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 24,
+          "title": "Phương pháp quỹ đạo nghiệm số (QĐNS)"
+        },
+        {
+          "slide": 25,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 26,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 27,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 28,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 29,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 30,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 31,
+          "title": "Thí dụ vẽ QĐNS hệ rời rạc"
+        },
+        {
+          "slide": 32,
+          "title": "Đặc tính tần số của hệ rời rạc"
+        },
+        {
+          "slide": 33,
+          "title": "Đặc tính tần số hệ rời rạc"
+        },
+        {
+          "slide": 34,
+          "title": "Thí dụ đặc tính tần số hệ rời rạc"
+        },
+        {
+          "slide": 35,
+          "title": "Thí dụ đặc tính tần số hệ rời rạc"
+        },
+        {
+          "slide": 36,
+          "title": "Phép biến đổi song tuyến"
+        },
+        {
+          "slide": 37,
+          "title": "Quan hệ giữa tần số trong mặt phẳng W và tần số của hệ liên tục"
+        },
+        {
+          "slide": 38,
+          "title": "Vẽ biểu đòâ Bode gần đúng của hệ rời rạc"
+        },
+        {
+          "slide": 39,
+          "title": "Thí dụ vẽ biểu đồ Bode gần đúng của hệ rời rạc"
+        },
+        {
+          "slide": 40,
+          "title": "Thí dụ vẽ biểu đồ Bode gần đúng"
+        },
+        {
+          "slide": 41,
+          "title": "Chất lượng của hệ rời rạc"
+        },
+        {
+          "slide": 42,
+          "title": "Đáp ứng của hệ rời rạc"
+        },
+        {
+          "slide": 43,
+          "title": "Chất lượng quá độ"
+        },
+        {
+          "slide": 44,
+          "title": "Chất lượng quá độ"
+        },
+        {
+          "slide": 45,
+          "title": "Sai số xác lập"
+        },
+        {
+          "slide": 46,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 47,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 48,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 49,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 50,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 51,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 52,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 53,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 54,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 1"
+        },
+        {
+          "slide": 55,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 56,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 57,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 58,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 59,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 60,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 61,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        },
+        {
+          "slide": 62,
+          "title": "Chất lượng của hệ rời rạc. Thí dụ 2"
+        }
+      ]
+    },
+    {
+      "source_path_relative_to_course_root": "Tài liệu/Chuong9_CSTD_Unicode_DayDuCongThuc.pptx",
+      "collection": "9_chapter_formula_complete_source",
+      "sha256": "d7666f41fa03dc5d8d184ae6a281c73ad19513fb7ec77a0bb593e855c3510c78",
+      "size_bytes": 622749,
+      "slide_count": 61,
+      "title_method": "Inferred navigation title from existing source map; not a transcription guarantee",
+      "slides": [
+        {
+          "slide": 1,
+          "title": "Môn học"
+        },
+        {
+          "slide": 2,
+          "title": "Chương 9"
+        },
+        {
+          "slide": 3,
+          "title": "Nội dung chương 9"
+        },
+        {
+          "slide": 4,
+          "title": "Các bộ điều khiển rời rạc"
+        },
+        {
+          "slide": 5,
+          "title": "Các sơ đồ điều khiển thường dùng"
+        },
+        {
+          "slide": 6,
+          "title": "Hàm truyền của các khâu cơ bản rời rạc"
+        },
+        {
+          "slide": 7,
+          "title": "Hàm truyền của các khâu cơ bản rời rạc"
+        },
+        {
+          "slide": 8,
+          "title": "Hàm truyền của bộ điều khiển PID rời rạc"
+        },
+        {
+          "slide": 9,
+          "title": "Hàm truyền của bộ điều khiển rời rạc"
+        },
+        {
+          "slide": 10,
+          "title": "Phương pháp thiết kế hệ thống điều khiển rời rạc"
+        },
+        {
+          "slide": 11,
+          "title": "Thiết kế bộ điều khiển rời rạc trong miền Z"
+        },
+        {
+          "slide": 12,
+          "title": "Trình tự thiết kế khâu sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 13,
+          "title": "Trình tự thiết kế khâu hiệu chỉnh sớm pha dùng QĐNS (tt)"
+        },
+        {
+          "slide": 14,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 15,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 16,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 17,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 18,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 19,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 20,
+          "title": "Thí dụ thiết kế bộ điều khiển sớm pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 21,
+          "title": "Trình tự thiết kế khâu trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 22,
+          "title": "Thí dụ thiết kế bộ điều khiển trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 23,
+          "title": "Thí dụ thiết kế bộ điều khiển trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 24,
+          "title": "Thí dụ thiết kế bộ điều khiển trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 25,
+          "title": "Thí dụ thiết kế bộ điều khiển trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 26,
+          "title": "Thí dụ thiết kế bộ điều khiển trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 27,
+          "title": "Thí dụ thiết kế bộ điều khiển trể pha rời rạc dùng QĐNS"
+        },
+        {
+          "slide": 28,
+          "title": "Thí dụ thiết kế bộ điều khiển PID dùng PP giải tích"
+        },
+        {
+          "slide": 29,
+          "title": "Thí dụ thiết kế bộ điều khiển PID dùng PP giải tích"
+        },
+        {
+          "slide": 30,
+          "title": "Thí dụ thiết kế bộ điều khiển PID dùng PP giải tích"
+        },
+        {
+          "slide": 31,
+          "title": "Thí dụ thiết kế bộ điều khiển PID dùng PP giải tích"
+        },
+        {
+          "slide": 32,
+          "title": "Thí dụ thiết kế bộ điều khiển PID dùng PP giải tích"
+        },
+        {
+          "slide": 33,
+          "title": "Thiết kế bộ điều khiển rời rạc"
+        },
+        {
+          "slide": 34,
+          "title": "Tính điều khiển được"
+        },
+        {
+          "slide": 35,
+          "title": "Điều kiện cần và đủ để hệ thống điều khiển được"
+        },
+        {
+          "slide": 36,
+          "title": "PP phân bố cực thiết kế bộ điều khiển hồi tiếp trạng thái"
+        },
+        {
+          "slide": 37,
+          "title": "PP phân bố cực. Thí dụ 1"
+        },
+        {
+          "slide": 38,
+          "title": "PP phân bố cực. Thí dụ 1"
+        },
+        {
+          "slide": 39,
+          "title": "PP phân bố cực. Thí dụ 1"
+        },
+        {
+          "slide": 40,
+          "title": "PP phân bố cực. Thí dụ 1"
+        },
+        {
+          "slide": 41,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 42,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 43,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 44,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 45,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 46,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 47,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 48,
+          "title": "PP phân bố cực. Thí dụ 2"
+        },
+        {
+          "slide": 49,
+          "title": "Thiết kế bộ ước lượng trạng thái rời rạc"
+        },
+        {
+          "slide": 50,
+          "title": "Khái niệm ước lượng trạng thái"
+        },
+        {
+          "slide": 51,
+          "title": "Tính quan sát được"
+        },
+        {
+          "slide": 52,
+          "title": "Điều kiện cần và đủ để hệ thống quan sát được"
+        },
+        {
+          "slide": 53,
+          "title": "Thí dụ khảo sát tính quan sát được"
+        },
+        {
+          "slide": 54,
+          "title": "Bộ quan sát trạng thái"
+        },
+        {
+          "slide": 55,
+          "title": "Thiết kế bộ quan sát trạng thái"
+        },
+        {
+          "slide": 56,
+          "title": "Trình tự thiết kế bộ quan sát Luenberger"
+        },
+        {
+          "slide": 57,
+          "title": "Thí dụ thiết kế bộ quan sát trạng thái"
+        },
+        {
+          "slide": 58,
+          "title": "Thí dụ thiết kế bộ quan sát trạng thái (tt)"
+        },
+        {
+          "slide": 59,
+          "title": "Thí dụ thiết kế bộ quan sát trạng thái (tt)"
+        },
+        {
+          "slide": 60,
+          "title": "Mô phỏng bộ quan sát trạng thái rời rạc"
+        },
+        {
+          "slide": 61,
+          "title": "Kết quả mô phỏng ước lượng trạng thái"
+        }
+      ]
+    }
+  ]
+}
