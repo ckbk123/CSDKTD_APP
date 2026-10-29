@@ -113,10 +113,10 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     shape(plane, 'circle', { cx: 160, cy: 140, r: 100, class: 'dp03-circle' });
     shape(plane, 'circle', { cx: 160 + 100 * Math.cos(angle), cy: 140 - 100 * Math.sin(angle), r: 6, class: 'dp03-marker' });
     shape(plane, 'text', { x: 250, y: 165 }, 'Re z'); shape(plane, 'text', { x: 175, y: 25 }, 'Im z'); shape(plane, 'text', { x: 261, y: 140 }, '1'); shape(plane, 'text', { x: 40, y: 140 }, '−1');
-    const nyquist = svg('Sampled Nyquist response: solid positive frequencies, dashed conjugate negative frequencies, selected gain point. Both axes are gain units.');
-    const nx = (x: number) => 330 + 110 * x / halfSpan, ny = (y: number) => 140 - 110 * y / halfSpan;
-    shape(nyquist, 'line', { x1: 70, y1: 140, x2: 590, y2: 140, class: 'dp03-axis' }); shape(nyquist, 'line', { x1: 330, y1: 25, x2: 330, y2: 255, class: 'dp03-axis' });
-    shape(nyquist, 'text', { x: 480, y: 270 }, 'Re G (gain units)'); shape(nyquist, 'text', { x: 10, y: 20 }, 'Im G');
+    const nyquist = svg('Sampled Nyquist response: solid positive frequencies, dashed conjugate negative frequencies, selected gain point. Both axes are gain units.', 320, 280);
+    const nx = (x: number) => 160 + 110 * x / halfSpan, ny = (y: number) => 140 - 110 * y / halfSpan;
+    shape(nyquist, 'line', { x1: 40, y1: 140, x2: 280, y2: 140, class: 'dp03-axis' }); shape(nyquist, 'line', { x1: 160, y1: 25, x2: 160, y2: 255, class: 'dp03-axis' });
+    shape(nyquist, 'text', { x: 195, y: 275 }, 'Re G'); shape(nyquist, 'text', { x: 10, y: 20 }, 'Im G (gain units)');
     for (const sign of [1, -1]) {
       let path = '', previous = false;
       for (const point of current.points) {
@@ -126,7 +126,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       shape(nyquist, 'path', { d: path, class: sign === 1 ? 'dp03-line' : 'dp03-comparison' });
     }
     for (const tick of [-halfSpan, 0, halfSpan]) {
-      shape(nyquist, 'text', { x: nx(tick), y: 157, 'text-anchor': 'middle' }, format(tick)); shape(nyquist, 'text', { x: 335, y: ny(tick) }, format(tick));
+      shape(nyquist, 'text', { x: nx(tick), y: 157, 'text-anchor': 'middle' }, format(tick)); shape(nyquist, 'text', { x: 165, y: ny(tick) }, format(tick));
     }
     if (selected.kind === 'value' && Math.abs(selected.value.re) <= halfSpan && Math.abs(selected.value.im) <= halfSpan) shape(nyquist, 'circle', { cx: nx(selected.value.re), cy: ny(selected.value.im), r: 5, class: 'dp03-marker' });
     const bode = (phase: boolean) => {
@@ -151,7 +151,8 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       if (selected.kind === 'value' && angle >= Math.PI * .0001) { const ordinate = phase ? selected.phase === null ? null : selected.phase * 180 / Math.PI : selected.db; if (ordinate !== null) shape(picture, 'circle', { cx: bx(angle), cy: by(ordinate), r: 5, class: 'dp03-marker' }); }
       return picture;
     };
-    plots.replaceChildren(card('Unit-circle cursor', plane, 'The point is z=cos Ω+j sin Ω. Ω=0 is DC; Ω=π is the Nyquist endpoint.'), card('Sampled Nyquist curve', nyquist, `Positive Ω: solid. Negative Ω: dashed conjugate. Out-of-view segments beyond ±${format(halfSpan)} gain units are omitted; adjust the half-span. Singular points are gaps. This is not an encirclement/stability proof.`), card('Magnitude', bode(false), 'Solid: direct discrete evaluation. Dashed: transformed model evaluated without frequency warping. DC and frequencies below the logarithmic span are reported by the cursor, not represented by a log-zero axis.'), card('Principal phase', bode(true), 'Phase is undefined at a zero or pole. Principal-phase wraps are drawn as gaps; ±180° represent the same negative real direction.'));
+    const outside = selected.kind === 'value' && (Math.abs(selected.value.re) > halfSpan || Math.abs(selected.value.im) > halfSpan);
+    plots.replaceChildren(card('Unit-circle cursor', plane, 'The point is z=cos Ω+j sin Ω. Ω=0 is DC; Ω=π is the Nyquist endpoint.'), card('Sampled Nyquist curve', nyquist, `Positive Ω: solid. Negative Ω: dashed conjugate. Out-of-view segments beyond ±${format(halfSpan)} gain units are omitted; adjust the half-span. ${outside ? 'The selected point is outside this window; increase the half-span to show it. ' : ''}Singular points are gaps. This is not an encirclement/stability proof.`), card('Magnitude', bode(false), 'Solid: direct discrete evaluation. Dashed: transformed model evaluated without frequency warping. DC and frequencies below the logarithmic span are reported by the cursor, not represented by a log-zero axis.'), card('Principal phase', bode(true), 'Phase is undefined at a zero or pole. Principal-phase wraps are drawn as gaps; ±180° represent the same negative real direction.'));
   }
   const reveal = () => {
     try {

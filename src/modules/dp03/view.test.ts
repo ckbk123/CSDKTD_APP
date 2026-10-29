@@ -90,4 +90,11 @@ describe('DP03 linked exercise flow', () => {
     visit.set('Requested physical ω (rad/s)', '-0e-999'); visit.button('Map physical frequency');
     expect(visit.visible()).toBe(true); expect(visit.container.textContent).toContain('Signed alias evaluation at Ω=0');
   });
+  it('explains a Nyquist point outside the chosen window instead of hiding it silently', () => {
+    const visit = open(); visit.button('First-order variation'); visit.set('Nyquist half-span (gain units)', '.01'); visit.reveal();
+    expect(visit.container.textContent).toContain('selected point is outside this window');
+    visit.set('Nyquist half-span (gain units)', '10');
+    expect(visit.container.textContent).not.toContain('selected point is outside this window');
+    expect(visit.container.querySelectorAll('.dp03-scroll[tabindex="0"]')).toHaveLength(4);
+  });
 });
