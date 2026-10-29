@@ -25,7 +25,7 @@ describe('bounded exact visual rational grammar', () => {
     expect(parseForward('\\frac123').numerator).toEqual([q(3, 2)]);
     expect(parseForward('\\frac{12}3').numerator).toEqual([q(4)]);
   });
-  it.each(['2\\frac12', '-2\\frac12', '(2\\frac12)/(z+1)', '\\frac1{2\\frac12}', '-\\frac{2\\frac12}{z+1}'])('rejects ambiguous mixed number %s', text => {
+  it.each(['2\\frac12', '-2\\frac12', '(2\\frac12)/(z+1)', '\\frac1{2\\frac12}', '-\\frac{2\\frac12}{z+1}', '-{2}\\frac12', '2{\\frac12}', '\\frac1{2{\\frac12}}'])('rejects ambiguous mixed number %s', text => {
     expect(() => parseForward(text)).toThrow(/Mixed-number/);
   });
   it('requires explicit mixed-number addition or multiplication while preserving algebraic juxtaposition', () => {
@@ -34,6 +34,23 @@ describe('bounded exact visual rational grammar', () => {
     expect(values('z^2\\frac12/(z^2+1)')).toEqual({ n: [0, 0, 0.5], d: [1, 0, 1] });
     expect(parseForward('\\frac12\\frac12').numerator).toEqual([q(1, 4)]);
   });
+  it.each([['1{+2}', 3], ['-{2+3}', 1], ['1{2}', 12], ['{1}{2}', 12], ['-{2}{3}', -23], ['{2}', 2], ['{-2}^2', -4], ['{(-2)}^2', 4], ['{1+2}^2', 5]])('preserves displayed arithmetic across invisible formatting: %s', (source, expected) => {
+    expect(parseForward(source).numerator).toEqual([q(expected)]);
+  });
+  it('retains actual fraction boxes and visible parentheses', () => {
+    expect(values('\\frac1{{z+2}z}')).toEqual({ n: [1 / 3], d: [0, 1] });
+    expect(values('\\frac1{(z+2)z}')).toEqual({ n: [1], d: [0, 2, 1] });
+    expect(values('\\frac{{1}{2}}{{z}+{1}}')).toEqual({ n: [12], d: [1, 1] });
+  });
+  it('distinguishes a one-token exponent from a complete exponent box', () => {
+    expect(values('z^12/(z+1)')).toEqual({ n: [0, 2], d: [1, 1] });
+    expect(values('2^12')).toEqual({ n: [4], d: [1] });
+    expect(values('10^23')).toEqual({ n: [300], d: [1] });
+    expect(values('10^{{-2}}')).toEqual({ n: [0.01], d: [1] });
+    expect(() => parseForward('z^{12}')).toThrow(/powers/);
+    expect(() => parseForward('2^{12}')).toThrow(/powers/);
+  });
+  it.each(['\\frac1\\;2', '\\frac\\,12', 'z^\\;2', '1\\,2'])('retains TeX argument tokens before spacing cleanup: %s', source => expect(() => parseForward(source)).toThrow());
   it.each(['1e-2', '1E-2', '10e2'])('rejects visual programming-style exponents %s', text => expect(() => parseForward(text)).toThrow(/e\/E/));
   it.each(['', '1/0', '1/(z-z)', 'z^2/(z+1)', 'z^3', '1.2.3', 'sin(z)', '1/(z+1', '\\frac1', '0^{-1}', '10^{13}', '1'.repeat(25), '1+'.repeat(80)+'1'])('rejects malformed/unsupported/bounded input %s', text => expect(() => parseForward(text)).toThrow());
   it('keeps exact z=1 factors separate from near factors', () => {

@@ -1,43 +1,50 @@
 import { decimal, div, neg, number, plus, q, scale, times, zero, type Poly, type Q } from './rational';
 
 export interface Forward { readonly numerator: Poly; readonly denominator: Poly }
-function fractions(input: string): string {
+/** Preserve true argument scope and flatten standalone invisible formatting.
+ * Fractions and powers each consume exactly one unbraced TeX token. */
+function visualNotation(input: string): string {
   let i = 0;
   function arg(depth: number): string {
-    if (depth > 20) throw new Error('Keep fraction nesting within 20 levels.');
-    while (/\s/.test(input[i] ?? '') && i < input.length) i++;
-    if (i >= input.length) throw new Error('Complete both fraction arguments.');
+    if (depth > 20) throw new Error('Keep notation nesting within 20 levels.');
     if (input[i] === '{') {
-      const start = ++i; let balance = 1;
-      while (i < input.length && balance) { if (input[i] === '{') balance++; if (input[i] === '}') balance--; i++; }
-      if (balance) throw new Error('Close the fraction group.');
-      return input.slice(start, i - 1);
+      i++; const body = scan(true, depth + 1);
+      if (input[i++] !== '}') throw new Error('Close each fraction or power box.');
+      return body;
     }
-    if (input.startsWith('\\frac', i)) { i += 5; return `\\frac{${arg(depth + 1)}}{${arg(depth + 1)}}`; }
-    if (input[i] === '\\') {
-      const token = /^\\[a-zA-Z]+/.exec(input.slice(i))?.[0];
-      if (!token) throw new Error('Check the fraction notation.');
-      i += token.length; return token;
+    if (input.startsWith('\\frac', i)) return fraction(depth + 1);
+    if (input[i] && /[0-9z]/.test(input[i])) return input[i++];
+    throw new Error('Complete each fraction or power argument.');
+  }
+  function fraction(depth: number): string {
+    i += 5; const n = arg(depth), d = arg(depth);
+    return `\\frac{${n}}{${d}}`;
+  }
+  function scan(untilBrace: boolean, depth: number): string {
+    if (depth > 20) throw new Error('Keep notation nesting within 20 levels.');
+    let output = '';
+    while (i < input.length && !(untilBrace && input[i] === '}')) {
+      if (input.startsWith('\\frac', i)) output += fraction(depth + 1);
+      else if (input[i] === '^') { i++; output += `^{${arg(depth + 1)}}`; }
+      else if (input[i] === '{') {
+        i++; output += scan(true, depth + 1);
+        if (input[i++] !== '}') throw new Error('Close each formatting group.');
+      } else output += input[i++];
+      if (output.length > 2000) throw new Error('The expanded notation is too large.');
     }
-    return input[i++];
+    return output;
   }
-  let result = '';
-  while (i < input.length) {
-    if (input.startsWith('\\frac', i)) {
-      i += 5; const a = arg(0), b = arg(0);
-      result += `\\frac{${fractions(a)}}{${fractions(b)}}`;
-    } else result += input[i++];
-    if (result.length > 2000) throw new Error('The expanded fraction notation is too large.');
-  }
-  return result;
+  return scan(false, 0);
 }
 export function parseForward(latex: string): Forward {
   if (!latex.trim() || latex.length > 300) throw new Error('Enter a forward path within 300 characters.');
   let text = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:dfrac|tfrac)\b/g, '\\frac')
-    .replace(/\\(?:cdot|times)\b/g, '*').replace(/\\div\b/g, '/').replace(/\\[,!;: ]/g, '').replace(/−/g, '-');
-  text = text.replace(/^\s*[LFG]\s*\(\s*z\s*\)\s*=\s*/, '');
+    .replace(/\\(?:cdot|times)\b/g, '*').replace(/\\div\b/g, '/').replace(/\s/g, '').replace(/−/g, '-');
+  text = text.replace(/^[LFG]\(z\)=/, '');
   if (/[eE]/.test(text)) throw new Error('Visual e/E notation is algebra. Use decimals or explicit powers of ten.');
-  text = fractions(text);
+  text = visualNotation(text);
+  if (/[0-9.](?:\\[,!;: ])+[0-9.]/.test(text)) throw new Error('Use explicit + or × between separate numeric terms.');
+  text = text.replace(/\\[,!;: ]/g, '');
   const tokens: string[] = [];
   while (text.trim()) {
     text = text.trimStart();

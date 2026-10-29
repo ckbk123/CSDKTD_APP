@@ -121,7 +121,7 @@ export function analyze(forward: Forward, period: Q, sensor: Q, reference: Refer
   if (T < 0.001 || T > 10 || h < 0.01 || h > 10) throw new Error('Use T=0.001–10 s and sensor h=0.01–10.');
   if (!Number.isInteger(samples) || samples < 10 || samples > 1000) throw new Error('Choose an integer final sample index from 10 to 1000.');
   const raw = plus(forward.denominator, scale(forward.numerator, sensor));
-  if (zero(raw) || raw.length < forward.denominator.length) throw new Error('The direct feedback equation is singular: 1+h times the forward feedthrough is zero.');
+  if (zero(raw) || raw.length < forward.denominator.length) throw new Error('The direct feedback equation is singular: 1 + h·d₀ = 0, where d₀ is the forward feedthrough gain.');
   const closed = raw.map(a => div(a, raw.at(-1)!));
   if (closed.some(a => Math.abs(number(a)) > 1e6)) throw new Error('The normalized closed-loop coefficients exceed 10⁶. The direct feedback equation is too ill-conditioned here.');
   const conditions = schur(closed), stable = conditions.every(c => c.value.n > 0n);
