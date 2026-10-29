@@ -156,17 +156,20 @@ export function stateAt(model: Model, initial: readonly number[], t: number): nu
   const delta = num(discriminant) / 4;
   const largest = center + (delta > 0 ? Math.sqrt(delta) : 0);
   if (largest * t > 40) throw new Error('This horizon exceeds the growth limit exp(40). Shorten the horizon; classification is still valid.');
+  const nx = [(a[0][0] - center) * initial[0] + a[0][1] * initial[1], a[1][0] * initial[0] + (a[1][1] - center) * initial[1]];
   let f: number, g: number;
   if (!discriminant.n) { f = Math.exp(center * t); g = t * f; }
   else if (delta > 0) {
     const q = Math.sqrt(delta), plus = Math.exp((center + q) * t), minus = Math.exp((center - q) * t);
+    // Keep separated exponentials separated. Forming cosh/sinh first can erase
+    // a fast decaying state in the presence of a growing eigenvalue.
+    if (q * t >= 0.1) return initial.map((x, i) => ((x + nx[i] / q) * plus + (x - nx[i] / q) * minus) / 2);
     f = (plus + minus) / 2;
     g = q * t < 0.1 ? Math.exp(center * t) * Math.sinh(q * t) / q : (plus - minus) / (2 * q);
   } else {
     const q = Math.sqrt(-delta), scale = Math.exp(center * t); f = scale * Math.cos(q * t); g = scale * Math.sin(q * t) / q;
   }
-  return [f * initial[0] + g * ((a[0][0] - center) * initial[0] + a[0][1] * initial[1]),
-    f * initial[1] + g * (a[1][0] * initial[0] + (a[1][1] - center) * initial[1])];
+  return initial.map((x, i) => f * x + g * nx[i]);
 }
 
 /** Regular impulse response of the exactly reduced scalar channel, excluding D delta(t). */
@@ -184,6 +187,7 @@ export function impulseAt(analysis: Analysis, t: number): number {
   if (!disc.n) return Math.exp(center * t) * (n1 + (n0 + n1 * center) * t);
   if (delta < 0) return Math.exp(center * t) * (n1 * Math.cos(q * t) + (n0 + n1 * center) * Math.sin(q * t) / q);
   const plus = Math.exp((center + q) * t), minus = Math.exp((center - q) * t);
+  if (q * t >= 0.1) return ((n1 + (n0 + n1 * center) / q) * plus + (n1 - (n0 + n1 * center) / q) * minus) / 2;
   const f = (plus + minus) / 2, g = q * t < 0.1 ? Math.exp(center * t) * Math.sinh(q * t) / q : (plus - minus) / (2 * q);
   return n1 * f + (n0 + n1 * center) * g;
 }

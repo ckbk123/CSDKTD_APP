@@ -39,3 +39,7 @@ Read TASK, current source, shared equation API, contribution/development/design/
 - Node 24.22.1: `npm run check` passed; `npm test` passed 80 tests in 8 files; `npm run build` passed. Existing MathLive chunk-size advisory remains. npm was invoked with the bundled Node executable and the installed npm CLI; no dependency changes.
 - One first test run found the Node-side MathLive export cannot initialize the interactive editor during catalogue imports. Fixed locally by loading the editor inside synchronous mount with an abort/disposal guard; all global tests now pass without shared changes.
 - **Still pending:** real-browser production checks, visual-font/keyboard validation, final mathematical review and final delivery. Stage remains in-progress.
+
+### Numerical review checkpoint
+
+A review of mixed growing/decaying modes found that forming hyperbolic terms before recombining could erase a tiny decaying state. The transition now keeps separated real exponentials separate away from a repeated root, and uses a small-argument expression near repetition. Added the independent diag(1,-2), x(0)=[1,1], t=30 check (exp(30), exp(-60)). Reduced-channel impulse evaluation uses the exactly reduced denominator, so a canceled unstable eigenvalue cannot contaminate that trace. The 38 module tests pass after this correction; browser QA is reserved by DR01 at this checkpoint, so no browser controls have been used.

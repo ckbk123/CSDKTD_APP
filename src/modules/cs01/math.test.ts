@@ -101,6 +101,8 @@ describe('analytic free and modal traces', () => {
   it('uses exact reduction to avoid contamination from a hidden unstable mode', () => {
     const result = analyze(make([['1', '0'], ['0', '-2']], ['0', '1'], ['0', '1']));
     expect(impulseAt(result, 30)).toBeCloseTo(Math.exp(-60), 40);
+    const mixed = stateAt(make([['1', '0'], ['0', '-2']]), [1, 1], 30);
+    expect(mixed[0]).toBeCloseTo(Math.exp(30), 0); expect(mixed[1]).toBeCloseTo(Math.exp(-60), 40);
     expect(impulseAt(analyze(make([['1', '0'], ['0', '1']], ['0', '0'], ['1', '0'], '2')), 1)).toBe(0);
   });
   it('handles nearly repeated real eigenvalues without subtractive loss in the transition', () => {
