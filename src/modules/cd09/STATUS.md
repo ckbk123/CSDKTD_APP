@@ -1,6 +1,6 @@
 # CD09 implementation status
 
-- **Stage:** in-progress — pure calculation/parser layer and48 independent tests pass; the workspace UI is still the original blank scaffold.
+- **Stage:** in-progress — full guided UI and calculations implemented;59 module/719 project tests and type/build pass; actual browser QA pending.
 - **Assessed:** 29 October 2026, primary main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd09/**`, [TASK.md](TASK.md), atlas CD09 and continuous exercise audit D1.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -10,21 +10,21 @@
 
 ## Current source assessment
 
-`index.ts` is metadata-only and preserves the accepted baseline. `workspace.ts` remains blank. Module-owned `math.ts`, `parser.ts` and `math.test.ts` now implement and test the bounded computational contract; no exercise controls or browser behavior are claimed yet. Existing shared services provide visual equation entry/display and native numeric reading; `src/shared/math/README.md` does not supply a numerical toolbox. Locked dependencies installed successfully with bundled Node24.22.1 (`npm ci`:109 packages,0 vulnerabilities). Primary checkout and8787 were not changed. Previous CD08 PR20/source5886e80 remains submitted in its preserved worktree for asynchronous review.
+`index.ts` remains metadata-only. `workspace.ts` now loads the owned `ui.ts` synchronously through an owned loading host/child signal; partial failure aborts resources before showing recovery. Module-owned `math.ts`, `parser.ts`, scoped `style.css` and tests implement the bounded exercise. Existing shared services provide visual equation entry/display and native numeric reading; no shared math/package change was made. Locked dependencies installed with bundled Node24.22.1 (`npm ci`:109 packages,0 vulnerabilities). Primary checkout and8787 were not changed. Previous CD08 PR20/source5886e80 remains submitted in its preserved worktree for asynchronous review.
 
 ## Requirement audit and next work
 
 | Accepted requirement | Current state / implementation action |
 |---|---|
-| Edit model and observer targets | Missing. Use shared visual A2×2,B2×1,C1×2 and real monic quadratic target inputs, with a bounded local parser; native initial states/estimate/input/noise controls use shared numeric reader. |
-| Row-by-row observability | Calculations/tests present: C then CA, normalized-row determinant/rank, changed C=[0,1], rank loss and near-rank loss. Guided row reveal still missing. |
-| Derive and check L | Calculations/tests present: matching equations, L, actual A−LC and both modes, repeated/conjugate targets and conditioning/accuracy failures. Prediction/reveal UI still missing. |
-| Estimate from one output | Separate plant/estimate dynamics computed and independently tested; estimator receives only known u and scalar measured output. Truth, measurement, estimate, innovation, injection, component errors and effort returned. All visualization/sample controls remain missing. |
-| Connect estimated-state feedback | Computed/tested u=−K xhat+Nr, controller target matching, all combined modes, exact ideal response and error independence. Known-input mode works separately. Connection UI and explanation remain missing. |
-| Linear noise/filter experiments | Computed/tested sinusoidal disturbance with amplitude/frequency/phase, optional innovation filter and its three actual modes. Independent frequency-response/DC fixtures and unstable-filter counterexample pass. UI comparison and explanation remain missing. No nonlinear hardware or stochastic/Kalman claims. |
-| Changed data and failures | Missing. Sensor/target/initial-estimate/input/noise changes must recompute; empty/malformed/nonfinite/rank/conditioning/resource failures hide stale answers. Preserve small nonzero coefficients. |
-| Lifecycle and accessible UI | Missing. Synchronous lazy wrapper with owned loading host/child signal, partial-failure cleanup, mount-owned state, scoped styles, keyboard/numeric alternatives, local equation/table scrolling and fresh reset/reopen. |
-| Mathematical/project/browser checks | Missing. Independent fixtures below plus changed/noisy/filtered/failure cases, then module/type/full/build checks and actual private IAB editing/reset/reopen/rapid navigation/font/keyboard/narrow tests. |
+| Edit model and observer targets | Five shared visual A/B/C and target inputs, bounded local parser; native initial state/estimate/input/noise/time controls use shared numeric reader. Actual editor QA pending. |
+| Row-by-row observability | C then CA reveal, normalized-row determinant/rank; changed C=[0,1], rank loss and near-rank loss tested. |
+| Derive and check L | Matching equations, nominal actual A−LC/modes/residual, gain prediction and reveal; repeated/conjugate and conditioning/accuracy tests. |
+| Estimate from one output | Separate plant/estimate dynamics; only known u and measured scalar drive the estimator. Seven plots, numeric time inspector and signal table distinguish truth, measured/estimated output, innovation, injection, component error and effort. |
+| Connect estimated-state feedback | Explicit toggle computes K/N from feedback targets and uses xhat. Complete4/5-mode homogeneous spectrum shown, including filter modes. Known-input experiment remains available; unused controls are disabled. |
+| Linear noise/filter experiments | Sinusoidal amplitude/frequency/phase, optional innovation filter, actual three-mode spectrum and unfiltered comparison. Component RMS and effort statistics are sampled, not settling proofs. Independent phasor/DC and unstable-filter fixtures pass. |
+| Changed data and failures | Sensor/faster/conjugate/noisy/filtered variations and editable initial conditions. Native/visual edits invalidate stale results; zero/underflow/exponent and domain failures tested. Tiny gains stay nonzero and zero predictions fail. |
+| Lifecycle and accessible UI | Owned child-abort loading wrapper and partial-failure resource tests; mount-owned state and scoped styles. Keyboard focus survives rerender; Escape preserves visual entry; equations/table scroll locally. Real reset/navigation/narrow checks pending. |
+| Mathematical/project/browser checks |59 module tests,719 project tests/type/build pass. Browser editing, fonts, symbol keyboard, reset/reopen/rapid navigation and narrow QA remain mandatory. |
 
 ## Independent fixtures now covered by tests
 
@@ -53,6 +53,6 @@ Current bounds: matrix entries≤1000; target coefficients≤10000, strictly pos
 
 Initial states/estimates, held input/reference and noise controls have magnitude≤100; amplitude/frequency nonnegative. Tau is0 or.001–10s; horizon.1–50s; sample count2–1001 (planned UI401). An augmented7/8-state exponential propagates the plant, observer, optional filter, sinusoidal source and held input. Taylor≤24 terms at reduced norm≤.5, term tolerance10⁻¹⁶, scaling≤30. Response values≤10⁸; modal/noise resolution receives a sampling flag. RMS estimation error is returned separately for each state, avoiding addition of unlike physical units.
 
-Bundled Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/cd09` passes48 tests; `node node_modules/typescript/bin/tsc --noEmit` passes. The initial syntax precedence error and overly exact complex-root test were corrected before this checkpoint. Full application tests/build and all actual browser checks remain pending.
+Bundled Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/cd09` passes59 tests (48 math/parser,7 mocked UI,4 loader); `node node_modules/typescript/bin/tsc --noEmit` passes. `npm test` passes719 tests in29 files; `npm run build` passes including type check (existing MathLive chunk warning only). The initial syntax precedence error and overly exact complex-root test were corrected before this checkpoint. Mocked editors do not prove MathLive browser behavior; all actual browser checks remain pending.
 
-Next: finish the full guided UI, changed-data experiments, lifecycle wrapper/tests and actual browser proof, then combined checks and one PR/exact submission. No shared API/package change is required. Private per-chat IAB testing is authorized after inventory identity verification; the earlier global queue is not required for this verified chat context. Do not repeat the unsupported Firefox control route.
+Next: complete actual browser proof and any repairs, record evidence, then final exact-HEAD combined checks and one PR/submission. No shared API/package change is required. Private per-chat IAB testing is authorized after inventory identity verification; the earlier global queue is not required for this verified chat context. Do not repeat the unsupported Firefox control route.
