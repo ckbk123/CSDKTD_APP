@@ -77,3 +77,21 @@ Primary v0.3.3 introduced readNumericInput(input,label) in src/shared/numeric-in
 DP02 was resubmitted at f6c7b74 with its focused visual/native production evidence and its browser reservation released. DD04 has resumed. The same observed MathLive scientific-paste normalization now gets a clear unsupported-powers message in this error-list parser; its new regression brings module checks to94/94. The last full suite/build remains the135-test b6367fa checkpoint; final checks will be rerun after dependency disposition and browser changes. Actual remaining browser work is still pending the shared QA resource. No contribution submission is claimed.
 
 Coordinator disposition (2026-10-29): DD04 keeps its independently tested equivalent local native-number checks in this preserved branch. The coordinator owns adapting the module reader to readNumericInput(input,label) in the integration worktree, with focused native-zero/exponent/underflow regressions, combined checks and browser verification before merge. This is an approved integration adaptation and does not block functional module delivery. No unowned shared commit, rebase or main merge is authorized or needed here. New module worktrees from current primary will use the published helper directly.
+
+## Current requirement evidence (before final browser gate)
+
+| Accepted requirement | Delivered evidence | Remaining |
+|---|---|---|
+| Editable integration and derivative rules | view.ts selectors; derive maps forward/backward/trapezoidal I and backward/Tustin/filtered D; future-input forward D is rejected explicitly | Browser rule variations |
+| Positional/incremental identities and C(z) | math.ts derives c0/c1,alpha/beta,b0…b2; view.ts shows I/D, C(q), denominator clearing, C(z) and both execution forms | None |
+| Read, calculate, commit memory | calculate returns immutable next state; view.ts separates preview/commit and shows old-read highlighting; tests verify no early shift | Final keyboard recheck |
+| Baseline and changed T | Independent math fixtures verify14.1,-23.9,10; outputs14.1,4.3; T=.2 gives9.2,-13.8,5; earlier browser pass confirmed these | None |
+| Explicit initial memory | e0,e[-1],I0,D0 initialize consistent output/increment histories; nonzero memory fixture and interface restart check | Final changed-memory browser recheck |
+| Distinct filtered controller/state | First-order backward-Euler derivative filter has its own D and τ; analytic fixtures and earlier D0=2 browser check give u1=10.1 | Remaining rule/keyboard check |
+| Editable visual errors and failures | Shared editor; bounded real parser with compact/signed/nested fractions; rejects e/E,powers,ambiguous adjacency and singular/large/malformed inputs; separate native numeric grammar | Actual fraction-button entry and browser failures |
+| Student reasoning and comparison | Optional next-output prediction; explicit P/I/D arithmetic and both output forms with scale-aware residual; committed sample table and stem plots | Browser interaction and plot readability |
+| Bounded, local and isolated | 1–40 samples; pure helpers; synchronous deferred mount, abort/error/cleanup tests; scoped styles and no cross-module state | Actual reset/reopen/rapid-navigation check |
+| Numeric shared API | Current native guards are behaviorally equivalent and tested; coordinator owns the approved shared-reader adaptation during integration | Coordinator integration check, not worker functional scope |
+| Verification/delivery |94 module tests (24 math,58 input,8 mocked view,4 lifecycle),136 full-project tests, build/type check pass after the powers message; draft PR9 attached | Final real-browser gate, evidence/ready/submission |
+
+This table records current evidence, not a verified-stage claim. Original course slides were not reinspected; accepted baseline/source-audit fixtures and independently derived analytic checks remain distinguished above. No plant simulation or closed-loop stability claim is made.
