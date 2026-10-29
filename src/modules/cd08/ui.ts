@@ -64,7 +64,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const action = active?.dataset.action, name = active instanceof HTMLInputElement ? active.name : undefined;
     view.replaceChildren();
     const rankStep = node('section'); rankStep.append(node('h3', '1. Build controllability, one column at a time'), createEquationDisplay(`B=${matrixTex(result.model.B, 1)}`, 'First controllability column'));
-    if (columns === 2) rankStep.append(createEquationDisplay(`AB=${matrixTex(result.AB, 1)},\\quad\\mathcal{C}=[B\;AB]=${matrixTex(result.controllability, 2)}`, 'Full controllability matrix'), node('p', `After independently normalizing the columns: determinant = ${format(result.scaledDet)}. Its magnitude exceeds 10⁻⁹, so the declared numerical rank is 2.`));
+    if (columns === 2) rankStep.append(createEquationDisplay(`AB=${matrixTex(result.AB, 1)},\\quad\\mathcal{C}=[B\\;AB]=${matrixTex(result.controllability, 2)}`, 'Full controllability matrix'), node('p', `After independently normalizing the columns: determinant = ${format(result.scaledDet)}. Its magnitude exceeds 10⁻⁹, so the declared numerical rank is 2.`));
     rankStep.append(button(columns === 1 ? 'Construct AB and check rank' : 'Hide second column', 'column'));
     const attempt = node('section'); attempt.append(node('h3', '2. Predict the feedback and tracking gains'));
     const row = node('div'); row.className = 'feedback-controls';
@@ -81,6 +81,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
       if (result.prefilter !== null) tracking.append(createEquationDisplay(`N=${tex(result.prefilter)},\\quad y_\\infty=${tex(result.dcGain * result.prefilter)}r`, 'Checked scalar prefilter'));
       tracking.append(node('p', 'The prefilter changes the reference channel, not A−BK or its poles. Correct pole placement alone does not guarantee unity reference tracking. The DC statement assumes the stable model, a constant reference and time tending to infinity.'));
       const simulation = node('section'); simulation.append(node('h3', '5. Compare states, output and control effort'), node('p', 'Solid indigo: calculated prefilter. Dashed slate: N=1. Output dotted line: held reference. Both cases use the same original model, feedback gain and initial state. Curves are numerical samples; endpoint values are not a declaration of settling.'));
+      const step = raw.at(-1)!.t / (raw.length - 1), fastestRate = Math.max(...result.poles.map(([re, im]) => Math.hypot(re, im)));
+      if (step * fastestRate > .25) simulation.append(node('p', `Sampling warning: Δt=${format(step)} s is coarse relative to the fastest mode. Curves may miss peaks or oscillations. Shorten the horizon toward ${format(.25 * (raw.length - 1) / fastestRate)} s or inspect numerical values; the pole calculation is separate from this sampled illustration.`));
       const plots = node('div'); plots.className = 'feedback-plots'; plots.append(chart('Output y(t)', s => s.output), chart('Control effort u(t)', s => s.effort), chart('State x₁(t)', s => s.state[0]), chart('State x₂(t)', s => s.state[1])); simulation.append(plots);
       const select = node('div'); select.className = 'feedback-actions'; numeric(select, 'Inspect time (s)', 'inspectTime', String(selectedTime)); select.append(button('Inspect nearest sample', 'time')); simulation.append(select);
       const index = Math.round(selectedTime / raw.at(-1)!.t * (raw.length - 1)), table = node('table'); table.append(node('caption', `Nearest sampled time: ${format(raw[index].t)} s (401 points).`));
@@ -137,3 +139,4 @@ export const mount: ModuleMount = ({ container, signal }) => {
   try { apply(); } catch (error) { message.textContent = error instanceof Error ? error.message : 'Check the model.'; }
   return () => { editors.forEach(e => e.destroy()); root.remove(); };
 };
+

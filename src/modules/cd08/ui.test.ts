@@ -24,7 +24,7 @@ function open() {
 describe('two-state feedback lesson', () => {
   it('typesets a tiny nonzero gain as a power of ten rather than zero', () => {
     const v = open(), fields = v.root.querySelectorAll('textarea'); fields[0].value = String.raw`A=\begin{bmatrix}0&1\\0&0\end{bmatrix}`;
-    fields[3].value = String.raw`q(s)=s^2+\frac{0.000001}{100000000}s+\frac{0.000001}{100000000}`;
+    fields[3].value = String.raw`q(s)=s^2+\frac{0.0000001}{10000000}s+\frac{0.0000001}{10000000}`;
     fields[0].dispatchEvent(new Event('input')); fields[3].dispatchEvent(new Event('input')); v.action('apply').click(); v.action('reveal').click(); expect(v.root.textContent).toContain('10^{-14}');
   });
   it('constructs rank, checks a genuine attempt, reveals both pole and tracking results', () => {
@@ -55,3 +55,4 @@ describe('two-state feedback lesson', () => {
     const fresh = open(); expect(fresh.root.textContent).not.toContain('Actual eigenvalues'); expect(fresh.root.querySelectorAll('textarea')[3].value).toBe('q(s)=(s+2)(s+4)');
   });
 });
+
