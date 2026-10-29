@@ -74,6 +74,12 @@ describe('independent modal fixtures', () => {
     expect(a.map(s => s.first)).toEqual(b.map(s => s.first));
     expect(b[4].t).toBe(2);
   });
+  it('keeps the largest supported modal computation finite', () => {
+    const data = samples(mode(2, 'jordan3'), 10, 80);
+    expect(data).toHaveLength(81);
+    expect(data.every(s => [s.first, s.norm, s.t].every(Number.isFinite))).toBe(true);
+    expect(data[80].first).toBeCloseTo(3160 * 2 ** 78, -14);
+  });
   it('constructs the declared real dimension', () => {
     expect(realDimension([mode(.8, 'independent'), mode(.5, 'jordan3', true, .4)])).toBe(8);
   });

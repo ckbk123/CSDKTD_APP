@@ -14,7 +14,7 @@ const locationText = { inside: 'Inside', outside: 'Outside', boundary: 'On circl
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node;
 }
-function number(value: number): string { return Object.is(value, -0) ? '0' : Number(value.toPrecision(10)).toString(); }
+function number(value: number): string { return Object.is(value, -0) ? '0' : Number(value.toPrecision(14)).toString(); }
 function tex(value: number): string { return number(value).replace(/e([+-]?\d+)/, '\\times 10^{$1}'); }
 function poleTex(p: Mode['pole']): string {
   if (!p.im) return tex(p.re);

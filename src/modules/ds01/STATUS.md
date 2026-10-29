@@ -1,34 +1,56 @@
 # DS01 implementation status
 
-- **Stage:** in-progress
-- **Assessed:** 2026-10-29; starting revision `c5d1135`
+- **Stage:** in-progress (browser verification pending)
+- **Assessed:** 2026-10-29; starting revision `c5d1135`; working implementation checkpoints `70f0889`, `b94d22c`
 - **Ownership:** `src/modules/ds01/**`; [accepted contract](TASK.md)
+- **Review:** no independent technical review claimed; integration owner reviews the submitted branch.
 
-## Requirement audit before implementation
+## Requirement audit
 
-The starting `workspace.ts` is an empty synchronous mount; `index.ts` provides the correct lazy metadata. There are no module tests. The shell equation preview is not a solver.
+The starting workspace was an empty synchronous mount and had no module tests. Metadata and the shell equation preview were preserved. This record supersedes the original scaffold assessment.
 
-| Accepted requirement | Starting evidence | Delivery work |
+| Accepted requirement | Current implementation and evidence | Remaining action |
 |---|---|---|
-| Editable/selectable poles and computed modes | Absent | Visual complex-pole fields, sample period, finite sample horizon, selected mode |
-| Strict disk test; .8, -.8, 1, -1 | Absent | Radius calculation and independently checked modal sequences |
-| Repeated boundary modes | Absent | Distinguish two independent copies from Jordan chains of length 2/3; show boundedness versus asymptotic decay |
-| Eigenvalues versus reduced TF | Absent | Explicit block realization with selectable output visibility; retain hidden modes in internal verdict |
-| Prediction, reasoning, reveal, changed data | Absent | Predict classification before reveal, linked pole/sequence plots, boundary and hidden-mode experiments |
-| Validation and bounded support | Absent | Tested complex-literal parser, numeric bounds, explicit near-boundary uncertainty |
-| Lifecycle, browser and integration checks | Scaffold only | Abort-owned fields/listeners, reset/reopen/fast navigation, keyboard/fonts, narrow viewport; project checks |
+| Editable/selectable poles and z^k modes | `workspace.ts`: per-row visual equation fields, selected-mode radio, T and sample-horizon controls; computed unit-circle and free-response plots | Real-browser editing/keyboard checks |
+| Compare .8, -.8, 1 and -1 | `math.ts` radius/angle, exact Jordan power identity evaluated numerically; `math.test.ts` independently derived geometric and alternating samples | Browser check baseline/changed inputs |
+| Strict disk stability versus bounded free response | Internal verdict distinguishes decay, bounded nondecay, unbounded growth and near-boundary uncertainty; BIBO verdict is a separate zero-state channel question | Browser result inspection |
+| Repeated boundary modes | Two independent copies versus length-2/3 Jordan chains; binomial factors, explicit real matrices, sample table and polynomial-growth explanation | Browser comparison |
+| Eigenvalues versus reduced TF, including hidden modes | Constructed parallel real SISO realization: full A retains all blocks, a hidden block has C=0; visible G(z) omits that block; separate internal/BIBO verdicts | Browser hidden-mode experiment |
+| Attempt, intermediate steps, reveal, variation | Prediction selector, reveal button, computed radii/angles, J^k identity, state-block inspection and eight experiments; changed inputs hide stale results | Browser usability check |
+| Bounded validation and useful failures | Local tested complex-literal parser; finite numbers, size/radius/T/horizon bounds, distinct/conjugate-row rules, no eval/CAS; uncertainty near unit circle | Browser empty/unsupported-input feedback |
+| Lifecycle and module isolation | Synchronous mount, deferred browser-only equation import with abort/disposal guard; input and row-listener cleanup; six mocked wiring tests | Actual reset/reopen/fast navigation/font checks |
+| Scoped style and responsive controls | Only selectors beneath `[data-module="DS01"]`; shared Indigo/slate tokens, labelled numeric/keyboard controls, table/equation scroll containers | Narrow/light/dark browser checks |
+| Project integration and submission | Owned files only; check, tests and build pass at `b94d22c`; claim records worktree/branch/checkpoint | Finish QA, final checks/commit, push branch, submit claim |
 
-## Chosen bounded model
+## Supported mathematics and conventions
 
-Up to four distinct real poles or conjugate pairs, each simple, repeated independently twice, or in a Jordan chain of length 2/3. This avoids guessing Jordan structure from algebraic multiplicity. Construct a real SISO block realization; output-hidden blocks remain part of A. No general polynomial root finder or arbitrary matrix eigensolver is promised. Private math will need no shared API or dependency changes.
+- One to four distinct pole rows. A nonreal row automatically represents its conjugate pair. Pole literals are decimals or numeric fractions, optionally a real plus imaginary part using j or i; visual fraction notation is supported. No variables, functions, mode powers, general polynomial input, arbitrary matrices or eigensolver are offered.
+- Each row is a simple block, two independent simple copies, or one Jordan chain of length 2 or 3. Repetition is explicit; duplicate/conjugate rows closer than 1e-10 are rejected. Up to 24 real states, pole radius at most 2, T in [0.001,10] seconds, and last integer sample k in [4,80]. All computation is bounded and local.
+- Discrete convention: x[k+1]=Ax[k]+Bu[k], y[k]=Cx[k], D=0. A is block diagonal. Real rows use J_m(p)=pI+N with unit superdiagonal; conjugate rows use real 2x2 rotation blocks and identity superdiagonals. B selects each block's last real coordinate, C its first; hidden blocks have C=0. Independent copies both receive the same scalar input and contribute to the same scalar output. No feedback topology is assumed.
+- The reduced zero-state transfer is the sum of 1/(z-p)^m terms; independent copies multiply the contribution by 2. A complex block contributes half the sum of conjugate terms. Distinct rows cannot cancel each other's poles. This is a constructed realization with explicit hidden blocks, not arbitrary TF cancellation or a general minimal-realization tool.
+- Free-response plots use u=0 and unit initial state in the last coordinate of one representative block (last real coordinate of a conjugate pair). The first real coordinate and full block norm are computed from the binomial Jordan identity. Repeated independent blocks have identical qualitative behavior. State amplitudes are dimensionless; t=kT in seconds, pole angle in rad/sample. Changing T preserves the fixed-z sequence.
+- Strict inside poles imply asymptotic decay, including defective blocks with possible initial growth. Boundary semisimple modes permit bounded nondecay; defective boundary blocks permit unbounded growth. The channel is BIBO stable only when its uncancelled poles are strictly inside. A zero channel is BIBO stable even if hidden states are unstable.
+- IEEE-754 numerical evaluation is labelled separately from the exact Jordan identity. A radius equal to 1 at working precision is treated as boundary. Other radii within 1e-9 of 1 produce an uncertified verdict, rather than a false strict-side claim. Plots are finite sampled illustrations; verdicts use modal structure, not finite-horizon growth alone.
 
-## Verification and remaining work
+## Independent fixtures and provenance
 
-Implementation, independent fixtures and actual browser verification are pending. Original decks were not re-inspected; TASK/atlas source anchors Ch8:4–13 and S13:4 remain course provenance, while new fixtures will be explicitly independent examples.
+`math.test.ts` checks the baseline (-.8)^k = [1,-.8,.64,-.512,.4096], simple/independent +/-1 bounded modes, J_2(1)^k e_2=[k,1], J_3(-1)^k e_3 with first samples [0,0,1,-3,6] and norm sqrt(53) at k=4, a stable defective .8 mode, nilpotent zero blocks, and the 0.6+0.8j rotation [1,.6,-.28,-.936,-.8432]. It checks hidden 1.2 and hidden defective boundary blocks, period invariance, near-circle uncertainty and invalid data. Independently stepped real matrices verify Markov coefficients C A^(k-1) B and complex-chain state coordinates/norms. Assertions use explicit expected values with 1e-12 to 1e-13 absolute precision on these small fixtures, plus finite-value checks at the maximum supported horizon.
 
-## Working checkpoint
+These fixtures are independently derived examples, not new claims of transcribing course slides. TASK/atlas anchors Ch8:4-13 and S13:4 are preserved. The source audit's inspected material supports course provenance; original decks were not newly inspected in this worker run.
 
-- Private `math.ts` now computes radii, classifications, bounded Jordan/conjugate modes and explicit real state blocks. `workspace.ts` implements visual inputs, editable structures/channel visibility, predictions/reveal, linked plots, sample tables and preset experiments.
-- `npm run check`: passed. `node node_modules/vitest/vitest.mjs run src/modules/ds01/math.test.ts`: 57 tests passed, including independently derived modal samples and real-matrix Markov coefficients.
-- Still pending: complete project tests/build, real-browser evidence and final acceptance assessment. Stage remains in-progress.
-- Follow-up integration fix: workspace mount now defers the browser-only equation import and guards abort/disposal. The first full-suite run exposed MathLive's Node export at catalog import time (98 passed, 1 failed); after the local fix all 99 then-existing tests passed. Six additional local UI/lifecycle tests pass, making 63 module tests. Rebuilt successfully, with only the existing MathLive large-chunk warning. Browser reservation was busy with DP02; no browser control was taken.
+## Verification log
+
+Toolchain: bundled Node v24.22.1, invoking npm's CLI with that Node (system npm.cmd otherwise selects Node 20). Locked dependencies installed inside this worktree only; no dependency changes.
+
+- Initial `npm ci` via system npm warned about Node 20; rerun with Node 24 completed cleanly, 109 packages, zero audit vulnerabilities.
+- `npm run check`: passed.
+- `node node_modules/vitest/vitest.mjs run src/modules/ds01`: 63 tests passed before the final maximum-bound fixture (57 mathematical, 6 UI/lifecycle).
+- The first `npm test` exposed a catalogue-import failure from MathLive's Node export (98 passed, 1 failed). Fixed locally by deferring the equation import until synchronous mount, guarding late import results. No shared files/test configuration changed.
+- Resumed run on `b94d22c`: `npm test` passed all 105 tests in 8 files; `npm run check` passed; `npm run build` passed. Vite emits the existing MathLive >500 kB chunk warning. No deployment.
+- `workspace.test.ts` verifies result invalidation, changed and hidden-mode experiments, errors, add/remove rows, fresh-visit reset and immediate abort/disposal. The equation layer is mocked in these tests; they are not browser/font/keyboard evidence.
+- `git diff --check`: passed at checkpoints.
+- Browser QA was reserved by DP02 before the pause and DR02 on resumption. This worker has not controlled their tabs or viewport. Browser evidence remains pending.
+
+## Remaining work
+
+Complete reserved real-browser verification of the production build, repair any issues within DS01, record exact evidence, rerun affected/final checks, mark implemented only after acceptance, commit/push the unique branch and submit the claim. No unresolved shared dependency request. Independent review and integration remain the integration owner's later responsibility.
