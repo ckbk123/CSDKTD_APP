@@ -7,6 +7,7 @@
 - **Ownership/branch:** `src/modules/cp02/**`; `codex/cp02-pole-zero-modes-01a18701`; claim `worker-cp02-01a18701`.
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cp02-modes-01a18701/CSDKTD APP`.
 - **Contract:** [TASK.md](TASK.md), atlas CP02 and continuous source audit P1.
+- **Pull request:** [#27 — CP02 pole and zero mode laboratory](https://github.com/ckbk123/CSDKTD_APP/pull/27). The shared claim records the exact clean submitted HEAD.
 
 ## Delivered accepted exercise
 
@@ -86,4 +87,4 @@ The later human Firefox instruction was verified in the coordinator chat; local 
 
 ## Delivery and remaining work
 
-No accepted exercise requirement remains within the declared domain. Independent final review/integration is pending. Own test tab is closed, private viewport restored, preview stopped and obsolete global waiter/reservation released. Primary port 8787 was preserved. No dependencies, shared files, versions, deployment or main merge changed. The PR URL and exact clean submitted HEAD will be recorded with submission; preserve this worktree/branch for review returns.
+No accepted exercise requirement remains within the declared domain. Independent final review/integration is pending. Own test tab is closed, private viewport restored, preview stopped and obsolete global waiter/reservation released. Primary port 8787 was preserved. No dependencies, shared files, versions, deployment or main merge changed. PR #27 is open and attached; the shared claim records its exact clean submitted HEAD. Preserve this worktree/branch for review returns. This contribution is a milestone of the continuous worker loop, not completion of the overall backlog.
