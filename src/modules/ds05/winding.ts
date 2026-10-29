@@ -100,7 +100,7 @@ export function winding(model: Model, limits: WorkLimits = DEFAULT_LIMITS): Wind
       const adjusted = delta - compensation, next = phase + adjusted; compensation = (next - phase) - adjusted; phase = next;
       accepted++; points.push(e.point(right)); return true;
     }
-    if (depth >= limits.depth) { failure = 'An arc could not be separated safely from a pole or the critical point within depth 20 and the 10⁻¹² normalized numerical guard. No winding count is asserted. Use coefficients farther from the boundary.'; return false; }
+    if (depth >= limits.depth) { failure = `An arc could not be separated safely from a pole or the critical point within depth ${limits.depth} and the 10⁻¹² normalized numerical guard. No winding count is asserted. Use coefficients farther from the boundary.`; return false; }
     return arc(a, mid, depth + 1) && arc(mid, b, depth + 1);
   }
   for (let i = 0; i < 128; i++) if (!arc(TAU * i / 128, TAU * (i + 1) / 128, 0)) return result('unresolved', failure);

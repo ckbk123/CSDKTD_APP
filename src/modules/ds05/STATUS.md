@@ -5,7 +5,7 @@
 - **Assessed code baseline:** fresh primary-main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9)
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
 - **Branch/worktree:** `codex/ds05-discrete-nyquist-7393`; `C:/Users/baokh/.codex/worktrees/ds05-discrete-nyquist-7393/CSDKTD APP`.
-- **PR:** none yet. Prior CP01 [PR #24](https://github.com/ckbk123/CSDKTD_APP/pull/24) is submitted at clean tested `87034c72b1e6b1505095d5d82c3171d7d1993cb4`; CF02 [PR #18](https://github.com/ckbk123/CSDKTD_APP/pull/18) is resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`. Preserve both for asynchronous review; requested corrections take priority. DS01 PR #10 was accepted v0.3.6.
+- **PR:** none yet. Prior CP01 [PR #24](https://github.com/ckbk123/CSDKTD_APP/pull/24) is corrected/resubmitted at clean tested `cfaccb5be0e7477a423b34d3d98d41c17094b78e`; CF02 [PR #18](https://github.com/ckbk123/CSDKTD_APP/pull/18) is resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`. Preserve both for asynchronous review; requested corrections take priority. DS01 PR #10 was accepted v0.3.6.
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
 - **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
 
@@ -80,3 +80,15 @@ Added local rational/degree-two visual-parser helpers adapted from the prior own
 Primary mathematical reference read: [Berkeley complex-analysis argument-principle notes, lecture23](https://math.berkeley.edu/~avizeff/complex_analysis_S26/lecture_23.html), including multiplicity, poles and winding. The Caltech Feedback Systems search-index excerpt also states the CCW zero-minus-pole theorem; opening its PDF timed out, so no full-PDF inspection is claimed. These support the general mathematical theorem; they do not turn this instructor-review extension into a local worked slide exercise.
 
 The coordinator reopened CP01 PR24 for confirmed modal cancellation/iteration contamination: G=1/[(s−2)(s+3)], free x(0−)=[1,−3] should be exp(−3t), but direct transition multiplication/iteration invents growth at horizons20/30. Preserve DS05 and return to the original CP01 branch/PR first. Required repair: stable modal contributions before amplification or explicit loss-of-accuracy feedback; regress direct sample and trace at20/30 and nearby IC with a genuine unstable component; verify in the actual private browser, update evidence and resubmit exact clean revision. CP01 corrections take priority; DS05 remains active and checkpointed without preview/browser resources.
+
+## Resumed core verification
+
+CP01's requested correction is complete and resubmitted on the same PR at clean `cfaccb5be0e7477a423b34d3d98d41c17094b78e`: 198 module / 542 full tests, type/build, actual returned/perturbed fixtures in the private production browser and final-head CI pass. Its preserved worktree remains available for review. DS05 resumed only after that exact resubmission.
+
+DS05 now has **118 passing local tests / 3 files** (parser, exact model/root counts, guarded winding). Independent mapping checks derive the baseline image circle center10/9 and radius25/18, its clockwise orientation, cardinal points/conjugacy and exact endpoint closure. Guarded winding fixtures yield W=0,+1,−1,+2,−2 with independently factored real/complex characteristic roots, including open-unstable stabilization, hidden unstable cancellation, zero gain and well-posed biproper/static loops. A test deliberately changes the root-classification answer without changing polynomial coefficients, confirming the winding routine does not read that answer to manufacture its result. Exact contour poles/critical crossings remain boundary outcomes; near-contour and exhausted work limits produce no asserted integer. Sample-period changes preserve a fixed discrete loop's mapping.
+
+One initial winding assertion distinguished IEEE−0 from+0 at a mathematically zero imaginary coordinate; its norm-based zero check now reflects the mathematical requirement. The numerical winding cases otherwise passed. The depth-limit message now reports the actual requested bounded depth.
+
+Checks under bundled Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/ds05` **118 pass**; `npm run check` passes; preliminary `npm test` **778 tests / 29 files pass**; preliminary `npm run build` passes with the existing MathLive chunk advisory; `git diff --check` passes. Since the workspace is still blank, build compatibility is not browser/UI acceptance.
+
+The guided workspace, paired source/mapped plots with real direction arrows, prediction/reveal flow, full inside/outside accounting, numerical cursor, visible boundary/conditioning feedback and real-browser checks remain required. No preview/browser/QA resource held. Continue implementation against the full audit; do not submit this core-only checkpoint as a finished teaching module.
