@@ -47,6 +47,8 @@ Fixtures use independent results:
 
 A separate Python Fraction check at code checkpoint 02794c6 used 240 deterministic modal/Jordan models (seed 20261029) with unimodular coordinate transforms. Expected channels came from modal residues, independently of production GCD. All original/reduced coefficients, cancellation counts and discriminant signs agreed; maximum scaled coefficient discrepancy was zero for this finite corpus. Private reference fixtures/summaries are preserved with the worker ledger; Python is not an application dependency.
 
+The same 240 models were also checked against scipy.linalg.expm 1.18.1, using a bounded horizon, constant input .75 and two changed initial states. All 720 inspected points / 16,560 scalar component comparisons passed a 1e-10 scaled-error threshold; maximum error was 7.51e-14. This independently covers transition matrices, input integrals, free/forced/total/difference states and output decomposition. It supplements analytical fixtures and does not certify arbitrary conditioning. Private probe/reference files are preserved with the ledger; SciPy is not an application dependency.
+
 An early test incorrectly sorted numeric eigenvalues lexically; the comparator was corrected before the passing checkpoints. Review of the numerical characteristic/coefficient approach led to exact bounded binary-value algebra before submission, preventing the cancellation errors covered above. No independent integration review is claimed.
 
 ## Project verification
