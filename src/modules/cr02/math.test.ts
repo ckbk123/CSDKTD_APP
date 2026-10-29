@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validateLatex } from 'mathlive/ssr';
-import { BASELINE, dcGain, equations, initialPolynomial, odeLatex, parseOde, poles, responseAt, responseSamples, warnings, type Experiment } from './math';
+import { BASELINE, dcGain, equations, initialPolynomial, odeLatex, parseOde, poles, responseAt, responseSamples, warnings, type Experiment, type Model } from './math';
 
 const step: Experiment = { initial: { y: 0, v: 0 }, excitation: 'step', amplitude: 1 };
 function close(actual: number, expected: number, relative = 2e-9): void {
@@ -109,6 +109,32 @@ describe('CR02 independent response and Laplace fixtures', () => {
     for (const t of [0, .001, 1, 60]) close(responseAt(model,step,t).total, t/1000 - .01/(1000**2)*(1-Math.exp(-100000*t)), 1e-7);
     const maximum = responseAt({m:.01,c:0,k:0,b:1000,d:1000},{...step,excitation:'ramp',amplitude:100},60);
     close(maximum.total, 1e7*60**2/2 + 1e7*60**3/6, 1e-7);
+  });
+  it('agrees with independently solved exponential/trigonometric responses across changed models', () => {
+    // This reference solves the scalar quadratic and particular polynomial;
+    // it shares no matrix-exponential code with the implementation.
+    function homogeneous(m:Model,y:number,v:number,t:number):number{
+      const discriminant=m.c*m.c-4*m.m*m.k;
+      if(Math.abs(discriminant)<1e-12){const r=-m.c/(2*m.m);return(y+(v-r*y)*t)*Math.exp(r*t);}
+      if(discriminant<0){const a=-m.c/(2*m.m),w=Math.sqrt(-discriminant)/(2*m.m);return Math.exp(a*t)*(y*Math.cos(w*t)+(v-a*y)/w*Math.sin(w*t));}
+      const r1=(-m.c+Math.sqrt(discriminant))/(2*m.m),r2=(-m.c-Math.sqrt(discriminant))/(2*m.m);
+      return(v-r2*y)/(r1-r2)*Math.exp(r1*t)+(r1*y-v)/(r1-r2)*Math.exp(r2*t);
+    }
+    let seed=1403;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+    const models:Model[]=Array.from({length:60},()=>({m:.2+4.8*random(),c:.1+11.9*random(),k:.3+19.7*random(),b:6*random()-3,d:6*random()-3}));
+    models.push({m:.01,c:0,k:1000,b:1000,d:1000},{m:.01,c:1000,k:1000,b:-1000,d:1000});
+    for(const model of models)for(const excitation of ['zero','step','ramp']as const){
+      const experiment:Experiment={initial:{y:2*random()-1,v:2*random()-1},excitation,amplitude:2*random()-1};
+      const slope=excitation==='ramp'?model.b*experiment.amplitude/model.k:0;
+      const constant=excitation==='step'?model.b*experiment.amplitude/model.k:excitation==='ramp'?(model.d*experiment.amplitude-model.c*slope)/model.k:0;
+      const jump=excitation==='step'?model.d*experiment.amplitude/model.m:0;
+      for(const t of [0,.02,.2,1,3,10,60]){
+        const free=homogeneous(model,experiment.initial.y,experiment.initial.v,t);
+        const forced=slope*t+constant+homogeneous(model,-constant,jump-slope,t);
+        const actual=responseAt(model,experiment,t);
+        close(actual.free,free,2e-7);close(actual.forced,forced,2e-7);close(actual.total,free+forced,2e-7);
+      }
+    }
   });
   it('finite DC limits after a true zero factor are explicit while original poles remain', () => {
     const model = {m:1,c:2,k:0,b:0,d:4};
