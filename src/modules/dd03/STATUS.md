@@ -27,3 +27,13 @@ The assigned base has metadata and a blank synchronous mount, without owned test
 The atlas identifies Ch8:33–40 as representation support and continuous frequency design/E10/E11 as related tasks. A standalone discrete design sequence is an **instructor-review synthesis**, not a claimed worked chapter9 Bode example. Source topology and transform normalization still require inspection. Implementation, all mathematical checks, browser verification and PR submission remain outstanding.
 
 Only `src/modules/dd03/**` is owned. No shared/package/deployment change is planned. Locked dependencies installed successfully with bundled Node24 (`npm ci`:109 packages, zero vulnerabilities).
+
+## Implementation checkpoint (browser gate pending)
+
+The owned parser, degree1–3 root checks, exact-ZOH/W-plane construction, distinct emulation/direct-centered-lead routes, all polynomial crossing equations, full poles, step/ramp tracking, original physical/controller recurrence and guarded finite-horizon response are implemented. The visual input, prediction/reveal flow, nonlinear frequency cursor, mapped corners, local plots/tables and changed-period/remap-versus-redesign experiment are connected. This supersedes the initial missing-behavior audit above; real-browser verification and delivery are still pending.
+
+Source inspection rendered the selected Unicode chapter8 deck at slides33–40 outside Git. Slide40 visibly confirms z=(1+Tw/2)/(1−Tw/2); other inspected slides show unit-circle evaluation/Nyquist and W-plane reasoning. Embedded-equation gaps remain explicit; no unrendered formula or worked standalone chapter9 design is claimed inspected. Independent 65-digit Python Decimal exp/sqrt and90-term sin/cos with bisection give baseline a=.81873075307798185867, b1=.00468268826949546466748, b0=.00438077407660544239902, poles .9±.162030396482893382649j, gain-crossing angle .15711313008440931335, phase margin47.347326955108116°, first negative-real angle .62239525485777025289 with GM10.34459000579638244, bandwidth angle .26406223886362349343. The exact T=ln2 fixture and gain-scaling/timing invariants are separately tested.
+
+Current gates: `npm run check` passes; `npm exec vitest run src/modules/dd03`85 tests/4files pass; `npm test`745 tests/30files pass; `npm run build` passes (normal MathLive large-chunk warning,20 local fonts; DD03 view17.15kB gzip). Mocked equation tests validate actual generated LaTeX but do not establish browser behavior. Browser gate is next.
+
+Human stop-after-current amendment received through the coordinator: finish only DD03, submit its exact clean tested revision, preserve earlier reviews/worktrees and stop. No further module will be claimed.
