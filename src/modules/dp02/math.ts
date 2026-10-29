@@ -36,6 +36,11 @@ export function parsePole(latex: string): Pole {
     if (!Number.isFinite(p.real) || !Number.isFinite(p.imag)) fail('The pole must have finite real and imaginary parts.');
     return p;
   };
+  const productValue = (a: number, b: number): number => {
+    const value = a * b;
+    if (a !== 0 && b !== 0 && value === 0) fail('A nonzero product is too small to represent. Use larger magnitudes.');
+    return value;
+  };
   const atom = (depth: number): Pole => {
     if (depth > 12) fail('Use at most 12 levels of parentheses or fractions.');
     const token = tokens[at++];
@@ -51,7 +56,9 @@ export function parsePole(latex: string): Pole {
     if (token === 'j') return { real: 0, imag: 1 };
     if (token === 'π') return { real: Math.PI, imag: 0 };
     if (!token || !/^[\d.]/.test(token)) fail('Complete the pole expression.');
-    return checked({ real: Number(token), imag: 0 });
+    const value = Number(token);
+    if (value === 0 && /[1-9]/.test(token.split(/[eE]/)[0])) fail('A nonzero number is too small to represent. Use a larger magnitude.');
+    return checked({ real: value, imag: 0 });
   };
   const product = (depth: number): Pole => {
     let p = atom(depth);
@@ -64,10 +71,12 @@ export function parsePole(latex: string): Pole {
       if (token === '/') {
         if (q.imag !== 0) fail('Use a real denominator in a pole expression.');
         if (q.real === 0) fail('A fraction cannot have a zero denominator.');
-        p = checked({ real: p.real / q.real, imag: p.imag / q.real });
+        const real = p.real / q.real, imag = p.imag / q.real;
+        if ((p.real !== 0 && real === 0) || (p.imag !== 0 && imag === 0)) fail('A nonzero quotient is too small to represent. Use larger magnitudes.');
+        p = checked({ real, imag });
       } else {
         if (p.imag !== 0 && q.imag !== 0) fail('Use a rectangular pole a + bj.');
-        p = checked({ real: p.real * q.real, imag: p.real * q.imag + p.imag * q.real });
+        p = checked({ real: productValue(p.real, q.real), imag: productValue(p.real, q.imag) + productValue(p.imag, q.real) });
       }
     }
     return p;
@@ -120,8 +129,8 @@ export function inversePole(z: Pole, period: number, branch: number): Pole {
 export function radialMovement(pole: Pole, reference: number, target: number): Movement {
   validatePole(pole, reference); validatePole(pole, target);
   // Direction follows the sign of the exact log-radius difference, even close to 1.
-  const delta = pole.real * (target - reference);
-  return delta === 0 ? 'unchanged' : delta < 0 ? 'inward' : 'outward';
+  if (pole.real === 0 || target === reference) return 'unchanged';
+  return (pole.real < 0) === (target > reference) ? 'inward' : 'outward';
 }
 
 export function modeSamples(pole: Pole, period: number, intervals: number) {

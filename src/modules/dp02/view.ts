@@ -75,6 +75,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   get('.dp-editor').append(equation.element); draft = equation.getValue();
   const readNumber = (input: HTMLInputElement, name: string) => {
     if (!input.value.trim() || !Number.isFinite(input.valueAsNumber)) throw new Error(`Enter a finite number for ${name}.`);
+    if (input.valueAsNumber === 0 && /[1-9]/.test(input.value.split(/[eE]/)[0])) throw new Error(`The nonzero value for ${name} is too small to represent. Use a larger magnitude.`);
     return input.valueAsNumber;
   };
   const syncNumbers = () => {

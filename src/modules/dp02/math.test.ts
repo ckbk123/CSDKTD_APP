@@ -8,10 +8,14 @@ describe('DP02 pole notation', () => {
     [String.raw`s=\left(-\frac{1}{2}+\frac{\pi}{2}\mathrm{j}\right)`, -0.5, Math.PI / 2],
     [String.raw`-2+3\times j`, -2, 3], ['-2+j(3/2)', -2, 1.5],
     [String.raw`-1\div2+4j`, -0.5, 4], ['−1÷2+4×j', -0.5, 4],
+    ['1e-300+j', 1e-300, 1], ['0e-999+j', 0, 1],
   ])('parses %s', (input, real, imag) => expect(parsePole(input)).toEqual({ real, imag }));
   it.each(['', 's=', '1/0', 'NaN', 'Infinity', 'x+2j', 'j*j', '1/(1+j)', 'sin(2)',
     '2^3', '1..2', '2 3', '1+', '(1+2j', '1+2j)', '2=3', String.raw`\placeholder{}`, '1e999', '1'.repeat(257), '('.repeat(14) + '1' + ')'.repeat(14), Array(45).fill('1').join('+')])('rejects %s', input => {
     expect(() => parsePole(input)).toThrow();
+  });
+  it.each(['1e-999+j', '1e-300*1e-300+j', '1e-300/1e300+j', '1e-300j/1e300'])('rejects silent numeric underflow in %s', input => {
+    expect(() => parsePole(input)).toThrow(/too small to represent/);
   });
 });
 
@@ -42,6 +46,8 @@ describe('DP02 independent analytic fixtures', () => {
     expect(radialMovement({ real: 2, imag: 3 }, 0.1, 0.2)).toBe('outward');
     expect(radialMovement({ real: 0, imag: 3 }, 0.1, 0.2)).toBe('unchanged');
     expect(radialMovement({ real: -2, imag: 3 }, 0.2, 0.1)).toBe('outward');
+    expect(radialMovement({ real: Number.MIN_VALUE, imag: 0 }, 0.1, 0.2)).toBe('outward');
+    expect(radialMovement({ real: -Number.MIN_VALUE, imag: 0 }, 0.1, 0.2)).toBe('inward');
   });
   it('negative-real z=-0.8 is decaying and alternating, not unstable', () => {
     const s = { real: Math.log(0.8) / 0.1, imag: Math.PI / 0.1 };

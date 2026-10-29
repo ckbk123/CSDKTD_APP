@@ -22,7 +22,7 @@ The starting workspace was blank; no working mathematical features were replaced
 | Visual mathematical entry and validation | Shared createEquationInput/createEquationDisplay, visit-owned draft; bounded local parser and domain checks; keyboard division and visual fractions | None |
 | Local state, lazy metadata, abort/cleanup | Metadata unchanged. Synchronous workspace mount defers browser view; abort/dispose guards; mount-owned state, signal listeners and result-event cleanup; five lifecycle/error-path tests | Rapid-navigation browser scenario pending |
 | Keyboard and narrow layout | Direct typing, fraction boxes, Systems keyboard/Escape, Tab, Enter reveal, reset/reopen and 390×844 viewport checked in production Chromium before pause | Repeat final production check after notation fix |
-| Independent mathematics and project checks | 44 module tests; check, all 86 project tests, production build pass at 1baa7f3 | Final browser evidence and submission |
+| Independent mathematics and project checks | 50 module tests; check, all 92 project tests, production build pass at 1baa7f3 | Final browser evidence and submission |
 
 ## Supported mathematical domain
 
@@ -53,10 +53,10 @@ Runtime: Node 24.22.1. On this host, commands use that bundled node.exe and the 
 
 At implementation revision 1baa7f3:
 
-- npm test -- src/modules/dp02: **44 passed**, 2 files (39 math/parser, 5 lifecycle/error-path).
+- npm test -- src/modules/dp02: **50 passed**, 2 files (45 math/parser, 5 lifecycle/error-path).
 - npm run check: **passed**.
-- npm test: **86 passed**, 8 files.
-- npm run build: **passed**, static output and 20 local font assets emitted. Existing MathLive large-chunk warning remains (about 221.49 kB gzip); DP02 view is about 7.41 kB gzip.
+- npm test: **92 passed**, 8 files.
+- npm run build: **passed**, static output and 20 local font assets emitted. Existing MathLive large-chunk warning remains (about 221.49 kB gzip); DP02 view is about 7.58 kB gzip.
 
 An initial full-suite failure due to eagerly initializing MathLive in the non-browser catalogue inspection was resolved locally with the guarded deferred view. No shared test/configuration change was needed. Added lifecycle tests confirm synchronous return, single cleanup, no late mount after abort or explicit disposal, no already-aborted mount, and recoverable initialization feedback.
 
@@ -79,3 +79,8 @@ Rapid-navigation-during-load and a repeat of final production output after notat
 Audit e759bc9, implementation 77e5bd1, pause checkpoint 9251348 and resumed fixes 1baa7f3 are committed on the worker branch. Pausing preserved all work and released browser QA/stopped the worker preview. A transient remote rejection of 77e5bd1 was later resolved; 1baa7f3 is pushed. No main merge or deployment occurred.
 
 Remaining: obtain QA after the current holder releases it; finish the final production/navigation check, record evidence, then commit/push this final status and submit the claim. No shared helper/dependency request or unimplemented mathematical requirement remains. Independent technical review for verified stage belongs to integration; it is not claimed here.
+
+
+### Numerical hardening while waiting for QA
+
+A review of extreme inputs found that nonzero literals/products/quotients could underflow to zero before validation. The parser now rejects these explicitly; exact-zero literals remain valid and representable tiny values remain intact. Numeric component inputs reject the same literal underflow. Radial movement uses sign comparisons rather than a potentially underflowing product, so even the smallest representable nonzero σ retains its direction. Six new parser regressions plus tiny-pole direction assertions pass. Latest module tests: 50/50; full suite: 92/92; production build/type check pass. Final browser pass will include numeric underflow feedback. These changes preserve the accepted exercise and declared floating-point limits.
