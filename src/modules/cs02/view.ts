@@ -136,7 +136,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       m.rows.forEach((row, i) => {
         if (row.treatment === 'ordinary') return;
         const card = el('section', undefined, 'r-special'); card.append(el('h4', `s^${row.power}: ${row.treatment === 'epsilon' ? 'isolated zero first entry' : 'all-zero row'}`));
-        card.append(display(`${vector(row.original)}\\ \longrightarrow\\ ${vector(row.values)}`, `Original and continued row s^${row.power}`));
+        card.append(display(String.raw`${vector(row.original)}\quad\longrightarrow\quad${vector(row.values)}`, `Original and continued row s^${row.power}`));
         if (row.treatment === 'epsilon') card.append(el('p', 'The rest of this row is nonzero. Replace only its first entry by ε>0 and use the exact ε→0⁺ limits. A zero pivot alone does not prove an axis root.'));
         else {
           const aux = m.auxiliaries.find(a => a.row === i)!, derivative = aux.symbolic.slice(1).map((coefficient, power) => mulRF(constantRF(q(power + 1)), coefficient));
