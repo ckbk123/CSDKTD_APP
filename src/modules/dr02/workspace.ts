@@ -11,7 +11,10 @@ export const mount: ModuleMount = context => {
     if (disposed || context.signal.aborted) return;
     loading.remove(); cleanup = view.mount(context);
   }).catch(() => {
-    if (!disposed && !context.signal.aborted) loading.textContent = 'The exercise could not load. Reset the workspace to try again.';
+    if (disposed || context.signal.aborted) return;
+    loading.textContent = 'The exercise could not load. Reset the workspace to try again.';
+    loading.setAttribute('role', 'alert');
+    context.container.replaceChildren(loading);
   });
   return () => { disposed = true; cleanup?.(); loading.remove(); };
 };

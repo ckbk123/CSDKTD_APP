@@ -33,7 +33,7 @@ The starting workspace was a blank synchronous mount with metadata and no local 
 
 ## Independent mathematical fixtures
 
-`math.test.ts` contains 30 parser/mathematics cases; `view.test.ts` and `workspace.test.ts` add four caller-state/lifecycle cases. The latter mock equation rendering only and are not offered as interactive-editor evidence.
+`math.test.ts` contains 30 parser/mathematics cases; `view.test.ts`, `workspace.test.ts`, and `workspace-import-failure.test.ts` add eight caller-state/lifecycle/error-path cases. The latter mock the equation view or rendering and are not offered as interactive-editor evidence.
 
 - Baseline: b = 1−a for the entered rounded numbers, so the independently derived held-input answer is y[k] = 1−aᵏ. Tests check eleven samples and the course's first three nonzero rounded values.
 - Changed history: the difference from zero history equals (2a+3b)aᵏ for stored y[−1]=2, u[−1]=3. The TF is unchanged.
@@ -50,8 +50,8 @@ Commands ran in this isolated worktree using bundled Node **v24.22.1** and npm *
 |---|---|
 | `npm ci` | Passed; 109 packages installed, no vulnerabilities reported |
 | `npm run check` | Passed |
-| `node node_modules/vitest/vitest.mjs run src/modules/dr02` | Passed: 34 tests, 3 files |
-| `npm test` | Passed: 76 tests, 9 files |
+| `node node_modules/vitest/vitest.mjs run src/modules/dr02` | Passed: 38 tests, 4 files (after coordinator error-path correction) |
+| `npm test` | Passed: 80 tests, 10 files (after coordinator error-path correction) |
 | `npm run build` | Passed; all 20 equation fonts emitted locally. Existing MathLive chunk-size warning remains. |
 | `git diff --check` | Passed |
 
@@ -66,3 +66,11 @@ Local screenshots (outside tracked source): `C:/Users/baokh/.codex/visualization
 No accepted bounded exercise work remains. Independent integration review is pending. Light-theme rendering and browsers other than the in-app Chromium were not separately exercised; styling uses the shared light/dark tokens. No shared API/dependency request, version bump, main merge or deployment was made. Generated build/dependency files and screenshots are excluded from commits.
 
 Early checkpoints: audit `05a13bd`, implementation `3a9331d` (pushed before interruption), user-requested pause checkpoint `39b6a99`. The resumed worker completed the remaining numerical/display hardening and browser verification. The branch/worktree and submitted claim retain the final deliverable for the integration owner.
+
+## Coordinator review correction (29 October 2026)
+
+The coordinator reported 2,880 independent first-order/history comparisons passing on submitted revision `3209ab1cfc24b0b42e018f029ab516800ba58e8a`, and identified a loader recovery defect: `loading.remove()` detached the message before `view.mount`, so a thrown mount left its catch message invisible. `workspace.ts` now replaces partial content with the recovery paragraph and gives it `role="alert"`, only if the visit is still active. Existing disposal/abort guards continue to suppress late imports and error messages.
+
+Regression coverage explicitly forces an active view mount to append partial content and throw, checks that only the connected recovery alert remains, forces abort during a failed mount, verifies active import rejection feedback, verifies import rejection after navigation stays empty, and retains the late-successful-import-after-abort check. The normal equation view and mathematics are unchanged. No new browser reservation/session was needed for this forced error-path regression; the prior production browser evidence remains as recorded above, and no QA reservation is held by this worker.
+
+After this correction: `npm run check`, all 38 DR02 tests, all 80 project tests, `npm run build`, and `git diff --check` pass. The existing MathLive build-size warning remains. The original claim is already `submitted`; the current helper rejects updating/submitting any non-active claim (`INACTIVE_CLAIM`). It is preserved at its original revision rather than bypassing that coordination rule. The corrected branch head is pushed on the same branch for the coordinator to review and use when deliberately resolving integration.
