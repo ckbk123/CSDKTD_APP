@@ -80,6 +80,8 @@ CR06 was checkpointed and suspended for the coordinator's priority DR05 review c
 
 Finish actual matrix-cell editing, current notation/error/underflow feedback, singular/oscillator/updated hidden-mode displays, prediction edits, reset/reopen/rapid navigation, keyboard and narrow viewport checks. Restore viewport, close this worker's tab and release QA afterward. Light theme and other browser engines are not yet checked.
 
-The latest browser reservation was acquired but released unused when the coordinator assigned DD04 integration next. No CR06 browser tab or acquisition waiter is active. Preview 8893 remains private; primary preview 8787 is untouched. Respect the announced priority until DD04 release, then acquire normally. No shared dependency request is pending.
+The latest browser reservation was acquired but released unused when the coordinator assigned DD04 integration next. No CR06 browser tab or acquisition waiter is active. Preview 8893 remains private; primary preview 8787 is untouched. Current named QA order is DD04 -> CP03 -> DR01 -> DP03, then ordinary acquisition. No shared dependency request is pending.
+
+The coordinator has reopened DR05 PR11 for an inspection-index Reveal bypass and partial-mount resource cleanup. CR06 is checkpointed and suspended while those priority corrections are repaired in their original worktree/branch. No concurrent implementation is underway here. Resume the final browser gates afterward.
 
 After acceptance: record actual browser results, mark implemented, commit/push the tested final tree, make PR17 ready, verify exact clean HEAD/remote, and submit the claim. Do not merge, deploy, rebase or mark this continuous worker goal complete after one submission.
