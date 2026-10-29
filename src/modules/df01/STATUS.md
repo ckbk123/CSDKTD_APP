@@ -1,7 +1,7 @@
 # DF01 implementation status
 
-- **Stage:** in-progress (browser QA still pending)
-- **Assessed:** 2026-10-29; base `c5d1135`, implementation checkpoints `a798749`, `309dbc8`
+- **Stage:** implemented
+- **Assessed:** 2026-10-29; base `c5d1135`, tested implementation `717adda`; earlier checkpoints `a798749`, `309dbc8`
 - **Ownership:** `src/modules/df01/**`; acceptance: [TASK.md](TASK.md)
 
 ## Requirement evidence
@@ -17,7 +17,7 @@
 | Changed-data experiment | Oscillatory `1.25/(z²+.25)` and short-horizon `.01/(z-.99)` presets; manual model/T/N/band edits; state and answer do not survive reopening. |
 | Intersample distinction | No continuous plant/hold is supplied. Explicitly no reconstruction or continuous-peak claim. |
 | Lifecycle/metadata/style isolation | Original `index.ts` unchanged. Synchronous `workspace.ts` mount owns guarded lazy view and cleanup; tests prevent late import mount and duplicate disposal. View listeners use signal, field destroyed, no timers/workers. All CSS under `[data-module="DF01"]`. |
-| Independent math and project checks | 29 parser/math tests plus 4 UI/lifecycle tests (33 local total); exact commands/results below. Browser checks still required. |
+| Independent math and project checks | 30 parser/math tests plus 4 UI/lifecycle tests (34 local total); exact commands/results and real-browser evidence below. |
 
 ## Supported mathematics and numerical limits
 
@@ -27,7 +27,7 @@
 - ≤512 input characters and 128 polynomial tokens; degree ≤2 including intermediate polynomial products. Coefficients and normalized coefficients ≤10⁶, leading denominator magnitude ≥10⁻¹⁰. T in [10⁻⁶,1000] seconds; integer last index N in [2,500] (N+1 plotted samples). Abort computation if response/state magnitude exceeds 10⁹. No iterative root finder.
 - All displayed decimal evaluations are numerical approximations (7 significant digits); small nonzero residuals remain visible and scientific outputs use typeset powers of ten. State/recurrence agreement threshold 10⁻⁸ times max(1,response scale). Peak ties within 10⁻¹² of final-value scale choose the earliest index. Negative-gain peaks/overshoot follow the direction of final value.
 - For future-error certification use the homogeneous error state v=[e[k],e[k−1]] and companion matrix A. Find m≤4096 with q=||A^m||∞<1−10⁻⁸. For j=lm+r, ||A^j v||∞≤||A^r||∞ q^l ||v||∞. The maximum norm for r=0…m−1 bounds every future sample; inflate by 1+10⁻⁸ and reserve 10⁻¹⁰ times the output scale. First-order errors use their monotone absolute envelope. This bound can be conservative. An ambiguous band-boundary sample does not justify naming the following sample as first; such cases remain unestablished. Extending N can resolve insufficient horizons, but cannot resolve a mathematically exact boundary obscured by floating arithmetic.
-- Overshoot is observed on the grid. A positive directional peak is globally certified only if its excess dominates the future-error bound. Otherwise “largest plotted sample” is the stated result; a monotone response may have no attained finite maximum.
+- Overshoot is observed on the grid. A positive directional peak has supporting numerical evidence across the whole sample grid only if its excess dominates the future-error envelope including the roundoff allowance. This is not interval-arithmetic certification. Otherwise “largest plotted sample” is the stated result; a monotone response may have no attained finite maximum.
 
 ## Independent fixtures and provenance
 
@@ -46,20 +46,39 @@ The course audit DF1 supports TF/recurrence/state comparison and sampled transie
 Toolchain: **Node 24.22.1**, npm 10.8.2, locked dependencies inside this worktree. Invoked npm via `node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js` with Node24 on child PATH; direct Vitest via the same Node runtime.
 
 - `npm ci`: passed, 109 packages / 0 vulnerabilities. Initial machine-default Node20 invocation printed engine warnings; repeated under Node24 successfully. No dependency files changed.
-- `npx vitest run src/modules/df01` (direct equivalent `node node_modules/vitest/vitest.mjs run src/modules/df01`): **3 files / 33 tests passed** after the decimal-grammar clarification.
-- `npm run check`: passed before the final two-line decimal-grammar clarification; rerun for final submission.
-- `npm test`: **9 files / 75 tests passed** before that clarification; rerun for final submission.
-- `npm run build`: passed before that clarification; only the existing large MathLive chunk warning. All 20 local font files emitted.
+- `npx vitest run src/modules/df01` (direct equivalent `node node_modules/vitest/vitest.mjs run src/modules/df01`): **3 files / 34 tests passed** after all review corrections.
+- `npm run check`: passed after all implementation/review corrections.
+- `npm test`: **9 files / 76 tests passed** after all implementation/review corrections.
+- `npm run build`: passed after all implementation/review corrections; only the existing large MathLive chunk warning. All 20 local font files emitted.
 - `git diff --check`: passed.
 - An initial full-suite import failure exposed MathLive's browser-only initialization in a public workspace import. The visit-owned lazy `view.ts` now keeps public metadata/workspace loading independent of browser initialization, with explicit abort/disposal tests. No shared files changed.
 - Browser QA attempts correctly reported other owners (DR01, then DS03). No browser control was used without the reservation. Worker production preview is at `127.0.0.1:8811`; primary port8787 untouched.
 
 ## Remaining work and delivery
 
-Real-browser editing/fonts/keyboard, error/reset/reopen/rapid-navigation/narrow-layout checks, final project checks, evidence update and final submission remain. No shared dependency requests; no independent reviewer has been claimed. Stage stays in-progress until those checks finish. The unique branch is `codex/df01-sampled-quality-01a18701`; checkpoints pushed for recovery, claim active. No merge, deployment, version/dependency changes or added agents.
+The accepted bounded exercise is implemented and checked. No required implementation work or shared dependency requests remain. Independent integration review is still separate; no final verified-stage review is claimed. Branch `codex/df01-sampled-quality-01a18701`; final evidence commit and submission follow these checks. No merge, deployment, version/dependency changes or added agents.
 
 ## Preliminary review correction (2026-10-29)
 
 Coordinator review identified that a floating residual could round to zero even though the exact tail remains nonzero. Corrected the returned/displayed tail envelope to **include** the scale-aware roundoff allowance already used for settling, and explicitly labeled it floating-point evidence rather than an interval-arithmetic proof. Global-peak wording uses the same allowance. Regression `(z²+.5z+.75)/(z²+.25)` has exact e[2]=1/5 and e[62]=(1/5)4^-30>0, while its computed residual can round to zero; the displayed envelope now remains positive and encloses this error. No independent final-review stage is claimed.
 
-Also accepted MathLive's single-token fraction arguments (for example fraction numerator 1 need not serialize with braces); decimal-only coefficient grammar remains explicit. Current checks after these changes: local suite **3 files / 34 tests**, full `npm test` **9 files / 76 tests**, `npm run check`, `npm run build` and `git diff --check` all passed under Node24. Build warning unchanged. Browser QA still pending (resource now held by DP01).
+Also accepted MathLive's single-token fraction arguments (for example fraction numerator 1 need not serialize with braces); decimal-only coefficient grammar remains explicit. Current checks after these changes: local suite **3 files / 34 tests**, full `npm test` **9 files / 76 tests**, `npm run check`, `npm run build` and `git diff --check` all passed under Node24. Build warning unchanged. Subsequent real-browser evidence follows below.
+
+
+## Real-browser evidence (2026-10-29, 17:23–17:28 Asia/Saigon)
+
+- Worker chat: `01a18701-3f40-7572-9a49-7dc0103c9161`. Shared QA acquired through the claim helper; used a newly created, dedicated in-app Chromium tab on the production build at `http://127.0.0.1:8811/#/module/DF01`. Tested system dark theme at 1280×900 and 390×844; temporary viewport override reset, temporary tab closed and QA released after testing. Primary preview8787 untouched.
+- Baseline predictions k_p=60 (largest plotted sample) and k_s=18 both checked correct; y∞=1, t_s=1.8s, observed overshoot0%. Monotone/no-attained-peak distinction visible.
+- T=.25 and 5% band recomputed k_s=14, t_s=3.5s with unchanged sequence. Changing inputs immediately removed old plot/answer.
+- Oscillatory preset: predicted k_p=2 and k_s=6 checked correct; overshoot25%, t_s=.6s; inspector k=3 agreed at1.25 in state/recurrence routes.
+- Short-horizon preset N=20 correctly reported unestablished settling. Raising N to500 established k_s=390 and39s, without inventing the horizon as a settling time; 501-stem rendering remained responsive.
+- Cleared the actual MathLive field: useful empty-equation feedback and no stale response. Inserted incomplete fraction: highlighted-box feedback and no response. Ordinary keys plus fraction button built `1/(z−.5)` and computed final2, k_s=6, t_s=.6s. Fraction and power buttons built `1.25/(z²+.25)` and computed the independently checked oscillatory response. The test also deliberately produced a term outside the fraction; the bounded grammar rejected it with a useful one-fraction message.
+- Actual Systems keyboard opened and inserted z; this invalidated the old response. Escape dismissed it without leaving the tool. Changing the visual denominator to z−2 produced the strict-unit-circle error. Fraction/power and matrix result glyphs rendered correctly with bundled styles; browser console captured **no error/warning logs**. Document font status reported loaded. No claim of testing every browser or separately testing light theme.
+- Shell Reset example restored G=.2/(z−.8), T=.1, N=60, band2%, blank predictions and a closed keyboard. Numeric inspector keyboard ArrowUp advanced k=18→19, yielding t=1.9s and matching output. Leaving with the keyboard open removed the field and keyboard; rapid DF01→CP01 navigation left zero `.df-tool` roots on CP01. Reopening DF01 restored its baseline and independent state.
+- Narrow baseline and quadratic revealed views: document client/scroll widths both375px (390px viewport with scrollbar). Plot scrolled internally (281px container /540px plot); long quadratic equations scrolled internally (281px container, largest644px), without widening the page. Controls stacked and remained usable. No visual layout repairs were required.
+- Screenshot evidence saved outside Git at `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/df01-browser.jpg`.
+
+## Final handoff
+
+Owned changes: `math.ts`, `math.test.ts`, `view.ts`, `view.test.ts`, `workspace.ts`, `workspace.test.ts`, scoped `style.css` and this record. `TASK.md` and metadata unchanged. Supported scope remains stable real order1–2, proper channel, zero prehistory and sampled evidence only. Conservative numerical/near-boundary cases can remain unestablished; higher orders, arbitrary initial states and continuous intersample reconstruction are outside this declared exercise domain. The independent integration owner reviews and merges separately. Claim submission records the final tested branch SHA; retain its worktree and reservation.
+
