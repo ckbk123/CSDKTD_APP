@@ -1,9 +1,10 @@
 # DP01 implementation status
 
-- **Stage:** in-progress (implementation and automated checks complete; browser QA pending)
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
-- **Tested implementation checkpoint:** `2b1b8fb9c45343eea704007c1c09a294e956f842`
+- **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
+- **Delivery:** final tested commit recorded in the submitted claim and pull request
 - **Ownership:** `src/modules/dp01/**`; branch `codex/dp01-sequences-f802`
 - **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md)
 
@@ -20,8 +21,8 @@ The starting revision contained a blank workspace and no local tests. Existing m
 | Modal decomposition | Original quadratic/linear denominator poles, radius/angle and decay/sign/oscillation reasoning. Analytic free-response and impulse modal-tail formulas handle distinct real, conjugate, repeated and zero poles; the forced response is linked through convolution. Near-coincident roots use the recurrence instead of an ill-conditioned residue display. |
 | Prediction/reveal and changed data | Prediction of strict natural decay, revealable results, presets for ±0.8, conjugates and repeated +1. Separate comparison holds radius fixed while angles vary, including 45°/90° and 0°/180°. Interaction tests cover changed amplitude/history, error inputs and reopen. |
 | Physical timing and intersample limits | T changes time labels and physical ramp values, not fixed discrete step/impulse/free samples. Principal pole angle is rad/sample, θ/T is rad/s with alias branches. No continuous plant/hold or intersample maximum is inferred. |
-| Lifecycle/isolation | `workspace.ts` exports synchronous mount and guards its lazy browser-only view against abort/disposal. State is mount-local; listeners use the signal; cleanup destroys the equation input and removes owned content. Two loader tests and five view-flow tests exercise lifecycle/results. |
-| Project/browser checks | Automated checks below pass. Real-browser editor/fonts/keyboard, reset/reopen/rapid navigation and narrow-screen checks are pending the shared reservation. |
+| Lifecycle/isolation | `workspace.ts` exports synchronous mount and guards its lazy browser-only view against abort/disposal. State is mount-local; listeners use the signal; cleanup destroys the equation input and removes owned content. Three loader tests and five view-flow tests exercise lifecycle/results. |
+| Project/browser checks | Automated checks and the production-browser scenarios below pass. |
 
 ## Supported domain and conventions
 
@@ -46,13 +47,33 @@ Independent expected values in `math.test.ts` are derived from geometric sums or
 
 In this worktree, bundled Node v24.22.1 with npm 10.8.2 and locked dependencies (`npm ci`: 109 packages, zero audit vulnerabilities):
 
-- `npm test -- src/modules/dp01`: **48 tests pass** (41 mathematical/parser tests, 5 view-flow tests with a public equation API stub, 2 lazy-mount lifecycle tests).
+- `npm test -- src/modules/dp01`: **51 tests pass** (43 mathematical/parser tests, 5 view-flow tests with a public equation API stub, 3 lazy-mount lifecycle tests).
 - `npm run check`: **pass**.
-- `npm test`: **90 tests pass across 9 files**.
+- `npm test`: **93 tests pass across 9 files**.
 - `npm run build`: **pass**. Existing MathLive large-chunk advisory remains; all 20 fonts are emitted as same-origin WOFF2 assets. No generated files committed.
 - A first full-suite run exposed browser-only MathLive import evaluation during catalogue testing. Fixed within DP01 by lazy view loading; the subsequent full suite passed.
 - Private production preview: http://127.0.0.1:8891/ returns HTTP 200. Primary checkout/preview 8787 was not modified.
 
 ## Remaining work and delivery
 
-Real-browser QA is pending because another worker holds the shared reservation. No browser controls have been used by this worker yet. Complete those checks, record exact evidence, mark implemented, commit/push and submit the exact tested revision. No shared dependency/API request, version change, deployment or main merge is needed. Independent integration review is separate and has not been claimed.
+No accepted exercise requirement remains open within the declared bounds. No shared dependency/API change, version change, deployment or main merge was made. The branch and worktree are preserved for coordinator integration. Stage is implemented; an independent final integration review is separate and is not claimed here.
+
+
+## Review corrections and real-browser evidence
+
+Preliminary coordinator review found three issues, all corrected with regressions before submission:
+
+1. A scaled selected impulse experiment G(z)=z/(z−10000), A=0.0001, count=4 has samples [0.0001,1,10000,10^8]. Its optional unit-kernel explanation previously reused the selected response bound and rejected the experiment. The explanation now computes just four finite coefficients separately; the selected experiment retains its 10^10 bound. The browser confirms y[3]=10^8.
+2. A throwing view mount removed the loading node before the catch updated it. Active failures now reattach a reset/recovery message; an explicit throwing-mount/abort regression passes.
+3. Nonzero decimals/products/normalization could silently underflow to zero. These cases now reject with rescaling feedback; regressions include a 400-zero decimal within the character bound, a tiny product and normalization underflow. The parser also handles actual MathLive single-token fraction notation (including nested fractions), not only fully braced developer input.
+
+Production build inspected on 2026-10-29 in the in-app Chromium browser, system dark theme, private preview 8891. QA was exclusively reserved through the shared helper, then released; the temporary viewport was reset and the private tab closed. No primary preview/browser tab was reused.
+
+- Baseline step: first samples 0, 0.2, 0.36, 0.488 and arithmetic at k=3. Changed A=2 gives y[3]=0.976.
+- Direct keyboard entry 1/(z−0.5) gives y[3]=1.75. Using the fraction button twice creates the actual canonical editor output `\frac{\frac12}{z-0.5}`; accepted computation gives y[3]=0.875. An incomplete fraction produces notation feedback; the power button renders z squared and the unsupported bare polynomial gets a domain error. Empty input and count=201 receive useful errors.
+- Impulse y[3]=0.128; physical ramp y[3]=0.056 at T=0.1; custom y[−1]=2/free input gives y[3]=0.8192. Sample/time axis, held-guide and forced/free plot controls work.
+- Negative mode gives −0.512 at k=3; conjugate preset gives −0.64 at k=2; repeated +1 gives 4 at k=2 with the boundary/multiplicity explanation. Equal-radius 45°/90° comparison and stale-comparison clearing work.
+- Real fractions, powers and symbols render visibly with the bundled fonts. Systems math keyboard opens at desktop/narrow sizes; Escape closes it; reset while open dismisses it and restores the baseline. Tab from the math field reaches the fraction button. Reset/reopen restore step, A=1, T=0.1, count=41, zero history, default comparison and hidden answers.
+- Leaving while the keyboard is open removes it. Rapid DP01→DP02 navigation shows only DP02's workspace, then reopening DP01 starts fresh; no late sequence controls/results appear in the other module.
+- At viewport override 390×844, document client/scroll widths both equal 375 CSS px (scrollbar accounted for): no page-wide horizontal overflow. Plot regions are 305 px wide with their 560 px diagrams scrolling internally. Controls wrap, equations scroll locally and the math keyboard fits. Desktop stems and modal text were visually inspected at the default viewport. Light theme and other browser engines were not separately tested.
+- Browser warning/error log is empty at the end. Build output emits all 20 same-origin font files. These observations do not claim every browser/device was tested.

@@ -11,6 +11,8 @@ describe('DP01 bounded visual notation', () => {
     expect(parseModel(String.raw`\frac{2z+1}{2(z-0.5)(z+0.5)}`)).toEqual({ a: [1, 0, -0.25], b: [0, 1, 0.5] });
     expect(parseModel(String.raw`\frac{z^{2}+1}{z^2+0.5z+0.25}`).b).toEqual([1, 0, 1]);
     expect(parseModel(String.raw`\frac{\frac{1}{2}}{z-\frac{1}{2}}`).b).toEqual([0, 0.5]);
+    expect(parseModel(String.raw`\frac12/(z-\frac12)`)).toEqual({ a: [1, -0.5], b: [0, 0.5] });
+    expect(parseModel(String.raw`G\left(z\right)=\frac1{z-\frac12}`)).toEqual({ a: [1, -0.5], b: [0, 1] });
   });
   it.each(['', 'G(s)=1/(s+1)', '\\sin(z)', 'NaN', 'Infinity', '1e309/(z-1)', '1/(z-)', '1/(z+1', '1/z^3', '1/(z^2*z)', 'z^2/(z+1)', '1/0', '1/(z-z)', '1/(0.000000001z+1)', '1000001/(z+1)', '1/((z+1)^2)^2', 'z^-1', 'z^0', '1/(z+1))', '2 3/(z+1)'])('rejects invalid/unsupported %s', value => {
     expect(() => parseModel(value)).toThrow();
@@ -18,6 +20,14 @@ describe('DP01 bounded visual notation', () => {
   it('bounds expression size and nesting', () => {
     expect(() => parseModel('('.repeat(21) + '1/(z+1)' + ')'.repeat(21))).toThrow(/nested/);
     expect(() => parseModel('z'.repeat(513))).toThrow(/512/);
+  });
+  it('rejects nonzero literal, coefficient-product and normalization underflow', () => {
+    const literal = '0.' + '0'.repeat(400) + '1';
+    const factor = '0.' + '0'.repeat(199) + '1';
+    const numerator = '0.' + '0'.repeat(319) + '1';
+    expect(() => parseModel(`${literal}/(z-0.8)`)).toThrow(/nonzero decimal/);
+    expect(() => parseModel(`${factor}*${factor}/(z-0.8)`)).toThrow(/coefficient product/);
+    expect(() => parseModel(`${numerator}/(1000000z-0.8)`)).toThrow(/normalized coefficient/);
   });
 });
 
@@ -92,4 +102,10 @@ describe('DP01 sequences checked against closed forms', () => {
     { amplitude: NaN }, { amplitude: 10001 }, { history: [Infinity, 0] as [number, number] },
   ])('rejects invalid experiment %j', change => expect(() => run(baseline, change)).toThrow());
   it('stops explosive models with useful feedback', () => expect(() => run('1/(z-1000)')).toThrow(/display bound/));
+  it('keeps a valid scaled experiment independent from the unit-kernel explanation bound', () => {
+    const m = parseModel('z/(z-10000)');
+    const rows = simulate(m, { ...experiment, count: 4, input: 'impulse', amplitude: 0.0001 });
+    expect(rows.map(r => r.y)).toEqual([0.0001, 1, 10000, 1e8]);
+    expect(impulseDecomposition(m)).toContain('(10000)');
+  });
 });

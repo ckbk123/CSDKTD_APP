@@ -25,4 +25,12 @@ describe('DP01 synchronous lazy mount', () => {
     expect(stub.mount).not.toHaveBeenCalled();
     expect(container.textContent).toBe('');
   });
+  it('reattaches a recovery message when the view throws after loading was removed', async () => {
+    stub.mount.mockImplementationOnce(() => { throw new Error('View failed'); });
+    const container = document.createElement('div'); const controller = new AbortController();
+    const cleanup = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(container.textContent).toContain('Reset the tool to try again'));
+    controller.abort(); if (typeof cleanup === 'function') cleanup();
+    expect(container.textContent).toBe(''); expect(stub.cleanup).not.toHaveBeenCalled();
+  });
 });

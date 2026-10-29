@@ -13,7 +13,10 @@ export const mount: ModuleMount = context => {
     loading.remove();
     cleanup = view.mount(context);
   }).catch(() => {
-    if (!disposed && !context.signal.aborted) loading.textContent = 'Sequence controls could not load. Reset the tool to try again.';
+    if (!disposed && !context.signal.aborted) {
+      loading.textContent = 'Sequence controls could not load. Reset the tool to try again.';
+      context.container.replaceChildren(loading);
+    }
   });
   return () => {
     disposed = true;

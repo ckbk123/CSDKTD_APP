@@ -23,7 +23,11 @@ function add(a: Poly, b: Poly, sign = 1): Poly {
 }
 function mul(a: Poly, b: Poly): Poly {
   const c = Array(a.length + b.length - 1).fill(0) as number[];
-  a.forEach((x, i) => b.forEach((y, j) => { c[i + j] += x * y; }));
+  a.forEach((x, i) => b.forEach((y, j) => {
+    const product = x * y;
+    if (product === 0 && x !== 0 && y !== 0) fail('A nonzero coefficient product is too small for numeric representation. Rescale the expression.');
+    c[i + j] += product;
+  }));
   return bounded(c);
 }
 
@@ -35,12 +39,37 @@ function plain(latex: string): string {
   let s = latex.replace(/\\left|\\right/g, '').replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\[,;! ]/g, '').replace(/−/g, '-').replace(/\s/g, '');
   s = s.replace(/^G\(z\)=/, '');
-  s = s.replace(/\^\{([^{}]*)\}/g, '^($1)');
-  // Each pass replaces an innermost fraction. Nested fractions are bounded by input size.
-  for (let i = 0; i < 30 && /\\(?:dfrac|tfrac|frac)\{[^{}]*\}\{[^{}]*\}/.test(s); i++) {
-    s = s.replace(/\\(?:dfrac|tfrac|frac)\{([^{}]*)\}\{([^{}]*)\}/g, '(($1)/($2))');
+  let pos = 0, depth = 0;
+  const fractionCommand = (): string | undefined => /^(?:\\dfrac|\\tfrac|\\frac)/.exec(s.slice(pos))?.[0];
+  function fraction(): string {
+    pos += fractionCommand()!.length;
+    const n = group(), d = group();
+    return `((${n})/(${d}))`;
   }
-  return s.replace(/[{}]/g, m => m === '{' ? '(' : ')');
+  function group(): string {
+    if (++depth > 20) fail('Use at most 20 nested groups.');
+    let value: string;
+    if (s[pos] === '{') {
+      pos++; value = sequence(true);
+      if (s[pos++] !== '}') fail('Complete each fraction and brace group.');
+    } else if (fractionCommand()) value = fraction();
+    else {
+      if (pos >= s.length || s[pos] === '}') fail('Complete the numerator and denominator of each fraction.');
+      value = s[pos++]; // TeX permits a single unbraced token, as in \frac12.
+    }
+    depth--; return value;
+  }
+  function sequence(stopAtBrace: boolean): string {
+    let value = '';
+    while (pos < s.length && !(stopAtBrace && s[pos] === '}')) {
+      if (fractionCommand()) value += fraction();
+      else if (s[pos] === '{') value += `(${group()})`;
+      else if (s[pos] === '}') fail('Remove the unmatched closing brace.');
+      else value += s[pos++];
+    }
+    return value;
+  }
+  return sequence(false);
 }
 
 /** Bounded recursive-descent rational polynomial parser. +,-,*,/, implicit
@@ -64,6 +93,7 @@ export function parseModel(latex: string): Model {
     else if (t && /^(?:\d|\.)/.test(t)) {
       const x = Number(t);
       if (!Number.isFinite(x) || x > 1e6) fail('Each entered number must be finite and at most 10⁶ in magnitude.');
+      if (x === 0 && /[1-9]/.test(t)) fail('A nonzero decimal is too small for numeric representation. Rescale the expression.');
       r = { n: [x], d: [1] };
     } else return fail('Complete each term with a number, z or a parenthesized expression.');
     if (tokens[pos] === '^') {
@@ -118,8 +148,13 @@ export function parseModel(latex: string): Model {
   if (r.n.length > r.d.length) fail('This is improper: a future input would be needed. Use numerator degree no greater than denominator degree.');
   const leading = r.d.at(-1)!;
   if (Math.abs(leading) < 1e-8) fail('The leading denominator coefficient is too small; rescale the model.');
-  const a = [...r.d].reverse().map(x => x / leading);
-  const b = [...Array(r.d.length - r.n.length).fill(0), ...[...r.n].reverse()].map(x => x / leading);
+  const normalize = (x: number): number => {
+    const value = x / leading;
+    if (value === 0 && x !== 0) fail('A nonzero normalized coefficient is too small for numeric representation. Rescale the expression.');
+    return value;
+  };
+  const a = [...r.d].reverse().map(normalize);
+  const b = [...Array(r.d.length - r.n.length).fill(0), ...[...r.n].reverse()].map(normalize);
   if ([...a, ...b].some(x => !Number.isFinite(x) || Math.abs(x) > 1e6)) fail('Normalized coefficients must have magnitude at most 10⁶.');
   return { a, b };
 }
@@ -197,9 +232,15 @@ function modalFormula(model: Model, f0: number, f1: number, index: string): stri
 
 export function impulseDecomposition(model: Model): string {
   const n = model.a.length - 1;
-  const h = simulate(model, { T: 1, count: 4, amplitude: 1, history: [0, 0], input: 'impulse' });
-  const prefix = h.slice(0, n).map(r => `h[${r.k}]=${tex(r.y)}`).join(',\\quad ');
-  return `${prefix};\\quad h[k]=${modalFormula(model, h[n].y, h[n + 1].y, `(k-${n})`)}\\quad(k\\geq${n})`;
+  // Four explanatory unit-kernel coefficients are bounded work. They do not
+  // share the amplitude/display bound of the student's selected experiment.
+  // With normalized coefficients <=10^6 these four values remain finite.
+  const h: number[] = [];
+  for (let k = 0; k < 4; k++) {
+    h[k] = (model.b[k] ?? 0) - model.a.slice(1).reduce((sum, a, j) => sum + a * (h[k - j - 1] ?? 0), 0);
+  }
+  const prefix = h.slice(0, n).map((value, k) => `h[${k}]=${tex(value)}`).join(',\\quad ');
+  return `${prefix};\\quad h[k]=${modalFormula(model, h[n], h[n + 1], `(k-${n})`)}\\quad(k\\geq${n})`;
 }
 
 export function recurrence(model: Model): string {
