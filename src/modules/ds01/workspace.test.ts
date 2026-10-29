@@ -2,12 +2,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
 import { mount } from './workspace';
 
+const mockState = vi.hoisted(() => ({ failNext: false }));
+
 // Checks DS01's state/lifecycle wiring, not the real editor or browser rendering.
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (latex: string) => {
     const element = document.createElement('div'); element.dataset.latex = latex; element.textContent = latex; return element;
   },
   createEquationInput: (options: EquationInputOptions) => {
+    if (mockState.failNext) { mockState.failNext = false; throw new Error('Synthetic editor mount failure'); }
     const element = document.createElement('div'), field = document.createElement('textarea');
     field.setAttribute('aria-label', options.label); field.value = options.value; element.append(field);
     const getValue = () => ({ latex: field.value, empty: !field.value, syntaxIssues: [], hasPlaceholders: false });
@@ -32,6 +35,12 @@ function experiment(root: HTMLElement, value: string) {
 afterEach(() => { for (const v of visits.splice(0)) { v.abort.abort(); v.cleanup(); v.root.remove(); } });
 
 describe('DS01 teaching flow and isolation', () => {
+  it('keeps a visible error and removes partial controls when editor mounting fails', async () => {
+    mockState.failNext = true; const { root } = start();
+    await vi.waitFor(() => expect(root.textContent).toContain('Equation controls could not load'));
+    expect(root.querySelector('.ds01')).toBeNull();
+    expect(root.querySelector('textarea')).toBeNull();
+  });
   it('reveals the baseline and invalidates stale results on an edited pole', async () => {
     const { root } = await open();
     expect(root.querySelector<HTMLElement>('.ds-results')!.hidden).toBe(true);

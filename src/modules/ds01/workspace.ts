@@ -77,16 +77,24 @@ type Equations = typeof import('../../shared/equations/input');
 // not when the catalogue checks workspace exports in Node. Never mount after abort.
 export const mount: ModuleMount = context => {
   if (context.signal.aborted) return;
+  const lifetime = new AbortController();
+  const abort = () => lifetime.abort();
+  context.signal.addEventListener('abort', abort, { once: true });
   let cleanup: ReturnType<ModuleMount>;
   let disposed = false;
   const loading = el('p', 'Loading equation controls…'); context.container.append(loading);
   void import('../../shared/equations/input').then(equations => {
-    if (context.signal.aborted || disposed) return;
-    loading.remove(); cleanup = mountExercise(context, equations);
+    if (lifetime.signal.aborted || disposed) return;
+    cleanup = mountExercise({ container: context.container, signal: lifetime.signal }, equations);
+    loading.remove();
   }).catch(() => {
-    if (!context.signal.aborted && !disposed) loading.textContent = 'Equation controls could not load. Reset the tool to try again.';
+    if (!context.signal.aborted && !disposed) {
+      lifetime.abort(); cleanup?.();
+      loading.textContent = 'Equation controls could not load. Reset the tool to try again.';
+      context.container.replaceChildren(loading);
+    }
   });
-  return () => { disposed = true; loading.remove(); cleanup?.(); };
+  return () => { disposed = true; lifetime.abort(); context.signal.removeEventListener('abort', abort); loading.remove(); cleanup?.(); };
 };
 
 const mountExercise = ({ container, signal }: Parameters<ModuleMount>[0], { createEquationInput, createEquationDisplay }: Equations): ReturnType<ModuleMount> => {
