@@ -1,6 +1,6 @@
 # Browser development guide
 
-**Browser migration milestone, 29 October 2026.** The primary application is a static Vite/TypeScript interface. Its 56 independent module folders currently provide metadata and blank workspaces. Mathematical solvers and exercise-specific controls are future per-module work.
+**Browser migration milestone, 29 October 2026.** Control Studio is a static Vite/TypeScript browser application. Its 56 independent module folders currently provide metadata and blank workspaces. Mathematical solvers and exercise-specific controls are future per-module work.
 
 ## Build and run
 
@@ -81,6 +81,12 @@ and lazy export contracts without requiring modules to remain blank or running
 browser-only plotting APIs in jsdom. Add the real mathematical tests locally.
 An editor/dialog may consume a keyboard event with `preventDefault()`; the shell
 respects that before handling its own Escape and navigation shortcuts.
+
+## Shared visual contract
+
+Follow [DESIGN.md](DESIGN.md) for the selected Control Studio identity, Indigo + slate light/dark tokens and compact layout. The 64 px header contains the 32 px pole/zero mark, application name and `v<package.version> · Cao Kha Bao Khanh`. Read the version automatically from `package.json`; do not duplicate it as a hardcoded UI value. Catalogue search belongs in the header, with a collapsible search control on small screens. Keep the sidebar light and surfaces subtly outlined. The unchanged HCMUT PNG is institutional HCMUT/EE2019 footer credit; provenance is in [ASSETS.md](ASSETS.md).
+
+The repository remains `CSDKTD_APP` and package/Cloudflare identifiers remain `csdktd-app`. Stable module IDs and course/history references are preserved. Module work uses the selected shared tokens and scoped styles; changes to the global identity or header need coordination.
 
 ## Mathematical services
 

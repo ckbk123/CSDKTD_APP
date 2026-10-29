@@ -1,6 +1,6 @@
-# CSDKTD APP
+# Control Studio
 
-A browser application for learning **SISO LTI control theory**, organized into Continuous and Discrete systems and five subject groups in each: System Representation, Plots, Stability, Performance and Controller Design.
+Control Studio is a browser application for learning **SISO LTI control theory**, organized into Continuous and Discrete systems and five subject groups in each: System Representation, Plots, Stability, Performance and Controller Design. The repository remains `CSDKTD_APP`; package and Cloudflare identifiers remain `csdktd-app`.
 
 ## Current milestone
 
@@ -15,6 +15,8 @@ The primary interface uses **TypeScript, HTML and CSS with Vite**, without a UI 
 ![Independent module workspace](docs/images/web-workspace.jpg)
 
 [Narrow-screen preview](docs/images/web-mobile.jpg)
+
+The selected identity uses an Indigo + slate palette, a compact pole/zero mark and a 64 px header. The header shows the application name with `v<package.version> · Cao Kha Bao Khanh` beneath it, reading the version automatically from `package.json`. Catalogue search lives in the header; HCMUT/EE2019 credit lives in the footer. See the [design contract](docs/DESIGN.md) and [asset provenance](docs/ASSETS.md).
 
 ## Run locally
 

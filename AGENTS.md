@@ -1,15 +1,21 @@
-# Agent instructions for CSDKTD APP
+# Agent instructions for Control Studio
 
 ## Product and current status
 
-CSDKTD APP is a **browser-first static educational application** for SISO LTI control theory. Continuous and Discrete each contain Representation, Plots, Stability, Performance and Controller Design. The 56 module folders are scaffolds; mathematical features are pending until implemented and verified individually.
+Control Studio is a **browser-first static educational application** for SISO LTI control theory. Continuous and Discrete each contain Representation, Plots, Stability, Performance and Controller Design. The 56 module folders are scaffolds; mathematical features are pending until implemented and verified individually.
 
 Use TypeScript/HTML/CSS and Vite without adding a UI framework. All exercise computation runs in the browser. There are no accounts, persistence, saved projects, export workflow, application API server, database or API keys. Do not add a service worker/PWA/offline guarantee in this release. C/WebAssembly is an optional future math implementation detail; web interfaces use browser/TypeScript types rather than Raven or C UI types.
+
+## Selected identity
+
+The visible application name is **Control Studio**. Read `docs/DESIGN.md` and use its Indigo + slate tokens. Keep the compact 64 px header, 32 px pole/zero mark, name/version-author hierarchy and functional header search. The second line is `v<package.version> · Cao Kha Bao Khanh`, with the version read automatically from `package.json`; do not maintain a separate hardcoded UI version. HCMUT/EE2019 is institutional footer credit, using the preserved university PNG. Do not introduce another palette, logo, slogan, gradient or decorative fake plot without coordinating a design change.
+
+The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdktd-app`. Stable module IDs, course source names, historical documents and the existing CSDKTD course/repository alias remain valid; do not mass-rename them.
 
 ## Read before editing
 
 1. Read the assigned module's `src/modules/<id>/TASK.md`, `index.ts` and `workspace.ts`.
-2. Read `docs/CONTRIBUTING.md`, `docs/DEVELOPMENT.md` and the matching atlas entry.
+2. Read `docs/CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, `docs/DESIGN.md` and the matching atlas entry.
 3. Check the current working tree and existing shared helpers. Course slides remain outside Git; audits distinguish inspected examples from proposed fixtures. Preserve those distinctions.
 
 ## Ownership and isolation

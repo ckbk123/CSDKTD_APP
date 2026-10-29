@@ -2,6 +2,7 @@ import type { Category, Domain, ModuleManifest } from './core/module';
 import { libraryHref, moduleHref, parseRoute } from './core/router';
 import { WorkspaceSession } from './core/workspace-session';
 import { categories, categoryName, domainName, domains, filterModules, findModule } from './modules/catalog';
+import { APP_AUTHOR, APP_NAME, APP_VERSION } from './brand';
 
 function element<K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
@@ -20,8 +21,9 @@ export function createApp(root: HTMLElement): () => void {
   let domain: Domain = 'continuous';
   let category: Category | undefined;
   let currentModule: ModuleManifest | undefined;
-  let search: HTMLInputElement | undefined;
   let query = '';
+  let requestedQuery: string | undefined;
+  let libraryVisible = false;
   let results: HTMLElement;
 
   const skip = link('Skip to content', '#main', 'skip-link');
@@ -31,18 +33,54 @@ export function createApp(root: HTMLElement): () => void {
   });
   const header = element('header', 'app-header');
   const brand = link('', libraryHref('continuous'), 'brand');
-  brand.setAttribute('aria-label', 'CSDKTD APP home');
+  brand.setAttribute('aria-label', `${APP_NAME} home`);
   const logo = element('img', 'brand-logo');
-  logo.src = '/hcmut.png'; logo.alt = 'HCMUT'; logo.width = 46; logo.height = 46;
+  logo.src = '/control-studio.svg'; logo.alt = ''; logo.width = 32; logo.height = 32;
   const wordmark = element('span', 'wordmark');
-  wordmark.append(element('strong', '', 'CSDKTD APP'), element('span', 'university', 'Ho Chi Minh City University of Technology'));
+  wordmark.append(element('strong', '', APP_NAME), element('span', 'brand-credit', `v${APP_VERSION} · ${APP_AUTHOR}`));
   brand.append(logo, wordmark);
-  header.append(brand, element('span', 'scope-label', 'SISO LTI'));
+  const searchForm = element('form', 'header-search'); searchForm.id = 'header-search';
+  searchForm.setAttribute('role', 'search');
+  const searchLabel = element('label', 'sr-only', 'Search modules'); searchLabel.htmlFor = 'module-search';
+  const search = element('input'); search.id = 'module-search'; search.type = 'search';
+  search.placeholder = 'Search modules'; search.autocomplete = 'off';
+  const submitSearch = element('button', 'search-submit'); submitSearch.type = 'submit';
+  submitSearch.setAttribute('aria-label', 'Submit module search');
+  const searchSymbol = element('span', 'search-symbol'); searchSymbol.setAttribute('aria-hidden', 'true');
+  submitSearch.append(searchSymbol); searchForm.append(searchLabel, submitSearch, search);
+  const searchToggle = element('button', 'search-toggle'); searchToggle.type = 'button';
+  searchToggle.setAttribute('aria-label', 'Open module search');
+  searchToggle.setAttribute('aria-controls', searchForm.id); searchToggle.setAttribute('aria-expanded', 'false');
+  const toggleSymbol = element('span', 'search-symbol'); toggleSymbol.setAttribute('aria-hidden', 'true'); searchToggle.append(toggleSymbol);
+  function setSearchOpen(open: boolean): void {
+    header.classList.toggle('search-open', open);
+    searchToggle.setAttribute('aria-expanded', String(open));
+  }
+  function focusSearch(): void { setSearchOpen(true); search.focus(); }
+  searchToggle.addEventListener('click', () => {
+    const open = !header.classList.contains('search-open'); setSearchOpen(open);
+    if (open) search.focus();
+  });
+  search.addEventListener('input', () => { query = search.value; if (libraryVisible) renderResults(); });
+  searchForm.addEventListener('submit', event => {
+    event.preventDefault();
+    query = search.value;
+    if (libraryVisible) { renderResults(); return; }
+    requestedQuery = search.value;
+    location.hash = libraryHref(domain);
+  });
+  header.append(brand, searchForm, element('span', 'scope-label', 'SISO LTI'), searchToggle);
   const layout = element('div', 'app-layout');
   const aside = element('aside', 'sidebar');
   const main = element('main', 'main'); main.id = 'main'; main.tabIndex = -1;
   layout.append(aside, main);
-  root.replaceChildren(skip, header, layout);
+  const footer = element('footer', 'site-footer');
+  const institution = element('span', 'institution');
+  const universityLogo = element('img'); universityLogo.src = '/hcmut.png'; universityLogo.alt = 'HCMUT';
+  universityLogo.width = 22; universityLogo.height = 22;
+  institution.append(universityLogo, element('span', '', 'Ho Chi Minh City University of Technology'));
+  footer.append(institution, element('span', '', 'EE2019 · SISO LTI'));
+  root.replaceChildren(skip, header, layout, footer);
 
   function sidebar(): void {
     const domainNav = element('nav', 'domain-nav'); domainNav.setAttribute('aria-label', 'System domain');
@@ -96,19 +134,14 @@ export function createApp(root: HTMLElement): () => void {
   }
 
   function libraryPage(): void {
+    libraryVisible = true;
     const heading = element('header', 'page-heading');
     if (category) heading.append(element('p', 'eyebrow', `${domainName(domain)} systems`));
     heading.append(element('h1', '', category ? categoryName(category) : `${domainName(domain)} systems`));
     if (category) heading.append(element('p', 'page-description', categories.find(item => item.id === category)!.description));
-    const searchBox = element('div', 'search-box');
-    const label = element('label', '', 'Search modules'); label.htmlFor = 'module-search';
-    search = element('input'); search.id = 'module-search'; search.type = 'search';
-    search.placeholder = 'Name, topic or module ID'; search.autocomplete = 'off';
     search.setAttribute('aria-controls', 'module-results');
-    search.addEventListener('input', () => { query = search!.value; renderResults(); });
-    searchBox.append(label, search);
     results = element('section', 'module-results'); results.id = 'module-results'; results.setAttribute('aria-label', 'Module catalogue');
-    main.append(heading, searchBox, results);
+    main.append(heading, results);
     renderResults();
   }
 
@@ -158,7 +191,11 @@ export function createApp(root: HTMLElement): () => void {
 
   function render(): void {
     session.close();
-    query = ''; search = undefined;
+    const focusRequested = requestedQuery !== undefined;
+    query = requestedQuery ?? ''; requestedQuery = undefined;
+    search.value = query; search.removeAttribute('aria-controls');
+    libraryVisible = false;
+    setSearchOpen(false);
     const route = parseRoute(location.hash);
     currentModule = route.kind === 'module' ? findModule(route.id) : undefined;
     if (route.kind === 'library') { domain = route.domain; category = route.category; }
@@ -170,17 +207,26 @@ export function createApp(root: HTMLElement): () => void {
     else {
       main.append(element('h1', '', 'Page not found'), link('Return to modules', libraryHref(domain), 'button'));
     }
-    document.title = currentModule ? `${currentModule.title} · CSDKTD APP` : 'CSDKTD APP';
-    main.focus({ preventScroll: true });
+    document.title = currentModule ? `${currentModule.title} · ${APP_NAME}` : APP_NAME;
+    if (focusRequested) focusSearch(); else main.focus({ preventScroll: true });
     window.scrollTo(0, 0);
   }
+  brand.addEventListener('click', event => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    // The home link also clears a live query when its hash is already current.
+    if (location.hash === libraryHref(domain)) { event.preventDefault(); render(); }
+  });
   function keydown(event: KeyboardEvent): void {
     if (event.defaultPrevented) return;
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f' && search) {
-      event.preventDefault(); search.focus();
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
+      event.preventDefault(); focusSearch();
     } else if (event.key === 'Escape') {
-      if (currentModule) { event.preventDefault(); location.hash = libraryHref(domain, category); }
-      else if (search?.value) { event.preventDefault(); query = search.value = ''; renderResults(); }
+      if (document.activeElement === search && (search.value || header.classList.contains('search-open'))) {
+        event.preventDefault(); query = search.value = '';
+        if (libraryVisible) renderResults();
+        setSearchOpen(false); searchToggle.focus();
+      } else if (currentModule) { event.preventDefault(); location.hash = libraryHref(domain, category); }
+      else if (search.value) { event.preventDefault(); query = search.value = ''; if (libraryVisible) renderResults(); }
     } else if ((event.ctrlKey || event.metaKey) && event.key === 'Home') {
       event.preventDefault(); location.hash = libraryHref(domain);
     }
