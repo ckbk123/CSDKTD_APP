@@ -1,6 +1,6 @@
 # CSDKTD APP: course architecture and functional plan
 
-**Revision 3, 29 October 2026. Subapplication scope accepted; mathematical implementation pending.** The application covers **single-input, single-output, linear time-invariant systems**. Its organization follows the mathematical course, with exercise-specific tools inside each block. This replaces the previous flat F01–F35 catalog.
+**Revision 4, 29 October 2026. Browser-first architecture; 56 module scaffolds, mathematical implementation pending.** The application covers **single-input, single-output, linear time-invariant systems**. Its organization follows the mathematical course, with exercise-specific tools inside each block. This replaces the previous flat F01–F35 catalog.
 
 ## 1. Scope
 
@@ -48,15 +48,25 @@ These are ten subject groups containing independent subapplications. Each subapp
 
 **Teaching sequence example:** students can study `G=1/[s(s+2)]` in several independent tools: representation, root-locus construction, stable-gain analysis, error measurement and lead design. Each tool starts from its declared local example. A teacher may ask students to enter matching data manually; navigation does not transfer a mutable model or result between tools.
 
-## Single-window shell architecture — 29 October 2026
+## Browser shell architecture — 29 October 2026
 
-The entry interface is a grid of subapplications organized by domain and subject. Clicking a tile replaces the current content inside the same native **CSDKTD APP** window. Home/back navigation returns to the catalogue. Subapplications do not open separate native windows.
+The primary application is a static browser application built with **Vite and TypeScript, without a UI framework**. Its catalogue groups 56 independent modules by domain and subject. Clicking a tile replaces the workspace in the same browser page; Home/back returns to the catalogue. Student-facing names describe the subject, while stable module IDs support development and source review.
 
-Each subapplication has its own C library target and a narrow lifecycle: mount into the shell-provided content container, reset to its baseline, and unmount/release state. It owns only its private state and child widgets. The shell owns navigation and the outer window. Immutable catalogue metadata and stateless helpers may be shared; mutable exercise models are module-local.
+Only immutable catalogue metadata loads eagerly. Each workspace implementation is imported lazily when selected. A module exposes a synchronous lifecycle:
 
-The present development milestone supplies the shell, catalogue, baseline metadata and empty content containers. Those containers are intentionally ready for later module-specific interfaces and solvers. Returning to a subapplication starts a new baseline visit. Saving, session restoration, project files and export are not required.
+```ts
+mount({ container, signal }): void | (() => void)
+```
 
-Separate libraries make ownership and dependencies explicit; they do not provide process-level memory isolation. Each future module must respect its lifecycle and avoid mutable cross-module globals.
+The container is an `HTMLElement` owned by the shell, and the signal is the visit's `AbortSignal`. The module creates its local exercise state inside `mount`, using its own immutable baseline data. It may return a synchronous cleanup function. The web interface contains no C or Raven types. Module implementation and helper imports must not create a mutable cross-module current model.
+
+Before leaving or resetting a workspace, the shell aborts its active signal, runs the returned cleanup once and releases its content. Reset remounts a fresh visit at the same baseline. A navigation generation/token guards lazy imports: a superseded import must never mount after the user has left or selected another tool. Later module-owned asynchronous work must also honor abort/visit checks before changing the page. The dynamic import itself need not be cancelable for its stale result to be discarded.
+
+Workspace styling is scoped through CSS modules or the shell’s `data-module="CR01"`-style root; module CSS does not apply global rules to other workspaces.
+
+The first-release milestone is the catalogue, navigation and **56 independent scaffolds with mathematics pending**. All future educational mathematics runs on the client. There is no server calculation, account system, persistence, save/load, project file, export or service worker in the first release. Navigation and reset discard the current visit's state; no result travels automatically to another module. Static hosting is sufficient, with browser compatibility established by testing the chosen build and APIs.
+
+Stateless shared numerical services can be added under `src/shared/math/` later. If a particular algorithm benefits from C, a future compiled C/WebAssembly component may supply mathematics behind a TypeScript adapter after capability, size and license evaluation. It does not replace the browser UI with a native window. The earlier [native platform assessment](history/PLATFORM_FEASIBILITY_NATIVE.md) is retained as historical research, not a deployment requirement for this browser architecture.
 
 ## 3. What makes an exercise tool
 
@@ -70,9 +80,9 @@ Each concept that forms an identified exercise family gets a dedicated **subappl
 
 Examples include highlighting the coefficients used in a Routh cell, showing which old samples a recurrence reads, selecting a shared node between Mason loops, or mapping a contour point into a Nyquist curve. Highlighted equations, matrix rows and tables can be more informative than animation.
 
-Explore, Guided and Check-my-work behaviors can be implemented inside each tool later. Every tool has a baseline default example and starts fresh when opened. Any comparison or answer-reveal state is local to that visit. Localization, keyboard input and reusable visual controls can share code. Saving, project files, persistence and export are outside the requested product. Local reveal controls are teaching aids, not secure examinations.
+Explore, Guided and Check-my-work behaviors can be implemented inside each tool later. Every tool has a baseline default example and starts fresh when opened. Any comparison or answer-reveal state is local to that visit. Localization, keyboard input and reusable visual controls can share code. The first release has no accounts, saving, project files, persistence, export or service worker. Local reveal controls are teaching aids, not secure examinations.
 
-Tool identifiers below are review references; student menus use subject names. The [exercise tool atlas](EXERCISE_TOOL_ATLAS.md) details tasks, controls, visual behavior, source anchors and checks. The [review sheet](FEATURE_REVIEW.md) starts with the ten blocks and then their modes. The instructor has accepted the hierarchy and all 56 logical subapplication concepts. The immediate implementation milestone is the global interface and blank subapplication containers; mathematical functionality and detailed interactions follow later.
+Tool identifiers below are review references; student menus use subject names. The [exercise tool atlas](EXERCISE_TOOL_ATLAS.md) details tasks, controls, visual behavior, source anchors and checks. The [review sheet](FEATURE_REVIEW.md) starts with the ten blocks and then their modes. The instructor has accepted the hierarchy and all 56 logical subapplication concepts. The immediate implementation milestone is the browser catalogue and 56 lazy module scaffolds; mathematical functionality and detailed interactions follow later.
 
 ## 4. Continuous systems
 
@@ -242,7 +252,7 @@ Emulating a continuous controller and directly designing a discrete one are dist
 
 Each subapplication creates its own in-memory exercise state from immutable baseline data: domain, coefficients/factors or state realization, delays, sample period, selected scalar channel, inputs, initial conditions and requirements. Its own dependent views update together or mark its own results stale. Leaving the page releases that visit's state. Reopening starts from the baseline. No model, history or result travels automatically to another subapplication, and no project/save/export service is required.
 
-The C implementation separates subapplication code from reusable stateless math/UI services. Future services can cover polynomial algebra, roots, scalar block/SFG structure, matrices, simulation, plot construction and exercise feedback. Callers own mutable input/output/workspace objects. A shared service must not retain a process-wide current system that couples unrelated tools. Raven supplies the current native shell direction, subject to the [platform assessment](PLATFORM_FEASIBILITY.md); no cross-platform certification follows from this documentation.
+The browser implementation separates workspace modules from stateless mathematical/UI helpers. Future client-side services under `src/shared/math/` can cover polynomial algebra, roots, scalar block/SFG structure, matrices, simulation, plot construction and exercise feedback. Callers own mutable inputs, temporary workspaces and results; shared services do not retain a global current system. A future C/WebAssembly math adapter is optional and unselected. It must preserve the TypeScript/browser lifecycle and contain no Raven or native-window interface types. [Mathematical backend research](MATH_BACKEND_OPTIONS.md) records candidates and evaluation limits.
 
 Exact algebra, numerical estimates and textbook approximations have different labels. Declare coefficient order, factor domain, transform convention, initial conditions, metric definitions, units, horizon, tolerances and resource limits. A numerical sample is supporting evidence, not a proof of symbolic equivalence. A canceled transfer factor cannot alone establish internal stability. Unsupported/singular cases and incomplete enumeration must receive explicit results.
 
@@ -256,7 +266,7 @@ Evaluate coverage by exercise families within a block, not by the number of slid
 
 Proposed dependency sequence:
 
-1. Implement the accepted grid entry interface and single-window navigation into independent blank subapplication containers.
+1. Implement and verify the static Vite/TypeScript catalogue and same-page navigation into 56 lazily imported module scaffolds.
 2. Verify navigation, module lifecycle, baseline reset and UI/platform behavior without introducing mathematical runtime dependencies.
 3. Implement the first selected subapplication with its local baseline, narrow service interfaces and explanatory plotting.
 4. Develop the other representation, stability, performance and controller-design subapplications independently, with module-specific checks.

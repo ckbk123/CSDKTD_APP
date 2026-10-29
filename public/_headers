@@ -1,0 +1,19 @@
+# Vite copies this file to dist; Cloudflare parses it as asset metadata.
+# Keep script execution local. Inline CSS is allowed for generated plot styles.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Revalidate the HTML entry point so a reload can discover the newest build.
+/
+  Cache-Control: no-cache
+
+/*.html
+  Cache-Control: no-cache
+
+# Only put content-hashed build output in this directory.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

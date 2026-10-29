@@ -1,12 +1,12 @@
 # Instructor review: ten course blocks and their exercise tools
 
-**Revision 3, 29 October 2026.** The instructor has accepted all 56 logical subapplication concepts in the **SISO LTI → Continuous / Discrete → five subject blocks** structure. Scope is accepted; mathematical implementation is pending. The immediate milestone is a grid entry GUI and independent blank subapplication pages inside one native window.
+**Revision 4, 29 October 2026.** The instructor has accepted all 56 logical subapplication concepts in the **SISO LTI → Continuous / Discrete → five subject blocks** structure. Scope is accepted; mathematical implementation is pending. The first-release milestone is a static Vite/TypeScript browser catalogue and 56 independent lazy module scaffolds inside the same page. The interface uses no UI framework; all educational mathematics remains pending and will run client-side.
 
 Read the [architecture](FUNCTIONAL_SPECIFICATION.md) first. Use the [exercise atlas](EXERCISE_TOOL_ATLAS.md) when reviewing a specific tool. Source/exercise audits are supporting evidence, not additional application menus.
 
 ## 1. Review the blocks first
 
-All ten subject groups and their subapplication concepts are accepted. The status below records accepted scope separately from the still-pending mathematical functionality. The shell supplies catalogue navigation, local baseline metadata and blank containers first.
+All ten subject groups and their subapplication concepts are accepted. The status below records accepted scope separately from the still-pending mathematical functionality. The shell supplies eager immutable metadata, catalogue navigation and lazily mounted blank workspaces first.
 
 | Domain | Block | Exercise modes | Scope / implementation | Instructor notes |
 |---|---|---|---|---|
@@ -147,10 +147,11 @@ Every listed concept is **Accepted**. **Implementation pending** means its educa
 | Sampling | Distinguish k, seconds, normalized frequency, hold and sample topology | |
 | Controller form | Agree PID parameterization, linear filter and observer update timing | |
 | Reveal | Student attempt/prediction before selected steps or answers | |
-| User interface | Grid catalogue; one native window; independent module pages; readable controls | |
-| Module lifecycle | Baseline on every visit; module-local state released on leave | Accepted |
-| Persistence | No saving, session restoration, project files or export | Accepted |
-| Platform | Preserve existing Windows/Linux/Mac feasibility investigation | |
+| User interface | Static Vite/TypeScript; no UI framework; catalogue and independent workspaces in one browser page | Accepted |
+| Module lifecycle | Synchronous `mount({container,signal})` returns void or cleanup; local state starts in mount; abort/cleanup before leave/reset; discard stale imports | Accepted |
+| Persistence | First release has no accounts, persistence, save/load, project files, export or service worker | Accepted |
+| Platform | Test supported browsers and the static build; native OS/Vulkan research is historical | |
+| Mathematical backend | Client-side TypeScript services first; optional future C/WebAssembly math requires evaluation | |
 
 ## 4. Related teaching sequences
 
@@ -164,4 +165,4 @@ These are conceptual lesson sequences across independent tools. Each tool opens 
 
 ## 5. Notes for the next implementation plan
 
-The current plan implements the global shell and independent subapplication containers first. Later work implements accepted tools individually using local baseline data and stateless mathematical helpers. No saving, persistence, project-file or export feature is required. Historical scope changes from the first draft remain documented in [the migration record](research/SCOPE_AND_MIGRATION.md); the 29 October lifecycle requirements above supersede its earlier shared-case assumptions.
+The current plan implements the browser shell and 56 independent lazy scaffolds first. Later work implements accepted tools individually using module-local baseline state and stateless client-side mathematical helpers. Only catalogue metadata loads eagerly; mounts initialize state synchronously and return optional cleanup. The shell aborts and cleans the current visit before leave/reset and discards superseded imports. The first release has no accounts, persistence, save/load, project-file, export or service-worker feature. Historical scope changes from the first draft remain documented in [the migration record](research/SCOPE_AND_MIGRATION.md); the revision 4 browser and lifecycle requirements above supersede earlier shared-case and native-window assumptions.

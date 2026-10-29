@@ -1,4 +1,11 @@
-# Local builds, editor state and generated scratch data
+# Web dependencies, builds, local previews and generated scratch data
+/node_modules/
+/dist/
+/.wrangler/
+/coverage/
+/.vitest/
+*.tsbuildinfo
+*.log
 /build/
 /out/
 /.work/

@@ -1,53 +1,55 @@
 # CSDKTD APP
 
-A native **C11 / Raven** desktop shell for learning **SISO LTI control theory**.
+A browser application for learning **SISO LTI control theory**, organized into Continuous and Discrete systems and five subject groups in each: System Representation, Plots, Stability, Performance and Controller Design.
 
-The first implementation provides the global interface and independent subapplication containers. Mathematical tools will be implemented inside those containers later.
+## Current milestone
 
-## What works now
+The application provides a responsive catalogue and **56 independent module scaffolds**. A module opens inside the same browser page, with its title, baseline-example description and an empty workspace ready for later implementation. These are 56 planned educational tools, **not 56 implemented mathematical solvers**.
 
-- An HCMUT-branded entry interface with Continuous and Discrete sections.
-- Five topic groups in each section: System Representation, Plots, Stability, Performance and Controller Design.
-- A responsive card grid, topic filtering and module search.
-- All **56 module routes**, each opening its own page inside the **same native window**.
-- A baseline-example description, an empty content container, Back navigation and Reset example.
-- Fresh module state on each visit. No lesson saving, persistence, project files or export workflow.
+Each module owns its temporary state. Opening or resetting a module starts from its default example; leaving releases its resources. There are no accounts, saved projects, persistence or student export workflows. The first browser release has no service worker or guaranteed offline mode.
 
-Each subapplication has its own C static-library target and private lifecycle. Shared stateless mathematical/visual helpers can be added later without introducing a shared mutable exercise model. The module structure improves ownership and change boundaries; linked C libraries still share one process and do not provide crash isolation.
+The primary interface uses **TypeScript, HTML and CSS with Vite**, without a UI framework. Calculations will run in the student's browser. No application API server, database or API keys are needed. C/WebAssembly remains an optional future mathematical backend, subject to validation.
 
-The logo comes from the existing instructor course assets. It is embedded so the executable does not depend on the original OneDrive path. See [asset provenance](assets/README.md).
+![Browser entry interface](docs/images/web-home.jpg)
 
-![Continuous section overview](docs/images/home.png)
+![Independent module workspace](docs/images/web-workspace.jpg)
 
-![A module's blank workspace](docs/images/module.png)
+[Narrow-screen preview](docs/images/web-mobile.jpg)
 
-## Build and run on Windows
+## Run locally
 
-Use Visual Studio 2022 with **Desktop development with C++**, CMake **3.24 or later**, and Git. Run from a Developer PowerShell at the repository root:
+Install **Node.js 24 LTS, version 24.15 or later**, with its bundled npm, then run from the repository root. Node 22.22.2+ is also supported by the pinned toolchain:
 
-```powershell
-cmake -S . -B build/windows -G "Visual Studio 17 2022" -A x64
-cmake --build build/windows --config Release --parallel
-ctest --test-dir build/windows -C Release --output-on-failure
-cmake --install build/windows --config Release --prefix out/windows
-& ".\out\windows\bin\CSDKTD APP.exe"
+```sh
+npm ci
+npm run dev
 ```
 
-The build executable is `build/windows/Release/CSDKTD APP.exe`. Installation puts it in `out/windows/bin` and includes upstream notices. The normal GUI currently requires a working **Vulkan driver**. The Vulkan SDK is not a student runtime requirement; initial source configuration may fetch Raven and Vulkan headers.
+Open the local address printed by Vite. For a production build and local inspection:
 
-The shell has been built and tested locally on Windows x64. Linux, macOS, Windows 7/8/8.1 and the complete requested Windows release matrix remain unverified. See [development/build instructions](docs/DEVELOPMENT.md) and [platform feasibility](docs/PLATFORM_FEASIBILITY.md) before making compatibility claims. Generated binaries and build folders are not committed.
+```sh
+npm run check
+npm test
+npm run build
+npm run preview
+```
 
-## Develop a subapplication
+The static output is `dist/`. The repository includes Cloudflare Workers Static Assets configuration in `wrangler.jsonc`; deployment serves these generated files without an application API server. See [deployment instructions](docs/DEPLOYMENT.md) for the exact publishing workflow and hosting limits. Local preview does not publish anything.
 
-Start with [modules/README.md](modules/README.md), the [module contract](include/csdktd/module.h), and one directory such as `modules/cr05`. Implement its controls under the shell-provided container, keep state in `host->state`, and release resources on unmount. The shell owns the outer window and navigation.
+## Implement a teaching tool
 
-The shell currently links no numerical or symbolic library. [Mathematical backend options](docs/MATH_BACKEND_OPTIONS.md) compares C-callable numerical, control and exact-algebra candidates for later modules.
+Each tool has its own directory under `src/modules/<id>/` and a durable `TASK.md` containing its exercise, source evidence, default example, visual behavior, mathematical checks and copyable agent assignment. The metadata entry is loaded eagerly; its workspace code loads only when opened.
+
+Start with the [56-task index](docs/AGENT_TASKS.md), [contribution guide](docs/CONTRIBUTING.md) and [development guide](docs/DEVELOPMENT.md). Agents should work on one explicitly assigned module at a time. Shared mathematical helpers and dependency changes need coordinated ownership.
 
 ## Course plan and evidence
 
-- [Functional specification](docs/FUNCTIONAL_SPECIFICATION.md): accepted subject hierarchy and independent-module architecture.
-- [Exercise tool atlas](docs/EXERCISE_TOOL_ATLAS.md): the mathematical tasks and checks to implement in each module.
-- [Feature status](docs/FEATURE_REVIEW.md): all 56 concepts accepted, mathematical implementation pending.
-- [Continuous](docs/research/CONTINUOUS_EXERCISE_AUDIT.md) and [Discrete](docs/research/DISCRETE_EXERCISE_AUDIT.md) exercise audits, [external exercises](docs/research/EXTERNAL_EXERCISE_REFERENCES.md), and [slide inventory](docs/research/SLIDE_INVENTORY.json).
+- [Functional specification](docs/FUNCTIONAL_SPECIFICATION.md): accepted course scope and browser architecture.
+- [Exercise tool atlas](docs/EXERCISE_TOOL_ATLAS.md): all 56 mathematical teaching contracts.
+- [Feature review](docs/FEATURE_REVIEW.md): accepted scope, with educational implementation still pending.
+- [Mathematical backend options](docs/MATH_BACKEND_OPTIONS.md): numerical, exact-algebra and optional C/WebAssembly considerations.
+- [Continuous](docs/research/CONTINUOUS_EXERCISE_AUDIT.md) and [Discrete](docs/research/DISCRETE_EXERCISE_AUDIT.md) audits, [external exercises](docs/research/EXTERNAL_EXERCISE_REFERENCES.md), and [slide inventory](docs/research/SLIDE_INVENTORY.json).
 
-The course decks/textbooks remain outside this repository. No application-wide software license has been selected. Raven and other supplied assets retain their own notices; see [third-party notices](THIRD_PARTY_NOTICES.md).
+The original course slides, worksheets and textbooks remain outside Git. Existing course and university assets retain their provenance. The earlier native C/Raven experiment is historical context; see the [native platform study](docs/history/PLATFORM_FEASIBILITY_NATIVE.md) and [third-party notices](THIRD_PARTY_NOTICES.md). No application-wide software license has been selected.
+
+The [cleanup record](docs/CLEANUP.md) identifies the native files removed from the active checkout, the recoverable local archive and the research retained for future contributors.

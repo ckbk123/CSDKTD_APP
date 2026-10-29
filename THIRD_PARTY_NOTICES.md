@@ -1,20 +1,20 @@
 # Third-party notices
 
-The GUI uses Raven, pinned to commit
-`c4410662723bf0eec633a36a7c2e4d69490325cf`, under Apache-2.0.
-Raven's upstream LICENSE, NOTICE and THIRD_PARTY.md describe its notices,
-including bundled font/image components:
-https://github.com/oscar-soirey/Raven/tree/c4410662723bf0eec633a36a7c2e4d69490325cf
+The current application is a static TypeScript/HTML/CSS browser scaffold.
+Raven, its bundled fonts and the native Vulkan renderer are no longer included
+in the active source or browser distribution. The earlier native experiment
+is recoverable in Git history at commit `a7302e8`.
 
-Distributions must include the upstream license and notices. The app does
-not bundle a Vulkan GPU driver. The existing university logo is separately
-identified in assets/README.md.
+The HCMUT logo retains the provenance described in [docs/ASSETS.md](docs/ASSETS.md).
+The application uses installed system fonts. No numerical or symbolic backend
+is installed yet; future candidates are in
+[docs/MATH_BACKEND_OPTIONS.md](docs/MATH_BACKEND_OPTIONS.md).
 
-The install directory includes full Raven, stb, Roboto and Roboto Mono
-license texts in licenses/, together with Raven's NOTICE, component table
-and the logo provenance. Raven's development headers and static libraries
-are not part of the application package.
+Development dependencies are pinned in `package-lock.json` and keep their
+upstream licenses in their installed packages. Vite's generated module-preload
+helper is distributed with the Vite MIT notice in
+`public/licenses/Vite-LICENSE.md` (copied to the browser build).
 
-No numerical or symbolic library is linked into this GUI scaffold yet.
-Future candidates and their upstream licenses are documented in
-docs/MATH_BACKEND_OPTIONS.md.
+No application-wide software license has been selected. Review the actual
+licenses and notices of every newly bundled numerical, plotting or symbolic
+dependency before adding it to the browser distribution.

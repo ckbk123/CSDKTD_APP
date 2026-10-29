@@ -1,8 +1,10 @@
-# Native mathematical libraries for later modules
+# Mathematical backend options for browser modules
 
-**Research date: 29 October 2026.** This is a future implementation recommendation. The entry GUI and blank submodule containers do not need a numerical or symbolic backend, and this research does not add one to the application.
+**Architecture revision 4, 29 October 2026. Library research date: 29 October 2026.** The active application is a static Vite/TypeScript browser application without a UI framework. Its first release supplies 56 independent lazy workspace scaffolds; their educational mathematics remains pending. Every future student calculation runs on the client. No numerical or symbolic dependency is selected by this document.
 
-C-callable libraries cover the necessary mathematical building blocks. The application still needs its own small SISO LTI model layer, exercise explanations and plotting logic. No single candidate below is a drop-in replacement for MATLAB plus Control System Toolbox.
+The recommended starting point is a small, stateless TypeScript mathematics layer under `src/shared/math/` when an implemented exercise needs it. It must specify coefficient order, model conventions, numerical errors and exact-algebra boundaries. Module state stays local to its synchronous mount; there is no shared mutable current system or persistent project model.
+
+The native-interface facts below are retained from the earlier research because selected algorithms may later be useful through a **math-only WebAssembly build**. A native C/Fortran/C++ library, a C wrapper or a successful desktop build does not establish browser compatibility. WebAssembly build feasibility, binary size, initialization, lifetime handling, license terms and numerical coverage all require evaluation. There are no Raven types or native-window APIs in the browser module interface, and none of these candidates currently runs in the app.
 
 ## Candidate comparison
 
@@ -14,9 +16,9 @@ C-callable libraries cover the necessary mathematical building blocks. The appli
 | FLINT, including the formerly separate Arb library | C library | Exact integer/rational polynomials and matrices; real/complex ball arithmetic, root isolation and matrix functions | Mathematical-expression parser/printer, course-specific model operations and explanation steps |
 | SymEngine | C++ implementation with a C wrapper | Symbolic expressions, arithmetic, differentiation and expansion through C-callable functions | Verify the exact C-wrapper coverage for each proposed operation; factorization, equivalence and control algorithms must not be assumed from the word “symbolic” |
 
-These are alternative layers or complementary components. The proposal is not to bundle all five.
+These are potential future algorithm sources, not approved browser dependencies. The proposal is not to bundle all five. The table describes native upstream capabilities; WebAssembly availability is not assumed.
 
-## What the official interfaces establish
+## Retained research: what the upstream interfaces establish
 
 ### Matrix foundation
 
@@ -32,13 +34,13 @@ The [SLICOT library index](https://www.slicot.org/objects/software/shared/libind
 - `MB05ND`: matrix exponential and integral, relevant to exact ZOH state conversion.
 - `AB04MD`: bilinear conversion. This is a different conversion from exact ZOH.
 
-See the [SB01BD routine documentation](https://www.slicot.org/objects/software/shared/doc/SB01BD.html) for input, workspace and status requirements. SLICOT is written in Fortran and depends on BLAS/LAPACK. A C application can call a selected bridge, but compiler ABI, integer sizes, character arguments and array layout require a tested integration. A Fortran implementation underneath a C interface does not require the student application code to become Fortran.
+See the [SB01BD routine documentation](https://www.slicot.org/objects/software/shared/doc/SB01BD.html) for input, workspace and status requirements. SLICOT is written in Fortran and depends on BLAS/LAPACK. A native C application can call a selected bridge, but compiler ABI, integer sizes, character arguments and array layout require tested integration. A browser integration would additionally need a proven WebAssembly toolchain and a narrow TypeScript adapter. No working SLICOT/WebAssembly bridge is established here.
 
 ### General numerical routines
 
 [GSL](https://www.gnu.org/software/gsl/) is a broad numerical library for C/C++. Its [polynomial solver](https://www.gnu.org/software/gsl/doc/html/poly.html) computes complex roots through a balanced companion-matrix QR method. The documentation explicitly notes reduced accuracy for multiple roots. It also provides matrices, eigensystems and ODE tools.
 
-GSL is a convenient numerical candidate if its license and packaging fit the project. It does not provide exact symbolic Mason expressions or a ready-made control-system workbench. Numerical root residuals, conditioning and solver failures still need application-level reporting.
+GSL is a numerical algorithm candidate if a future browser build, license and packaging fit the project. It does not provide exact symbolic Mason expressions or a ready-made control-system workbench. Numerical root residuals, conditioning and solver failures still need application-level reporting.
 
 ### Exact algebra and high precision
 
@@ -61,28 +63,38 @@ This is relevant to rational polynomial identities, factor reconstruction and re
 
 These are source-identification facts, not a complete distribution review. Record the exact pinned revision, bundled components, compiler runtimes and linkage/package choices before shipping. The project has not selected a mathematical dependency or project license in this document.
 
-## Recommended implementation path
+## Browser-first implementation path
 
-1. **Finish the shell without a math dependency.** Every module gets a baseline example, a content container and a lifecycle. There is no need to download or initialize a general numerical stack for empty pages.
-2. **Prototype one numerical service for the first implemented module.** Start with a C-facing API for scalar polynomial evaluation/roots, small matrix solves and eigenvalues. Compare an LAPACKE-based route with GSL under the project's licensing/build preferences. Select one initially rather than maintain two interchangeable backends prematurely.
-3. **Add model operations above that service.** The application owns coefficient order, transfer/state conventions, continuous/discrete metadata, exact delays, frequency evaluation and simulation. Exact ZOH needs a suitable matrix-exponential method; it cannot depend exclusively on an inverse of A because A may be singular.
-4. **Evaluate selected SLICOT routines when state/control design begins.** A tested pole-placement and transformation adapter may be more appropriate than implementing every numerical algorithm from scratch. The observer can use the appropriate dual pole-placement problem, with its sign/timing conventions verified separately.
-5. **Choose a separate exact-algebra route when Mason/representation work begins.** Compare a restricted exact rational-polynomial layer using FLINT with a SymEngine-backed expression layer. Include multi-symbol rational identities and reconstruction checks in the trial. Broad symbolic support should not be inferred from a handful of successful expansions.
+1. **Keep the shell mathematical-dependency free.** Eagerly load immutable catalogue metadata only. Import a workspace implementation when selected, then synchronously mount it into the current page. The 56 scaffolds do not demonstrate completed solvers.
+2. **Implement one client-side mathematical slice when its exercise is agreed.** Begin with stateless TypeScript inputs/results, explicit errors and reference cases. Selected evaluation, small matrices or plotting calculations may need little code; robust roots, exact algebra or matrix functions may justify a dependency. Do not assume every algorithm is either trivial or supplied by one package.
+3. **Keep the SISO model conventions in the application layer.** Coefficient order, continuous/discrete domain, delays, transform rules, sample period and numerical tolerances must remain explicit. Exact ZOH needs a suitable matrix-exponential method; it cannot rely exclusively on `A^-1` when A may be singular.
+4. **Evaluate browser libraries and optional C/WebAssembly only for a demonstrated need.** Compare actual operation coverage, correctness, download/initialization cost, memory ownership and license requirements. A small adapter may expose a selected native algorithm through WebAssembly. Build and test it in the browser before adopting it; a native API feature list is insufficient evidence.
+5. **Evaluate exact algebra separately from floating-point numerics.** Mason's symbolic identities need a defined rational/polynomial domain. Expansion alone does not prove factorization, multi-symbol rational equivalence, assumptions or complete CAS coverage. Compare against independently generated fixtures and return explicit unsupported/inconclusive results where necessary.
 
-Numerical algorithms can be shared without sharing lesson state. Each module owns its inputs, temporary matrices, solver workspaces and results. It calls reusable services with explicit arguments and receives results/errors. A backend should not retain a mutable “current system” shared by unrelated modules.
+A TypeScript adapter should hide any future WebAssembly-specific pointers, allocation and ABI details from lesson code. The public module lifecycle stays browser-native:
 
-The shell's `mount`/`unmount` contract is also the place to allocate and release module-owned workspaces later. Returning to a module should restore its baseline for the session behavior requested by the instructor. No saved-project requirement follows from using mathematical libraries.
+```ts
+mount({ container, signal }): void | (() => void)
+```
 
-## Independent modules do not imply isolated processes
+`mount` initializes local state synchronously and may return synchronous cleanup. A later lazy backend or asynchronous calculation starts within that visit, honors the signal, and rejects stale results before touching the DOM. The shell aborts the active signal and invokes cleanup before leaving or resetting; a superseded workspace import never mounts. Reset remounts from the baseline. There is no separate native `unmount` callback, C module host or per-tool static-library target in this interface.
 
-Separate C static libraries and private per-module state make changes easier to reason about. They do not provide memory isolation: a C out-of-bounds write in one linked module can still corrupt the process. Module boundaries should therefore be reinforced by narrow interfaces, ownership rules, compiler diagnostics and targeted tests as functionality is added. The requested single-window design does not require loading a separate DLL or spawning a process for every lesson.
+Backend-specific asynchronous initialization does not make `mount` return a promise. If initialization is necessary later, show a local loading/error state, register cleanup immediately, and publish results only while the visit remains current. Large client calculations may eventually use a worker after explicit evaluation; no server calculation is part of the product.
 
-Use each library's status/error handling through an adapter. In particular, avoid process-wide settings or an error path that terminates the whole application during a recoverable lesson calculation. Shared numerical thread pools/settings must be controlled by the application rather than changed unpredictably by each module.
+## Independent modules and shared services
+
+Each module owns its input values, temporary matrices, solver workspaces, comparison/reveal state and results for one visit. Shared helpers accept explicit arguments and return values or errors. They do not retain a mutable current plant/controller that couples tools. Workspaces live in the same browser page and are not security/process-isolation boundaries.
+
+Module styles stay scoped through CSS modules or the shell's `data-module="CR01"`-style root rather than global selectors. Event listeners, timers, observers and any future worker or WebAssembly workspace are released through the visit signal and returned cleanup. A math adapter must turn recoverable calculation failures into module feedback instead of corrupting another workspace or the shell.
+
+The first release has no accounts, persistence, save/load, project files, export or service worker. Browser execution does not itself make an application available offline: this static application has no service-worker/offline-cache feature in the initial scope.
 
 ## Verification and deployment gates
 
-For the first mathematical slice, validate a known polynomial, repeated/near roots, the mechanical state realization, ZOH with singular A, a controllability/observability example, and actual closed-loop/observer eigenvalues. For exact algebra, verify reconstruction and rational equivalence independently. Show exact, approximate and inconclusive results distinctly.
+When a mathematical module is implemented, validate a known polynomial, repeated/near roots, the mechanical realization, ZOH with singular A, controllability/observability, and actual closed-loop/observer eigenvalues as applicable. Exact algebra needs independent reconstruction and rational-equivalence checks. Distinguish exact, approximate and inconclusive outputs. The existing slide/worksheet examples define exercise targets, not a claim that the browser scaffolds compute them.
 
-No library above has been built, benchmarked or certified on this project's requested Windows 7/8/10/11, Linux or macOS targets during this research. Their language/interface portability does not establish compatibility of a particular prebuilt package. Check CPU instruction requirements, integer ABI, runtime dependencies, OS imports and thread settings. Measure package size, startup, memory and interaction latency on named machines; native code does not guarantee a tiny distribution.
+No native candidate above has been compiled to WebAssembly, integrated, benchmarked or certified for this browser application during this research. Verify compiler/runtime requirements, wasm32 integer/pointer assumptions, allocation and cleanup, and any threading requirements. Measure the shipped static assets, module/backend load and startup time, memory and interaction latency on named browsers and devices. Lazy workspaces should not pull a whole optional mathematical stack into the eager catalogue bundle.
 
-The existing [platform assessment](PLATFORM_FEASIBILITY.md) remains the baseline for those tests. The new entry shell demonstrates UI/navigation work only; it does not certify the eventual numerical dependencies or all target operating systems.
+Browser compatibility is determined by the emitted build, DOM/JavaScript/WebAssembly features actually used, and supported browser versions. It is not determined by the historical Windows/Linux/macOS Vulkan matrix. The earlier [native platform assessment](history/PLATFORM_FEASIBILITY_NATIVE.md) is retained for provenance. Vite build tooling runs on a development computer; students need a compatible browser for the delivered static application, with no C compiler, Raven or Vulkan SDK prerequisite.
+
+Use `npm run check` for TypeScript checking and `npm test` for the configured Vitest run; test files use `*.test.ts`. Passing shell/lifecycle checks establishes navigation behavior, not the correctness of future exercise algorithms or every possible browser. Add focused mathematical tests when actual calculation code is introduced.
