@@ -5,7 +5,7 @@
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
 - **Branch/worktree:** `codex/cf02-steady-state-7393`; `C:\Users\baokh\.codex\worktrees\cf02-steady-state-7393\CSDKTD APP`.
-- **PR:** not created yet. Prior DS01 PR #10 is submitted and preserved for coordinator review; corrections take priority.
+- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), draft pending browser verification. Prior DS01 PR #10 is submitted and preserved for coordinator review; corrections take priority.
 
 ## Audit before implementation
 
@@ -68,3 +68,5 @@ Checks on this checkpoint under bundled Node v24.22.1:
 - Mock-editor tests exercise result invalidation, source/prediction/reset, malformed and native-underflow input, immediate abort/late loading, initialization failure and new-mount baseline. They do not establish real MathLive functionality.
 
 Full application tests/build, real browser editing/keyboard/font/reset/fast-navigation/mobile evidence, PR creation and exact submitted commit remain unfinished. No shared dependency request is outstanding. Primary preview and shared browser remain untouched by this checkpoint.
+
+The initial full project run at `d6f3454` passed `npm test` (**297 tests / 19 files**) and `npm run build` (including type checks). The existing MathLive input chunk warning remains; no dependency or global build changes were made. Draft PR #18 is created and attached. Shared browser QA was busy (CR02); no browser evidence is claimed yet. A further zero-channel regression and equation-initialization cleanup refinement follow this checkpoint and require the final checks.

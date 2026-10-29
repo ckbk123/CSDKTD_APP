@@ -1,6 +1,6 @@
-# CF02 implementation notes (unfinished design)
+# CF02 implementation derivations
 
-This file preserves derivations for the active implementation, not completion evidence. The full TASK remains the contract.
+This file preserves derivations used by the implementation, not completion evidence. STATUS records actual checks and remaining verification. The full TASK remains the contract.
 
 ## Model and selected signal
 
@@ -20,11 +20,11 @@ Channel transfer numerators over Q:
 
 The reference type table applies to the comparator's reference channel. Physical error with h!=1 requires its own numerator. Example: baseline N=4,D=s(s+2),h=2 has comparator ramp limit .25 but physical ramp error asymptotically .5*t+.125.
 
-## Exact coefficient work still needed
+## Exact coefficient work
 
-The initial `parseLinear` prototype returns numeric [constant,s] pairs and passes its grammar fixtures. Before classifying low-frequency powers, retain exact rational coefficients from its decimal/fraction arithmetic. For example h=.8,N=10,D=s+2 gives exactly zero constant term in D+(h-1)N, while naive floating subtraction can leave a tiny residue and incorrectly predict ramp growth. Do not trim small nonzero coefficients to zero. A bounded private rational helper (e.g. reduced integer fractions with a declared bit budget) is appropriate; preserve parser behavior and fixtures while adding an exact-coefficient API. Read native controls with shared readNumericInput first, then retain valid decimal/exponent text when exact parameter algebra needs it. Scientific e notation remains forbidden in visual polynomial entry.
+`parseLinearExact` returns exact rational [constant,s] pairs; `parseLinear` remains a numeric wrapper for grammar fixtures. For example h=.8,N=10,D=s+2 gives exactly zero constant term in D+(h-1)N, while naive floating subtraction can leave a tiny residue and incorrectly predict ramp growth. No small nonzero coefficients are trimmed. The private rational helper reduces integer fractions with a 4096-bit bound. Native controls use shared readNumericInput first, then retain valid decimal/exponent text for exact parameter algebra. Scientific e notation remains forbidden in visual polynomial entry.
 
-A finite exact-rational resource bound must give useful feedback. Numerical simulation is a separately labelled approximation. Avoid losing nonzero values through underflow or normalization. Literal and arithmetic bounds currently tested by the prototype are not a certificate of exact cancellation.
+Resource bounds give visible feedback. Numerical simulation is a separately labelled approximation. Nonzero coefficient underflow is rejected, and normalization retains exact gain. Exact cancellation and a nearby nonzero remainder have separate regression fixtures.
 
 ## Stability and limits
 

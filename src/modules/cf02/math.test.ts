@@ -72,6 +72,14 @@ describe('CF02 exact signal algebra and final values', () => {
     expect(limit(m, 'reference', 'physical', 2, '0')).toMatchObject({ reason: 'zero-input' });
     expect(m.stability.kind).toBe('unstable');
   });
+  it('recognizes an identically zero physical channel without erasing comparator error', () => {
+    // P=2, H=1/2: y=2(r-y/2)=r, e_c=r/2.
+    const m = model('2s+4', 's+2', 0, '.5');
+    expect(limit(m, 'reference', 'physical', 2)).toMatchObject({ kind: 'finite', reason: 'zero-channel' });
+    expect(finite(limit(m, 'reference', 'physical', 2))).toBe('0');
+    expect(finite(limit(m, 'reference', 'comparator', 0))).toBe('1/2');
+    for (const p of trace(m, 'reference', 2, ONE, 5).points) expect(Math.abs(p.physical)).toBeLessThan(1e-10);
+  });
   it('distinguishes the disturbance and sensor channels and feedback sign', () => {
     const m = model();
     expect(finite(limit(m, 'disturbance', 'physical', 0))).toBe('-1');

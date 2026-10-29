@@ -175,7 +175,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
     numerator = api.createEquationInput({ label: 'Numerator N(s)', value: '4', signal, onChange: changed });
     pole = api.createEquationInput({ label: 'Finite pole factor F(s)', value: 's+2', signal, onChange: changed });
     equationGrid.replaceChildren(numerator.element, pole.element); nativeControls.forEach(control => { control.disabled = false; }); feedback.textContent = 'Baseline ready. Predict the unit-ramp comparator error, then reveal.';
-  }).catch(() => { if (!disposed && !signal.aborted) { loading.textContent = 'Equation controls could not load. Reset or reopen this tool to retry.'; feedback.textContent = 'Equation controls unavailable; no result was computed.'; } });
+  }).catch(() => {
+    numerator?.destroy(); pole?.destroy();
+    if (!disposed && !signal.aborted) { loading.textContent = 'Equation controls could not load. Reset or reopen this tool to retry.'; feedback.textContent = 'Equation controls unavailable; no result was computed.'; }
+  });
   const cleanup = (): void => { if (disposed) return; disposed = true; signal.removeEventListener('abort', cleanup); numerator?.destroy(); pole?.destroy(); root.remove(); };
   signal.addEventListener('abort', cleanup, { once: true }); if (signal.aborted) cleanup();
   return cleanup;
