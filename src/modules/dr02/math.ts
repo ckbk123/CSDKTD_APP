@@ -43,11 +43,16 @@ function polynomial(text: string): Polynomial {
       p = tidy(new Map([[0, value]]));
     }
     if (peek() === '^') {
-      i++; let sign = 1;
+      i++;
+      // Notation normalization supplies a delimited exponent. Never consume
+      // the following baseline digit as part of a TeX one-token superscript.
+      if (tokens[i++] !== '(') fail('Complete the integer power box.');
+      let sign = 1;
       if (peek() === '-' || peek() === '+') sign = tokens[i++] === '-' ? -1 : 1;
       const token = tokens[i++];
       const exponent = sign * Number(token);
       if (!token || !/^\d+$/.test(token) || Math.abs(exponent) > MAX) fail('Use integer powers from −6 to 6.');
+      if (tokens[i++] !== ')') fail('Complete the integer power box.');
       if (exponent < 0) {
         if (p.size !== 1 || p.get(1) !== 1) fail('Negative powers are supported for z only.');
         p = new Map([[exponent, 1]]);
@@ -132,16 +137,34 @@ function splitFraction(text: string): [string, string] {
   }
   return slash < 0 ? [text, '1'] : [text.slice(0, slash), text.slice(slash + 1)];
 }
+/** Keep exponent braces until their extent has been recorded; other invisible
+ * groups are not algebraic parentheses. Ambiguous numeric adjacency is rejected. */
+function polynomialNotation(text: string): string {
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === '^') {
+      const rest = text.slice(i + 1), braced = /^\{([+-]?\d+)\}/.exec(rest);
+      let exponent: string;
+      if (braced) { exponent = braced[1]; i += braced[0].length; }
+      else if (/^[0-9]/.test(rest)) { exponent = rest[0]; i++; }
+      else fail('Complete the power box with an integer. Put the whole signed exponent inside that box.');
+      if (/[0-9.]/.test(text[i + 1] ?? '')) fail('Separate a power from the following number with explicit ×. Keep every exponent digit inside the power box.');
+      result += `^(${exponent})`;
+    } else if (text[i] === '{' || text[i] === '}') fail('Use visible parentheses for grouping; standalone formatting braces are unsupported.');
+    else result += text[i];
+  }
+  return result;
+}
 export function parseTransfer(latex: string): Model {
   if (!latex.trim()) fail('Enter a transfer function.');
   if (latex.length > 1000) fail('Keep the expression under 1,000 characters.');
   let text = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:,|!|;|quad|qquad| )/g, '').replace(/\s/g, '')
     .replace(/\\(?:dfrac|tfrac)/g, '\\frac').replace(/\\(?:cdot|times)/g, '*').replace(/−/g, '-');
   text = text.replace(/^G\(z\)=/, '');
+  text = text.replace(/\\(?:mathrm|mathit|mathbf|mathsf|mathtt|text)\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}/g, '$1').replace(/\\mathrm([0-9])/g, '$1');
   if (/[eE]/.test(text)) fail('Enter decimal coefficients, such as 0.01. The visual editor treats e/E as symbols, so e/E input notation is unsupported.');
   const [n, d] = splitFraction(text);
-  const clean = (s: string) => s.replace(/\^\{([+-]?\d+)\}/g, '^$1').replace(/\{/g, '(').replace(/\}/g, ')');
-  const numerator = polynomial(clean(n)), denominator = polynomial(clean(d));
+  const numerator = polynomial(polynomialNotation(n)), denominator = polynomial(polynomialNotation(d));
   if (!denominator.size) fail('The denominator cannot be zero.');
   const leading = Math.max(...denominator.keys());
   if (numerator.size && Math.max(...numerator.keys()) > leading) fail('Improper transfer function: isolating y[k] requires future input u[k+r]. It cannot run as an ordinary causal delay recurrence.');

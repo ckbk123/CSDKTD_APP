@@ -13,6 +13,7 @@ function numberInput(label: string, value: string): { label: HTMLLabelElement; i
 }
 function numeric(input: HTMLInputElement, name: string, limit = 1e6): number {
   if (!input.value.trim() || !Number.isFinite(input.valueAsNumber) || Math.abs(input.valueAsNumber) > limit) throw new Error(`${name} must be a finite number with magnitude at most ${limit.toLocaleString()}.`);
+  if (input.valueAsNumber === 0 && /[1-9]/.test(input.value.split(/[eE]/)[0])) throw new Error(`${name} is too small to represent. Enter zero explicitly or a representable value.`);
   return input.valueAsNumber;
 }
 interface Row { k: number; t: number; u: number; y: number; zero: number }

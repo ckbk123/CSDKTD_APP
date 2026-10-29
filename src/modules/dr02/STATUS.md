@@ -1,7 +1,7 @@
 # DR02 implementation status
 
 - **Stage:** in-progress
-- **Remaining acceptance gate:** coordinator-owned signed visual 1/2 browser check; code and project checks pass.
+- **Remaining acceptance gates:** focused exponent browser correction/reverification; coordinator-owned signed visual 1/2 check and shared native-reader adaptation disposition.
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
@@ -100,3 +100,13 @@ All 45 module tests, 87 project tests, type checking and production build pass. 
 Review returned the valid editor spellings `-\frac12`, `\left(-\frac12\right)` and `G(z)=-\frac1{z-0.5}`. `splitFraction` now checks balanced parentheses and normalizes a leading unary sign sequence only when it applies to a complete fraction or complete outer group. It preserves the polynomial's ordinary precedence: `-2+1` remains −1, while `-(2+1)` is −3. Positive, negative, double-negative, braced, compact and grouped equivalents are tested, along with malformed signs, empty groups, unbalanced groups and incomplete fractions. A changed negative plant gives independently checked held-input samples 0, −1, −1.5, −1.75; a caller-state test applies and commits signed compact −1/2 as gain −0.5.
 
 The full common-spelling audit now passes 61 local tests and 103 project tests; type checking, production build and diff checks also pass. CR02's current interface checkpoint `d98baee63a1bee87f7c6bc0cc0820bbdb974ef81` is preserved separately. Stage remains canonical `in-progress` solely because the coordinator-owned signed visual fraction acceptance gate above is pending; no browser evidence for that gate is invented.
+
+## Reopened exponent-boundary correction (29 October 2026)
+
+The coordinator reopened this same claim/branch/PR after confirming that superscript braces and TeX one-token boundaries were lost at submitted `a8d544a`. CR03 is clean, pushed and checkpointed at `9546b57f5f3ea545485b2b7ed4c5cec04143a717`; its implementation/browser work is suspended during this review return. No submitted branch was rebased or replaced.
+
+`polynomialNotation()` now records a delimited exponent before tokenization. A true power-box `z^{-2}` remains a two-sample delay and `z^{+2}` remains a square. Bare `z^-2`/`z^+2` receive whole-power-box guidance. A following baseline number, including `z^{0}2+1`, `z^02+1` and `z^04`, is rejected with explicit multiplication/power-box guidance rather than absorbed into the exponent. The visibly separated product `1/(z^{0}×2+1)` is gain 1/3; braced `1/z^{02}` is a two-sample delay. Standalone invisible grouping braces are rejected with visible-parentheses guidance. Existing generated braced delay forms remain supported.
+
+The previously recorded font-wrapper gap is also corrected: numeric font wrappers, including the real-editor `\mathrm1`, `\frac{\mathrm{1}}{2}` and signed wrapped fractions, are accepted as their numeric values. Unsupported symbolic fonts remain outside the grammar. Native numeric controls now reject nonzero raw mantissas rounded to zero, while preserving `0`, `0e-999` and representable `1e-2`. The preserved baseline predates `src/shared/numeric-input.ts`; this is a tested equivalent local guard, with coordinator-owned shared-reader adaptation requested before integration. No unowned shared file was added and no main merge was used to obtain the API.
+
+Independent regressions cover causal braced signed powers, gain 1/3, braced exponent 02, ambiguous unbraced/split exponents, invisible grouping, numeric-font gains and changed recurrence, and native numeric zero/exponent/empty/underflow behavior. All **82 local tests in four files** pass. Full project/type/build and focused actual-browser checks remain to be rerun for this candidate; no new browser evidence is claimed at this checkpoint. The separately delegated signed visual ±1/2 acceptance gate remains coordinator-owned.

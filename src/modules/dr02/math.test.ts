@@ -55,7 +55,7 @@ describe('DR02 independently checked recurrence', () => {
   });
   it('z, inverse powers, common powers, factors and normalized models agree', () => {
     const m = parseTransfer('(2z+1)/(2z^2-z)');
-    for (const text of ['(z^-1+0.5z^-2)/(1-0.5z^-1)', '\\frac{2z+1}{z(2z-1)}', '\\left(2z+1\\right)/(2z^{2}-z)']) expect(parseTransfer(text)).toEqual(m);
+    for (const text of ['(z^{-1}+0.5z^{-2})/(1-0.5z^{-1})', '\\frac{2z+1}{z(2z-1)}', '\\left(2z+1\\right)/(2z^{2}-z)']) expect(parseTransfer(text)).toEqual(m);
     const f = forms(m);
     expect(parseTransfer(f.z)).toEqual(m);
     expect(parseTransfer(f.delay)).toEqual(m);
@@ -67,6 +67,28 @@ describe('DR02 independently checked recurrence', () => {
     expect(parseTransfer('\\frac1z')).toEqual({ a: [1], b: [0, 1] });
     expect(parseTransfer('\\frac{1}z')).toEqual({ a: [1], b: [0, 1] });
     for (const text of ['\\frac1', '\\frac123', '\\frac10']) expect(() => parseTransfer(text)).toThrow();
+  });
+  it('keeps true signed and multi-digit braced powers separate from baseline factors', () => {
+    expect(sequence(parseTransfer('z^{-2}'), 4)).toEqual([0, 0, 1, 1]);
+    expect(sequence(parseTransfer('\\frac1{z^{+2}+1}'), 5)).toEqual([0, 0, 1, 1, 0]);
+    expect(parseTransfer('\\frac1{z^{0}*2+1}')).toEqual({a:[1],b:[1/3]});
+    expect(parseTransfer('\\frac1{z^{02}}')).toEqual({a:[1],b:[0,0,1]});
+    expect(parseTransfer('\\frac1{z^2}')).toEqual({a:[1],b:[0,0,1]});
+  });
+  it.each(['z^-2','z^+2','\\frac1{z^-2}','\\frac1{z^+2+1}'])('rejects an unboxed sign instead of extending its TeX exponent: %s', text => {
+    expect(()=>parseTransfer(text)).toThrow(/whole signed exponent/);
+  });
+  it.each(['\\frac1{z^{0}2+1}','\\frac1{z^02+1}','\\frac1{z^04}','\\frac1{z^{0}4}','\\frac1{z^{2}0}','z^0.5'])('rejects a baseline number next to a power: %s', text => {
+    expect(()=>parseTransfer(text)).toThrow(/following number/);
+  });
+  it.each(['1{+2}','{z+2}z','\\frac1{{z+2}z}'])('rejects invisible grouping rather than adding visible parentheses: %s', text => {
+    expect(()=>parseTransfer(text)).toThrow(/visible parentheses/);
+  });
+  it('accepts numeric font wrappers without changing signed fractions or a delayed model', () => {
+    for (const text of ['\\frac{\\mathrm{1}}{2}','\\frac{1}{\\mathrm{2}}','\\frac\\mathrm12']) expect(parseTransfer(text)).toEqual({a:[1],b:[.5]});
+    expect(parseTransfer('-\\frac{\\mathrm{1}}{\\mathrm{2}}')).toEqual({a:[1],b:[-.5]});
+    expect(parseTransfer('\\mathrm1')).toEqual({a:[1],b:[1]});
+    expect(sequence(parseTransfer('\\frac{\\mathrm{1}}{z-\\mathrm{0.5}}'),4)).toEqual([0,1,1.5,1.75]);
   });
   it('preserves negative fraction signs across common visual groupings', () => {
     for (const text of ['-\\frac12', '(-\\frac12)', '-(\\frac12)', '\\left(-\\frac12\\right)', '\\frac{-1}2', '\\frac{1}{-2}', '+(-\\frac12)', '-+(\\frac12)']) expect(parseTransfer(text)).toEqual({a:[1],b:[-.5]});
@@ -104,7 +126,7 @@ describe('DR02 useful failures and resource bounds', () => {
   });
   it('explains future-input causality for improper forms in either notation', () => {
     expect(() => parseTransfer('(z^2+1)/(z+1)')).toThrow(/future input/);
-    expect(() => parseTransfer('1/z^-1')).toThrow(/future input/);
+    expect(() => parseTransfer('1/z^{-1}')).toThrow(/future input/);
   });
   it('reports coefficient underflow instead of silently replacing a nonzero plant by zero', () => {
     const tiny = `0.${'0'.repeat(200)}1`;

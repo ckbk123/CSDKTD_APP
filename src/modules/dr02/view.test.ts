@@ -22,6 +22,24 @@ function visit() {
   return { container, click, close: () => { controller.abort(); cleanup?.(); } };
 }
 describe('DR02 exercise state transitions', () => {
+  it.each([['0',0],['0e-999',0],['1e-2',.01],['1e-999',null],['',null]])('reads native amplitude %s without silently rounding a nonzero value to zero', (raw, value) => {
+    const {container,click}=visit();
+    const field=container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;
+    field.value='1';field.dispatchEvent(new Event('input'));click('Apply transfer function');
+    const amplitude=container.querySelector<HTMLInputElement>('[aria-label="Input amplitude / ramp slope"]')!;
+    amplitude.value=raw;amplitude.dispatchEvent(new Event('input'));click('Restart with this history');
+    const reveal=[...container.querySelectorAll('button')].find(b=>b.textContent==='Reveal arithmetic')!;
+    if(value===null){expect(reveal.disabled).toBe(true);expect(container.textContent).toContain(raw?'too small to represent':'must be a finite number');}
+    else {reveal.click();click('Commit sample & shift memory');expect(container.textContent).toContain(`Committed y[0] = ${value}`);}
+  });
+  it('invalidates a previous model when copied exponent boundaries are ambiguous', () => {
+    const {container,click}=visit();click('Reveal arithmetic');
+    const field=container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;
+    field.value='\\frac1{z^{0}2+1}';field.dispatchEvent(new Event('input'));click('Apply transfer function');
+    expect(container.textContent).toContain('following number');
+    expect(container.querySelector('[aria-label="Transfer function in z"]')).toBeNull();
+    expect([...container.querySelectorAll('button')].find(b=>b.textContent==='Commit sample & shift memory')?.disabled).toBe(true);
+  });
   it('applies and commits a signed compact visual fraction as a negative gain', () => {
     const { container, click } = visit();
     const field=container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;
