@@ -26,6 +26,8 @@ describe('two-state feedback lesson', () => {
     const v = open(), fields = v.root.querySelectorAll('textarea'); fields[0].value = String.raw`A=\begin{bmatrix}0&1\\0&0\end{bmatrix}`;
     fields[3].value = String.raw`q(s)=s^2+\frac{0.0000001}{10000000}s+\frac{0.0000001}{10000000}`;
     fields[0].dispatchEvent(new Event('input')); fields[3].dispatchEvent(new Event('input')); v.action('apply').click(); v.action('reveal').click(); expect(v.root.textContent).toContain('10^{-14}');
+    v.set('k1', '0'); v.set('k2', '0'); v.set('n', '0'); v.action('check').click(); expect(v.root.textContent).toContain('Recheck both matching equations');
+    v.set('k1', '1e-14'); v.set('k2', '1e-14'); v.set('n', '1e-14'); v.action('check').click(); expect(v.root.textContent).toContain('Correct feedback and tracking conclusion');
   });
   it('constructs rank, checks a genuine attempt, reveals both pole and tracking results', () => {
     const v = open(); expect(v.root.textContent).not.toContain('Actual eigenvalues');

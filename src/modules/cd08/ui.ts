@@ -13,7 +13,7 @@ const format = (v: number): string => plain(v).replace(/e([+-]?\d+)/, (_, expone
 function tex(v: number): string { const parts = plain(v).split('e'); return parts.length === 1 ? parts[0] : `${parts[0]}\\times10^{${Number(parts[1])}}`; }
 const matrixTex = (a: readonly number[], columns: number) => `\\begin{bmatrix}${a.map((v, i) => `${tex(v)}${i === a.length - 1 ? '' : (i + 1) % columns ? '&' : '\\\\'}`).join('')}\\end{bmatrix}`;
 function button(label: string, action: string): HTMLButtonElement { const e = node('button', label); e.type = 'button'; e.dataset.action = action; return e; }
-const matches = (a: number, b: number) => Math.abs(a - b) <= 1e-7 * Math.max(1, Math.abs(b));
+const matches = (a: number, b: number) => b === 0 ? a === 0 : Math.abs(a - b) <= 1e-7 * Math.abs(b);
 
 export const mount: ModuleMount = ({ container, signal }) => {
   const root = node('div'); root.className = 'feedback-tool';

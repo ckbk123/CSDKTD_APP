@@ -43,6 +43,7 @@ Original decks were not reinspected. Source anchors remain TASK/atlas and the co
 - Independent free response and state-coordinate transform S=diag(2,3) preserve y/u and map x/K consistently. C=[0,1] retains valid K but has no static DC tracking gain.
 - Noncanonical unstable plant A=[[1,2],[3,4]], B=[1,−1], C=[1,2], q=s²+4s+5 gives K=[−21.5,−30.5], N=2.5. Independent matching equations k1−k2=9 and 6k1−4k2=−7; steady x=[−3,2], u=−1 gives Ax+Bu=0 and Cx=1.
 - A tiny-gain double integrator preserves K,N≈10⁻¹⁴ and the forced output≈5×10⁻¹⁷ at t=.1 without equilibrium cancellation.
+- Prediction checks use relative tolerance10⁻⁷ for nonzero gains and exact equality for zero. A zero prediction does not pass for a tiny nonzero gain; the tiny-gain UI regression checks both the rejected zero attempt and accepted native exponent input.
 - Accuracy review caught A=diag(10⁻⁶,−2), B=[3,1], C=[1,0], desired constant10⁻³⁰ producing actual≈5.05783×10⁻²² under a former tolerance floor. The floor was removed; a regression now requires explicit accuracy rejection. Small magnitude alone is not rejected.
 
 ## Verification and recovery
