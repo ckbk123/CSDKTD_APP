@@ -1,6 +1,6 @@
 import { frequencySamples, response, type Complex, type Construction, type Point, type Response } from './nyquist';
 export interface Prediction { readonly source: Complex; readonly guess: Complex }
-const fmt = (n: number) => Number(Math.abs(n) < 1e-12 ? 0 : n.toPrecision(6)).toString();
+const fmt = (n: number) => Number(n.toPrecision(6)).toString();
 const finiteValue = (r: Response): Complex | undefined => r.kind === 'value' ? r.value : undefined;
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', cls = ''): HTMLElementTagNameMap[K] { const n = document.createElement(tag); n.textContent = text; if (cls) n.className = cls; return n; }
 function picture(label: string, width = 420, height = 350) {

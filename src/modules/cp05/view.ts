@@ -9,7 +9,7 @@ import { makePlots, type Prediction } from './plotting';
 import './workspace.css';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', cls = ''): HTMLElementTagNameMap[K] { const n = document.createElement(tag); n.textContent = text; if (cls) n.className = cls; return n; }
-const fmt = (n: number) => Number(Math.abs(n) < 1e-12 ? 0 : n.toPrecision(8)).toString();
+const fmt = (n: number) => Number(n.toPrecision(8)).toString();
 const nf = (n: number) => { const p = fmt(n).split('e'); return p.length > 1 ? `${p[0]}\\times10^{${Number(p[1])}}` : p[0]; };
 const complex = (z: Complex) => `${nf(z.re)}${Number(fmt(z.im)) < 0 ? '-' : '+'}${nf(Math.abs(z.im))}j`;
 const description = (r: Response) => r.kind === 'undefined' ? r.message : r.phase === null ? `|L|≈${fmt(r.magnitude)}; phase is undefined at a zero (or below numerical resolution); dB tends to−∞.` : `|L|≈${fmt(r.magnitude)}; ${fmt(r.db!)}dB; principal phase≈${fmt(r.phase * 180 / Math.PI)}°.`;

@@ -43,6 +43,12 @@ describe('CP05 contour/prediction/frequency exercise wiring', () => {
     const t = open(); t.button('Removable original point').click(); t.prepare(); t.change('Bode frequency ω (rad/s)', '0'); t.reveal();
     expect(t.container.textContent).toContain('original N/D is still undefined'); expect(t.container.querySelector('[aria-label="Finite removable extension"]')!.textContent).toContain('1+0j'); t.close();
   });
+  it('reports a small nonzero response without replacing it by displayed zero', () => {
+    const t = open(); t.change('Loop numerator N(s)', '.00000000000001'); t.change('Loop denominator D(s)', 's+1'); t.prepare(); t.reveal();
+    // Independently: 10^-14/(1+j)=5*10^-15-j5*10^-15, magnitude=sqrt(2)*5*10^-15.
+    expect(t.container.querySelector('[aria-label="Selected mapped coordinates"]')!.textContent).toContain('5\\times10^{-15}-5\\times10^{-15}j');
+    expect(t.container.textContent).toContain('|L|≈7.0710678e-15'); expect(t.container.textContent).toContain('principal phase≈-45°'); t.close();
+  });
   it('updates every sample cursor without treating off-axis arcs as frequency evaluations', () => {
     const t = open(); t.prepare(); t.reveal(); const max = t.field<HTMLInputElement>('Contour sample index').max;
     t.change('Contour sample index', String(Number(max) - 64)); expect(t.container.textContent).toContain('Contour part: closing outer semicircle'); expect(t.container.textContent).toContain('off-axis arc point');
