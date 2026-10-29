@@ -47,7 +47,7 @@ describe('CS03 complete cubic workspace', () => {
     click(root, 'Reverse gain polarity'); expect(root.querySelector('.c-answer')).toBeNull(); click(root, 'Reveal derivation'); expect(root.querySelector('.c-answer')!.textContent).toBe('-70 < K < 0');
   });
   it('handles all-real and empty sets without fake finite endpoints', async () => {
-    const { root } = await open(); click(root, 'Gain-independent experiment'); const kind = root.querySelector('select')!; kind.value = 'all'; kind.dispatchEvent(new Event('change'));
+    const { root } = await open(); click(root, 'Gain-independent experiment'); edit(scalar(root, 0), '0e-999'); const kind = root.querySelector('select')!; kind.value = 'all'; kind.dispatchEvent(new Event('change'));
     expect(answer(root, 0).parentElement!.hidden).toBe(true); click(root, 'Check interval and reveal'); expect(root.querySelector('.c-answer')!.textContent).toBe('All real K');
     edit(root.querySelector('textarea')!, 's^3+s'); click(root, 'Reveal derivation'); expect(root.querySelector('.c-answer')!.textContent).toContain('Empty set'); expect(root.textContent).toContain('division by a is not performed');
   });
@@ -63,6 +63,8 @@ describe('CS03 complete cubic workspace', () => {
   });
   it('clears stale answers and distinguishes visual grammar, numeric and window failures', async () => {
     const { root } = await open(); click(root, 'Reveal derivation'); edit(scalar(root, 1), '1e-999'); expect(root.textContent).toContain('finite manual K'); expect(root.querySelectorAll('svg')).toHaveLength(0);
+    edit(scalar(root, 1), '0e-999'); expect(root.textContent).toContain('All roots at K = 0'); expect(root.querySelectorAll('svg')).toHaveLength(2);
+    edit(scalar(root, 1), '1e-2'); expect(root.textContent).toContain('All roots at K = 1/100'); expect(root.querySelectorAll('svg')).toHaveLength(2);
     edit(scalar(root, 1), '0'); expect(root.querySelectorAll('svg')).toHaveLength(2); edit(scalar(root, 2), '100'); expect(root.textContent).toContain('minimum < maximum');
     edit(scalar(root, 2), '-10'); edit(root.querySelector('textarea')!, 's^3+1e-2'); expect(root.querySelector('.c-answer')).toBeNull(); click(root, 'Reveal derivation'); expect(root.textContent).toContain('e notation is unsupported');
     edit(root.querySelector('textarea')!, '\\placeholder{}'); click(root, 'Reveal derivation'); expect(root.textContent).toContain('Complete the denominator');

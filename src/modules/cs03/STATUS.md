@@ -84,3 +84,6 @@ The full current tree passes npm test:194/194 across13files, including60owned te
 
 Endpoint layout checkpoint: each visual bound now shares a group with its own inclusion selector. The answer grid uses a240pxminimum below the available width, respecting the shared editor's210pxdesktop minimum while collapsing on phones. This prevents field overlap at intermediate widths without changing the shell or shared styles.60/60module tests and the production build/type check pass; actual viewport evidence is still pending. No QA request is active during the current order.
 
+
+Current native-number fixtures also explicitly verify0e-999 as intentionalzero for both g and selectedK,1e-2 as exact selecteddecimal1/100, and1e-999 as rejected nonzero underflow. The UI regression checks the computed gain heading and all-real g=0 outcome.60/60module tests pass. This test-only checkpoint leaves the rebuilt browser implementation unchanged; the DP03→DP04→coordinatorDP02 order remains pending and no acquisition is active.
+
