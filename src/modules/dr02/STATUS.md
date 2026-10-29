@@ -13,6 +13,7 @@
 - `view.ts`, `math.ts`, and scoped `workspace.css` implement the editable TF, linked forms, recurrence, history registers, term highlighting, prediction/reveal/commit and zero-state comparison.
 - 31 local tests passed (27 math/parser tests plus four caller-state/lifecycle tests). Type checking passed. Full suite passed at the previous implementation checkpoint (69 tests); repeat after latest UI/lifecycle tests.
 - Browser QA is pending: DP02 held the shared reservation at the first attempt. No interactive-editor claim yet.
+- **Paused at the user's request (29 October 2026):** implementation checkpoint `3a9331d` is pushed. Later local parser hardening rejects adjacent malformed decimals (`1.2.3`); that final edit and its added fixture have not been rerun. The last full suite passed 73 tests, local suite 31 tests, type check and production build passed before that final edit. Real-browser QA and final submission remain incomplete. No browser reservation was acquired. Worker preview on port 8792 is being stopped; primary port 8787 was untouched. Preserve this active claim and worktree for deliberate resumption.
 
 ## Remaining acceptance work
 

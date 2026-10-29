@@ -68,7 +68,7 @@ describe('DR02 independently checked recurrence', () => {
   });
 });
 describe('DR02 useful failures and resource bounds', () => {
-  it.each(['', 'NaN', 'Infinity', 's+1', 'sin(z)', '1/(0)', 'z^7', 'z^0.5', '(z+1)^-1', '1/(z^-6+z^6)', '1/(1e-14z+1)', '1/0.00000001', 'z+', '1//2', '\\frac{}{z}', '\\frac{1}{z', 'z'.repeat(1001)])('rejects malformed/unsupported model %s', text => {
+  it.each(['', 'NaN', 'Infinity', 's+1', 'sin(z)', '1/(0)', 'z^7', 'z^0.5', '(z+1)^-1', '1/(z^-6+z^6)', '1/(1e-14z+1)', '1/0.00000001', 'z+', '1//2', '1.2.3', '\\frac{}{z}', '\\frac{1}{z', 'z'.repeat(1001)])('rejects malformed/unsupported model %s', text => {
     expect(() => parseTransfer(text)).toThrow();
   });
   it('explains future-input causality for improper forms in either notation', () => {

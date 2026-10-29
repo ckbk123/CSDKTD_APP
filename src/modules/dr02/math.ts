@@ -59,7 +59,7 @@ function polynomial(text: string): Polynomial {
   }
   function product(): Polynomial {
     let p = signed();
-    while (peek() === '*' || peek() === '(' || peek() === 'z' || /^(?:\d|\.)/.test(peek() ?? '')) {
+    while (peek() === '*' || peek() === '(' || peek() === 'z') {
       if (peek() === '*') i++;
       p = multiply(p, signed());
     }
