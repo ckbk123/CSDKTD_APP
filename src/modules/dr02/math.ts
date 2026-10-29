@@ -89,10 +89,16 @@ function unwrap(text: string): string {
   return text;
 }
 function splitFraction(text: string): [string, string] {
-  if (text.startsWith('\\frac')) {
+  text = unwrap(text);
+  if (/^\\frac(?=[{0-9])/.test(text)) {
     let i = 5;
     function group(): string {
-      if (text[i++] !== '{') fail('Complete the numerator and denominator boxes.');
+      // MathLive omits braces around single-token arguments, e.g. \\frac12.
+      if (text[i] !== '{') {
+        if (/[0-9z]/.test(text[i] ?? '') && text[i] !== undefined) return text[i++];
+        fail('Complete the numerator and denominator boxes.');
+      }
+      i++;
       const start = i; let depth = 1;
       while (i < text.length && depth) { if (text[i] === '{') depth++; if (text[i] === '}') depth--; i++; }
       if (depth) fail('Complete the fraction.');
@@ -102,7 +108,6 @@ function splitFraction(text: string): [string, string] {
     if (i !== text.length) fail('Enter one fraction with polynomial numerator and denominator.');
     return [n, d];
   }
-  text = unwrap(text);
   let depth = 0, slash = -1;
   for (let i = 0; i < text.length; i++) {
     depth += text[i] === '(' ? 1 : text[i] === ')' ? -1 : 0;

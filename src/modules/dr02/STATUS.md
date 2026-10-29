@@ -1,6 +1,6 @@
 # DR02 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
@@ -33,7 +33,7 @@ The starting workspace was a blank synchronous mount with metadata and no local 
 
 ## Independent mathematical fixtures
 
-`math.test.ts` contains 30 parser/mathematics cases; `view.test.ts`, `workspace.test.ts`, and `workspace-import-failure.test.ts` add eight caller-state/lifecycle/error-path cases. The latter mock the equation view or rendering and are not offered as interactive-editor evidence.
+`math.test.ts` contains 31 parser/mathematics cases; `view.test.ts`, `workspace.test.ts`, and `workspace-import-failure.test.ts` add eight caller-state/lifecycle/error-path cases. The latter mock the equation view or rendering and are not offered as interactive-editor evidence.
 
 - Baseline: b = 1−a for the entered rounded numbers, so the independently derived held-input answer is y[k] = 1−aᵏ. Tests check eleven samples and the course's first three nonzero rounded values.
 - Changed history: the difference from zero history equals (2a+3b)aᵏ for stored y[−1]=2, u[−1]=3. The TF is unchanged.
@@ -63,7 +63,7 @@ Local screenshots (outside tracked source): `C:/Users/baokh/.codex/visualization
 
 ## Delivery and remaining boundaries
 
-No accepted bounded exercise work remains. Independent integration review is pending. Light-theme rendering and browsers other than the in-app Chromium were not separately exercised; styling uses the shared light/dark tokens. No shared API/dependency request, version bump, main merge or deployment was made. Generated build/dependency files and screenshots are excluded from commits.
+The coordinator returned a compact-fraction input compatibility issue; its correction and PR delivery are tracked below. Independent integration review is pending. Light-theme rendering and browsers other than the in-app Chromium were not separately exercised; styling uses the shared light/dark tokens. No shared API/dependency request, version bump, main merge or deployment was made. Generated build/dependency files and screenshots are excluded from commits.
 
 Early checkpoints: audit `05a13bd`, implementation `3a9331d` (pushed before interruption), user-requested pause checkpoint `39b6a99`. The resumed worker completed the remaining numerical/display hardening and browser verification. The branch/worktree and submitted claim retain the final deliverable for the integration owner.
 
@@ -76,3 +76,9 @@ The coordinator reported 2,880 independent first-order/history comparisons passi
 Regression coverage explicitly forces an active view mount to append partial content and throw, checks that only the connected recovery alert remains, forces abort during a failed mount, verifies active import rejection feedback, verifies import rejection after navigation stays empty, and retains the late-successful-import-after-abort check. The normal equation view and mathematics are unchanged. No new browser reservation/session was needed for this forced error-path regression; the prior production browser evidence remains as recorded above, and no QA reservation is held by this worker.
 
 After this correction: `npm run check`, all 38 DR02 tests, all 80 project tests, `npm run build`, and `git diff --check` pass. The existing MathLive build-size warning remains. The submitted claim was initially locked against updates (`INACTIVE_CLAIM`). The coordinator subsequently reopened the same claim for this owner/token/branch/worktree using the tested coordinator transition, retaining prior submission evidence in `reopenHistory`. The worker will update and re-submit the final checked/pushed branch head through the ordinary helper; its exact final delivery SHA is recorded in that claim. No new claim or branch was created and the original review evidence remains above.
+
+## Compact fraction and PR follow-up (29 October 2026)
+
+The coordinator reopened DR02 for actual-editor compatibility: MathLive can emit `\frac12` for a visual 1/2. The local parser now accepts single-token fraction arguments, mixed braced/unbraced forms, and an outer parenthesized fraction. Tests independently check gain 0.5, a delayed unit gain, and the normalized denominator for 1/(z−0.5); incomplete, extra-token and zero-denominator compact forms still fail. All 39 module tests and type checking passed. Production-browser 1/2 entry and final full checks are pending.
+
+The revised human goal requires one GitHub PR per module and continued queue work after submission. No existing DR02 PR was found. The GitHub connector's create-PR action returned `403 Resource not accessible by integration`; the worker will use the signed-in browser fallback when shared QA is available, then record/attach the resulting PR URL. No PR creation success is claimed yet.

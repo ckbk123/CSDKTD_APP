@@ -61,6 +61,13 @@ describe('DR02 independently checked recurrence', () => {
     expect(parseTransfer(f.delay)).toEqual(m);
     expect(f.recurrence).toContain('0.5y[k-1]');
   });
+  it('accepts compact and mixed fraction arguments emitted by the visual editor', () => {
+    for (const text of ['\\frac12', '\\frac{1}2', '\\frac1{2}', '\\left(\\frac12\\right)']) expect(parseTransfer(text)).toEqual({ a: [1], b: [.5] });
+    expect(parseTransfer('G(z)=\\frac1{z-0.5}')).toEqual({ a: [1, -.5], b: [0, 1] });
+    expect(parseTransfer('\\frac1z')).toEqual({ a: [1], b: [0, 1] });
+    expect(parseTransfer('\\frac{1}z')).toEqual({ a: [1], b: [0, 1] });
+    for (const text of ['\\frac1', '\\frac123', '\\frac10']) expect(() => parseTransfer(text)).toThrow();
+  });
   it('physical ramp uses kT and period is not a solver step', () => {
     expect(sample('ramp', 2, 3, .2)).toBeCloseTo(1.2, 12);
     expect(sample('impulse', 2, 3, .2)).toBe(0);
