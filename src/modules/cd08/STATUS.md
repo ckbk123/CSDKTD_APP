@@ -1,6 +1,6 @@
 # CD08 implementation status
 
-- **Stage:** in-progress — coordinator reopened PR20 for scoped visual-spacing and narrow-plot corrections. Corrections/local tests/type pass; focused browser and final combined checks pending.
+- **Stage:** implemented — scoped coordinator corrections,69 module tests/type and focused production-browser checks pass; independent integration review pending. Final clean revision is recorded by the claim/PR.
 - **Assessed:** 29 October 2026; contribution based on primary main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5).
 - **Ownership:** `src/modules/cd08/**`; [TASK.md](TASK.md), atlas CD08 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -10,7 +10,13 @@
 
 ## Requirement-to-evidence audit
 
-Review return,29 October2026: the coordinator independently checked core mathematics (192 placements,640 analytic traces,55,680 scalar checks;58 tests/type) and requested two localized corrections. The parser now inspects TeX fraction/exponent argument boundaries before deleting explicit spacing atoms, rejecting unbraced spacing arguments while preserving ordinary literal whitespace and braced spacing. Eleven focused regressions pass (69 module tests total). Each plot now has a keyboard-focusable local scroll region and a500px minimum SVG width, preserving14px axis labels on phones. Focused actual-editor rejection/recovery, narrow scrolling and final checks remain pending at this checkpoint. DD07 was checkpointed separately at25624a2 before this priority return; no submitted branch was rebased/merged.
+Review return,29 October2026: the coordinator independently checked core mathematics (192 placements,640 analytic traces,55,680 scalar checks;58 tests/type) and requested two localized corrections. The parser now inspects TeX fraction/exponent argument boundaries before deleting explicit spacing atoms, rejecting unbraced spacing arguments while preserving ordinary literal whitespace and braced spacing. Eleven focused regressions pass (69 module tests total). Each plot now has a keyboard-focusable local scroll region and a500px minimum SVG width, preserving14px axis labels on phones. DD07 was checkpointed separately at25624a2 before this priority return; no submitted branch was rebased/merged.
+
+Focused correction evidence: all six unbraced fraction-spacing cases also reject inside a matrix cell; four target-spacing cases reject. Controls retain ordinary `\frac 1 2`, braced `\frac{1\,}{2}` / `\frac{\,1}{\;2}` / `\frac{1}{2\,}` and `s^{\,2}+6s+8` / literal-space exponent. Actual MathLive command entry created a spacing-only power argument with2 visibly outside the power; applying rejects it. Restoring and entering a proper square through the power button recovers K=[6,3],N8 and modes−4,−2. The clipboard paste control reported a target mismatch, so it was abandoned and its temporary test clipboard cleared; no clipboard-injection proof is claimed.
+
+The same verified private per-chat IAB context and own preview8997 were used. At390×844, document client/scroll widths375/375; focused plot viewport285px/content500px/SVG500px, with native ArrowRight scrolling to146.5px and readable14px axis text. Four plots scroll independently and the table retains its local region. Console error/warning log empty. Local Escape capture closes the keyboard; Reset removes plots and closes all four keyboards. Override reset to1280×720; own temporary tab/preview closed. Coordinator-owned upstream Escape adaptation is separate and must be rechecked on integration; this preserved branch was not merged/rebased to acquire it.
+
+Correction screenshots outside Git: `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd08-spacing-rejection.jpg` and `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd08-phone-rework.jpg`. Final delivery uses69 module/413 combined tests, `npm run check`, `npm run build` (existing MathLive chunk warning) and clean diff/HEAD checks; the claim and PR name that exact tested revision. No solver change or repeated large-grid claim is included in this correction.
 
 | Accepted requirement | Implemented evidence |
 |---|---|
