@@ -78,6 +78,8 @@ describe('DF04 independent physical/weighted comparison fixtures', () => {
     expect(run.terminal / Math.exp(-30)).toBeCloseTo(1, 12);
     const repeated = simulate({ gain: 1, tau: 0.01 }, { ...task, initial: 1, horizon: 1.5 }, { ...fixed, period: 0.3, fixedGain: 0 });
     expect(repeated.holds).toHaveLength(5); expect(repeated.terminal / Math.exp(-150)).toBeCloseTo(1, 12);
+    const longHorizon = simulate({ gain: 1, tau: 0.01 }, { ...task, initial: 1, horizon: 60 }, { ...fixed, period: 0.3, fixedGain: 0 });
+    expect(longHorizon.holds).toHaveLength(200); expect(longHorizon.holds.every(hold => hold.weight <= 0.3)).toBe(true);
   });
   it('rejects invalid data, impossible redesign, numerical conditioning and work limits', () => {
     for (const bad of [{ gain: 0, tau: 1 }, { gain: 1, tau: NaN }, { gain: 21, tau: 1 }]) expect(() => validatePlant(bad)).toThrow();

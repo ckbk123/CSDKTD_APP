@@ -83,7 +83,7 @@ export function simulate(plant: Plant, task: Task, spec: CaseSpec): Run {
     const time = index * spec.period;
     if (time >= t.horizon) break;
     if (index === MAX_INTERVALS) fail('Use at most 2000 held intervals per case. Increase T or reduce the common horizon.');
-    const end = Math.min((index + 1) * spec.period, t.horizon), weight = end - time;
+    const end = Math.min((index + 1) * spec.period, t.horizon), weight = Math.min(spec.period, t.horizon - time);
     const error = finiteAmplitude(t.reference - output), control = finiteAmplitude(model.gain * error);
     const nextOutput = heldFlow(p, output, control, weight);
     const contribution: Indices = { raw: error * error, ise: weight * error * error, iae: weight * Math.abs(error), itae: weight * time * Math.abs(error), effort: weight * control * control };
@@ -102,5 +102,5 @@ export function physicalOutputAt(run: Run, time: number): number {
   if (!Number.isFinite(time) || time < 0 || time > run.task.horizon) fail('Choose a physical time inside the common horizon.');
   if (time === run.task.horizon) return run.terminal;
   const index = Math.min(Math.floor(time / run.spec.period), run.holds.length - 1), hold = run.holds[index];
-  return heldFlow(run.plant, hold.output, hold.control, Math.max(0, time - hold.time));
+  return heldFlow(run.plant, hold.output, hold.control, Math.min(hold.weight, Math.max(0, time - hold.time)));
 }
