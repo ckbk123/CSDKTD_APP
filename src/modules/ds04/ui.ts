@@ -7,7 +7,7 @@ import './workspace.css';
 function element<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
   const out = document.createElement(tag); if (text !== undefined) out.textContent = text; if (className) out.className = className; return out;
 }
-const fmt = (n: number) => Math.abs(n) < 1e-13 ? '0' : n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 8 });
+const fmt = (n: number) => n === 0 ? '0' : n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 8 });
 function polynomial(p: Polynomial): string {
   let out = '';
   for (let i = 2; i >= 0; i--) {

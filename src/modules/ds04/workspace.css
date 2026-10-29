@@ -21,6 +21,7 @@
 [data-module="DS04"] th { padding: 9px; border: 1px solid var(--line); text-align: left; font-weight: normal; }
 [data-module="DS04"] .g-boundary { margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
 [data-module="DS04"] figure { margin: 16px 0; min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
+[data-module="DS04"] .g-locus { max-width: 560px; }
 [data-module="DS04"] figcaption { font-weight: 550; }
 [data-module="DS04"] svg { display: block; width: 100%; height: auto; }
 [data-module="DS04"] svg text { font-size: 13px; fill: var(--muted); }

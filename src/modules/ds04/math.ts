@@ -125,11 +125,11 @@ export function gainRegions(model: Model) {
   return { critical, regions, stable: regions.filter(r => r.stable), identities: conditions.filter(q => !q.constant.n && !q.slope.n).map(q => q.name) };
 }
 export interface Complex { readonly re: number; readonly im: number }
-export function polynomialRoots(a: number, b: number, c: number) {
+export function polynomialRoots(a: number, b: number, c: number, exactNormalizedDiscriminant?: number) {
   if (a === 0) return b !== 0 ? { finite: [{ re: -c / b, im: 0 }], atInfinity: 1, identicallyZero: false }
     : { finite: [], atInfinity: c === 0 ? 0 : 2, identicallyZero: c === 0 };
   b /= a; c /= a;
-  const discriminant = b * b - 4 * c;
+  const discriminant = exactNormalizedDiscriminant ?? b * b - 4 * c;
   if (!Number.isFinite(discriminant)) throw new Error('The numerical roots exceed the conditioning limit; choose a gain farther from the algebraic singularity.');
   if (discriminant < 0) return { finite: [{ re: -b / 2, im: Math.sqrt(-discriminant) / 2 }, { re: -b / 2, im: -Math.sqrt(-discriminant) / 2 }], atInfinity: 0, identicallyZero: false };
   const q = -.5 * (b + (b < 0 ? -1 : 1) * Math.sqrt(discriminant));
@@ -137,8 +137,17 @@ export function polynomialRoots(a: number, b: number, c: number) {
 }
 export function analyze(model: Model, gain: number | Rational) {
   if (typeof gain === 'number' && (!Number.isFinite(gain) || Math.abs(gain) > 100)) throw new Error('Choose a finite K in [-100,100].');
-  const p = model.denominator.map((d, i) => typeof gain === 'number' ? numberOf(d) + gain * numberOf(model.numerator[i]) : numberOf(plus(d, times(gain, model.numerator[i]))));
-  const [c, b, a] = p, roots = polynomialRoots(a, b, c), radii = roots.finite.map(z => Math.hypot(z.re, z.im));
+  let k: Rational;
+  if (typeof gain === 'number') {
+    const [mantissa, exponent = '0'] = String(gain).split('e'), places = (mantissa.split('.')[1]?.length ?? 0) - Number(exponent);
+    const digits = BigInt(mantissa.replace('.', ''));
+    k = places >= 0 ? rational(digits, 10n ** BigInt(places)) : rational(digits * 10n ** BigInt(-places));
+  } else k = gain;
+  const exact = model.denominator.map((d, i) => plus(d, times(k, model.numerator[i])));
+  const [c, b, a] = exact.map(numberOf);
+  // Form b²−4ac exactly before conversion, preserving nearby/repeated modes.
+  const discriminant = exact[2].n ? numberOf(divide(minus(times(exact[1], exact[1]), times(rational(4), times(exact[2], exact[0]))), times(exact[2], exact[2]))) : undefined;
+  const roots = polynomialRoots(a, b, c, discriminant), radii = roots.finite.map(z => Math.hypot(z.re, z.im));
   const classification = a === 0 ? 'algebraically singular feedback' : radii.some(r => r > 1 + 1e-8) ? 'unstable' : radii.some(r => r >= 1 - 1e-8) ? 'boundary or within numerical tolerance' : 'strictly stable';
   return { a, b, c, roots, radii, classification, nearSingular: a !== 0 && Math.abs(a) < 1e-10 * Math.max(1, Math.abs(b), Math.abs(c)) };
 }
@@ -151,7 +160,10 @@ export function boundaryInfo(model: Model, gain: Rational) {
   let angle: number | null = null;
   if (!values[3].n && values[0].n) {
     const ratio = divide(negative(plus(model.denominator[1], times(gain, model.numerator[1]))), times(rational(2), values[0]));
-    if (compare(ratio, negative(ONE)) > 0 && compare(ratio, ONE) < 0) { angle = Math.acos(numberOf(ratio)); kinds.push('complex conjugate unit-circle pair'); }
+    if (compare(ratio, negative(ONE)) > 0 && compare(ratio, ONE) < 0) {
+      angle = 2 * Math.atan2(Math.sqrt(numberOf(minus(ONE, ratio))), Math.sqrt(numberOf(plus(ONE, ratio))));
+      kinds.push('complex conjugate unit-circle pair');
+    }
     else if (compare(ratio, negative(ONE)) !== 0 && compare(ratio, ONE) !== 0) kinds.push('a=c equality; no complex unit-circle pair');
   }
   return { ...result, kinds, angle };

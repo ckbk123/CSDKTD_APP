@@ -95,6 +95,17 @@ describe('DS04 numerical roots and sampled illustration', () => {
     expect(polynomialRoots(0, 0, 0).identicallyZero).toBe(true);
     expect(polynomialRoots(1, 10000, .01).finite[1].re).toBeCloseTo(-.0000010000000001, 15);
   });
+  it('preserves near-repeated unit roots and very small crossing angles', () => {
+    // (z−1)(z−(1−1e−8)): a floating discriminant can collapse these modes.
+    const close = analyze(parseModel('0', 'z^2+(-2+1/100000000)z+(1-1/100000000)'), 0);
+    expect(close.roots.finite.map(z => z.re).sort((a, b) => a - b)[0]).toBeCloseTo(.99999999, 14);
+    expect(close.roots.finite.map(z => z.re).sort((a, b) => a - b)[1]).toBeCloseTo(1, 14);
+    // At K=1e8, a=c=100000001 and b=−2a+1e−8, so theta≈1e−8.
+    const tiny = boundaryInfo(parseModel('z^2-2z+(1+1/100000000)', 'z^2+(-2+1/100000000)z'), rational(100000000));
+    expect(tiny.angle).toBeCloseTo(9.99999995e-9, 20);
+    expect(tiny.roots.finite[0].im).toBeCloseTo(9.99999995e-9, 20);
+    expect(tiny.kinds).toContain('complex conjugate unit-circle pair');
+  });
   it('includes every selected root and breaks across an algebraic singularity', () => {
     const m = parseModel('-z^2+.5z', 'z^2'), curves = sampleLocus(m, 0, 2, 5);
     expect(curves).toHaveLength(2); expect(curves.every(b => b.includes(null))).toBe(true);
