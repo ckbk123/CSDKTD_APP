@@ -38,6 +38,10 @@ describe('CD03 plant, full roots and tracking', () => {
     expect(() => validate({ ...baseline, a: NaN })).toThrow(/finite/);
     expect(() => roots([1, 0, 0, 0, 1])).toThrow(/quadratic/);
   });
+  it('retains all real and repeated roots without using order-dependent labels', () => {
+    expect(roots([1, 6, 11, 6]).map(p => p.re).sort((a, b) => a - b)).toEqual([-3, -2, -1]);
+    expect(roots([1, 3, 3, 1]).every(p => Math.abs(p.re + 1) < 1e-12 && Math.abs(p.im) < 1e-12)).toBe(true);
+  });
 });
 describe('full response and bounded measurements', () => {
   it('agrees with the baseline analytic step, derivative and independent crossing values', () => {
@@ -59,8 +63,17 @@ describe('full response and bounded measurements', () => {
     const expected = (t: number) => 1 + 3 / 64 * Math.exp(-t / 10) + Math.exp(-.955 * t) * (-67 / 64 * Math.cos(w * t) - 12737 / (12800 * w) * Math.sin(w * t));
     for (const t of [0, .2, 1, 4, 10, 100]) expect(r.value(t)).toBeCloseTo(expected(t), 11);
     expect(r.residues.some(c => Math.abs(c.re - 3 / 64) < 1e-12)).toBe(true);
-    const a = measure(r, 20, .02); expect(a.settling).toBeGreaterThan(8); expect(a.settling).toBeLessThan(10); expect(assess(a, 30, 4.5).settling).toBe('failed');
+    const a = measure(r, 20, .02); expect(a.settling).toBeCloseTo(8.492268129954148, 7); expect(assess(a, 30, 4.5).settling).toBe('failed');
     for (const t of [20, 50, 100, 200]) expect(Math.abs(r.value(t) - 1)).toBeLessThanOrEqual(r.tail(20));
+  });
+  it('matches an independent original-ODE RK4 reference and demonstrates a successful revision', () => {
+    // Independent RK4 on e'''+(a+p)e''+(ap+Kb)e'+Kbz e=0,
+    // [e,e',e''](0+)=[-1,0,Kb], dt=.0005; sampled peaks/linear last crossings.
+    for (const [p, z, overshootPct, settling] of [[.01, .1, 22.249083642360358, 8.66005218590835], [.002, .02, 17.520776190413546, 2.9271663330535]]) {
+      const m = model({ ...baseline, lag: true, p, z }), r = response(m.numerator, m.denominator, m.fullRoots), a = measure(r, 20, .02);
+      expect(a.overshoot * 100).toBeCloseTo(overshootPct, 4); expect(a.settling).toBeCloseTo(settling, 4); expect(m.kv).toBe(20);
+      expect(assess(a, 20, 4.5).all).toBe(p === .002 ? 'met' : 'failed');
+    }
   });
   it('requires stable distinct modes and bounds response work', () => {
     expect(() => response([1], [1, 2, 1], [{ re: -1, im: 0 }, { re: -1, im: 0 }])).toThrow(/Repeated/);

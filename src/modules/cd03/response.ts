@@ -21,6 +21,7 @@ export function response(numerator: number[], denominator: number[], poles: Comp
   const roundoff = 64 * Number.EPSILON * (1 + size) + 1e-12;
   const at = (t: number, slope: boolean) => {
     if (!Number.isFinite(t) || t < 0 || t > 200) throw new Error('Inspect time within 0–200 seconds.');
+    if (t === 0) return 0; // Exact zero-state value/slope, after modal consistency gates.
     let y = slope ? 0 : 1;
     poles.forEach((p, i) => { const c = slope ? mul(residues[i], p) : residues[i]; y += Math.exp(p.re * t) * (c.re * Math.cos(p.im * t) - c.im * Math.sin(p.im * t)); });
     if (!Number.isFinite(y)) throw new Error('Response evaluation lost accuracy.'); return y;

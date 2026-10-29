@@ -1,0 +1,26 @@
+[data-module="CD03"] .cd03 { display: grid; gap: 18px; min-width: 0; }
+[data-module="CD03"] .cd03 section { border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; background: var(--surface); }
+[data-module="CD03"] .cd03 h2 { font-size: 18px; margin: 0 0 12px; }
+[data-module="CD03"] .cd03 h3 { font-size: 15px; margin: 14px 0 8px; }
+[data-module="CD03"] .cd03 p { line-height: 1.6; font-size: 14px; overflow-wrap: anywhere; }
+[data-module="CD03"] .cd03 label { display: grid; gap: 7px; font-size: 13px; min-width: 0; }
+[data-module="CD03"] .cd03 input, [data-module="CD03"] .cd03 button, [data-module="CD03"] .cd03 select { padding: 9px 12px; border: 1px solid var(--line); border-radius: 7px; color: var(--text); background: var(--surface); max-width: 100%; min-width: 0; }
+[data-module="CD03"] .cd03 button:hover { background: var(--hover); }
+[data-module="CD03"] .cd03-row { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 12px 0; }
+[data-module="CD03"] .cd03-note { color: var(--muted); }
+[data-module="CD03"] .cd03-scroll { overflow-x: auto; max-width: 100%; }
+[data-module="CD03"] .cd03-scroll svg { display: block; min-width: 820px; width: 100%; height: auto; color: var(--muted); }
+[data-module="CD03"] .cd03-scroll svg text { fill: var(--text); font-size: 13px; }
+[data-module="CD03"] .cd03-scroll svg line { stroke: var(--muted); stroke-width: 1; }
+[data-module="CD03"] .cd03-scroll svg .cd03-grid { stroke: var(--line); }
+[data-module="CD03"] .cd03-scroll svg .cd03-base { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 7 5; }
+[data-module="CD03"] .cd03-scroll svg .cd03-full { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+[data-module="CD03"] .cd03-scroll svg .cd03-marker, [data-module="CD03"] .cd03-scroll svg .cd03-vector { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; }
+[data-module="CD03"] .cd03-band { fill: var(--tint); }
+[data-module="CD03"] .cd03-zero, [data-module="CD03"] .cd03-reference { stroke: var(--accent); stroke-width: 2; fill: var(--surface); }
+[data-module="CD03"] .cd03-point { fill: var(--accent); }
+[data-module="CD03"] .cd03 table { border-collapse: collapse; min-width: 650px; font-size: 13px; }
+[data-module="CD03"] .cd03 th, [data-module="CD03"] .cd03 td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; }
+[data-module="CD03"] .cd03 .equation-display { max-width: 100%; overflow-x: auto; }
+[data-module="CD03"] .cd03 [hidden] { display: none !important; }
+@media(max-width:600px) { [data-module="CD03"] .cd03 section { padding: 13px; } }
