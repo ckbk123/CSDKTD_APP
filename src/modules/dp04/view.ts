@@ -40,7 +40,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     <div class="rl-results" hidden>
       <section class="rl-card"><h3>3. Read the construction</h3><div class="rl-construction"></div></section>
       <section class="rl-card">
-        <h3>4. Move the gain cursor</h3><label>Gain cursor K<input type="range" data-number="cursor" value="1" min="0" max="4" step="any"></label>
+        <h3>4. Move the gain cursor</h3><label>Gain cursor K<input type="range" data-number="cursor" value="1" min="0" max="4" step="any"></label><p class="rl-cursor-value"></p>
         <div class="rl-overlays" role="group" aria-label="Construction overlays">
           <label><input type="checkbox" data-overlay="segments" checked>Real-axis segments</label><label><input type="checkbox" data-overlay="asymptotes" checked>Asymptotes</label><label><input type="checkbox" data-overlay="breaks" checked>Break candidates</label><label><input type="checkbox" data-overlay="branches" checked>Sampled branches</label><label><input type="checkbox" data-overlay="vectors" checked>Candidate vectors</label>
         </div><div class="rl-plot"></div><div class="rl-selected"></div>
@@ -93,6 +93,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   function renderSelected(): void {
     if (!exercise?.revealed) return;
     const selected = rootsAt(exercise.model, displayedGain), area = get('.rl-selected'); area.replaceChildren();
+    get('.rl-cursor-value').textContent = `Current K = ${n(displayedGain)}. The Selected gain K field in step 1 is the numeric alternative.`;
     say(area, `Displayed gain K = ${n(displayedGain)}; both unreduced roots are listed, including multiplicity.`, 'h4');
     equation(area, `P_K(z)\\approx ${polynomial(selected.coefficients)},\\quad P_K(z)=D(z)+KB(z)`, 'Selected unreduced characteristic polynomial');
     area.append(table(['Branch', 'Root z ≈', '|z| ≈', 'Scaled residual', 'σ = ln|z|/T (s⁻¹)', 'Principal ω (rad/s)'], selected.roots.map((point, index) => {
@@ -154,7 +155,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const area = get('.rl-model'); area.replaceChildren();
       equation(area, `L_0(z)\\approx\\frac{${polynomial([model.b1, model.b0])}}{${polynomial([1, model.a1, model.a0])}}`, 'Numerically normalized fixed loop factor');
       say(area, `Open poles: ${poles(model).map(complexText).join('; ')}. ${zero(model) ? `Finite zero: ${complexText(zero(model)!)}` : 'No finite zero.'} Coefficient order is descending powers; the denominator is monic. No factor has been canceled.`);
-      get('.rl-preview').replaceChildren(locusPlot(model, { range }));
+      get('.rl-preview').hidden = false; get('.rl-preview').replaceChildren(locusPlot(model, { range }));
       const options = get('.rl-choices'); options.replaceChildren();
       exercise.segments.forEach((segment, index) => { const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'rl-choice'; checkbox.type = 'checkbox'; checkbox.dataset.interval = String(index); label.append(checkbox, document.createTextNode(intervalText(segment))); options.append(label); });
       quiz.hidden = false; get('.rl-point-feedback').textContent = 'Test a point to draw its vectors.';
@@ -168,6 +169,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const choices = [...root.querySelectorAll<HTMLInputElement>('[data-interval]')].map(field => field.checked);
       exercise.path = trace(exercise.model, exercise.maximum); exercise.revealed = true;
       construction(choices); renderSelected(); results.hidden = false;
+      get('.rl-preview').hidden = true;
       message.textContent = `${choices.every((choice, index) => choice === exercise!.segments[index].onLocus) ? 'Correct interval prediction.' : 'Revisit your interval prediction.'} The construction table explains each interval; all selected roots are now visible.`;
     } catch (error) { results.hidden = true; message.textContent = (error as Error).message; }
   }, { signal });
