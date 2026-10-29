@@ -1,9 +1,9 @@
 # DS02 implementation status
 
-- **Stage:** in-progress (accepted quadratic exercise implemented; browser evidence pending)
-- **Assessment:** 2026-10-29; code checkpoint `95e667d`; starting baseline `c5d1135`.
+- **Stage:** implemented
+- **Assessment:** 2026-10-29; implementation checkpoint `87e67ff`; starting baseline `c5d1135`.
 - **Ownership:** `src/modules/ds02/**`; [TASK.md](TASK.md), atlas DS02, research audit DS1.
-- **Delivery:** branch `codex/ds02-jury-01a18700`; pushed checkpoints and active claim. No merge, deployment, dependency or shared-file changes.
+- **Delivery:** branch `codex/ds02-jury-01a18700`; pushed checkpoints; final tested SHA is recorded in the submitted claim and PR head. No merge, deployment, dependency or shared-file changes.
 
 ## Requirement-to-evidence audit
 
@@ -16,8 +16,8 @@
 | Root and unit-circle check | Both roots and magnitudes, selected gain marker, exact endpoint selection, numerical z-plane plot. An explicitly sampled 81-gain sweep is separate from the algebraic proof. |
 | Baseline and required changed experiment | .2K yields 0<K<5/2; .1K yields 0<K<20/9. Every finite endpoint excluded and inspectable within gain bounds. |
 | Honest boundaries and failures | Unsupported syntax/order/nonlinear K, nonconstant/zero divisor, incomplete input, coefficient and arithmetic size limits, invalid gain/sweep and zero leading reduction entry have feedback. Last valid numeric state survives rejected candidates. |
-| Lazy mount, abort, reset/reopen | Metadata unchanged. Synchronous `workspace.ts` returns cleanup and guards browser-only UI import against abort/disposal; loading/error feedback. All exercise state created in `ui.ts` mount. Local tests cover old buttons, fresh visits and late imports. Real-browser scenarios pending. |
-| Keyboard, equation fonts and responsive display | Labeled visual editor, numeric/fraction inputs, native buttons, scoped Indigo/slate styles and responsive SVG/tables. Actual editor/keyboard/fonts/narrow-screen QA pending; mocks are not browser evidence. |
+| Lazy mount, abort, reset/reopen | Metadata unchanged. Synchronous `workspace.ts` returns cleanup and guards browser-only UI import against abort/disposal; loading/error feedback. All exercise state created in `ui.ts` mount. Local tests cover old buttons, fresh visits and late imports. Real reset/reopen, rapid navigation and keyboard cleanup passed. |
+| Keyboard, equation fonts and responsive display | Labeled visual editor, numeric/fraction inputs, native buttons, scoped Indigo/slate styles and responsive SVG/tables. Real editor, Systems keyboard, bundled fonts and 390 px layout passed; see browser evidence below. |
 
 ## Supported mathematical domain
 
@@ -44,27 +44,40 @@ Using bundled **Node 24.22.1**, npm 10.8.2 CLI, with Node 24 in PATH for child p
 
 - `npm ci`: 109 packages installed, 0 vulnerabilities; locked dependencies unchanged.
 - `npm run check`: passed.
-- `node node_modules/vitest/vitest.mjs run src/modules/ds02`: 30 tests passed in 3 files (24 math, 3 lesson-state, 3 loading/cleanup).
-- `npm test`: 72 tests passed in 9 files on `95e667d` source.
+- `node node_modules/vitest/vitest.mjs run src/modules/ds02`: 32 tests passed in 3 files (25 math, 4 lesson-state, 3 loading/cleanup).
+- `npm test`: 74 tests passed in 9 files.
 - `npm run build`: passed; existing >500 kB MathLive chunk warning only. Same-origin fonts emitted, no generated files committed.
 - `git diff --check`: clean after removing trailing blank lines.
 - Worker production preview http://127.0.0.1:8892/ returns 200; primary 8787 returned 200 and was not changed.
 
 Initial failures were corrected: system Node 20 was accidentally used by the first launcher; explicit Node 24 fixed startup. The first catalogue test exposed eager browser-only MathLive import; local guarded loading resolved it. The first mathematical assertions used lexical root sorting and strict signed-zero equality; numerical assertions were corrected. All current checks above pass.
 
-## Remaining work and dependency state
+## Real-browser evidence (2026-10-29)
 
-Real-browser editing/calculation, reset, reopen, fast navigation/late updates, keyboard/font assets and narrow viewport remain mandatory. The shared QA reservation is actively held by another worker; DS02 has not used browser controls. No shared-helper request is needed. Do not mark implemented or submitted until actual browser evidence is recorded. Independent technical review remains for the integration owner.
+Shared QA was acquired through the helper at 10:13:38 UTC and released at 10:19:15 UTC. Own production preview: http://127.0.0.1:8892/#/module/DS02. In-app Chromium, system dark theme, 1280 px default width and a temporary 390×844 viewport (reset afterward). A first tab-opening timeout was recovered by inspecting inventory and creating the missing tab; no other worker tab was used.
 
+- Baseline row attempt 24/25,0 and interval prediction 0,5/2 both returned correct feedback before reveal. Full inequalities and both roots agreed with the independent fixtures.
+- Keyboard Enter on Reveal/Hide, inequality selection, exact boundary, Inspect K and sweep kept focus on the recreated action. This confirms the preliminary coordinator focus finding is fixed; the local regression covers these redraw paths too.
+- K=5/2 displayed roots −1,−.5 and excluded strict stability. The .1K button gave 0<K<20/9 and endpoint roots −1,−.2222222; K=0 showed roots 1,0.
+- Replaced the polynomial using ordinary keys plus power and fraction buttons with z²+(K−1)z+(1/2)K. Applying it gave 0<K<2. Pure parser tests also cover MathLive shorthand `\frac12` and mixed braced arguments.
+- Repeated the 81-gain sweep with exact bounds 1/3 and 20/9; 162 sampled root markers appeared and the same fractional inputs remained usable. Sampling is visibly distinguished from proof.
+- Empty editor, incomplete fraction boxes, a typed cubic and K=10001 returned useful errors without a stale new result. Recovered with a valid gain/baseline. Typed z²+1 showed an empty strict interval, zero reduction row and both roots ±j; no division through zero.
+- Systems keyboard rendered, inserted + and 1 into the polynomial, and produced the resulting changed intercept/interval (−5/6,0). Escape closed it; reset and leaving the module also removed it.
+- Reset restored .2K, K=1 and hidden checked results. Leave/reopen restored the same fresh state. Rapid DS02→DS01→DS02→DS01 navigation left zero Jury roots/editors in DS01, and the next DS02 visit was fresh. No late update or page error was observed.
+- At 390 px, document scroll width was 375 px (within the viewport); formulas/tables/buttons and exact boundary controls were usable, and no page-wide overflow appeared after reveal or a boundary change.
+- Actual fractions/powers and the keyboard rendered with loaded fonts. `document.fonts` reported loaded, KaTeX_Main and KaTeX_Math available, and captured console warning/error logs were empty. The build emits the bundled same-origin fonts. Light-theme tokens are reused but were not separately emulated; no all-browser claim is made.
+- Full-page baseline endpoint screenshot `ds02-browser.jpg` is saved with this worker chat's local artifacts, not committed. Temporary viewport settings were reset and the QA tab closed before releasing the reservation.
 
-## Review correction checkpoint (2026-10-29)
+## Review corrections and delivery
 
-Coordinator preliminary inspection found that lesson redraws disconnected the currently focused button. `ui.ts` now captures the focused lesson action/value (or input name) and restores the matching recreated control, with an intentional heading fallback. `workspace.test.ts` checks focus through Reveal/Hide, gain, condition, exact boundary, sweep and clear-sweep. Module tests now pass 31 tests; type check passes. Real keyboard verification remains mandatory. Fractional sweep bounds also retain exact fractions across repeated redraws rather than becoming unsupported long decimals.
+The coordinator's preliminary review found focus loss on redraw; fixed with semantic action/value focus restoration and independently rechecked with real Enter activation. Fractional sweep bounds now remain exact after redraw. Last valid state survives rejected numeric/resource-bound candidates. A guarded local browser-only loader provides loading/error recovery and ignores late imports after abort/disposal.
 
-Final independent changed-family fixture: z²+(.5K−.2)z+(.1K+.3) has strict interval (−11/6,15/4); endpoint factorizations are (z−1)(z−7/60) and (z+1)(z+27/40). The added test checks both endpoints and an interior gain. Current `npm test` passes 74 tests in 9 files (32 local DS02 tests). Shared browser QA moved from the completed DR01 check to active DS03 checks; DS02 continues to wait without taking another worker's browser controls.
+Worker chat: `01a18700-78e9-7a80-af1b-4436e25b10ff`.
+PR: https://github.com/ckbk123/CSDKTD_APP/pull/4
+Branch: `codex/ds02-jury-01a18700`.
 
-Visual-input compatibility audit now includes MathLive single-character fraction serialization (`\frac12`, mixed braced/unbraced arguments and K/2). These are parsed as individual TeX arguments, with complex expressions still grouped and denominator validation unchanged. Narrow-layout constraints use a zero-minimum grid track; SVG axis labels are rounded while exact bounds remain in text. Actual browser confirmation is still pending.
+The connected GitHub integration could read checks but returned HTTP 403 when creating a PR; the existing repository Git credential created PR #4 without writing/printing secrets. The PR check at `414047a` passed: https://github.com/ckbk123/CSDKTD_APP/actions/runs/40854045578/job/123380503217. Final tested SHA and submission are recorded by the shared helper after final checks and push.
 
-Draft integration PR: https://github.com/ckbk123/CSDKTD_APP/pull/4 (opened with the existing Git repository credential after the connected GitHub integration returned HTTP 403). The PR remains draft and the claim active until real-browser QA is complete. No secrets were printed or written to repository files.
+## Remaining work and limits
 
-Worker chat: `01a18700-78e9-7a80-af1b-4436e25b10ff`. At checkpoint `414047a`, `npm run check`, `node node_modules/vitest/vitest.mjs run src/modules/ds02` (32 tests) and `npm test` (74 tests / 9 files) pass. PR #4 GitHub check completed successfully for that head: https://github.com/ckbk123/CSDKTD_APP/actions/runs/40854045578/job/123380503217. The live release-event waiter uses the standard atomic QA helper; it never edits another worker's reservation.
+No accepted requirement remains within this declared quadratic mode. Full higher-order Jury tables and arbitrary nonlinear parameter regions are outside this mode, explicitly distinguished in the interface. Original decks were not reinspected; provenance is retained above. Independent technical review and serial integration remain with the coordinator, so the stage is implemented rather than verified. No shared-helper dependency is outstanding. No main merge, release/version change, deployment or primary-preview modification was performed.
