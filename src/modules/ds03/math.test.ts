@@ -7,6 +7,9 @@ describe('DS03 bounded polynomial grammar', () => {
     expect(parseFamily(String.raw`P\left(z\right)=z^{2}+\left(K-1\right)z+\frac{1}{5}K`)).toEqual(parseFamily(BASELINE));
     expect(parseFamily('(z+0.2)(z+0.3)+Kz')).toEqual({ b: { slope: 1, constant: .5 }, c: { slope: 0, constant: .06 } });
   });
+  it.each([String.raw`\frac12`, String.raw`\frac1{2}`, String.raw`\frac{1}2`, String.raw`\dfrac{1}{2}`])('reads MathLive numeric-fraction serialization %s', fraction => {
+    expect(parseFamily(`z^2+(K-1)z+${fraction}K`)).toEqual(parseFamily('z^2+(K-1)z+0.5K'));
+  });
   it.each(['', 'z^3+K', 'z^2+K^2', 'z^2+1/z', '2z^2+K', 'z^2+sin(K)', 'z^2+1/0', 'z^2+NaN', 'z^2+1000K', 'z^2+0.000000001K', 'z^2+(K', 'z^2+\\placeholder{}', 'z^2+' + '('.repeat(13) + '1' + ')'.repeat(13), 'z^2+' + '1'.repeat(301)])('rejects unsupported/incomplete input %s', text => expect(() => parseFamily(text)).toThrow());
 });
 describe('DS03 substitution and complete gain set', () => {

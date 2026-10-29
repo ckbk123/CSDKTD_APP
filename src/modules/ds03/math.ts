@@ -27,7 +27,9 @@ export function parseFamily(latex: string): Family {
   if (latex.length > 300) throw new Error('Keep the polynomial within 300 characters.');
   let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(/^P\(z\)=/, '');
-  source = source.replace(/\\(?:dfrac|frac)\{([+-]?(?:\d*\.)?\d+)\}\{([+-]?(?:\d*\.)?\d+)\}/g, '(($1)/($2))')
+  // MathLive omits braces around single-token arguments: \frac12 is 1/2.
+  source = source.replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g,
+    (_match, numeratorGroup, numeratorDigit, denominatorGroup, denominatorDigit) => `((${numeratorGroup ?? numeratorDigit})/(${denominatorGroup ?? denominatorDigit}))`)
     .replace(/\^\{([012])\}/g, '^$1').replace(/\{/g, '(').replace(/\}/g, ')');
   const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|[zK()+\-*/^]/g) ?? [];
   if (tokens.join('') !== source || !tokens.length) throw new Error('Use only z, K, decimal numbers, +, −, products, numeric fractions and squares.');
