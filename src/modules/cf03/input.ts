@@ -6,6 +6,11 @@ export interface Plant { g: number; a: number[] }
 export interface Controller { kp: number; ki: number }
 const fail = (message: string): never => { throw new Error(message); };
 const decimalPattern = /^(?:\d+(?:\.\d*)?|\.\d+)$/;
+function quotient(numerator: number, denominator: number): number {
+  const value = numerator / denominator;
+  if (numerator !== 0 && value === 0) fail('A nonzero coefficient ratio is too small to represent. Rescale the equation.');
+  return value;
+}
 function checked(p: number[]): number[] {
   while (p.length > 1 && p.at(-1) === 0) p.pop();
   if (p.some(x => !Number.isFinite(x) || Math.abs(x) > 1e6)) fail('Keep polynomial coefficients finite and at most 1,000,000.');
@@ -172,15 +177,15 @@ export function parsePlant(latex: string): Plant {
   if (top.length !== 1 || ![2, 3].includes(bottom.length)) fail('Use a constant numerator over a first- or second-order plant denominator.');
   const leading = bottom.at(-1)!;
   if (Math.abs(leading) < 1e-9) fail('The leading plant coefficient must have magnitude at least 10⁻⁹.');
-  const g = top[0] / leading, a = bottom.slice().reverse().map(x => x / leading);
+  const g = quotient(top[0], leading), a = bottom.slice().reverse().map(x => quotient(x, leading));
   if (Math.abs(g) < 1e-9 || [...a, g].some(x => !Number.isFinite(x) || Math.abs(x) > 1000)) fail('Use nonzero plant gain and normalized coefficients with magnitude at most1000; gain magnitude at least10⁻⁹.');
   return { g, a };
 }
 export function parseController(latex: string): Controller {
   const { top, bottom } = rational(latex, 'C');
   let kp: number, ki: number;
-  if (bottom.length === 1 && bottom[0] !== 0 && top.length === 1) { kp = top[0] / bottom[0]; ki = 0; }
-  else if (bottom.length === 2 && bottom[0] === 0 && top.length <= 2) { kp = (top[1] ?? 0) / bottom[1]; ki = top[0] / bottom[1]; }
+  if (bottom.length === 1 && bottom[0] !== 0 && top.length === 1) { kp = quotient(top[0], bottom[0]); ki = 0; }
+  else if (bottom.length === 2 && bottom[0] === 0 && top.length <= 2) { kp = quotient(top[1] ?? 0, bottom[1]); ki = quotient(top[0], bottom[1]); }
   else return fail('Use proportional C(s)=Kp, or PI as a linear numerator (Kp s+Ki) over s.');
   if (![kp, ki].every(Number.isFinite) || Math.max(Math.abs(kp), Math.abs(ki)) > 1000) fail('Controller gains must be finite with magnitude at most1000.');
   if (ki !== 0 && Math.abs(ki) < 1e-9) fail('A nonzero integral gain must have magnitude at least10⁻⁹.');

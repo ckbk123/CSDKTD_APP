@@ -34,6 +34,8 @@ describe('CF03 displayed mathematical meaning', () => {
     expect(()=>parseController('1001')).toThrow(/1000/);
     expect(()=>parsePlant('1/(0.00000000001s+1)')).toThrow(/leading/);
     expect(()=>parseController('0.'+'0'.repeat(400)+'1')).toThrow(/too small/);
+    const tiny='0.'+'0'.repeat(319)+'1'; // representable numerator, unrepresentable nonzero quotient
+    expect(()=>parseController(`${tiny}/1000000`)).toThrow(/ratio is too small/);
     expect(()=>parsePlant('1'.repeat(513))).toThrow(/512/);
   });
 });
