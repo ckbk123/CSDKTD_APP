@@ -1,7 +1,7 @@
 # CR06 implementation status
 
-- **Stage:** in-progress; final production-browser checks remain.
-- **Assessed:** 2026-10-29; implementation checkpoint c067ccb225f8035ac6ada71822a8c211215ba961, base 0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d.
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29; base 0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d. The claim records the current committed implementation checkpoint; final production-browser checks remain.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
 - **Branch/worktree:** codex/cr06-states-f802; C:\Users\baokh\.codex\worktrees\cr06-states-f802\CSDKTD APP.
 - **Contract/ownership:** [TASK.md](TASK.md), src/modules/cr06/** only.
@@ -19,7 +19,7 @@ The claimed baseline had metadata and a blank workspace, with no local tests. Ex
 | Same input, two initial states | Both initial vectors share the same forced response; show Delta x=Phi(xB0-xA0), separate free states and compared outputs. Mathematical invariants, view tests and partial browser changed-initial checks pass. |
 | Hidden modes and state count | Original integrators and all eigenvalues survive zero-state channel reduction. Hidden unstable and coupled cancelled-mode fixtures retain internal motion with unchanged outputs. A collapsed channel rectangle explains why one block need not mean one state. Final updated browser inspection remains. |
 | Attempt and changed-data experiment | Optional selected derivative prediction, explicit tolerance, revealed arithmetic, editable matrices/input/initials/horizon/density, and four teaching presets. Editing model data hides stale answers; editing prediction clears stale assessment. |
-| Lifecycle, errors, access and layout | Synchronous lazy mount guards late imports, all listeners use the signal, four editor instances are destroyed. Scoped styles, numeric alternatives and keyboard controls exist. Loader/public-equation-API view tests pass; final real-browser reset/reopen/rapid-navigation/narrow checks remain. |
+| Lifecycle, errors, access and layout | Synchronous lazy mount owns a host and child signal, guards late imports, and immediately aborts partial-mount resources. All listeners use the signal; four editor instances are destroyed. Scoped styles, numeric alternatives and keyboard controls exist. Loader/public-equation-API view tests pass; final real-browser reset/reopen/rapid-navigation/narrow checks remain. |
 
 ## Mathematical scope and limits
 
@@ -35,7 +35,7 @@ algebra.ts performs exact rational characteristic/channel polynomial algebra on 
 
 ## Independent mathematical verification
 
-Latest owned tests: **84 across three files**: 72 math/parser, nine public-equation-API view-flow tests and three lazy-loader tests. The view tests stub the editor API and do not prove real MathLive functionality.
+Latest owned tests: **87 across three files**: 72 math/parser, ten public-equation-API view-flow tests and five lazy-loader tests. The view tests stub the editor API and do not prove real MathLive functionality.
 
 Fixtures use independent results:
 - Mechanical chain free/forced closed forms, exact two-initial-state forced invariance, changed input/feedthrough and negative scalar input.
@@ -55,9 +55,9 @@ An early test incorrectly sorted numeric eigenvalues lexically; the comparator w
 
 At c067ccb, in this isolated worktree with bundled Node 24.22.1 / npm 10.8.2:
 
-- npm test -- src/modules/cr06: 84 passed.
+- npm test -- src/modules/cr06: 87 passed.
 - npm run check: passed.
-- npm test: **287 passed across 18 files**, rerun after the prediction-assessment correction.
+- npm test: **290 passed across 18 files**, after the lifecycle and numeric-draft corrections.
 - npm run build: passed; existing MathLive large-chunk advisory only.
 - GitHub checks: passed on c067ccb (run 40883389064).
 
@@ -80,8 +80,8 @@ CR06 was checkpointed and suspended for the coordinator's priority DR05 review c
 
 Finish actual matrix-cell editing, current notation/error/underflow feedback, singular/oscillator/updated hidden-mode displays, prediction edits, reset/reopen/rapid navigation, keyboard and narrow viewport checks. Restore viewport, close this worker's tab and release QA afterward. Light theme and other browser engines are not yet checked.
 
-The latest browser reservation was acquired but released unused when the coordinator assigned DD04 integration next. No CR06 browser tab or acquisition waiter is active. Preview 8893 remains private; primary preview 8787 is untouched. Current named QA order is DD04 -> CP03 -> DR01 -> DP03, then ordinary acquisition. No shared dependency request is pending.
+No CR06 browser tab or acquisition waiter is active. Preview 8893 serves the rebuilt output; primary preview 8787 is untouched. The coordinator subsequently demonstrated independent per-chat IAB tab inventories/viewports and authorized private sessions without the overbroad global reservation. Browser 2 inventory was verified to match worker chat 01a18700-cc48-7482-ba96-f9aab107f802. Use only this worker's own tabs and restore its viewport after QA; do not release another worker's reservation. Firefox native URL-policy controls are unsupported and are not retried. No shared dependency request is pending.
 
-The coordinator has reopened DR05 PR11 for an inspection-index Reveal bypass and partial-mount resource cleanup. CR06 is checkpointed and suspended while those priority corrections are repaired in their original worktree/branch. No concurrent implementation is underway here. Resume the final browser gates afterward.
+DR05's second review correction was checked and resubmitted in PR11 at 5c0c63b9449387b2b591ae3883ea80095cc746d6. CR06 now resumes in its preserved worktree/branch. The same partial-mount risk was fixed locally here: an owned host/child AbortController forwards parent abort, aborts immediately on mount failure and cleans once on disposal. A mock that allocates a signal-owned listener before throwing verifies release with the parent still active; unrelated siblings survive. Native optional prediction badInput is validated. Inspection drafts now remain visible through Reveal with localized feedback, and newly revealed plots are cleared before inspecting the new model; only valid nonnegative integer indices are clamped. This replaces the earlier last-valid-index restoration. Tests cover these behaviors and stale prediction-assessment clearing. Mathematical code and independent reference fixtures are unchanged.
 
 After acceptance: record actual browser results, mark implemented, commit/push the tested final tree, make PR17 ready, verify exact clean HEAD/remote, and submit the claim. Do not merge, deploy, rebase or mark this continuous worker goal complete after one submission.

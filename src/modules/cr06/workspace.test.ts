@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ModuleContext } from '../../core/module';
 const stub = vi.hoisted(() => ({ mount: vi.fn(), cleanup: vi.fn() }));
 vi.mock('./view', () => ({ mount: stub.mount }));
 import { mount } from './workspace';
@@ -20,5 +21,33 @@ describe('CR06 synchronous lazy lifecycle', () => {
     const container = document.createElement('div'), controller = new AbortController(), cleanup = mount({ container, signal: controller.signal });
     await vi.waitFor(() => expect(container.textContent).toContain('Reset the example to try again'));
     controller.abort(); if (typeof cleanup === 'function') cleanup(); expect(container.textContent).toBe('');
+  });
+  it('aborts allocated resources immediately if a partial view mount throws', async () => {
+    const target = new EventTarget(), listener = vi.fn(), release = vi.fn();
+    let partialSignal: AbortSignal | undefined;
+    stub.mount.mockImplementationOnce(({ container, signal }: ModuleContext) => {
+      partialSignal = signal; container.append(document.createElement('button'));
+      target.addEventListener('probe', listener, { signal }); signal.addEventListener('abort', release, { once: true });
+      throw new Error('Partial mount failure');
+    });
+    const container = document.createElement('div'), unrelated = document.createElement('aside'), controller = new AbortController();
+    unrelated.textContent = 'Unrelated'; container.append(unrelated);
+    const cleanup = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(container.textContent).toContain('Reset the example to try again'));
+    expect(partialSignal).not.toBe(controller.signal); expect(partialSignal!.aborted).toBe(true);
+    expect(controller.signal.aborted).toBe(false); expect(release).toHaveBeenCalledOnce();
+    target.dispatchEvent(new Event('probe')); expect(listener).not.toHaveBeenCalled();
+    expect(container.querySelector('button')).toBeNull(); expect(unrelated.parentElement).toBe(container);
+    if (typeof cleanup === 'function') { cleanup(); cleanup(); }
+    expect(container.children).toHaveLength(1); expect(container.firstChild).toBe(unrelated); expect(release).toHaveBeenCalledOnce();
+  });
+  it('disposes the child and normal view exactly once without aborting the parent', async () => {
+    const container = document.createElement('div'), controller = new AbortController(), cleanup = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(stub.mount).toHaveBeenCalledOnce());
+    const childSignal = stub.mount.mock.calls[0][0].signal as AbortSignal;
+    if (typeof cleanup === 'function') { cleanup(); cleanup(); }
+    expect(childSignal.aborted).toBe(true); expect(controller.signal.aborted).toBe(false);
+    expect(stub.cleanup).toHaveBeenCalledOnce(); expect(container.children).toHaveLength(0);
+    controller.abort(); expect(stub.cleanup).toHaveBeenCalledOnce();
   });
 });

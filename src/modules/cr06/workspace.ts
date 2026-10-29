@@ -1,15 +1,25 @@
 import type { ModuleMount } from '../../core/module';
 
 export const mount: ModuleMount = ({ container, signal }) => {
-  const loading = document.createElement('p'); loading.textContent = 'Loading state workspace…'; container.append(loading);
+  const child = new AbortController(), host = document.createElement('div'), loading = document.createElement('p');
+  loading.textContent = 'Loading state workspace…'; host.append(loading); container.append(host);
   let disposed = false, cleanup: (() => void) | undefined;
-  void import('./view').then(view => {
-    if (disposed || signal.aborted) return;
+  const dispose = (): void => {
+    if (disposed) return;
+    disposed = true; child.abort(); signal.removeEventListener('abort', dispose);
+    try { cleanup?.(); } finally { host.remove(); }
+  };
+  signal.addEventListener('abort', dispose, { once: true });
+  if (signal.aborted) dispose();
+  else void import('./view').then(view => {
+    if (disposed || child.signal.aborted) return;
     loading.remove();
-    try { cleanup = view.mount({ container, signal }) || undefined; }
-    catch { container.replaceChildren(loading); loading.textContent = 'The state workspace could not open. Reset the example to try again.'; }
+    cleanup = view.mount({ container: host, signal: child.signal }) || undefined;
   }).catch(() => {
-    if (!disposed && !signal.aborted) { loading.textContent = 'The state workspace could not open. Reset the example to try again.'; if (!loading.isConnected) container.append(loading); }
+    if (disposed || signal.aborted) return;
+    // Partial mounts can allocate signal-owned resources before throwing.
+    child.abort(); loading.textContent = 'The state workspace could not open. Reset the example to try again.';
+    host.replaceChildren(loading);
   });
-  return () => { disposed = true; cleanup?.(); loading.remove(); };
+  return dispose;
 };

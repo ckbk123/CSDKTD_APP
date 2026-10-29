@@ -34,6 +34,8 @@ describe('CR06 teaching flow with equation API stub', () => {
     expect(root.textContent).toContain('Prediction matched');
     const p = rows(root)[20]; expect(p[0]).toBe('1'); expect(Number(p[8])).toBeCloseTo(.5 - Math.exp(-1) + .5 * Math.exp(-2), 7);
     expect(Number(p[9])).toBeCloseTo(.5 + Math.exp(-1) - .5 * Math.exp(-2), 7);
+    change(control(root, 'Prediction for selected derivative at t=0 (optional)'), '2');
+    expect(root.textContent).toContain('Prediction changed'); expect(root.textContent).not.toContain('Prediction matched');
   });
   it('selects integrators with keyboard and keeps checked prediction tied to its original state', () => {
     const root = open(); click(root, 'Reveal state response');
@@ -79,11 +81,20 @@ describe('CR06 teaching flow with equation API stub', () => {
     change(control(root, 'Inspect drawing point k'), '999'); expect(root.textContent).toContain('Choose a drawing point from 0');
     change(control(root, 'Drawing points'), '20'); click(root, 'Reveal state response'); expect(root.textContent).toContain('21 to 401');
   });
-  it('guards underflow in the inspection index and preserves the last valid point', () => {
+  it('preserves invalid inspection drafts through Reveal without stale model plots', () => {
     const root = open(); click(root, 'Reveal state response');
     change(control(root, 'Inspect drawing point k'), '1e-999'); expect(root.textContent).toContain('Inspection point:');
-    click(root, 'Reveal state response'); expect(control(root, 'Inspect drawing point k').value).toBe('20');
+    change(control(root, 'Constant input U for t ≥ 0'), '2');
+    click(root, 'Reveal state response'); expect(control(root, 'Inspect drawing point k').value).toBe('1e-999');
+    expect(root.textContent).toContain('Inspection point:'); expect(results(root).querySelectorAll('.state-curve')).toHaveLength(0);
+    expect(Number(rows(root)[20][8])).toBeCloseTo(1 - 2 * Math.exp(-1) + Math.exp(-2), 6);
     change(control(root, 'Inspect drawing point k'), '0e-999'); expect(root.textContent).toContain('t = 0 s; selected x1');
+  });
+  it('validates browser-reported bad input in an optional derivative prediction', () => {
+    const root = open(), prediction = control(root, 'Prediction for selected derivative at t=0 (optional)') as HTMLInputElement;
+    const validity = vi.spyOn(prediction, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState);
+    click(root, 'Reveal state response'); expect(results(root).hidden).toBe(true); expect(root.textContent).toContain('finite number');
+    validity.mockRestore(); click(root, 'Reveal state response'); expect(results(root).hidden).toBe(false);
   });
   it('cleans owned controls and reopens with fresh mechanical baseline', () => {
     const root = open(); click(root, 'Hidden unstable state');

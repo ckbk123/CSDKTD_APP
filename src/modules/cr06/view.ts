@@ -17,7 +17,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   };
   const read = (input: HTMLInputElement): number => readNumericInput(input, input.parentElement?.firstChild?.textContent ?? 'the control');
   const failMessage = (error: unknown): void => { notice.textContent = error instanceof Error ? error.message : 'Check the model and controls.'; };
-  let selected = 0, lastInspect = 20, model: Model | undefined, experiment: Experiment | undefined, result: Result | undefined;
+  let selected = 0, model: Model | undefined, experiment: Experiment | undefined, result: Result | undefined;
   const invalidate = (): void => { model = undefined; experiment = undefined; result = undefined; diagramSection.hidden = true; resultSection.hidden = true; notice.textContent = 'Data changed. Build the diagram or reveal again.'; };
   const setup = section('1. Build a state model');
   setup.append(el('p', 'Each integrator output is one state. Enter a real continuous SISO model with one or two states. Matrix rows describe signed gain paths into derivative summers; the output relation is algebraic. Time is in seconds; state, input and output units are normalized.'));
@@ -127,7 +127,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     try {
       experiment = { horizon: read(horizon), count: read(count), input: read(input), initial1: xA.slice(0, model.A.length).map(read), initial2: xB.slice(0, model.A.length).map(read) };
       result = run(model, experiment); const actual = derivative(model, experiment.initial1, experiment.input)[selected];
-      const predictionText = prediction.value ? (Math.abs(read(prediction) - actual) <= 1e-5 * Math.max(1, Math.abs(actual)) ? 'Prediction matched. ' : 'Compare your prediction with the derivative arithmetic. ') : '';
+      const predictionText = prediction.value || prediction.validity.badInput ? (Math.abs(read(prediction) - actual) <= 1e-5 * Math.max(1, Math.abs(actual)) ? 'Prediction matched. ' : 'Compare your prediction with the derivative arithmetic. ') : '';
       const t = result.transfer;
       summary.replaceChildren(
         createEquationDisplay('x_A(0)=' + matrixTex(experiment.initial1.map(v => [v])) + ',\\quad x_B(0)=' + matrixTex(experiment.initial2.map(v => [v])) + ',\\quad U=' + tex(experiment.input), 'Compared initial states and shared constant input'),
@@ -149,8 +149,12 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const table = el('table'), head = el('thead'), hr = el('tr'), body = el('tbody');
       ['t (s)', 'Free A states', 'Free B states', 'Shared forced states', 'Total A states', 'Total B states', 'Free A output', 'Forced output', 'Total A output', 'Total B output'].forEach(s => { const h = el('th', s); h.scope = 'col'; hr.append(h); }); head.append(hr);
       result.points.forEach(p => { const tr = el('tr'); [fmt(p.t), ...[p.free1, p.free2, p.forced, p.total1, p.total2].map(x => x.map(fmt).join(', ')), ...[p.yFree1, p.yForced, p.y1, p.y2].map(fmt)].forEach(s => tr.append(el('td', s))); body.append(tr); }); table.append(head, body); tableHost.replaceChildren(table);
-      inspect.max = String(result.points.length - 1); lastInspect = Math.min(lastInspect, result.points.length - 1);
-      inspect.value = String(lastInspect); resultSection.hidden = false; showPoint();
+      inspect.max = String(result.points.length - 1);
+      try {
+        const k = read(inspect);
+        if (Number.isInteger(k) && k >= 0) inspect.value = String(Math.min(k, result.points.length - 1));
+      } catch { /* Preserve the draft for localized showPoint feedback. */ }
+      statePlot.replaceChildren(); outputPlot.replaceChildren(); resultSection.hidden = false; showPoint();
     } catch (error) { result = undefined; experiment = undefined; resultSection.hidden = true; failMessage(error); }
   }
   function showPoint(): void {
@@ -159,7 +163,6 @@ export const mount: ModuleMount = ({ container, signal }) => {
     try { k = read(inspect); }
     catch (error) { inspected.replaceChildren(el('p', 'Inspection point: ' + (error instanceof Error ? error.message : 'Enter a valid index.'))); return; }
     if (!Number.isInteger(k) || k < 0 || k >= result.points.length) { inspected.replaceChildren(el('p', 'Choose a drawing point from 0 to ' + (result.points.length - 1) + '.')); return; }
-    lastInspect = k;
     const p = result.points[k], vector = (v: number[]): string => matrixTex(v.map(x => [x]));
     inspected.replaceChildren(el('h4', 't = ' + fmt(p.t) + ' s; selected x' + (selected + 1)),
       createEquationDisplay('\\Phi(t)=' + matrixTex(p.phi) + ',\\quad H(t)=' + vector(p.integral), 'Transition matrix and input integral'),
