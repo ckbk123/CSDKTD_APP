@@ -1,7 +1,7 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationInput } from '../../shared/equations/input';
 import { readNumericInput } from '../../shared/numeric-input';
-import { latexRat, neg, num, polynomialLatex, type Root } from './algebra';
+import { latexRat, mul, neg, num, polynomialLatex, sub, type Root } from './algebra';
 import { baseline, decompose, initialDescription, inspect, movePole, moveZero, parseModel, sameDenominator, stepAt, termAt, type Model, type Term, type StepSolution } from './math';
 import './workspace.css';
 
@@ -121,8 +121,8 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     overview.append(el('p', a.common.length > 1 ? `Exact common factor removed from the scalar channel; original modes remain in the declared realization.` : 'No exact pole/zero cancellation.'), createEquationDisplay(`q(s)=${polynomialLatex(a.common)}`, 'Exact common polynomial factor'), el('p', `Original internal dynamics: ${a.internal}. Reduced scalar channel: ${a.bibo ? 'BIBO stable' : 'not BIBO stable'}.`, 'modes-stability'));
     if (a.common.length > 1) overview.append(el('p', 'A canceled pole can be hidden from zero-state input/output response. Its internal mode remains relevant to initial conditions in the retained canonical state model. A stable reduced channel does not certify internal stability.'));
     overview.append(el('p', `Original poles: ${a.poles.map(rootText).join('; ')}. Reduced channel poles: ${a.reducedPoles.map(rootText).join('; ') || 'none'}.`));
-    const slope = num(model.b1), expectedDirection = slope > 0 ? 'positive' : slope < 0 ? 'negative' : 'zero';
-    overview.append(el('p', `Mode prediction: ${family.input.value ? family.input.value === a.kind ? 'correct' : 'revise it' : 'not selected'}; checked family: ${a.kind}. Initial-slope prediction: ${direction.input.value ? direction.input.value === expectedDirection ? 'correct' : 'revise it' : 'not selected'}. ${initialDescription(model)}`), createEquationDisplay(`y(0^+)=0,\\quad y'(0^+)=${latexRat(model.b1)},\\quad y''(0^+)=${tex(num(model.b0) - num(model.a1) * slope)}`, 'Initial output, slope and curvature'), el('p', `Same-poles check: ${misconception.input.value === 'no' ? 'correct.' : misconception.input.value === 'yes' ? 'revise it.' : 'not selected.'} Poles set the possible mode shapes; zeros and gain set their output weights. The −2/+2 zero presets keep poles and DC gain fixed but reverse the initial slope.`));
+    const slope = num(model.b1), expectedDirection = slope > 0 ? 'positive' : slope < 0 ? 'negative' : 'zero', curvature = sub(model.b0, mul(model.a1, model.b1));
+    overview.append(el('p', `Mode prediction: ${family.input.value ? family.input.value === a.kind ? 'correct' : 'revise it' : 'not selected'}; checked family: ${a.kind}. Initial-slope prediction: ${direction.input.value ? direction.input.value === expectedDirection ? 'correct' : 'revise it' : 'not selected'}. ${initialDescription(model)}`), createEquationDisplay(`y(0^+)=0,\\quad y'(0^+)=${latexRat(model.b1)},\\quad y''(0^+)=${latexRat(curvature)}`, 'Initial output, slope and curvature'), el('p', `Same-poles check: ${misconception.input.value === 'no' ? 'correct.' : misconception.input.value === 'yes' ? 'revise it.' : 'not selected.'} Poles set the possible mode shapes; zeros and gain set their output weights. The −2/+2 zero presets keep poles and DC gain fixed but reverse the initial slope.`));
   }
   function render(): void {
     if (!checked || signal.aborted) return;

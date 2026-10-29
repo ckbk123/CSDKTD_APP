@@ -42,6 +42,10 @@ describe('CP02 exercise and lifecycle', () => {
     expect(labeled(container, 'Exactly reduced scalar channel').textContent).toContain('s+2'); expect(labeled(container, 'Declared original canonical realization').textContent).toContain('2&-1');
     update(labeled(container, 'Original free mode to overlay'), '1:ordinary', 'change'); expect(container.querySelector('polyline.modes-free-line')).not.toBeNull(); controller.abort();
   });
+  it('typesets exact initial curvature when the accepted rational coefficients nearly cancel', async () => {
+    const { container, controller, reveal } = await open(); update(labeled(container, 'Numerator b₁'), '1'); update(labeled(container, 'Numerator b₀'), '\\frac{2000000000000000001}{1000000000000000000}'); reveal();
+    expect(labeled(container, 'Initial output, slope and curvature').textContent).toContain("y''(0^+)=\\frac{1}{1000000000000000000}"); expect(container.querySelector('polyline')).not.toBeNull(); controller.abort();
+  });
   it('clears stale results for unsupported math and provides reliable algebra when a trace is ill-conditioned', async () => {
     const { container, controller, reveal } = await open(); reveal(); update(labeled(container, 'Numerator b₁'), '2\\frac12'); expect(container.querySelector('polyline')).toBeNull(); reveal(); expect(container.textContent).toContain('Mixed numbers');
     update(labeled(container, 'Example'), 'hidden', 'change'); update(labeled(container, 'Numerator b₀'), '-\\frac{1000000000000000001}{1000000000000000000}'); reveal();
