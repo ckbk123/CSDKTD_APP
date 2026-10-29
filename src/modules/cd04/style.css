@@ -1,0 +1,44 @@
+[data-module="CD04"].cd04 { display: grid; gap: 18px; min-width: 0; line-height: 1.55; }
+[data-module="CD04"] section { padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); min-width: 0; }
+[data-module="CD04"] h2 { margin: 0 0 10px; font-size: 19px; font-weight: 550; }
+[data-module="CD04"] p { margin: 9px 0; }
+[data-module="CD04"] .cd04-note { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+[data-module="CD04"] .cd04-equations { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+[data-module="CD04"] .cd04-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 14px 0; }
+[data-module="CD04"] label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; }
+[data-module="CD04"] input[type="number"] { min-height: 42px; width: 100%; max-width: 240px; padding: 8px; background: var(--background); border: 1px solid var(--line); border-radius: 6px; color: var(--text); font: inherit; }
+[data-module="CD04"] input[type="range"] { width: 100%; min-height: 35px; accent-color: var(--accent); }
+[data-module="CD04"] button { border: 1px solid var(--line); border-radius: 7px; min-height: 42px; padding: 9px 13px; color: var(--text); background: var(--background); }
+[data-module="CD04"] button.cd04-primary { background: var(--tint); color: var(--accent-strong); border-color: var(--accent); }
+[data-module="CD04"] button:disabled { opacity: .55; cursor: default; }
+[data-module="CD04"] .equation-tool { min-height: 34px; padding: 4px 8px; }
+[data-module="CD04"] .cd04-feedback { padding: 10px 13px; border-left: 3px solid var(--accent); background: var(--tint); overflow-wrap: anywhere; flex-basis: 100%; }
+[data-module="CD04"] .cd04-plot { margin: 18px 0; min-width: 0; }
+[data-module="CD04"] .cd04-plot figcaption { font-weight: 550; font-size: 14px; }
+[data-module="CD04"] .cd04-plot svg { width: 100%; height: auto; display: block; }
+[data-module="CD04"] .cd04-plot text { fill: var(--muted); font: 12px sans-serif; }
+[data-module="CD04"] .cd04-gridline { stroke: var(--line); }
+[data-module="CD04"] .cd04-line { fill: none; stroke: var(--accent); stroke-width: 2.3; }
+[data-module="CD04"] .cd04-series-0 { stroke: var(--muted); stroke-width: 1.7; }
+[data-module="CD04"] .cd04-mark { fill: var(--surface); stroke: var(--accent); stroke-width: 1.7; }
+[data-module="CD04"] .cd04-table-wrap { max-width: 100%; overflow-x: auto; margin: 16px 0; }
+[data-module="CD04"] .cd04-table { width: 100%; min-width: 412px; table-layout: fixed; border-collapse: collapse; font-size: 13px; }
+[data-module="CD04"] .cd04-table th, [data-module="CD04"] .cd04-table td { text-align: left; vertical-align: top; padding: 9px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+[data-module="CD04"] .cd04-table th:first-child { position: sticky; left: 0; background: var(--surface); width: 132px; }
+[data-module="CD04"] details { margin: 20px 0 0; }
+[data-module="CD04"] summary { cursor: pointer; font-size: 13px; }
+[data-module="CD04"] details > a { font-size: 13px; }
+@media (max-width: 760px) {
+  [data-module="CD04"] section { padding: 14px; }
+  [data-module="CD04"] .cd04-controls > label { flex: 1 1 140px; min-width: 0; }
+  [data-module="CD04"] .cd04-plot text { font-size: 32px; }
+  [data-module="CD04"] .cd04-table th, [data-module="CD04"] .cd04-table td { padding: 7px; }
+}
+
+[data-module="CD04"] .cd04-axis { stroke: var(--muted); opacity: .6; stroke-dasharray: 3 5; }
+[data-module="CD04"] .cd04-mark { fill: var(--surface); stroke: var(--text); stroke-width: 2; }
+[data-module="CD04"] .cd04-selected { fill: var(--accent); stroke: var(--accent); }
+[data-module="CD04"] .cd04-target { fill: none; stroke: var(--accent); stroke-dasharray: 2 2; }
+[data-module="CD04"] select { min-height: 42px; max-width: 260px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--background); color: var(--text); font: inherit; }
+[data-module="CD04"] h3 { font-size: 14px; margin: 16px 0 4px; }
+@media (max-width:760px) { [data-module="CD04"] .cd04-equations { grid-template-columns:1fr; } }
