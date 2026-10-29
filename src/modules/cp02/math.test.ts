@@ -71,6 +71,7 @@ describe('independent step formulas and numerical decomposition', () => {
     // y(0)=y′(0)=0, y″(0)=1, y‴(0)=−2.000001; omitted t⁴ term <10⁻⁴⁰.
     const expected = t * t / 2 - 2.000001 * t ** 3 / 6;
     expect(Math.abs(stepAt(s, t) / expected - 1)).toBeLessThan(1e-12);
+    expect(() => model('2.0000009', '1.0000009')).toThrow(/Distinct poles are too close/);
   });
   it('supports one and two origin poles, including exact origin cancellation', () => {
     const single = decompose(model('1', '0')), double = decompose(model('0', '0')), canceled = decompose(model('0', '0', '1', '0'));
@@ -100,6 +101,11 @@ describe('linked pole/zero edits and bounded failures', () => {
     const before = model('\\frac23', '-\\frac13', '1', '-\\frac13'), moved = movePole(before, 0, -2, 0), a = inspect(moved);
     expect(equal(moved.a1, rat(5n, 3n))).toBe(true); expect(equal(moved.a0, rat(-2n, 3n))).toBe(true);
     expect(a.common.length).toBe(2); expect(a.internal).toBe('unstable'); expect(a.bibo).toBe(true); expect(stepAt(decompose(moved), 1)).toBeCloseTo(.5 * (1 - Math.exp(-2)), 14);
+  });
+  it('handles irrational real poles and states the nine-decimal edit precision honestly', () => {
+    const before = model('0', '-2'); expect(stepAt(decompose(before), 1)).toBeCloseTo((Math.cosh(Math.SQRT2) - 1) / 2, 13);
+    const moved = movePole(before, 0, -3, 0), positive = inspect(moved).poles.find(p => p.re > 0)!;
+    expect(positive.re).toBe(1.414213562); expect(Math.abs(positive.re - Math.SQRT2)).toBeLessThan(.5e-9); expect(equal(moved.b0, before.b0)).toBe(true);
   });
   it('preserves valid models on invalid candidates and supports a zero at the origin without DC preservation', () => {
     const m = baseline(), snapshot = { ...m };
