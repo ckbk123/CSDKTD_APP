@@ -5,6 +5,7 @@
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802
 - **Branch/worktree:** codex/cr06-states-f802; C:\Users\baokh\.codex\worktrees\cr06-states-f802\CSDKTD APP
 - **Contract/ownership:** [TASK.md](TASK.md), src/modules/cr06/**
+- **Pull request:** [#17](https://github.com/ckbk123/CSDKTD_APP/pull/17), draft while real-browser checks remain pending.
 
 ## Initial requirement audit
 
