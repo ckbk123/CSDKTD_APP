@@ -1,6 +1,6 @@
 # CR02 implementation status
 
-- **Stage:** in-progress — automated checks pass; actual-browser QA remains.
+- **Stage:** in-progress
 - **Assessed:** 2026-10-29
 - **Baseline:** `ae7daf3477c322d980418ec094b35585e43e109c` (fresh primary-main snapshot)
 - **Owned scope:** `src/modules/cr02/**`
