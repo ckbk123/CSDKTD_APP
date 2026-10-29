@@ -46,7 +46,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   signal.addEventListener('abort', cleanup, { once: true });
   root.append(node('p', 'Choose a sampled state-feedback design, predict controllability and tracking, then check the actual modes and sampled output/control effort.'));
   const form = node('form', '', 'dd06-card'); form.noValidate = true; form.append(node('h3', '1. Define the continuous plant and targets'));
-  const view = node('div'), message = node('p', '', 'dd06-message'); message.setAttribute('role', 'alert'); message.hidden = true;
+  const view = node('div', '', 'dd06-view'), message = node('p', '', 'dd06-message'); message.setAttribute('role', 'alert'); message.hidden = true;
   const invalidate = () => { if (disposed) return; viewController?.abort(); view.replaceChildren(); message.hidden = false; message.textContent = 'Inputs changed. Apply the design to recompute its model and checks.'; };
   function matrixInput(name: 'A' | 'B' | 'C', title: string, rows: number, columns: number) {
     let draft: EquationDraft;
@@ -60,7 +60,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
     return { editor, get };
   }
   const A = matrixInput('A', 'Continuous state matrix A (2×2)', 2, 2), B = matrixInput('B', 'Continuous input matrix B (2×1)', 2, 1), C = matrixInput('C', 'Output matrix C (1×2)', 1, 2);
-  form.append(node('p', 'Two normalized state coordinates, one input and one measured output; D=0. ZOH holds u[k] over [kT,(k+1)T). The baseline output is the first state: C=[1,0]. Numeric matrix cells accept signed decimals or numeric fractions.', 'dd06-note'));
+  form.append(equation(String.raw`\dot{x}=Ax+Bu,\quad y=Cx,\quad D=0`, 'Continuous SISO state model'));
+  form.append(node('p', 'Two normalized state coordinates, one scalar input/output; D=0. Both state coordinates are assumed available for feedback; C selects the tracked output. ZOH holds u[k] over [kT,(k+1)T). The baseline output is the first state: C=[1,0]. Matrix cells accept signed decimals or numeric fractions.', 'dd06-note'));
   const T = numeric('Sample period T (s)', '0.1', 0.001, 2), targetMode = choice('Target specification', [['real', 'Two real discrete poles'], ['damping', 'Continuous damping and natural frequency']], 'real');
   const p1 = numeric('First discrete pole', '0.7', -2, 2), p2 = numeric('Second discrete pole', '0.8', -2, 2), zeta = numeric('Damping ratio ζ', '0.5', 0, 3), wn = numeric('Natural frequency ωn (rad/s)', '8', 0.01, 100);
   const x1 = numeric('Initial state x₁[0] (units)', '0', -100, 100), x2 = numeric('Initial state x₂[0] (units)', '0', -100, 100), reference = numeric('Constant reference r (units)', '1', -10, 10), horizon = numeric('Final sample index N', '80', 10, 2000, '1');
@@ -87,7 +88,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   });
   form.append(actions, message);
   const limits = node('details', '', 'dd06-card'); limits.append(node('summary', 'Supported model, timing and numerical limits'));
-  limits.append(node('p', 'Continuous-time real A2×2, B2×1, C1×2; D=0, one scalar input/output. State coordinates are normalized units; A entries are per second, B entries per input unit per second, C maps to output units. Reference/output units agree. Initial state coordinates are −100…100; constant reference −10…10. Every visit/reset starts from the baseline.'));
+  limits.append(node('p', 'Continuous-time real A2×2, B2×1, C1×2; D=0, one scalar input/output. Ideal full-state feedback uses the available true state; no observer is inferred from C. State coordinates are normalized units; A entries are per second, B entries per input unit per second, C maps to output units. Reference/output units agree. Initial state coordinates are −100…100; constant reference −10…10. Every visit/reset starts from the baseline.'));
   limits.append(node('p', 'Matrix entries are zero or have magnitude 10⁻¹²…100. Visual bmatrix/pmatrix/matrix templates accept optional matching A=/B=/C= labels, signed decimals and numeric fractions, including compact and nested fractions. No cell arithmetic, powers, mixed numbers, e/E or symbolic entries. Matrix text≤600 characters, cell≤140, decimal mantissas≤24 digits, nesting≤16. Native controls have their separate numeric exponent grammar and an 80-character limit.'));
   limits.append(node('p', 'T=0.001…2 s. ZOH is a floating-point augmented exponential, with matrix/time infinity norm≤40, scaled norm≤.5 and at most 32 series terms plus squaring. No inverse of continuous A is used. Computed model, gain, equilibrium and signal magnitudes must stay≤10⁸. These guards are resource/conditioning limits, not certified error bounds.'));
   limits.append(node('p', 'Controllability uses normalized-column determinant tolerance 10⁻¹⁰ and a sampled zero-input scale 10⁻¹². Feedback and tracking residuals must be≤10⁻⁸. Schur values within10⁻⁹ times coefficient scale are boundary/uncertain. The DC solve needs reciprocal condition>10⁻¹² and nonvanishing output alignment at10⁻¹⁰. A formal tracking multiplier does not establish convergence for unstable/boundary modes.'));
@@ -111,6 +112,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   }
   function prediction(result: Design, initial: V2, r: number, count: number, local: AbortSignal): void {
     const card = node('section', '', 'dd06-card'); card.append(node('h3', '2. Inspect the sampled model and predict'));
+    card.append(equation(String.raw`A_d=e^{AT},\quad B_d=\int_0^T e^{A\tau}B\,d\tau`, 'Zero-order-hold model identities'));
     card.append(equation(String.raw`A_d\approx${matrixTex(result.model.Ad)},\quad B_d\approx${matrixTex(result.model.Bd.map(value => [value]))}`, 'Computed ZOH state and input matrices'));
     card.append(equation(String.raw`p_d(z)=z^2-(${tex(result.targets.sum)})z+(${tex(result.targets.product)}),\quad T=${tex(result.model.T)}\,\mathrm{s}`, 'Desired characteristic polynomial and sample period'));
     card.append(node('p', result.targets.description, 'dd06-note')); if (result.targets.aliasWarning) card.append(node('p', result.targets.aliasWarning, 'dd06-message'));
@@ -177,13 +179,13 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const upper = stems(trace.samples, [{ key: 'r', name: 'Reference r', style: 'open' }, { key: 'y', name: 'Output y', style: 'filled' }], 'Reference and output samples', 'Output/reference (units)');
     const effort = stems(trace.samples, [{ key: 'u', name: 'Held input u', style: 'filled' }], 'Control effort samples', 'Input effort (units)');
     const states = stems(trace.samples, [{ key: 'x1', name: 'State x₁', style: 'open' }, { key: 'x2', name: 'State x₂', style: 'filled' }], 'State coordinate samples', 'State coordinates (units)');
-    const show = (k: number) => { const sample = trace.samples[k]; [upper, effort, states].forEach(plot => plot.select(k)); point.textContent = `k=${k}, t=${label(sample.t)}s · x₁=${label(sample.x1)}, x₂=${label(sample.x2)}, r=${label(sample.r)}, y=${label(sample.y)}, u=${label(sample.u)}, error=${label(sample.error)} (normalized units)`; };
+    const show = (k: number) => { const sample = trace.samples[k]; [upper, effort, states].forEach(plot => plot.select(k)); point.textContent = `k=${k}, t=${label(sample.t)} s · x₁=${label(sample.x1)}, x₂=${label(sample.x2)}, r=${label(sample.r)}, y=${label(sample.y)}, u=${label(sample.u)}, error=${label(sample.error)} (normalized units)`; };
     inspector.input.addEventListener('input', () => { try { const k = read(inspector.input, 'sample index k', 0, last.k, true); range.input.value = String(k); show(k); pointError.hidden = true; } catch (error) { pointError.textContent = (error as Error).message; pointError.hidden = false; } }, { signal: local });
     range.input.addEventListener('input', () => { const k = read(range.input, 'sample index k', 0, last.k, true); inspector.input.value = String(k); show(k); pointError.hidden = true; }, { signal: local }); show(last.k);
     const stateDetails = node('details'); stateDetails.append(node('summary', 'State coordinate samples'), states.element);
     target.append(controls, pointError, point, upper.element, effort.element, stateDetails);
-    target.append(node('p', `Computed k=0…${last.k} of requested 0…${trace.requested}; T=${label(result.model.T)}s. Maximum sampled |u|=${label(trace.maxEffort)} input units; last error=${label(last.error)} output units.`, 'dd06-note'));
-    if (trace.overshoot !== undefined) target.append(node('p', `Observed overshoot in this window=${label(trace.overshoot)}%. ${trace.bandEntry === undefined ? 'No 2% in-band suffix of at least 10 samples was observed; extend the window if appropriate.' : `Observed 2% band suffix begins at t=${label(trace.bandEntry)}s and lasts at least 10 samples.`} These sampled-window measures do not prove a global peak or settling time.`, 'dd06-note'));
+    target.append(node('p', `Computed k=0…${last.k} of requested 0…${trace.requested}; T=${label(result.model.T)} s. Maximum sampled |u|=${label(trace.maxEffort)} input units; last error=${label(last.error)} output units.`, 'dd06-note'));
+    if (trace.overshoot !== undefined) target.append(node('p', `Observed overshoot in this window=${label(trace.overshoot)}%. ${trace.bandEntry === undefined ? 'No 2% in-band suffix of at least 10 samples was observed; extend the window if appropriate.' : `Observed 2% band suffix begins at t=${label(trace.bandEntry)} s and lasts at least 10 samples.`} These sampled-window measures do not prove a global peak or settling time.`, 'dd06-note'));
   }
   render(); return cleanup;
 };
