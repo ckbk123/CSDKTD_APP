@@ -1,6 +1,6 @@
 # Browser development guide
 
-**Browser migration milestone, 29 October 2026.** Control Studio is a static Vite/TypeScript browser application. Its 56 independent module folders currently provide metadata and blank workspaces. Mathematical solvers and exercise-specific controls are future per-module work.
+**Browser scaffold milestone, 29 October 2026.** Control Studio is a static Vite/TypeScript browser application. Its 56 independent module folders currently provide metadata and blank workspaces. A shared visual equation layer typesets their baseline examples and offers temporary equation editing. Mathematical solvers and exercise-specific controls are future per-module work.
 
 ## Build and run
 
@@ -34,6 +34,7 @@ Run check, tests and build before handing off a module. Local development/previe
 | `src/modules/<id>/TASK.md` | Durable implementation goal and mathematical acceptance contract |
 | `src/modules/<id>/*.test.ts` | Module-owned numerical/logic tests |
 | `src/shared/math/` | Future coordinated stateless mathematical helpers |
+| `src/shared/equations/` | Shared visual equation display/input and curated baseline previews; no mathematical solver |
 | `docs/research/` | Course evidence and provenance; original slide decks remain outside Git |
 
 The catalogue uses eager `import.meta.glob` discovery for **metadata only**. Each manifest's `load` lazily imports `./workspace`. Keep large algorithms, plotting libraries and module UI out of metadata imports so opening the home grid does not load every tool's implementation.
@@ -90,6 +91,8 @@ The repository remains `CSDKTD_APP` and package/Cloudflare identifiers remain `c
 
 ## Mathematical services
 
+Use the [shared equation UI](EQUATION_INPUT.md) for expression display and student entry. It provides textbook-style visual editing through locally bundled MathLive 0.111.1. The shell's editable example banner is a preview and does not update workspace inputs. Real module inputs use `createEquationInput` with caller-owned drafts and the visit's abort signal; use `createEquationDisplay` for results. No student should need MATLAB syntax or LaTeX knowledge. LaTeX syntax feedback is separate from the module's bounded domain parser and mathematical validation.
+
 The shell currently includes no general control toolbox or CAS. [MATH_BACKEND_OPTIONS.md](MATH_BACKEND_OPTIONS.md) records future candidates. Prefer small pure services with explicit coefficient order, matrix layout, units, tolerances, status and resource limits. Reuse shared math only through a documented interface; keep teaching state local.
 
 JavaScript/TypeScript and optional future C/WebAssembly are implementation choices behind that interface. Native library availability does not establish browser compatibility. A C/WebAssembly choice needs toolchain/library/license checks, bounded memory, predictable error handling and independent numerical tests. Raven/C UI types do not belong in the browser module contract.
@@ -101,6 +104,8 @@ Coordinate shared helper and dependency changes with the integration owner. Assi
 Vitest tests use `*.test.ts`. Keep normal module tests inside its directory. Check the baseline against an independent analytic or high-confidence reference, change data, and test domain-specific boundary/failure cases. Use residuals and scale-aware tolerances for numerical algorithms; never test correctness solely by calling the same calculation twice.
 
 Real-browser checks complement unit tests: open the module, edit values, inspect plots/results, reset to baseline, leave/reopen, navigate rapidly during loading, use keyboard input and inspect a narrow viewport. Confirm cleanup prevents old work from updating a new workspace. The project has no dedicated end-to-end command yet; record the manual/browser-tool checks performed.
+
+MathLive's Node export is its server-rendering build, not the interactive browser editor. A mock in jsdom cannot verify field selection, local fonts or the virtual keyboard. Follow the real-browser checks in [EQUATION_INPUT.md](EQUATION_INPUT.md) when using the shared component.
 
 Type checking and a successful build establish integration, not mathematical correctness or support for every browser/device. Record actual tested browsers and supported computational limits.
 

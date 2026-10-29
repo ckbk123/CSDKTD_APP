@@ -35,6 +35,12 @@ The dark variant follows the system media preference; it does not add a saved th
 
 Keep the interface compact and familiar. Do not add slogans, promotional copy, decorative charts, fake results or plots that appear to demonstrate mathematics the module does not compute. Blank workspaces remain honest scaffolds until their actual tools are implemented.
 
+## Equations
+
+Use textbook-style equations and the shared [visual equation input](EQUATION_INPUT.md). Fractions have a numerator and denominator, powers/subscripts use their proper positions, and matrices retain rows and columns. Students should be able to use ordinary keys, symbol buttons and the math keyboard without learning MATLAB syntax or LaTeX. Raw syntax is an internal interchange format, not the primary interface.
+
+The default-example banner typesets all 56 curated baselines. Its **Edit equations** button opens a temporary notation preview; it clearly states that edits do not update the still-empty workspace. Actual teaching tools place the same shared input inside their own workspace and validate its mathematical meaning before calculating. Keep prose, units and assumptions next to the equation rather than burying them inside an editable formula.
+
 ## Module consistency
 
 Modules fill their existing content container and respect the shared header/navigation. They do not add a second application header or move global search. Scope styles with CSS modules or the assigned `[data-module="ID"]` root and use the shared palette/spacing conventions. Keep numeric controls, units, equations and plot labels readable on narrow screens and with keyboard input.

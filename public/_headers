@@ -1,5 +1,5 @@
 # Vite copies this file to dist; Cloudflare parses it as asset metadata.
-# Keep script execution local. Inline CSS is allowed for generated plot styles.
+# Keep script execution local. Inline CSS supports generated math/plot styles.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'
   X-Content-Type-Options: nosniff

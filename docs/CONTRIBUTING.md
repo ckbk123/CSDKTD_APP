@@ -30,6 +30,8 @@ Scope styles with CSS modules or the module's `[data-module="ID"]` root. Build w
 
 Show the exercise data, assumptions, action, intermediate reasoning and result in a readable order. Provide meaningful numeric controls and units alongside sliders/dragging. Label axes, signs and tolerances. Make keyboard use and narrow screens practical. Feedback should explain the concrete mathematical issue; avoid slogans, filler and implementation jargon.
 
+Use the [shared visual equation input and display](EQUATION_INPUT.md) for mathematical expressions. Students edit textbook-style fractions and powers directly; do not require MATLAB syntax or LaTeX knowledge. `createEquationInput` reports an editing draft, not a validated mathematical model: add a bounded, tested domain parser before computation. Keep the draft and parsed model inside `mount`, supply its abort signal and release the input during cleanup. The shell's **Edit equations** banner is a preview only; its edits do not drive the workspace. Use `createEquationDisplay` for mathematical results and intermediate steps.
+
 Baseline, changed-data experiments, answer reveal and comparisons are temporary visit state. There are no accounts, persistence, saved projects, student export, remote solver calls or service worker in this release.
 
 ## Validation and handoff
@@ -45,5 +47,7 @@ npm run build
 ```
 
 Exercise the module in a real browser using the available browser tools/manual inspection. Check editing, reset, leave/reopen, rapid navigation, keyboard controls, cleanup and a narrow viewport. There is no dedicated end-to-end command yet. Include exact checks/results in the handoff and keep unresolved limits visible.
+
+For visual equations, also check the actual fonts, fraction/power buttons and math keyboard. MathLive's Node export is a server renderer; successful jsdom tests with a mock do not establish interactive browser behavior. See the [equation verification checklist](EQUATION_INPUT.md#browser-verification).
 
 A useful handoff states what students can now do, the supported mathematical domain, files changed, validation results, remaining limits and any shared API requests. Do not deploy, add API keys/servers, change dependencies/global configuration or modify another module without coordination. Do not commit generated output. Retain the course evidence and asset provenance.

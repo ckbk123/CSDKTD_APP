@@ -4,7 +4,7 @@ Control Studio is a browser application for learning **SISO LTI control theory**
 
 ## Current milestone
 
-The application provides a responsive catalogue and **56 independent module scaffolds**. A module opens inside the same browser page, with its title, baseline-example description and an empty workspace ready for later implementation. These are 56 planned educational tools, **not 56 implemented mathematical solvers**.
+The application provides a responsive catalogue and **56 independent module scaffolds**. A module opens inside the same browser page, with its title, typeset baseline equations and an empty workspace ready for later implementation. **Edit equations** opens visual fraction/power entry and a math keyboard. These temporary preview edits do not update the workspace. These are 56 planned educational tools, **not 56 implemented mathematical solvers**.
 
 Each module owns its temporary state. Opening or resetting a module starts from its default example; leaving releases its resources. There are no accounts, saved projects, persistence or student export workflows. The first browser release has no service worker or guaranteed offline mode.
 
@@ -15,6 +15,10 @@ The primary interface uses **TypeScript, HTML and CSS with Vite**, without a UI 
 ![Independent module workspace](docs/images/web-workspace.jpg)
 
 [Narrow-screen preview](docs/images/web-mobile.jpg)
+
+![Shared visual equation input](docs/images/web-equations.jpg)
+
+[Narrow-screen equation editor](docs/images/web-equations-mobile.jpg)
 
 The selected identity uses an Indigo + slate palette, a compact pole/zero mark and a 64 px header. The header shows the application name with `v<package.version> · Cao Kha Bao Khanh` beneath it, reading the version automatically from `package.json`. Catalogue search lives in the header; HCMUT/EE2019 credit lives in the footer. See the [design contract](docs/DESIGN.md) and [asset provenance](docs/ASSETS.md).
 
@@ -43,6 +47,8 @@ The static output is `dist/`. The repository includes Cloudflare Workers Static 
 Each tool has its own directory under `src/modules/<id>/` and a durable `TASK.md` containing its exercise, source evidence, default example, visual behavior, mathematical checks and copyable agent assignment. The metadata entry is loaded eagerly; its workspace code loads only when opened.
 
 Start with the [56-task index](docs/AGENT_TASKS.md), [contribution guide](docs/CONTRIBUTING.md) and [development guide](docs/DEVELOPMENT.md). Agents should work on one explicitly assigned module at a time. Shared mathematical helpers and dependency changes need coordinated ownership.
+
+Use the [shared equation input and display](docs/EQUATION_INPUT.md) when building a module's actual inputs and results. It bundles MathLive 0.111.1 and its math fonts locally, so students can enter textbook-style mathematics without learning MATLAB or LaTeX syntax. Each module must still validate its supported mathematical forms before computing; the visual editor is not a CAS.
 
 ## Course plan and evidence
 

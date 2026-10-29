@@ -15,7 +15,7 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 ## Read before editing
 
 1. Read the assigned module's `src/modules/<id>/TASK.md`, `index.ts` and `workspace.ts`.
-2. Read `docs/CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, `docs/DESIGN.md` and the matching atlas entry.
+2. Read `docs/CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, `docs/DESIGN.md`, `docs/EQUATION_INPUT.md` and the matching atlas entry.
 3. Check the current working tree and existing shared helpers. Course slides remain outside Git; audits distinguish inspected examples from proposed fixtures. Preserve those distinctions.
 
 ## Ownership and isolation
@@ -33,6 +33,8 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 Implement the assigned exercise contract with explicit, tested limits. Declare coefficient order, dimensions, units, feedback sign, timing, tolerances and assumptions. Validate finite inputs, polynomial/matrix sizes and bounded computation. Report singularities, unsupported forms, nonconvergence and insufficient horizons clearly. Never substitute a canned result, an LLM/API call or a fake CAS for computation. Distinguish exact identities, numerical approximations and sampled illustrations; a sweep is not a proof of a complete parameter region.
 
 Use readable labels, units and equations. Provide numeric/keyboard alternatives to dragging, accessible controls and useful input errors. Avoid slogans, decorative filler and claims broader than the implemented mathematics. Keep every tool within the course's SISO LTI scope.
+
+Use `src/shared/equations/input.ts` for visual equation entry (`createEquationInput`) and typeset results (`createEquationDisplay`); students must not need MATLAB syntax or LaTeX knowledge. Keep each `EquationDraft` inside the caller's mount, pass its abort signal and destroy the input on cleanup. The locally bundled MathLive editor checks notation only: add a bounded, independently tested module-specific parser and mathematical validation before solving. The shell's editable baseline banner is a preview; its edits do not update the module workspace. Follow `docs/EQUATION_INPUT.md`, including real-browser font/keyboard checks; a mocked editor in jsdom is not evidence of browser functionality.
 
 ## Validation and delivery
 

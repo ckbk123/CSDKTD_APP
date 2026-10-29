@@ -4,6 +4,10 @@ import { createApp } from './app';
 import { APP_AUTHOR, APP_NAME, APP_VERSION } from './brand';
 
 const visit = vi.hoisted(() => ({ mount: vi.fn<ModuleMount>(), cleanup: vi.fn() }));
+const equationVisit = vi.hoisted(() => ({ mount: vi.fn(), cleanup: vi.fn() }));
+
+// Real editor behavior belongs in browser checks. Node's MathLive export is SSR.
+vi.mock('./shared/equations/example-panel', () => ({ mountExamplePanel: equationVisit.mount }));
 
 // Test the shell with real catalogue metadata, without importing mathematical
 // workspaces or requiring their eventual plotting APIs to run in jsdom.
@@ -33,6 +37,10 @@ describe('application header', () => {
       content.textContent = 'Fixture exercise';
       container.append(content);
       return visit.cleanup;
+    });
+    equationVisit.mount.mockImplementation((container: HTMLElement, id: string) => {
+      const text = document.createElement('p'); text.textContent = `Equation fixture ${id}`;
+      container.replaceChildren(text); return equationVisit.cleanup;
     });
   });
 
@@ -77,6 +85,24 @@ describe('application header', () => {
     window.dispatchEvent(event);
     return event;
   }
+
+  it('resets and disposes the equation preview independently of the workspace', async () => {
+    start('#/module/CD02');
+    await vi.waitFor(() => expect(equationVisit.mount).toHaveBeenCalledTimes(1));
+    const firstSignal = equationVisit.mount.mock.calls[0][3] as AbortSignal;
+    expect(firstSignal.aborted).toBe(false);
+    const reset = Array.from(root.querySelectorAll('button')).find(button => button.textContent === 'Reset example')!;
+    reset.click();
+    expect(firstSignal.aborted).toBe(true);
+    await vi.waitFor(() => expect(equationVisit.mount).toHaveBeenCalledTimes(2));
+    const secondSignal = equationVisit.mount.mock.calls[1][3] as AbortSignal;
+    expect(secondSignal).not.toBe(firstSignal);
+    expect(secondSignal.aborted).toBe(false);
+    navigate('#/continuous');
+    expect(secondSignal.aborted).toBe(true);
+    expect(equationVisit.cleanup).toHaveBeenCalledTimes(2);
+    expect(root.textContent).not.toContain('Equation fixture');
+  });
 
   it('identifies Control Studio, its version and author across navigation', () => {
     start();

@@ -25,6 +25,13 @@ export function createApp(root: HTMLElement): () => void {
   let requestedQuery: string | undefined;
   let libraryVisible = false;
   let results: HTMLElement;
+  let exampleVisit: AbortController | undefined;
+  let disposeExample: (() => void) | undefined;
+
+  function closeExample(): void {
+    exampleVisit?.abort(); exampleVisit = undefined;
+    disposeExample?.(); disposeExample = undefined;
+  }
 
   const skip = link('Skip to content', '#main', 'skip-link');
   skip.addEventListener('click', event => {
@@ -156,7 +163,23 @@ export function createApp(root: HTMLElement): () => void {
     const heading = element('header', 'page-heading');
     heading.append(element('h1', '', module.title), element('p', 'page-description', module.description));
     const example = element('section', 'default-example'); example.setAttribute('aria-label', 'Default example');
-    example.append(element('h2', 'eyebrow', 'Default example'), element('p', 'example-value', module.defaultExample));
+    function showExample(): void {
+      closeExample();
+      const visit = new AbortController(); exampleVisit = visit;
+      example.replaceChildren(element('h2', 'eyebrow', 'Default example'), element('p', 'example-value', 'Loading equations…'));
+      // Load the shared editor/fonts only on a module page, never on the grid.
+      void import('./shared/equations/example-panel').then(({ mountExamplePanel }) => {
+        if (!visit.signal.aborted) disposeExample = mountExamplePanel(example, module.id, module.defaultExample, visit.signal);
+      }).catch(error => {
+        if (visit.signal.aborted) return;
+        console.error('Could not load equation input', error);
+        const retry = element('button', 'button', 'Retry equations'); retry.type = 'button';
+        retry.addEventListener('click', showExample, { signal: visit.signal });
+        example.replaceChildren(element('h2', 'eyebrow', 'Default example'),
+          element('p', 'example-value', module.defaultExample), retry);
+      });
+    }
+    showExample();
     const workspaceHeading = element('div', 'workspace-heading');
     const status = element('span', 'workspace-status', 'Loading workspace…'); status.setAttribute('role', 'status');
     workspaceHeading.append(element('h2', '', 'Workspace'), status);
@@ -185,11 +208,12 @@ export function createApp(root: HTMLElement): () => void {
         workspace.replaceChildren(message);
       }
     }
-    reset.addEventListener('click', () => { void mount(true); });
+    reset.addEventListener('click', () => { showExample(); void mount(true); });
     void mount();
   }
 
   function render(): void {
+    closeExample();
     session.close();
     const focusRequested = requestedQuery !== undefined;
     query = requestedQuery ?? ''; requestedQuery = undefined;
@@ -235,7 +259,7 @@ export function createApp(root: HTMLElement): () => void {
   window.addEventListener('keydown', keydown);
   render();
   return () => {
-    session.close(); window.removeEventListener('hashchange', render);
+    closeExample(); session.close(); window.removeEventListener('hashchange', render);
     window.removeEventListener('keydown', keydown); root.replaceChildren();
   };
 }

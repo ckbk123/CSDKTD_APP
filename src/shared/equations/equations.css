@@ -1,0 +1,48 @@
+.equation-example { min-width: 0; }
+.equation-example-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.equation-example-heading .eyebrow { margin: 0; }
+.equation-edit { background: transparent; color: var(--accent-strong); border: 1px solid var(--line); border-radius: 18px; padding: 7px 12px; font: inherit; font-size: 12px; white-space: nowrap; min-height: 36px; }
+.equation-edit:hover { background: var(--surface); }
+.equation-parts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; }
+.equation-part { min-width: 0; max-width: 100%; }
+.equation-label { display: block; font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 6px; }
+.equation-display { font-size: 21px; max-width: 100%; overflow-x: auto; padding: 7px 2px; }
+.equation-context, .equation-help { font-size: 13px; line-height: 1.65; margin: 6px 0; color: var(--muted); }
+.equation-help { margin-bottom: 17px; font-size: 12px; }
+.equation-input { min-width: 0; max-width: 100%; }
+.equation-input math-field { display: block; width: 100%; min-width: 210px; max-width: 100%; min-height: 61px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--text); font-size: 22px; --caret-color: var(--accent); --selection-background-color: var(--tint); --contains-highlight-background-color: var(--hover); --primary: var(--accent); }
+.equation-input math-field:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.equation-input math-field::part(menu-toggle), .equation-input math-field::part(virtual-keyboard-toggle) { display: none; }
+.equation-tools { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+.equation-tool { min-width: 36px; min-height: 36px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); padding: 5px 9px; font: inherit; font-size: 15px; }
+.equation-tool:hover { border-color: var(--accent); background: var(--hover); }
+.equation-fraction-icon { display: inline-flex; flex-direction: column; font-family: Georgia, serif; font-style: italic; font-size: 11px; line-height: 1.05; vertical-align: middle; }
+.equation-fraction-icon > span:first-child { border-bottom: 1px solid currentColor; padding: 0 3px 1px; }
+.equation-fraction-icon > span:last-child { padding-top: 1px; }
+.equation-keyboard { font-size: 11px; color: var(--accent-strong); }
+.equation-issue { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 8px 0 0; }
+.equation-preview-note { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 14px 0 0; }
+.equation-example[data-editing="true"] .equation-parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); align-items: start; gap: 20px; }
+.equation-example[data-editing="true"] .equation-context { grid-column: 1 / -1; }
+@media (max-width: 480px) {
+  .equation-example-heading { align-items: flex-start; }
+  .equation-display { font-size: 20px; }
+  .equation-input math-field { min-width: 0; }
+  .equation-tool { min-width: 40px; min-height: 40px; }
+}
+:root {
+  --keyboard-background: var(--background);
+  --keyboard-border: var(--line);
+  --keyboard-accent-color: var(--accent);
+  --keyboard-toolbar-text: var(--muted);
+  --keyboard-toolbar-text-active: var(--accent);
+  --keycap-background: var(--surface);
+  --keycap-background-hover: var(--hover);
+  --keycap-text: var(--text);
+  --keycap-text-hover: var(--text);
+  --keycap-primary-background: var(--tint);
+  --keycap-primary-text: var(--accent-strong);
+  --keycap-secondary-background: var(--hover);
+  --keycap-secondary-text: var(--text);
+  --keycap-shift-text: var(--accent);
+}
