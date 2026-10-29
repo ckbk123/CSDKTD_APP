@@ -43,3 +43,5 @@ Read TASK, current source, shared equation API, contribution/development/design/
 ### Numerical review checkpoint
 
 A review of mixed growing/decaying modes found that forming hyperbolic terms before recombining could erase a tiny decaying state. The transition now keeps separated real exponentials separate away from a repeated root, and uses a small-argument expression near repetition. Added the independent diag(1,-2), x(0)=[1,1], t=30 check (exp(30), exp(-60)). Reduced-channel impulse evaluation uses the exactly reduced denominator, so a canceled unstable eigenvalue cannot contaminate that trace. The 38 module tests pass after this correction; browser QA is reserved by DR01 at this checkpoint, so no browser controls have been used.
+
+The final pre-browser mathematical pass adds the exact tr(A), det(A) teaching check and fixtures for a simple zero mode, direct-feedthrough impulse response and conjugate eigenvalues at Re(λ)=±10⁻⁹ (no tolerance-based misclassification). `npm run check` and `npm test` pass; 82 tests total, including 40 owned module tests. No independent reviewer has been claimed. Browser evidence remains pending.

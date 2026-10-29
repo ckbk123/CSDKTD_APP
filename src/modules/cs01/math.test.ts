@@ -78,6 +78,19 @@ describe('stability and exact scalar channel reduction', () => {
     // C(sI-A)^-1B = 8/(s+1)+15/(s+2); adding D=2 gives (2s²+29s+35)/(s²+3s+2).
     const result = analyze(make([['-1', '0'], ['0', '-2']], ['2', '3'], ['4', '5'], '2'));
     expect(result.numerator.map(textRat)).toEqual(['35', '29', '2']);
+    expect(impulseAt(result, 2)).toBeCloseTo(8 * Math.exp(-2) + 15 * Math.exp(-4), 12);
+  });
+  it('treats a simple zero with a negative eigenvalue as bounded, not asymptotic', () => {
+    const result = analyze(make([['0', '0'], ['0', '-1']], ['1', '1'], ['1', '1']));
+    expect(result.freeClass).toBe('bounded, not asymptotic'); expect(result.defective).toBe(false); expect(result.bibo).toBe(false);
+  });
+  it('retains near-boundary conjugate modes on either side without a tolerance band', () => {
+    for (const real of ['0.000000001', '-0.000000001']) {
+      const result = analyze(make([[real, '1'], ['-1', real]]));
+      expect(result.freeClass).toBe(real.startsWith('-') ? 'asymptotically stable' : 'unstable');
+      expect(result.bibo).toBe(real.startsWith('-'));
+      expect(result.eigenvalues[0].im).toBe(1);
+    }
   });
   it('does not round a very small positive eigenvalue onto the axis', () => {
     const result = analyze(make([['0.000000001', '0'], ['0', '-100']]));

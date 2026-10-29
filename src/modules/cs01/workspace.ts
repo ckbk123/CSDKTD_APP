@@ -1,6 +1,6 @@
 import type { ModuleContext, ModuleMount } from '../../core/module';
 import type { EquationDraft } from '../../shared/equations/input';
-import { analyze, impulseAt, latexRat, modeAt, num, parseModel, polynomialLatex, stateAt, type Analysis, type Model, type Root } from './math';
+import { analyze, impulseAt, latexRat, modeAt, neg, num, parseModel, polynomialLatex, stateAt, type Analysis, type Model, type Root } from './math';
 import './workspace.css';
 
 const matrix = (rows: readonly (readonly number[])[]): string => `\\begin{bmatrix}${rows.map(row => row.join('&')).join('\\\\')}\\end{bmatrix}`;
@@ -119,6 +119,8 @@ function mountView({ container, signal }: ModuleContext, { createEquationDisplay
     const derivation = el('section'); derivation.append(el('h3', 'Derive the scalar channel before reducing'));
     derivation.append(createEquationDisplay(String.raw`G(s)=C(sI-A)^{-1}B+D=\frac{N(s)}{\chi_A(s)}`, 'Original scalar transfer identity'));
     derivation.append(createEquationDisplay(`\\chi_A(s)=\\det(sI-A)=${polynomialLatex(analysis.denominator)}`, 'Characteristic polynomial'));
+    derivation.append(createEquationDisplay(`\\operatorname{tr}(A)=${latexRat(neg(analysis.denominator[1]))},\\qquad\\det(A)=${latexRat(analysis.denominator[0])}`, 'Exact trace and determinant'));
+    derivation.append(el('p', 'For a real 2 × 2 matrix, strict internal stability is equivalent to tr(A)<0 and det(A)>0. If either equality occurs, inspect the boundary eigenvalues and their eigenspaces separately.'));
     derivation.append(createEquationDisplay(`N(s)=${polynomialLatex(analysis.numerator)}`, 'Unreduced numerator'));
     derivation.append(createEquationDisplay(`q(s)=${polynomialLatex(analysis.cancellation)},\\qquad G_{\\mathrm{red}}(s)=\\frac{${polynomialLatex(analysis.reducedNumerator)}}{${polynomialLatex(analysis.reducedDenominator)}}`, 'Exact common factor and reduced transfer'));
     derivation.append(el('p', 'The common factor q uses exact polynomial division over the entered rational numbers. Close pole/zero pairs are retained. A proper finite D term is BIBO stable by itself.'));
