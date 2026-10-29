@@ -46,6 +46,7 @@ describe('CP05 independent response and finite-contour fixtures', () => {
     const c = construct(parse('s'), parse('s'), 5, .1); expect(c.axisPoles[0].multiplicity).toBe(1); expect(c.axisPoles[0].numeratorOrder).toBe(1); expect(c.axisPoles[0].unboundedOrder).toBe(0); expect(c.axisPoles[0].extension).toEqual({ re: 1, im: 0 });
     expect(atFrequency(c, 0).bode.kind).toBe('undefined'); expect(c.points.every(p => p.response.kind === 'value' && Math.abs(p.response.value.re - 1) < 1e-12)).toBe(true);
     const zero = construct(parse('0', true), parse('s'), 5, .1); expect(zero.axisPoles[0].numeratorOrder).toBeNull(); expect(zero.axisPoles[0].extension).toEqual({ re: 0, im: 0 });
+    const zeroFrequency = atFrequency(zero, 1).bode; expect(zeroFrequency.kind).toBe('value'); if (zeroFrequency.kind === 'value') { expect(zeroFrequency.magnitude).toBe(0); expect(zeroFrequency.phase).toBeNull(); expect(zeroFrequency.db).toBeNull(); }
   });
   it('explicitly includes pole and zero frequencies in the sampled Bode list', () => {
     const poles = construct(parse('1'), parse('s^2+2'), 5, .1); const singular = frequencySamples(poles).find(x => x.frequency === Math.sqrt(2))!; expect(singular.response.kind).toBe('undefined');

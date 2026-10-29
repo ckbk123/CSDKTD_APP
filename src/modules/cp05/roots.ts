@@ -38,6 +38,6 @@ export function numericRoots(input: readonly number[]): Root[] {
     const next = Array.from({ length: product.length + 1 }, () => ({ re: 0, im: 0 }));
     product.forEach((c, i) => { next[i].re += -z.re * c.re + z.im * c.im; next[i].im += -z.re * c.im - z.im * c.re; next[i + 1].re += c.re; next[i + 1].im += c.im; }); product = next;
   }
-  if (result.some(z => !Number.isFinite(z.residual) || z.residual > 1e-9) || product.some((c, i) => Math.hypot(c.re - monic[i], c.im) > 1e-7 * Math.max(1, Math.abs(monic[i])))) throw new Error('Numerical roots are ill-conditioned at this gain: residual/reconstruction check failed. Exact gain intervals remain valid.');
+  if (result.some(z => !Number.isFinite(z.residual) || z.residual > 1e-9) || product.some((c, i) => Math.hypot(c.re - monic[i], c.im) > 1e-7 * Math.max(1, Math.abs(monic[i])))) throw new Error('Denominator roots are not resolved at this numerical scale: residual/reconstruction check failed. Rescale coefficients or use a better-separated model.');
   return result.sort((a, b) => a.re - b.re || a.im - b.im);
 }
