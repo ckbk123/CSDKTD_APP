@@ -77,6 +77,12 @@ describe('DD03 teaching flow with mocked equation presentation (not browser evid
     const v=visit(),old=v.container.querySelector('textarea')!;v.preset('direct');expect(old.isConnected).toBe(false);v.action('prepare');v.predict();v.numeric('comparePeriod','1e-999');v.action('compare');expect(v.text('.wp-comparison')).toContain('too small');expect(v.hidden()).toBe(false);
     v.numeric('comparePeriod','.2');v.action('compare');expect(v.text('.wp-comparison')).toContain('Original chosen loop');v.numeric('comparePeriod','.3');expect(v.text('.wp-comparison')).toBe('');
   });
+  it('labels an unresolved baseline comparison without hiding a valid chosen loop',()=>{
+    // Independently solve the critical-gain discriminant for the C=4 loop.
+    const a=Math.exp(-.2),h=1-a,b1=(.2-h)/4,b0=(h-.2*a)/4,A=16*b1*b1,B=-8*(1+a)*b1-16*b0,C=(1-a)**2;
+    const gain=2*C/(-B+Math.sqrt(B*B-4*A*C)),v=visit();v.edit(`${gain}/(s(s+2))`);v.numeric('gain','1');v.action('prepare');v.predict('inside','larger');
+    expect(v.hidden()).toBe(false);expect(v.text('.wp-bode')).toContain('comparison curve is unavailable');expect(v.text('.wp-bode')).toContain('Only the current design curve');
+  });
   it('cleans once and reopens with baseline state rather than a prior design',()=>{
     const v=visit();v.preset('direct');v.action('prepare');v.predict();v.controller.abort();if(typeof v.dispose==='function'){v.dispose();v.dispose();}expect(v.container.querySelector('.wp-tool')).toBeNull();
     const fresh=visit();expect(fresh.container.querySelector<HTMLInputElement>('[data-number="period"]')!.value).toBe('0.1');expect(fresh.hidden()).toBe(true);fresh.action('prepare');fresh.predict();expect(fresh.container.querySelector('[aria-label="Full closed-loop poles"] tbody')!.children).toHaveLength(2);
