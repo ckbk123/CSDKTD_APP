@@ -36,10 +36,12 @@ describe('DS03 exercise and visit state', () => {
   it('keeps the derivation hidden until checking, then reveals a computed strict interval', async () => {
     const { container } = await open();
     expect(container.textContent).not.toContain('0 < K < 2.5');
+    container.querySelector('select')!.value = 'strictly stable';
     click(container, 'Check and reveal'); expect(container.textContent).toContain('Step 1 of 5');
     click(container, 'Next derivation step'); expect(container.textContent).toContain('A = 1.2');
     click(container, 'Reveal all steps'); expect(container.textContent).toContain('0 < K < 2.5');
     click(container, 'Inspect upper endpoint (2.5)');
+    expect(container.textContent).toContain('Computed check: at K = 2.5');
     expect(container.textContent).toContain('∞ (z = −1)'); expect(container.textContent).toContain('A is zero or near zero');
     expect(container.textContent).toContain('z2 = -0.5');
   });

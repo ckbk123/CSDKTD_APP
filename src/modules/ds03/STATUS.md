@@ -27,7 +27,7 @@
 - At most 300 input characters, 160 tokens, 12 nested groups. Final nonzero coefficient magnitudes are between 1e-8 and 100. Multiplication intermediates are bounded by 1e6. Selected K must be finite in [-100,100]. The affine-inequality derivation describes all real K, rather than a sampled sweep limited to the gain control.
 - Dimensionless `w=(z-1)/(z+1)`, inverse `z=(1+w)/(1-w)`; no 2/T scaling or sample period. Inputs are characteristic polynomials; no feedback topology, cancellation or time-response initial history is inferred.
 - Strict discrete stability means every original root is inside the unit disk. Repeated or simple boundary roots are excluded. Quadratic roots use a cancellation-resistant formula. Root radii within 1e-8 of 1 receive boundary/within-tolerance feedback; transformed coefficients within 1e-9 times max(1, coefficient magnitudes) trigger exceptional-row feedback.
-- Identities/inequality reasoning are algebraic; decimals, endpoint divisions and plot coordinates use floating point, displayed to seven significant digits. Views show points up to an extent of 10 and explicitly report omitted/off-view/infinite points; numeric values remain available. Complex exploration coordinates are bounded by 5; nonexact points within 1e-8 of the mapping pole are rejected. Angle entry selects a unit-circle point; real/imaginary entry also explores interior/exterior points.
+- Identities/inequality reasoning are algebraic; decimals, endpoint divisions and plot coordinates use floating point, displayed to seven significant digits. Views show points up to an extent of 10 and explicitly report omitted/off-view/infinite points; numeric values remain available. Complex exploration coordinates are bounded by 5; nonexact manually entered complex points within 1e-8 of the mapping pole are rejected. Angle entry selects a unit-circle point; real/imaginary entry also explores interior/exterior points.
 - No iterative numerical solver or convergence assumption is needed. No shared helper/dependency/package changes are required. The degree-two Routh stepper is local; no shared Routh API exists at the starting revision and sibling imports are prohibited.
 
 ## Independent fixtures and provenance
@@ -40,7 +40,7 @@ Expanding `(1+w)^2+(K-1)(1-w^2)+.2K(1-2w+w^2)` gives `(2-.8K)w^2+(2-.4K)w+1.2K`.
 
 - `npm test -- src/modules/ds03`: **35/35 passed** (27 math/parser, 8 caller-state/lifecycle tests), after resume.
 - `npm run check`: **passed** after resume.
-- `npm test`: **76/76 passed across 8 files** before pause; rerun pending after the additional keyboard-focus test.
+- `npm test`: **77/77 passed across 8 files** after resume.
 - `npm run build`: **passed** after resume (bundled Node 24.22.1 and installed npm CLI). Existing large MathLive chunk warning remains; no new package/config change.
 - `git diff --check`: passed before pause; final rerun pending.
 - First full-suite attempt exposed MathLive's Node/browser export distinction when catalogue tests imported the workspace. A guarded local UI import corrected this without changing shared files; subsequent suite passed.

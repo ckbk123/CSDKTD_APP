@@ -180,7 +180,8 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
       result.append(node('p', 'All finite interval endpoints are excluded. Bounds are computed from affine coefficients in floating point (shown to 7 significant digits); this derivation is not a numerical sweep. The interval is over all real K; the selected-gain control is limited to [−100,100].'));
       const endpointActions = node('div', undefined, 'ds-actions');
       for (const [label, value] of [['lower', set.lower], ['upper', set.upper]] as const) if (!set.empty && Number.isFinite(value) && Math.abs(value) <= 100) button(`Inspect ${label} endpoint (${fmt(value)})`, () => {
-        gain = value; const field = controls.querySelector('input'); if (field) field.value = String(value); step = 5; render();
+        gain = value; const field = controls.querySelector('input'); if (field) field.value = String(value);
+        prediction.value = 'Choose a prediction'; step = 5; render();
       }, endpointActions);
       result.append(endpointActions);
     }
