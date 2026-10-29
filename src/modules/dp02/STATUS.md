@@ -1,49 +1,81 @@
 # DP02 implementation status
 
-- **Stage:** in-progress
-- **Assessed:** 2026-10-29, starting commit `c5d1135`
+- **Stage:** in-progress (final browser check pending)
+- **Assessed:** 2026-10-29; implementation revision `1baa7f3`, based on `c5d1135`
 - **Ownership:** `src/modules/dp02/**`; [accepted contract](TASK.md)
 - **Worker:** `worker-dp02-01a186d1`, branch `codex/dp02-pole-mapping-01a186d1`
+- **Worktree:** `C:\Users\baokh\.codex\worktrees\dp02-pole-mapping\CSDKTD APP`
 
-## Requirement audit before implementation
+## Requirement-to-evidence audit
 
-The metadata/lazy loader and synchronous blank mount exist. No module tests or calculations exist. The shell equation preview is independent of this tool.
+The starting workspace was blank; no working mathematical features were replaced. Metadata and the shell's independent example preview are preserved.
 
-| Accepted requirement | Existing evidence | Missing / next action |
+| Accepted requirement | Implementation and evidence | Remaining |
 |---|---|---|
-| Map a pole and conjugate using exp(sT) | Baseline metadata only | Bounded calculation; independent baseline/changed-data tests |
-| Linked s/z planes and sequence | None | Computed SVG planes, radial/angular guides and modal stems with sample/time units |
-| Adjustable T and radius/angle interpretation | None | Visual pole input, numeric alternative, period and reference-period comparison |
-| Predict inward/outward movement before reveal | None | Prediction selector, hidden result, input invalidation and checked feedback |
-| Selected inverse-log branch | None | Branch integer, inverse formula and nonunique-frequency explanation |
-| Frequencies separated by 2pi/T alias | None | Input-dependent alias comparison with equal-sample residual |
-| Stability depends on radius, including negative real z | None | Negative-real preset, circle-boundary qualifications and tests |
-| Visual equation editor / bounded parser | Shared API available | Mount-owned input/draft; finite rectangular complex grammar and useful errors |
-| Lifecycle, keyboard, narrow layout, local fonts | Shell lifecycle exists | Scoped styles, abort listeners, cleanup; production browser checks |
-| Project verification and delivery | Not run for implementation | Module tests, check, all tests, build; commit/push and submitted claim |
+| Map s and its conjugate with exp(sT) | math.ts mapPole; baseline Euler values, conjugation and doubled-period fixtures in math.test.ts | None |
+| Linked s/z planes and sequence | plots.ts computed SVG planes, unit/reference circles, radius ray, angle arc, selected inverse diamond, unit-amplitude modal stems/envelopes; numerical table in view.ts | None |
+| Adjustable T, radius/angle interpretation | Visual pole input and numeric σ/ω alternatives; reference/target T and sample count; rad/sample, rad/s, seconds and degree readouts; signed log-radius change | None |
+| Predict movement before reveal | Required inward/outward/unchanged choice; calculated correct/revise feedback; changed inputs discard results and result listeners | None |
+| Inverse branch and nonunique frequency | Branch m=-5…5; principal-angle and log formula, frequency restriction, original/inverse comparison and linked s marker | None |
+| Frequencies differing by 2π/T alias | Exact integer-sample identity plus independent unreduced-phase floating-point residual; T-dependent alias frequency shown | None |
+| Radius controls stability, including negative-real z | Negative-real, growing and circle-boundary experiments; tests for (-.8)^k, growth/decay and near-boundary tolerance; full-system/multiplicity caveat | None |
+| Visual mathematical entry and validation | Shared createEquationInput/createEquationDisplay, visit-owned draft; bounded local parser and domain checks; keyboard division and visual fractions | None |
+| Local state, lazy metadata, abort/cleanup | Metadata unchanged. Synchronous workspace mount defers browser view; abort/dispose guards; mount-owned state, signal listeners and result-event cleanup; five lifecycle/error-path tests | Rapid-navigation browser scenario pending |
+| Keyboard and narrow layout | Direct typing, fraction boxes, Systems keyboard/Escape, Tab, Enter reveal, reset/reopen and 390×844 viewport checked in production Chromium before pause | Repeat final production check after notation fix |
+| Independent mathematics and project checks | 44 module tests; check, all 86 project tests, production build pass at 1baa7f3 | Final browser evidence and submission |
 
-## Planned mathematical bounds
+## Supported mathematical domain
 
-One scalar pole s=sigma+j*omega and its conjugate for a real modal illustration, not a full transfer-function or closed-loop stability solver. T in [0.001,10] seconds; finite sigma/omega, bounded phase/exponent and 4–100 sample intervals. Unit initial modal amplitude: Re(exp(skT))=r^k cos(k theta). The sequence is a free-mode illustration, not a step response or an inferred intersample reconstruction. Principal angle in (-pi,pi], inverse branches integer -5 through 5. Exact identities evaluated with floating point; explicit boundary tolerance and computation limits will be tested and documented.
+One pole s=σ+jω and its conjugate. This is a free-mode mapping lesson within SISO LTI theory, with x[0]=1 and no forcing input or feedback loop. The real modal sequence is Re(exp(skT))=r^k cos(kθ). No transfer-function order, arbitrary state model, multiplicity or whole-system stability is inferred.
 
-## Source provenance and current verification
+The visual field accepts an optional s=, decimal/scientific real numbers, one j, π, parentheses, real-scalar arithmetic (+, −, multiplication, real division) and visual fractions. Products of two imaginary terms, complex denominators, functions, powers, other variables and lists of poles are rejected. Limits: 256 source characters, 80 tokens, 12 grouping/unary levels. Numeric σ/ω fields are an equivalent keyboard-friendly alternative.
 
-Read TASK, atlas DP02, and docs/research/DISCRETE_EXERCISE_AUDIT.md (DP1). That audit cites S13:2,4,6,13–14 and CH8:4–6,43–44; original slides were not reinspected by this worker. The default (-2 ± 3j, T=0.1) is the accepted metadata fixture; expected numbers will be derived from exponential/trigonometric identities. Additional cases are independent analytic fixtures, not claimed source exercises.
+T and reference T are 0.001–10 seconds; |σ|≤1000 s⁻¹, |ω|≤10000 rad/s, |σT|≤20 and |ωT|≤200π. N is an integer 4–100, and growing plots require σTN≤30. Nonfinite/empty values and exceeded limits give errors before results render. The derived alias/inverse frequency can lie outside the editable pole range; it is a derived branch value, not an extra accepted model input.
 
-No implementation checks or browser QA performed yet. No shared dependency is required. All acceptance work above remains open at this checkpoint.
+Angles use (-π,π], with a 10⁻¹⁴-radian endpoint normalization near -π. The inverse is ln(r)/T+j(θ+2πm)/T for integer m=-5…5; z=0 has no finite inverse. Radius classification uses |r-1|≤10⁻¹⁰ for boundary/near-boundary. A simple circle mode is bounded without decay; repeated circle poles may grow. Every system mode and the stability definition matter for a full-system claim.
 
-## Implementation checkpoint (before final browser QA)
+Exact identities are evaluated in floating point and numerical results are marked approximate (normally six significant digits). Very small decaying tails may underflow to zero. Plane axes auto-scale (equal scales in z, independent scales in s); tiny radii may be unresolved visually. Stems are computed samples, and dashed envelopes connect sampled envelope values for guidance. No output interpolation or inferred intersample behavior is plotted. Aliasing is established by the exact identity; the finite residual is a numerical illustration, not its proof.
 
-Pure calculation/parser and SVG plots now exist in math.ts and plots.ts, with 37 independent fixture/parser tests passing. view.ts implements the visual input, numeric alternative, comparison/prediction/reveal, inverse branch selector, modal table/stems and alias identity/check. workspace.ts guards a deferred browser-only view import; entry-point inspection does not initialize MathLive. Input changes discard results and result listeners; abort/cleanup discard pending views and editor state.
+## Independent mathematical fixtures and provenance
 
-Checks so far: Node 24.22.1, npm ci (0 vulnerabilities), npm run check passed, npm test (79 tests) passed, npm run build passed with the existing MathLive chunk warning. The initial full-suite failure from eager MathLive initialization was fixed locally with the deferred view; no shared files changed. Production preview on worker port 8793, browser QA reservation held. Baseline, T=.2, inverse m=1, negative z=-.8, circle boundary and invalid T=0 checked in in-app Chromium. Keyboard, lifecycle and narrow checks remain open; stage stays in-progress.
+- Accepted metadata baseline s=-2±3j, T=.1: exp(-.2)(cos(.3)±j sin(.3)); r≈.818730753077982, z≈.782163363184683±.241951481349599j.
+- T=.2: r≈.670320046035639, z≈.553239007381108±.378491168759837j; agrees with squaring the first discrete pole.
+- Analytic negative-real fixture s=ln(.8)/.1+jπ/.1: z=-.8, samples 1,-.8,.64,-.512,.4096.
+- Independent inverse fixture z=.5j, T=.25: σ=-4 ln2; ω=2π on m=0 and -6π on m=-1. Both map back to .5j.
+- Independent alias fixture at T=1: frequencies π/2 and 5π/2 give samples 1,0,-1,0,1. Baseline alias residual is below 10⁻¹² over 101 samples.
+- Mathematical assertions use decimal oracle values, analytic invariants and justified absolute tolerances (typically 10⁻¹²–10⁻¹⁴ at these scales). Parser/failure fixtures cover finite values, domain/work bounds, fractions, signs, malformed/unsupported notation and singular inverse/division cases.
 
-## Paused at the user's request (2026-10-29)
+Read the atlas DP02 and docs/research/DISCRETE_EXERCISE_AUDIT.md (DP1), which cites S13:2,4,6,13–14 and CH8:4–6,43–44. Original course slides were not reinspected by this worker. The baseline is accepted module metadata; additional fixtures above are analytic checks, not newly claimed inspected course exercises.
 
-Implementation remains in-progress until final checks and submission. Browser QA additionally checked direct typing (-1+4j), fractional input (-1/2+4j), incomplete fraction feedback, Systems keyboard and Escape, Tab navigation, Enter reveal, reset with open keyboard, leave/reopen restoring baseline, and 390×844 layout with no page-wide overflow. Local KaTeX fonts reported loaded; browser error/warning log was empty. Dark theme tested; light theme and a rapid-navigation-during-load browser scenario remain unperformed. Deferred lifecycle tests were added but have not yet been run. workspace.ts error-path feedback was repaired after the passing production build; final tests/build/browser reload are still required.
+## Reproducible checks
 
-Safe checkpoint only: stop requested before further implementation/checks/pushes. Browser viewport restored and worker tab closed; release QA and stop worker preview 8793. Last pushed checkpoint is e759bc9. Local implementation checkpoint was 77e5bd1; its push was rejected by the remote with a generic 'failed' response. Preserve this branch and worktree; do not claim submission or completion. Remaining delivery: final module/full tests, check/build, rapid navigation browser check, finish STATUS, final commit/push and claim submission. Primary checkout and preview 8787 remain untouched.
+Runtime: Node 24.22.1. On this host, commands use that bundled node.exe and the installed npm-cli.js explicitly, with Node 24 first on PATH; the system npm.cmd otherwise selects Node 20. Locked npm ci completed with 0 vulnerabilities. No packages or global runtime settings changed.
 
-## Resumed checkpoint (2026-10-29)
+At implementation revision 1baa7f3:
 
-Claim/worktree/branch were revalidated at 9251348 with no unrelated changes. The 42 module tests, all 84 project tests and production build passed on resume. Added support for the math keyboard division operator and explicit scientific-notation typesetting; tiny nonzero values are no longer silently displayed as exact zero. Added two independent parser fixtures; module tests now pass 44/44. A transient remote push rejection was resolved: 9251348 is now pushed. Final global checks and remaining browser QA are pending; DR02 held QA when inspected, and no browser controls were used while it held the reservation.
+- npm test -- src/modules/dp02: **44 passed**, 2 files (39 math/parser, 5 lifecycle/error-path).
+- npm run check: **passed**.
+- npm test: **86 passed**, 8 files.
+- npm run build: **passed**, static output and 20 local font assets emitted. Existing MathLive large-chunk warning remains (about 221.49 kB gzip); DP02 view is about 7.41 kB gzip.
+
+An initial full-suite failure due to eagerly initializing MathLive in the non-browser catalogue inspection was resolved locally with the guarded deferred view. No shared test/configuration change was needed. Added lifecycle tests confirm synchronous return, single cleanup, no late mount after abort or explicit disposal, no already-aborted mount, and recoverable initialization feedback.
+
+## Production browser evidence (2026-10-29)
+
+Worker-only production preview on port 8793, exclusive QA reservation, in-app Chromium in system dark theme. Before the pause, actual checks covered:
+
+- Baseline radius .818731, z≈.782163+.241951j, first samples; equal-period unchanged prediction.
+- Target T=.2 produces inward movement to .670320, z≈.553239+.378491j; old result disappears on edit.
+- Inverse m=1 at T=.2 gives ω≈34.4159 rad/s and moves the s-plane diamond without changing z or samples.
+- Negative z=-.8 alternates and decays; unit-circle explanation is qualified; invalid T=0 gives a useful error.
+- Direct equation typing -1+4j updates numeric fields; -1/2+4j parses to σ=-.5. Incomplete fraction boxes are rejected. Fonts/fractions/powers render locally; Systems keyboard opens, Escape closes it, Tab moves to the fraction button, Enter activates reveal.
+- Reset with keyboard open hides it and restores baseline/reveal state. Leave/reopen after a numeric edit restores σ=-2. No visit state is transferred.
+- 390×844 viewport has no page-wide overflow (document width 375, viewport 390 including scrollbar); inputs, stacked planes, result equations with local horizontal scrolling and keyboard remain usable. Local KaTeX_Main check passed; font set reported loaded. Browser warning/error log was empty.
+
+Rapid-navigation-during-load and a repeat of final production output after notation fixes remain pending. Light theme was not separately browser-tested; this implementation uses shared light/dark tokens without local palette overrides.
+
+## Checkpoints, delivery and remaining work
+
+Audit e759bc9, implementation 77e5bd1, pause checkpoint 9251348 and resumed fixes 1baa7f3 are committed on the worker branch. Pausing preserved all work and released browser QA/stopped the worker preview. A transient remote rejection of 77e5bd1 was later resolved; 1baa7f3 is pushed. No main merge or deployment occurred.
+
+Remaining: obtain QA after the current holder releases it; finish the final production/navigation check, record evidence, then commit/push this final status and submit the claim. No shared helper/dependency request or unimplemented mathematical requirement remains. Independent technical review for verified stage belongs to integration; it is not claimed here.
