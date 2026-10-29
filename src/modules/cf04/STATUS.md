@@ -27,3 +27,11 @@ Planned scope retains the full accepted frequency exercise within a real proper 
 ## Setup and next action
 
 Atomic own claim and fresh managed worktree at exact primary baseline; unique branch recorded in the claim/private ledger. Locked dependencies installed with bundled Node24. Next: derive/test complete bounded crossover, closed-loop and resonance/bandwidth mathematics, then implement the student flow and verify the actual browser. This early checkpoint is recoverable planning, not completion.
+
+## Mathematical checkpoint (29 October 2026, 15:56UTC)
+
+Private `algebra.ts`, `roots.ts`, `math.ts` and local tests now implement the bounded frequency calculations. Exact rational Sturm sequences first remove repeated factors, then count/isolate all distinct positive roots of degree≤3 equations. DC roots are separate. Isolation has220-step/depth and1500-work bounds; distinct numerical markers closer than relative10^-10 or insufficient residual/precision receive explicit errors. Curve samples do not establish crossing completeness. The scalar grammar now permits12 decimal places, preserving the atlas C1 coefficients; reduced denominators remain≤10^18 and numeric magnitudes≤100.
+
+The backend derives gain/phase equations, exact closed-loop Routh classification, Kv, all stationary points and −3dB candidates, and G/L/T frequency values. Stable performance markers are withheld for unstable/boundary models and near-pole conditioning. Exact static compensator cancellation is distinguished from near equality. Baseline PM51.82729237deg, resonance sqrt2 with peak2/sqrt3, bandwidth sqrt(2+2sqrt5), lead PM64.47122063deg atω2, sameKv2, and independent finite-GM lag stable/boundary/unstable fixtures pass.
+
+Checks: `node node_modules/vitest/vitest.mjs run src/modules/cf04`36 tests pass; `npm run check`passes. These are private math checks only. The workspace remains a scaffold: student inputs/plots/cursors/attempt/reveal, lifecycle/flow checks, full project test/build and actual browser QA still remain. This checkpoint does not mark the accepted exercise implemented.
