@@ -12,6 +12,7 @@ describe('CR02 bounded visual ODE entry', () => {
   it('accepts compact and mixed numeric coefficient fractions', () => {
     for (const coefficient of ['\\frac12', '\\frac1{2}', '\\frac{1}2', '\\frac{1}{2}']) expect(parseOde(`${coefficient}y''+3y'+2y=u`)).toEqual({ ...BASELINE, m: .5 });
     expect(parseOde("2y''+5y'+3y=u'+4u")).toEqual({ m: 2, c: 5, k: 3, b: 4, d: 1 });
+    expect(parseOde("y''+3y'+2y=\\frac1{100000000}u")).toEqual({ ...BASELINE, b: .00000001 });
   });
   it('round trips physical coefficient edits without rounding model input', () => {
     const model = { m: .123456789012345, c: 1e-9, k: 1000, b: -.333333333333333, d: 0 };
@@ -20,6 +21,12 @@ describe('CR02 bounded visual ODE entry', () => {
   });
   it.each(['', '0=u', "y''+3y'+2y=", "y''+3y'+2y=s", "y''+3y'+2y=u''", "y''+3y'+y*y=u", "-y''+3y'+2y=u", "y''-3y'+2y=u", "y''+3y'-2y=u", "y''+3y'+2y=sin(u)", "y''+3y'+2y=NaN*u", "\\frac10y''+3y'+2y=u", "1e-9999y''+3y'+2y=u", "y''+3y'+2y=0.0000000001u", 'y'.repeat(601)])('rejects unsupported/invalid ODE %s', text => {
     expect(() => parseOde(text)).toThrow();
+  });
+  it.each(["1e-2y''+3y'+2y=u", "y''+3y'+2y=1E2u", "y''+3y'+2y=e*u"])('rejects ambiguous visual e/E notation: %s', text => {
+    expect(()=>parseOde(text)).toThrow(/visual editor treats e\/E/);
+  });
+  it('rejects a long nonzero decimal that underflows before it can become a zero term', () => {
+    expect(()=>parseOde(`y''+3y'+2y=0.${'0'.repeat(330)}1u`)).toThrow(/floating-point range/);
   });
 });
 

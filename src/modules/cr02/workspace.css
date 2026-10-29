@@ -1,0 +1,22 @@
+[data-module="CR02"] .cr02 { display: grid; gap: 20px; min-width: 0; font-size: 14px; line-height: 1.6; }
+[data-module="CR02"] .cr02 section { padding: 18px; border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+[data-module="CR02"] .cr02 h3 { margin: 0 0 10px; font-size: 17px; font-weight: 550; }
+[data-module="CR02"] .cr02 h4 { margin: 16px 0 8px; font-size: 14px; }
+[data-module="CR02"] .cr02 p { margin: 8px 0; }
+[data-module="CR02"] .cr02 .muted { font-size: 12px; color: var(--muted); }
+[data-module="CR02"] .cr02 .notice { padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--tint); overflow-wrap: anywhere; }
+[data-module="CR02"] .cr02 .controls, [data-module="CR02"] .cr02 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+[data-module="CR02"] .cr02 label { display: grid; gap: 4px; font-size: 12px; }
+[data-module="CR02"] .cr02 input, [data-module="CR02"] .cr02 select { width: 150px; max-width: 100%; min-height: 40px; padding: 6px; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+[data-module="CR02"] .cr02 button { padding: 8px 12px; font: inherit; font-size: 13px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); }
+[data-module="CR02"] .cr02 button:hover { background: var(--tint); }
+[data-module="CR02"] .cr02 button.primary { background: var(--tint); border-color: var(--accent); }
+[data-module="CR02"] .cr02 button:disabled { opacity: .5; cursor: default; }
+[data-module="CR02"] .cr02 .selected { background: var(--tint); outline: 2px solid var(--accent); outline-offset: -2px; }
+[data-module="CR02"] .cr02 .scroll, [data-module="CR02"] .cr02 .equation-display { max-width: 100%; overflow-x: auto; }
+[data-module="CR02"] .cr02 table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+[data-module="CR02"] .cr02 td, [data-module="CR02"] .cr02 th { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+[data-module="CR02"] .cr02 svg { display: block; width: 100%; height: auto; color: var(--accent); }
+[data-module="CR02"] .cr02 svg text { fill: var(--text); font-size: 14px; }
+[data-module="CR02"] .cr02 [hidden] { display: none; }
+@media(max-width:480px) { [data-module="CR02"] .cr02 section { padding: 12px; } }

@@ -51,9 +51,11 @@ export function parseOde(latex: string): Model {
   if (!latex.trim()) fail('Enter a second-order ODE.');
   if (latex.length > 600) fail('Keep the ODE under 600 characters.');
   let text = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:,|!|;|quad|qquad| )/g, '').replace(/\s/g, '').replace(/−/g, '-');
-  text = expandFractions(text).replace(/\\(?:cdot|times)/g, '*')
+  text = text.replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\ddot\{?y\}?/g, "y''").replace(/\\dot\{?y\}?/g, "y'").replace(/\\dot\{?u\}?/g, "u'")
-    .replace(/\\prime/g, "'").replace(/([yu])\^\{('{1,2})\}/g, '$1$2').replace(/([yu])\^('{1,2})/g, '$1$2')
+    .replace(/\\prime/g, "'");
+  if (/[eE]/.test(text)) fail('Enter decimal coefficients, not e/E notation: the visual editor treats e/E as mathematical symbols.');
+  text = expandFractions(text).replace(/([yu])\^\{('{1,2})\}/g, '$1$2').replace(/([yu])\^('{1,2})/g, '$1$2')
     .replace(/y''/g, 'Y2').replace(/y'/g, 'Y1').replace(/u'/g, 'U1').replace(/y/g, 'Y0').replace(/u/g, 'U0');
   const scalar = String.raw`[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?`;
   text = text.replace(new RegExp(`\\((${scalar})\\)`, 'g'), '$1');
