@@ -27,3 +27,15 @@ The atlas CP03 entry and recorded source audit cite S05:4–11,13–14 and Ch3; 
 ## Verification
 
 Not yet performed. This checkpoint records scope and ownership; it does not claim implementation completion.
+
+## Paused checkpoint — 2026-10-29
+
+Work paused at the user's explicit request to pack up. Stage remains **in-progress**; this is not a submitted contribution.
+
+- Implemented locally: bounded visual plant parser, proper real TF order 0–2, analytic sinusoidal/zero-state/transient calculation, conservative settling qualification, paired peak/amplitude markers before reveal, transient toggle, linked sampled Bode/Nyquist views, changed-data presets, validation, scoped responsive styles and guarded deferred view loading.
+- Independent mathematical fixtures cover complex division, baseline partial fractions, changed frequency/amplitude, repeated poles, first-order feedthrough, complex poles checked by independent Simpson convolution, general proper second-order initial conditions, unstable/marginal modes, zero/notch phase, resonance and invalid/bounded inputs.
+- Exact checks completed using bundled Node v24.22.1: `npm test -- src/modules/cp03` **38/38 passed** (3 files); `npm run check` **passed**. Earlier `npm test` **73/73 passed** before adding the seven final UI/lifecycle tests. `npm run build` passed before the final deferred-view/formatting edits; a final full-suite/build rerun is still required.
+- An earlier full-suite failure exposed MathLive's Node export when the catalogue imported the workspace. Browser-only imports now sit behind the mount boundary, and the subsequent full suite passed; the deferred loader also has abort/cleanup tests. No shared files were changed.
+- Browser QA was requested once and was busy with DP02. CP03 acquired no browser reservation, opened no browser tab and started no preview/helper process. **All required real-browser checks remain unperformed**, including actual MathLive/fonts/keyboard, editing/results/reset/reopen/rapid navigation, narrow viewport and theme inspection.
+- Remaining: real-browser QA and any resulting repairs; final full test/build checks; final requirement evidence and implemented-stage assessment; commit/push and claim submission. The branch has not been pushed. No independent review or mathematical completion is claimed.
+- Resume only on user instruction; use the existing worktree/claim and preserve this checkpoint.
