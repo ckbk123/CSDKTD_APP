@@ -7,7 +7,8 @@
 - **Branch:** `codex/cs03-parameter-regions-2175`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cs03-parameter-regions-2175/CSDKTD APP`
 - **Baseline primary main:** `0c6f038e37c321169cbbac9961c3c3ebd125d25a` (v0.3.2)
-- **PR / submission:** implementation and checks complete; PR URL and exact clean submission are recorded below when created
+- **PR:** [#26 — Implement CS03 complete cubic gain-region exercise](https://github.com/ckbk123/CSDKTD_APP/pull/26), attached to the worker chat
+- **Submission:** final clean checked HEAD is recorded in the shared claim; branch remains preserved for independent review
 
 ## Scope and accepted requirements
 
@@ -24,7 +25,7 @@ The complete bounded exercise is implemented and checked in the production brows
 | All roots at interior/exterior/boundary gains | Exact inspection gains, full numerical cubic modes, Routh table, factors, counts/residuals | Every source boundary/interior/exterior checked |
 | Required baseline and W06 variation | Independent 0<K<70 and 0<K<48 tests and computed changed-data presets | Passed browser/reset verification |
 | Lifecycle and readable input | Three caller-owned equation editors, scoped styles, cold-load status, child-signal abort/failure cleanup | Keyboard, fast navigation and narrow viewport passed |
-| Delivery | Clean pushed checkpoints and current claim | One attached PR and final exact submission are the remaining bookkeeping |
+| Delivery | [PR #26](https://github.com/ckbk123/CSDKTD_APP/pull/26), attached worker artifact; own branch/worktree and final claim | Independent integration review |
 
 ## Mathematical domain and reasoning
 
@@ -91,4 +92,4 @@ Own viewport override was reset, tab5 closed, and preview process72504 on port88
 
 ## Remaining integration work
 
-The accepted bounded exercise and required worker checks are complete. Independent coordinator review and the approved native-reader adaptation remain integration responsibilities. PR attachment/URL and exact clean checked branch submission are recorded next. No merge, version change or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
+The accepted bounded exercise and required worker checks are complete. PR#26 is open against main and attached to this worker chat. The final delivery record is committed, checked and pushed before the shared claim records its exact clean HEAD. Independent coordinator review and the approved native-reader adaptation remain integration responsibilities. No merge, version change or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
