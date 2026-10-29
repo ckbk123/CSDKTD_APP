@@ -147,7 +147,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
         }
         shape(picture, 'path', { d: path, class: key === 'exact' ? 'dp03-line' : 'dp03-comparison' });
       }
-      if (selected.kind === 'value') { const ordinate = phase ? selected.phase === null ? null : selected.phase * 180 / Math.PI : selected.db; if (ordinate !== null) shape(picture, 'circle', { cx: bx(angle), cy: by(ordinate), r: 5, class: 'dp03-marker' }); }
+      if (selected.kind === 'value' && angle >= Math.PI * .0001) { const ordinate = phase ? selected.phase === null ? null : selected.phase * 180 / Math.PI : selected.db; if (ordinate !== null) shape(picture, 'circle', { cx: bx(angle), cy: by(ordinate), r: 5, class: 'dp03-marker' }); }
       return picture;
     };
     plots.replaceChildren(card('Unit-circle cursor', plane, 'The point is z=cos Ω+j sin Ω. Ω=0 is DC; Ω=π is the Nyquist endpoint.'), card('Sampled Nyquist curve', nyquist, `Positive Ω: solid. Negative Ω: dashed conjugate. Out-of-view segments beyond ±${format(halfSpan)} gain units are omitted; adjust the half-span. Singular points are gaps. This is not an encirclement/stability proof.`), card('Magnitude', bode(false), 'Solid: direct discrete evaluation. Dashed: transformed model evaluated without frequency warping. DC and frequencies below the logarithmic span are reported by the cursor, not represented by a log-zero axis.'), card('Principal phase', bode(true), 'Phase is undefined at a zero or pole. Principal-phase wraps are drawn as gaps; ±180° represent the same negative real direction.'));

@@ -43,3 +43,7 @@ Next: build the required linked unit-circle/Bode/Nyquist/W-plane teaching interf
 ## Priority review checkpoint
 
 DR01 was reopened by the coordinator after this first DP03 workspace slice. Its prepared correction is ready for the original branch; DP03 is checkpointed and suspended again to finalize that priority resubmission. Current DP03 `npm run check` passes. Next DP03 actions remain: interface and lifecycle regressions, project checks/build, real-browser verification and corrections, STATUS evidence, its one PR and exact submission. In particular inspect curve bounds, zero/pole gaps, log-axis cursor behavior and all mathematical labels in the real browser.
+
+## Interface regression checkpoint
+
+Added exercise-wiring and asynchronous-lifecycle tests: first-order prediction fixtures, live numeric/range cursor, undefined DC/zero phase, signed alias repetition, invalid T/notation/order, independent visits and native numeric scientific entry. `npm run check` passed; module tests now pass 29/29. A test initially compared the equivalent default numeric spellings .1 and 0.1; the assertion now checks the numeric value. The log-axis cursor no longer draws DC as a false finite log-zero point. Browser and full-project checks remain pending. Suspended here for two new coordinator DR01 edge cases (raw native-number underflow and invalid TeX parenthesis grouping); apply the same semantic guards here after that priority correction is resubmitted.
