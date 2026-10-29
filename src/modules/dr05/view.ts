@@ -65,7 +65,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   setup.append(element('p', 'The delayed preset is the separately declared ZOH plant path, not the full original feedback diagram. Integrator/oscillator examples are independent teaching fixtures.', 'zoh-small'));
   const attempt = section('2. Predict and reveal');
   const prediction = number(attempt, 'Your prediction for y[1] (optional)', '', -1e10, 1e10);
-  attempt.append(button('Reveal sampled model', reveal), notice);
+  attempt.append(element('p', 'Prediction tolerance: absolute difference ≤ 0.00001 × max(1, |y[1]|).', 'zoh-small'), button('Reveal sampled model', reveal), notice);
   root.append(resultHost); resultHost.append(element('h3', '3. Compare source trajectory and sampled models'));
   const feedback = element('p', '', 'zoh-notice'), equations = element('div');
   const inspect = number(resultHost, 'Inspect sample k', 1, 0, 30, '1');
