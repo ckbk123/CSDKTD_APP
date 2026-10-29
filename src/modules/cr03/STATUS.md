@@ -1,6 +1,6 @@
 # CR03 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Assessed:** 2026-10-29
 - **Claim baseline:** `ecf398eb8dc32376e994a458e3bff3b666ce118a`, fresh committed primary main (v0.3.4)
 - **Owned scope:** `src/modules/cr03/**`
@@ -8,10 +8,10 @@
 - **Branch:** `codex/cr03-state-realizations-01a186d2`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr03-state-realizations-01a186d2/CSDKTD APP`
 - **Contract:** [TASK.md](TASK.md)
-- **PR:** [CR03 #21](https://github.com/ckbk123/CSDKTD_APP/pull/21), attached to this worker chat; draft pending real-browser QA
-- **Current remaining work:** finish actual fraction/power-button and font-entry checks, keyboard/fonts, lifecycle and phone layout; repair any findings and finish the delivery evidence. Mathematical browser checks are recorded below. Historical global-browser deferrals are superseded by verified private per-chat IAB testing.
+- **PR:** [CR03 #21](https://github.com/ckbk123/CSDKTD_APP/pull/21), attached to this worker chat; final clean pushed HEAD is recorded in the PR and primary claim registry.
+- **Current remaining work:** independent coordinator review/integration. The full accepted bounded exercise and actual browser gate are complete; see the final delivery record below. Earlier plans, test counts and browser deferrals are historical checkpoints, superseded by that record. This worker does not claim independent `verified` status or an accepted release.
 
-## Accepted requirement audit before implementation
+## Historical accepted requirement audit before implementation
 
 Current source contains immutable-intended metadata and a blank synchronous mount. There are no local algorithms, controls or tests to preserve. The shared baseline banner is a notation preview, not a realization tool. Locked dependencies were installed in this new worktree with Node 24; no package files changed. No shared mathematical dependency is required.
 
@@ -27,7 +27,7 @@ Current source contains immutable-intended metadata and a blank synchronous moun
 | Browser/lifecycle/limits | absent | Shared equation input/display, shared native-number reader, local abort-safe state/loading, scoped responsive styles; all real-browser checks pending |
 | Independent mathematical/project verification | absent | Baseline resolvent, proposed similarity, biproper D, arbitrary transformations, hidden modes and singularities; no module tests run yet |
 
-## Intended bounded mathematical domain
+## Historical intended bounded mathematical domain
 
 The planned scope is continuous proper real SISO models with zero to four states, including static gains. Coefficients are in descending powers of s; matrices are row-major, B is a column, C a row and D a scalar. Denominator/characteristic polynomials are retained without silently discarding hidden modes. An improper transfer function cannot be forced into an ordinary standard realization.
 
@@ -45,7 +45,7 @@ A proposed independent biproper fixture is (2s²+7s+9)/(s²+3s+2): D=2 and the c
 
 The worker read the repository atlas and relevant continuous audit and functional-specification sections. No new inspection of external original course decks is claimed. No implementation, module test, production build or CR03 browser functionality is claimed at this audit checkpoint.
 
-## Recovery and earlier contributions
+## Historical recovery and earlier contributions
 
 CR02 is separately submitted in [PR #12](https://github.com/ckbk123/CSDKTD_APP/pull/12) at 8faeb86640e29d02323fc2c8d5d978a22e82193a, with 57 module tests, 99 project tests and production-browser evidence. DR02 is preserved on [PR #5](https://github.com/ckbk123/CSDKTD_APP/pull/5), submitted a8d544aaafe122588b8b58fa88a8b06a4594813e, with coordinator-owned final visual gate and a numeric font-wrapper issue recorded for reopening. Their claims/worktrees stay intact. Review returns take priority after checkpointing this newer work. Only CR03 is actively implemented.
 ## Mathematical checkpoint
@@ -84,7 +84,7 @@ A read-only pinned-MathLive/parser audit found a CR03 displayed-meaning defect: 
 
 The loader also now removes its synchronous loading node on parent abort without waiting for disposal and skips an already-aborted visit. An owned child signal releases partial view resources before recovery and on disposal with an active parent; a regression registers a signal-owned window listener and forces mount failure to verify actual resource release. The existing local Escape capture remains necessary and tested on this older shared-editor baseline.
 
-Current accepted-scope coverage:
+Accepted-scope coverage at the resumption checkpoint (all listed browser verification is completed in the final delivery record):
 
 | Requirement | Implemented evidence | Remaining verification |
 |---|---|---|
@@ -117,3 +117,42 @@ Ordinary keyboard typing of y″+3y′+2y=u′+4u serializes to successive MathL
 Native-control browser checks distinguish singular T=0, a nonzero underflow, an empty cell and representable 1e−2. The valid coordinate scale has condition 100 and preserves the output; condition above 10⁸ is rejected. Excessive/insufficient sample counts, horizon and command underflow hide answers with explicit bounds. Intentional 0e−999 gives finite zero curves and 401 actual table rows; native 1e−2 scales the four-integrator output correctly. A matrix free mode A=100 with initial state 1 reports the 10¹⁰ trajectory bound on a 1 s horizon; shortening to 0.1 s computes e¹⁰≈22026.47. A zero-transfer unobservable mode retains x(1)=e, output zero and its denominator; unavailable derivative coordinates explain the singular map while identity coordinates remain usable.
 
 Visual inspection found that a single long state/output equation made the two comparison panels unnecessarily wide. Each panel now typesets dynamics and output on separate aligned lines; the actual rebuilt layout was inspected with both complete equations visible in the two-state case. Numerical matrices and algorithms are unchanged. The partial structured browser evidence is saved outside Git as `cr03-browser-progress.json` in the worker visualization directory. Keyboard/fonts, fraction/power-button entry, lifecycle and narrow viewport remain to be completed; this checkpoint does not claim those checks.
+
+## Final delivery record — 29 October 2026
+
+All accepted bounded requirements and the browser checks listed as pending above are now complete. Students can edit a proper TF, linear ODE or supplied matrix model; attempt an input/output-equivalent realization; inspect canonical coefficient placement and physical derivative-corrected states side by side; choose T and map nonzero initial data; predict the direct output jump; and compare computed states and unchanged output. Source changes require Apply and invalidate old answers. Supplied nonminimal models retain their characteristic denominator and ranks; zero-state TF equivalence does not assert a bijective state map. Improper models cannot silently become ordinary standard realizations.
+
+Final supported limits are **0–4 states**, source/coordinate/normalized coefficients of magnitude at most **10⁶**, recovered polynomial coefficients at most **10¹²**, relative inversion/rank threshold **10⁻¹²** and coordinate infinity-norm condition at most **10⁸**. Source initial values and constant command have magnitude at most **100**. Time is seconds, horizon **0.001–20 s**, with **2–401** endpoint-inclusive samples. Generated/mapped states and output are bounded by **10¹⁰**; finite intermediate matrix products by **10¹⁰⁰**. The 26-term scaled exponential allows at most 36 squarings and avoids an inverse of A. Negligible exponential-series terms may underflow; entered algebraic nonzero data cannot silently become zero. Plot spacing warnings identify potentially unresolved fast variation. Polynomials descend in s; A is square, B a column, C a row, D a scalar; no feedback loop or discrete sample period is introduced. State is continuous at 0, with any output jump due to D; input was zero before the constant command. Signal units and chosen coordinate scaling are stated in the interface.
+
+The bounded visual grammar uses 600 characters, 256 tokens, 32 nested groups/signs, integer powers −4…4, intermediate polynomial order at most eight and final proper order at most four. ODEs are linear with constant coefficients through fourth derivatives. Unsupported/nonlinear forms, singularities, nonfinite/underflow data and resource bounds give explicit errors. TF equivalence uses a **10⁻⁸ relative cross-polynomial residual without an absolute floor**; sampled mapped outputs receive an independent **10⁻⁷ relative** check. Prediction uses **10⁻⁸ absolute/relative** tolerance. Labels have seven significant digits; matrix identities, floating-point residuals and sampled illustrations are distinguished. Minimal cancellation, arbitrary forcing waveforms and inferring unique physical states from a TF are outside this domain.
+
+### Completed real-editor, error and numeric checks
+
+- Actual fraction-button entry produces +1/2 and −1/2 with the corresponding static outputs. The actual power button builds s⁻² and gives y(1)=1/2. Numeric font-wrapped 1/(s+2) is accepted and gives y(1)=0.4323324. Empty/incomplete fraction input hides old answers; Baseline recovers.
+- Both TF and ODE Systems keyboards replace a selected value. Escape closes them while preserving visual editing; preset/Apply then works. Mathfield Tab first exits its editable content, and the next Tab reaches Insert fraction. Bundled fonts report loaded and KaTeX_Main is present.
+- Hidden ODE braces reject; visible (1+2)u recovers y(1)=0.5993646. Dependent-variable powers reject as nonlinear. Earlier actual prime, grouping, mixed-number, improper and single-token exponent checks remain recorded above.
+- A zero candidate for G=10⁻¹⁰/(s+1) rejects with relative residual 1; y(1)=6.321206×10⁻¹¹. Intentional native zero and representable exponent controls pass separately from nonzero underflow. All mathematical browser values above were read from computed UI results rather than injected application state.
+
+### Completed layout and lifecycle checks
+
+Desktop **1280×720** and phone **390×844** were inspected. The two-state comparison equations are fully readable on separate aligned lines. Four-state matrices, equations, chain and plots scroll locally; the phone page remains 375 px wide without page-wide overflow. Tab reaches offscreen matrix cells and scrolls them into view. The final scoped CSS bounds the sample table vertically and pins its headers and time column. Actual 401-row phone QA confirms horizontal ArrowRight and vertical PageDown scrolling: 433 px client height versus 12943 px row content, with header/time positions fixed during scrolling. Phone Systems keyboard remains usable without widening the page.
+
+Reset while the four-state table and keyboard are open restores dimension 2, command 1, initial zero, identity T, 201 points and hidden answers: one module root/two editors, no loading or keyboard. Leaving for CR04 removes the old root/editors and hides the keyboard. Reopening restores baseline A/B/C/D and controls. Three rapid CR04↔CR03 round trips leave one root/two editors and no stale answers, loading or keyboard. Application warning/error logs are empty. The temporary viewport was reset to 1280×720 and owned tab 4 was closed. Only this chat's verified private IAB was controlled; no global QA reservation was held. The exact Chromium engine version is not exposed. Firefox supplies no CR03 evidence because its current URL-policy limitation prevents supported native inspection; no bypass/retry was attempted.
+
+Evidence remains outside Git at `C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-0050-7de0-aa3f-c6616623f222/`: final `cr03-browser-results.json` (the earlier `cr03-browser-progress.json` remains explicitly partial), `cr03-desktop-coordinates.jpg`, `cr03-full-page.jpg`, `cr03-phone-matrices.jpg`, `cr03-phone-state.jpg`, `cr03-phone-table.jpg` and `cr03-phone-keyboard.jpg`.
+
+### Final checks and submission handoff
+
+After the final table CSS change, Node 24 with locked existing dependencies passes:
+
+- `npm run check`.
+- `node node_modules/vitest/vitest.mjs run src/modules/cr03`: **93 tests / five files**.
+- `npm test`: **347 tests / 22 files** in this contribution's baseline.
+- `npm run build`: passes; existing MathLive large-chunk warning remains.
+- `git diff --check`: passes.
+
+The independent fixtures above include partial fractions, a hand-multiplied T, independently eliminated noncanonical fourth order, analytic diagonal/fast/unbalanced trajectories, hidden initial modes, static and biproper cases. Parser and caller-state tests preserve actual four-prime serialization and reject hidden grouping. Lifecycle tests prove partial mount resource release with a real signal-owned window listener, synchronous parent-abort loading removal, already-aborted visit behavior and disposal with an active parent. Mocked view tests are not substituted for the actual editor checks.
+
+Runtime code through `45cc02844dd821d08cc86a97218ca992e549cae7` was production-browser tested; the subsequent scoped table CSS was rebuilt and browser checked as above. Final HEAD includes this delivery evidence and is submitted through the current primary helper only after commit/push and a clean tree/index, including nonignored untracked files. Independent source/mathematical review and integration remain coordinator work. This branch already uses shared `readNumericInput`; no reader exception or unowned shared change is requested. Its tested local Escape capture predates the coordinator's shared correction and can be assessed during integration. No main merge, release change or deployment was performed.
+
+The human stop-after-current amendment, relayed by the coordinator, ends this run after CR03 submission. **No further module was claimed.** Previous CR02 PR #12 remains submitted at `8faeb86640e29d02323fc2c8d5d978a22e82193a`. DR02 PR #5 is resubmitted at `271d2df700504012089729492926157786299683` with explicit approval for its tested equivalent local reader and coordinator-owned adaptation/native checks before acceptance. Their worktrees, branches and evidence stay preserved for review. Owned previews on 8792 and 8852 were already stopped; own 8864 preview is stopped after submission. No other preview or primary 8787 is altered. Stopping this worker does not certify those integrations or completion of the repository backlog.
