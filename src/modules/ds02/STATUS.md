@@ -32,3 +32,11 @@ Conditions are exact rational identities; roots and future sweeps are floating p
 ## Remaining work / dependencies
 
 Finish workspace, run tests/type/build and real-browser QA under reservation, update evidence and submit branch. No shared changes required.
+
+## Working lesson checkpoint
+
+`ui.ts` now implements visual equation entry, affine coefficient functions, mirrored rows and exact determinant arithmetic, row/interval attempts with feedback, reveal/hide, individual inequality sets and exact intersection, boundary gain selection, numerical roots and unit-circle plot, plus a bounded 81-gain illustration. Numeric/fraction controls provide keyboard access. Edits invalidate stale results; reset/reopen are per-visit. `workspace.ts` synchronously returns cleanup and guards its browser-only UI import against abort/disposal. No shared changes were needed.
+
+Bundled Node 24.22.1: `npm run check` passed; `npm test` passed 71 tests in 9 files (29 DS02 tests across math, lesson state and late-import cleanup); `npm run build` passed, with the existing MathLive large-chunk warning. The first full run exposed eager MathLive import during catalogue checks; the guarded local loader resolves it. Mocked UI tests establish caller logic only, not editor/browser behavior.
+
+Browser QA has been requested twice after independent implementation checkpoints and is busy with other workers; no browser controls have been used. Real-browser evidence is still required before implemented/submitted status.

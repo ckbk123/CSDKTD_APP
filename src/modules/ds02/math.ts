@@ -30,6 +30,14 @@ export function decimal(text: string): Rational {
   return rat(sign * (BigInt(whole || '0') * d + BigInt(fraction || '0')), d);
 }
 
+export function parseNumber(text: string): Rational {
+  if (text.length > 52) throw new Error('Use a short decimal or a fraction of two decimals.');
+  const parts = text.split('/');
+  if (parts.length > 2) throw new Error('Use a number or one fraction, such as 20/9.');
+  if (parts.length === 2 && parts.every(p => /^[+-]?\d{1,24}$/.test(p.trim()))) return rat(BigInt(parts[0].trim()), BigInt(parts[1].trim()));
+  return parts.length === 2 ? div(decimal(parts[0]), decimal(parts[1])) : decimal(text);
+}
+
 export interface Affine { readonly slope: Rational; readonly offset: Rational }
 export interface Family { readonly b: Affine; readonly a: Affine }
 export interface Condition extends Affine { readonly label: string; readonly formula: string }
@@ -156,7 +164,7 @@ export function roots(b: number, a: number): Root[] {
   return q === 0 ? [{ re: 0, im: 0 }, { re: 0, im: 0 }] : [{ re: q, im: 0 }, { re: a / q, im: 0 }];
 }
 export function at(f: Family, k: Rational) {
-  if (Math.abs(num(k)) > 10000) throw new Error('Use |K| ≤ 10,000.');
+  if (cmp(k, rat(-10000)) < 0 || cmp(k, rat(10000)) > 0) throw new Error('Use |K| ≤ 10,000.');
   const a = evaluate(f.a, k), b = evaluate(f.b, k), values = conditions(f).map(c => evaluate(c, k));
   const stable = values.every(v => v.n > 0n);
   const boundary = !stable && values.every(v => v.n >= 0n);

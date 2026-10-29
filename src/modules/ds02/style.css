@@ -1,0 +1,32 @@
+[data-module="DS02"] .jury { display: grid; gap: 20px; min-width: 0; font-size: 14px; line-height: 1.65; }
+[data-module="DS02"] .jury section { min-width: 0; padding-block: 10px 20px; border-bottom: 1px solid var(--line); }
+[data-module="DS02"] .jury h3 { margin: 4px 0 10px; font-size: 18px; font-weight: 550; }
+[data-module="DS02"] .jury p { margin: 10px 0; overflow-wrap: anywhere; }
+[data-module="DS02"] .jury-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin: 14px 0; }
+[data-module="DS02"] .jury label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; max-width: 100%; }
+[data-module="DS02"] .jury input { min-width: 0; width: 180px; max-width: 100%; padding: 9px; color: var(--text); background: var(--background); border: 1px solid var(--line); border-radius: 6px; }
+[data-module="DS02"] .jury input[type="checkbox"] { width: 22px; height: 22px; }
+[data-module="DS02"] .jury button { padding: 9px 13px; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 13px; }
+[data-module="DS02"] .jury button:hover { background: var(--tint); border-color: var(--accent); }
+[data-module="DS02"] .jury table { border-collapse: collapse; width: 100%; margin: 12px 0; table-layout: fixed; font-size: 13px; }
+[data-module="DS02"] .jury td, [data-module="DS02"] .jury th { text-align: left; border: 1px solid var(--line); padding: 9px; overflow-wrap: anywhere; }
+[data-module="DS02"] .jury caption { text-align: left; color: var(--muted); margin-bottom: 8px; }
+[data-module="DS02"] .jury-coefficient { background: var(--tint); }
+[data-module="DS02"] .jury-conditions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+[data-module="DS02"] .jury-conditions > div { padding: 12px; border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+[data-module="DS02"] .jury-conditions .jury-active { border-color: var(--accent); background: var(--tint); }
+[data-module="DS02"] .jury svg { display: block; width: 100%; max-width: 620px; height: auto; margin: 12px auto; overflow: visible; }
+[data-module="DS02"] .jury svg text { fill: var(--text); font: 12px system-ui; }
+[data-module="DS02"] .jury-axis { stroke: var(--muted); stroke-width: 1; }
+[data-module="DS02"] .jury-circle { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+[data-module="DS02"] .jury-pole { stroke: var(--accent); stroke-width: 3; fill: none; }
+[data-module="DS02"] .jury-sample { fill: var(--muted); opacity: .55; }
+[data-module="DS02"] .jury-interval { stroke: var(--accent); stroke-width: 6; }
+[data-module="DS02"] .jury-open { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+[data-module="DS02"] .jury details { color: var(--muted); font-size: 12px; }
+[data-module="DS02"] .jury summary { cursor: pointer; }
+[data-module="DS02"] .jury .equation-display { max-width: 100%; overflow-x: auto; }
+@media (max-width: 650px) {
+  [data-module="DS02"] .jury-conditions { grid-template-columns: minmax(0, 1fr); }
+  [data-module="DS02"] .jury td, [data-module="DS02"] .jury th { padding: 5px; font-size: 11px; }
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { at, cmp, conditions, decimal, exact, intersect, intervalText, num, parseFamily, rat, roots } from './math';
+import { at, cmp, conditions, decimal, exact, intersect, intervalText, num, parseFamily, parseNumber, rat, roots } from './math';
 
 describe('quadratic Jury interval: independent analytic fixtures', () => {
   it('derives all four baseline constraints and their strict intersection', () => {
@@ -77,6 +77,12 @@ describe('bounded visual polynomial parser and rational arithmetic', () => {
     expect(() => at(parseFamily('z^2+K'), decimal('10001'))).toThrow();
     expect(() => decimal('Infinity')).toThrow();
     expect(() => roots(NaN, 1)).toThrow();
+    expect(exact(parseNumber('20/9'))).toBe('20/9');
+    expect(exact(parseNumber('-.25/0.5'))).toBe('-1/2');
+    expect(() => parseNumber('1/2/3')).toThrow();
+    expect(() => parseNumber('1/0')).toThrow();
+    expect(() => rat(10n ** 25n)).toThrow();
+    expect(() => at(parseFamily('z^2+K'), parseNumber('10000000000000000000001/1000000000000000000'))).toThrow();
   });
 });
 
