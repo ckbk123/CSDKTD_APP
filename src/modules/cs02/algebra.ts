@@ -112,7 +112,8 @@ export function latexRF(a: RF): string {
 const variations = (signs: readonly number[]) => { const nonzero = signs.filter(Boolean); return nonzero.slice(1).filter((s, i) => s !== nonzero[i]).length; };
 /** Sturm signs at 0+ and +infinity, so roots at zero are excluded. */
 export function positiveDistinctRoots(p: Poly): number {
-  const first = monicP(p); if (degree(first) <= 0) return 0;
+  const original = trim(p); if (degree(original) <= 0) return 0;
+  const first = monicP(divideP(original, gcdP(original, derivativeP(original))).quotient);
   const sequence = [first, derivativeP(first)];
   while (!zeroP(sequence[sequence.length - 1])) {
     if (sequence.length > 34) throw new Error('Sturm sequence exceeded its degree bound.');
