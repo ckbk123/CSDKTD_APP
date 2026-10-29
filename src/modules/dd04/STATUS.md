@@ -39,3 +39,9 @@ Planned limits: finite signed gains |K|<=10000; T in [.001,10] s; filtered tau i
 Read current primary guides, module TASK, atlas DD04 and DISCRETE_EXERCISE_AUDIT.md DD3/S14 recurrence. Original slides were not reinspected. The exact baseline/changed-period numbers are accepted source-audit fixtures; other tests will be independently derived checks, labeled accordingly. No shared math API or dependency is needed.
 
 Locked npm ci completed under Node 24.22.1 with 0 vulnerabilities. No implementation tests/browser checks run yet. New QA acquisition is deferred until the coordinator releases its next integration slot, per scheduling notice; independent implementation continues.
+
+## Mathematical checkpoint
+
+math.ts now derives c0/c1, alpha/beta, the unreduced zero-state transfer coefficients and a consistent initial memory. calculate reads immutable old memory and returns the next state without mutation, comparing positional and incremental results with scale-aware residual feedback. Forward differentiation explains its future-input requirement. input.ts parses bounded finite error lists with ordinary arithmetic and compact/grouped fractions, rejecting malformed, excessive, singular and underflowing expressions.
+
+npm test -- src/modules/dd04 passed 54 tests (24 independent PID/limit tests and 30 visual-input fixtures). Baseline, T=.2, rectangular integral timing, ideal Tustin alternating state, filtered derivative state, nonzero memory, negative gains and a direct transfer identity are checked. The first negative-gain oracle contained an arithmetic mistake; independent hand evaluation corrected it to -83/30 before passing. UI, global checks and browser QA are still missing. The coordinator has now released its integration QA slot; this module will reserve QA only once its interface/build are ready.
