@@ -1,6 +1,6 @@
 # CR01 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `4d8064fa03de2ae62ff7b5f505fa725168b522d8` (primary main v0.3.8)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
@@ -81,3 +81,13 @@ The coordinator reopened this preserved claim/PR after independently passing the
 The coordinator explicitly owns the tiny reentrant late-disposer guard at integration, like DP03; no wrapper/shared/rebase edits are needed in this correction. That replaces the earlier worker self-review draft notice as its disposition. CP05 is checkpointed at65d2c9e with only a recovery plan; it remains suspended here. CS05 PR29 shares this grammar and was reported for its own coordinator return; its frozen branch has not been edited.
 
 Stage is in-progress until focused actual editor/error/recovery evidence, full project checks and exact new-head commit/push/ready/resubmission are complete. The unchanged large independent root grid is not being repeated.
+
+## Spacing-argument correction completed — 22:32 local
+
+The returned parser issue is corrected within this module.74 module tests,715 full application tests, `npm run check` and `npm run build -- --logLevel warn` pass, with the unchanged shared MathLive chunk warning. `git diff --check` passes. The coordinator's unchanged67-fixture/220-root algebra grid was not repeated; only the targeted semantic regressions, normal project checks and affected actual editor/recovery checks were added.
+
+A fresh own Chromium tab used the rebuilt/reloaded private production preview at13519, after verifying the browser inventory matched this worker chat. Clipboard paste was unavailable because its target binding failed; it was not retried blindly or replaced with hidden editor mutations. Actual MathLive command-entry keystrokes followed by Enter inserted the affected notation. Both raw\frac1\;2 and\frac\,12 displayed a spacing argument with the digit outside and received explicit complete-fraction-box feedback. A malformed spacing power (entered with a display-style prefix to commit the whole notation together) received the complete-power-box feedback; its rendered empty exponent and outside digit were inspected. The correctly boxed\frac1{\;2} returned1/2, and the correctly boxed spacing exponent2^{\;2} returned4.
+
+After a valid result, a malformed spacing fraction hid old output. The ordinary visual fraction button recovered1/2, and the ordinary power button still entered2^{12}→4096. Reset/reveal restored the proposed quartic, exact factors(s+1)(s+2)(s²+4s+13), discriminant−36 and roots−1,−2,−2±3j. Console warning/error inventory was empty. No viewport override was changed in this focused pass; the owned tab was closed and owned preview stopped. Prior full mobile/font/keyboard/lifecycle evidence remains applicable to the unchanged view.
+
+The coordinator explicitly owns the tiny reentrant late-disposer guard in this existing child-signal wrapper during integration; no worker wrapper/shared/rebase change is requested. This disposition supersedes the earlier self-review draft notice. The accepted bounded exercise is implemented, with that assigned integration hardening recorded transparently. Same PR25/original branch is used, and final clean exact-head submission follows this record. CP05 remains checkpointed/suspended until priority returns are resolved; CS05's inherited grammar issue remains on its separate frozen PR pending its own coordinator transition.

@@ -18,6 +18,7 @@ function fractions(source: string, depth = 0): string {
     }
     if (source.startsWith('\\frac', i)) { i += 5; return fraction(); }
     if (/^[\ds]$/.test(source[i] ?? '')) return source[i++];
+    if (presentation.test(source.slice(i))) throw new Error('Complete both fraction boxes. A space alone is not a numerator or denominator; use the fraction button to group the intended terms.');
     throw new Error('Use the fraction button; visible parentheses must be inside its boxes.');
   }
   function fraction() { const a = arg(), b = arg(); return `\\frac{${a}}{${b}}`; }
@@ -59,7 +60,7 @@ export function parsePolynomial(latex: string, allowZero = false): Poly {
     if (peek() === '^') {
       take(); const braced = peek() === '{'; if (braced) take();
       if (braced) skipPresentation();
-      if (!braced && !/^\d$/.test(peek() ?? '')) throw new Error('Use the power button to keep a multi-digit or signed exponent inside its power box.');
+      if (!braced && !/^\d$/.test(peek() ?? '')) throw new Error(isPresentation(peek()) ? 'Complete the exponent with the power button; keep its value inside a complete box.' : 'Use the power button to keep a multi-digit or signed exponent inside its power box.');
       const sign = peek() === '-' ? (take(), -1) : peek() === '+' ? (take(), 1) : 1;
       if (braced) skipPresentation();
       const token = take(), power = sign * Number(token);
