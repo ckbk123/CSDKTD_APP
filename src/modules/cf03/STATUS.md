@@ -1,27 +1,29 @@
 # CF03 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29; starting primary revision `c45512e`
+- **Ownership:** `src/modules/cf03/**`; acceptance: [TASK.md](TASK.md)
+- **Worker chat:** `01a18701-3f40-7572-9a49-7dc0103c9161`
+- **Branch/worktree:** `codex/cf03-error-effort-01a18701`, `C:/Users/baokh/.codex/worktrees/cf03-error-effort/CSDKTD APP`
 
-## Implemented and inspected
+## Starting audit and accepted requirements
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The current workspace is blank, metadata-only lazy loading works and there are no module tests. No functionality is being replaced. Shared visual equations and native-number validation are available; no shared mathematical toolbox is implemented.
 
-## Remaining acceptance work
+| Requirement | Starting evidence / implementation action |
+|---|---|
+| Compute IAE/ISE/ITAE/ITSE | Absent; derive error in explicit unity negative feedback, integrate all four finite-horizon criteria |
+| Explain different controller rankings | Absent; compare two editable P/PI controllers on the same plant/horizon, show each criterion and effort separately, include a checked ranking-reversal example |
+| Shade incremental contributions | Absent; selected metric's density and shaded chosen time interval, cumulative/interval contributions and a numeric cursor |
+| Overlay error with u(t) and units | Absent; labeled separate scales and line styles; zero initial conditions, unit reference, no saturation |
+| Temporary baseline/variant | Absent; mount-local controller drafts and results, reset/reopen baseline |
+| Independent/finer check | Absent; analytic first-order error-integral fixture and independently derived baseline response, plus bounded resolution refinement and reported numerical discrepancy |
+| Unstable/truncated designs | Absent; complete low-order characteristic stability conditions and visible finite-horizon-only warnings; no optimizer/optimality claim |
+| Visual inputs and errors | Absent; bounded real-polynomial plant and P/PI controller grammar, mixed/hidden grouping/e-symbol semantic gates, shared native-number helper |
+| Verification/lifecycle | No module tests/browser evidence; add meaningful mathematical and error/cleanup coverage then project checks/reserved real browser QA |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Intended bounded domain
 
-## Evidence and next action
+Real constant-numerator strictly proper first/second-order G(s), and proportional or PI C(s), in explicit unity negative feedback. Editable visual polynomial/factored forms within degree2; PI as a linear numerator over s. Zero initial plant state/integral, unit step at t=0. Finite common horizon, bounded RK4 state stepping with independently accumulated quadrature and resolution refinement. Declare all bounds and accuracy limits in the final record. No derivative impulse, actuator saturation, nonlinear model or infinite-horizon optimum is introduced.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
-
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Source atlas CF03 and continuous audit P2 were read (Ch5:28–32; S07:6,9–11); original slide assets were not inspected. New small analytic/ranking fixtures are independently constructed checks, not asserted slide transcriptions. Implementation, independent fixtures, all checks and browser evidence remain pending. Prior DF01 PR16/worktree remains preserved for coordinator integration.
