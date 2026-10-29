@@ -57,4 +57,8 @@ Proof screenshots outside Git:
 
 ## Delivery / remaining work
 
-Full accepted exercise is implemented within the declared first-order domain. No shared helper/package changes are requested. Independent coordinator review/integration remains; this is not a self-awarded verified stage. The separate PR and exact clean submitted revision will be recorded after creation. Earlier source checkpoints remain recoverable on this branch; only this module is included.
+Full accepted exercise is implemented within the declared first-order domain. No shared helper/package changes are requested. Independent coordinator review/integration remains; this is not a self-awarded verified stage.
+
+- Pull request: [PR32](https://github.com/ckbk123/CSDKTD_APP/pull/32), attached to this worker chat. Reuse this PR and preserved branch for any requested correction.
+- Tested application-source revision: `b409a37` (all subsequent changes are delivery documentation only). The claim records the exact clean full commit including this delivery record, equal to worktree HEAD when submitted.
+- Earlier checkpoints remain recoverable; only `src/modules/dd01/**` changed. Branch is pushed; submitted ownership stays reserved for asynchronous review. Primary main/version/deployment are coordinator-owned.
