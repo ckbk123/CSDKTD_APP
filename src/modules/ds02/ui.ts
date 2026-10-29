@@ -147,10 +147,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
     if (!interval.empty) {
       const left = interval.lower === null ? 20 : X(num(interval.lower)), right = interval.upper === null ? 580 : X(num(interval.upper));
       line.append(svgEl('line', { x1: left, y1: 45, x2: right, y2: 45, class: 'jury-interval' }));
-      for (const r of [interval.lower, interval.upper]) if (r !== null) line.append(svgEl('circle', { cx: X(num(r)), cy: 45, r: 6, class: 'jury-open' }), svgEl('text', { x: X(num(r)), y: 75, 'text-anchor': 'middle' }, exact(r)));
+      for (const r of [interval.lower, interval.upper]) if (r !== null) line.append(svgEl('circle', { cx: X(num(r)), cy: 45, r: 6, class: 'jury-open' }), svgEl('text', { x: X(num(r)), y: 75, 'text-anchor': 'middle' }, fmt(num(r))));
     }
-    line.append(svgEl('path', { d: `M${X(num(selectedK))},20v36`, class: 'jury-pole' }), svgEl('text', { x: X(num(selectedK)), y: 14, 'text-anchor': 'middle' }, `K=${exact(selectedK)}`), svgEl('text', { x: 570, y: 97 }, 'K'));
-    proof.append(line, el('p', 'Open circles mark excluded endpoints; the thick segment is the strict stable set. The table gives each inequality even when its bound is redundant.'));
+    line.append(svgEl('path', { d: `M${X(num(selectedK))},20v36`, class: 'jury-pole' }), svgEl('text', { x: X(num(selectedK)), y: 14, 'text-anchor': 'middle' }, `K=${fmt(num(selectedK))}`), svgEl('text', { x: 570, y: 97 }, 'K'));
+    proof.append(line, el('p', 'Open circles mark excluded endpoints; the thick segment is the strict stable set. Axis labels are rounded; exact bounds are listed above. The table gives each inequality even when its bound is redundant.'));
     const plot = el('section'); plot.append(el('h3', '4. Check every root'));
     plot.append(el('p', `At K = ${exact(selectedK)}: ${current.stable ? 'strictly stable — all Jury inequalities are positive.' : current.boundary ? 'on the closed stability boundary — strict stability fails. Boundary roots can give bounded or growing free responses depending on multiplicity; they do not establish BIBO stability.' : 'not strictly stable — at least one Jury inequality fails; inspect both roots.'}`));
     drawPoles(plot, family, selectedK);

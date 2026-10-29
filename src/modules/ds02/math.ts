@@ -81,6 +81,18 @@ export function parseFamily(source: string): Family {
     for (const [k, v] of p) if (k !== '0,0' && v.n) throw new Error('A divisor must be a nonzero constant number.');
     return p.get('0,0') ?? ZERO;
   }
+  // MathLive may serialize one-character fraction arguments as \frac12.
+  // Each unbraced TeX argument is one character, not a whole number token.
+  function fractionArgument(): Poly {
+    if (peek() === '{') return grouped('{', '}');
+    const t = peek();
+    if (t && /^\d+$/.test(t)) {
+      if (t.length > 1) tokens[pos] = t.slice(1); else pos++;
+      return constant(decimal(t[0]));
+    }
+    if (t === 'z' || t === 'K') { pos++; return new Map([[key(t === 'z' ? 1 : 0, t === 'K' ? 1 : 0), ONE]]); }
+    throw new Error('Complete both fraction boxes; group complex fraction arguments.');
+  }
   function atom(): Poly {
     if (++depth > 16) throw new Error('Expression nesting limit exceeded.');
     let r: Poly;
@@ -89,7 +101,7 @@ export function parseFamily(source: string): Family {
     else if (t === '(') r = grouped('(', ')');
     else if (t === '{') r = grouped('{', '}');
     else if (t === '\\frac' || t === '\\dfrac') {
-      pos++; const a = grouped('{', '}'), b = scalar(grouped('{', '}'));
+      pos++; const a = fractionArgument(), b = scalar(fractionArgument());
       r = times(a, constant(div(ONE, b)));
     } else if (t === 'z' || t === 'K') { pos++; r = new Map([[key(t === 'z' ? 1 : 0, t === 'K' ? 1 : 0), ONE]]); }
     else if (t && /^[\d.]/.test(t)) { pos++; r = constant(decimal(t)); }

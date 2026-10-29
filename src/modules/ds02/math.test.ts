@@ -82,6 +82,10 @@ describe('bounded visual polynomial parser and rational arithmetic', () => {
     expect(exact(decimal('-.25'))).toBe('-1/4');
     expect(cmp(rat(2, 4), rat(1, 2))).toBe(0);
     expect(num(rat(-2, -5))).toBe(.4);
+    for (const fraction of [String.raw`\frac12`, String.raw`\frac1{2}`, String.raw`\frac{1}2`, String.raw`\frac{1}{2}`]) {
+      expect(exact(parseFamily(`z^2+${fraction}K`).a.slope)).toBe('1/2');
+    }
+    expect(exact(parseFamily(String.raw`z^2+\frac K2 z+\frac1{10}K`).b.slope)).toBe('1/2');
   });
   it.each(['', 'z^3+K', '2z^2+K', 'Kz^2+z+1', 'z^2+K^2', 'z^2+1/K', 'z^2+1/0', 'z^2+\\sin(K)', 'z^2+NaN', 'z^2+1e10', 'z^2+(K', 'z^2+K+', 'z^2+10001', 'z^2+0.0000001', 'z^2+\\placeholder{}', 'z^2+'+'('.repeat(20)+'1'+')'.repeat(20), 'z'.repeat(401)])('rejects unsupported or malformed input %s', source => {
     expect(() => parseFamily(source)).toThrow();
