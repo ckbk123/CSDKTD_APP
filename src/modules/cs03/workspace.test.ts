@@ -25,6 +25,12 @@ function scalar(root: HTMLElement, index: number) { return root.querySelectorAll
 function answer(root: HTMLElement, index: number) { return root.querySelectorAll('textarea')[index + 1]; }
 
 describe('CS03 complete cubic workspace', () => {
+  it('populates the synchronous loading render and cleans it before a late import can mount', async () => {
+    const root = document.createElement('div'); root.dataset.module = 'CS03'; document.body.append(root); const controller = new AbortController();
+    const dispose = mount({ container: root, signal: controller.signal }) as () => void; visits.push({ root, controller, dispose });
+    expect(root.childElementCount).toBeGreaterThan(0); expect(root.querySelector('[role="status"]')?.textContent).toBe('Loading cubic stability…');
+    controller.abort(); expect(root.childElementCount).toBe(0); await vi.dynamicImportSettled(); expect(root.childElementCount).toBe(0);
+  });
   it('grades the interval, intersects all conditions and classifies every endpoint mode', async () => {
     const { root } = await open(); expect(root.querySelector('.c-answer')).toBeNull();
     edit(answer(root, 0), '0'); edit(answer(root, 1), '70'); click(root, 'Check interval and reveal');
@@ -74,4 +80,12 @@ describe('CS03 complete cubic workspace', () => {
     const second = await open(); expect(second.root.querySelector('textarea')!.value).toBe('D(s)=s(s+2)(s+5)'); expect(scalar(second.root, 1).value).toBe('10'); expect(second.root.querySelector('.c-answer')).toBeNull();
   });
   it('ignores the lazy view after immediate abort', async () => { const { root } = await open(true); expect(root.childElementCount).toBe(0); });
+  it('shows a recoverable load error and releases its pending view on abort', async () => {
+    vi.resetModules(); vi.doMock('./ui', () => { throw new Error('Simulated chunk load failure'); });
+    try {
+      const visit = await open(); expect(visit.root.textContent).toBe('The exercise could not load. Reset to try again.');
+      visit.controller.abort(); expect(visit.root.childElementCount).toBe(0);
+    } finally { vi.doUnmock('./ui'); vi.resetModules(); }
+    const recovered = await open(); expect(recovered.root.querySelector('textarea')!.value).toBe('D(s)=s(s+2)(s+5)');
+  });
 });

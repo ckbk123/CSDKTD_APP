@@ -87,3 +87,9 @@ Endpoint layout checkpoint: each visual bound now shares a group with its own in
 
 Current native-number fixtures also explicitly verify0e-999 as intentionalzero for both g and selectedK,1e-2 as exact selecteddecimal1/100, and1e-999 as rejected nonzero underflow. The UI regression checks the computed gain heading and all-real g=0 outcome.60/60module tests pass. This test-only checkpoint leaves the rebuilt browser implementation unchanged; the DP03→DP04→coordinatorDP02 order remains pending and no acquisition is active.
 
+
+### Cold-load/lifecycle completion checkpoint
+
+Source audit confirmed src/app.ts decides “Implementation pending” from the synchronous child count after mounting. CS03's original empty lazy wrapper could therefore retain that label on a cold load, even after its tool appeared. The owned wrapper now appends a truthful loading status synchronously, removes it after UI mount, disposes it and all mounted resources on abort/cleanup, ignores late imports, and gives a recoverable Reset message if the UI chunk rejects. DS04 was inspected and already had this working behavior; it was preserved unchanged. No shell/shared edit was needed.
+
+Meaningful new lifecycle tests check the initial nonempty/loading render before the import settles, immediate abort before a late mount, a simulated rejected chunk with useful feedback, cleanup, and a subsequent fresh successful visit.62/62module tests (51math/parser,11workspace) pass; npm run check and production build pass. Full npm test now passes196/196 across13files. This is unit/mock evidence for lifecycle, not a claim of real browser editor or network/offline functionality. The first real production load must still verify the absence of a stale scaffold label, along with the remaining keyboard/reset/rapid navigation/viewport checks. Current work is cleanly checkpointed while the ordered DP04→coordinatorDP02 QA dependency finishes; no acquisition watcher or reservation is held.
