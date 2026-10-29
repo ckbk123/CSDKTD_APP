@@ -38,6 +38,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   root.append(conventions);
   conventions.append(el('p', 'Write mixed numbers with an explicit +, such as 2 + 1/2. Put × between a number and a fraction when you intend multiplication.'));
   conventions.append(el('p', 'Use visible parentheses to group sums or products. Fraction bars and exponent positions already group their contents.'));
+  conventions.append(el('p', 'Use the power button so the whole exponent, including its sign or several digits, stays inside the power box.'));
   const controls = el('div', '', 'dp03-grid');
   const period = numeric('Sample period T (s)', '.1'), omega = numeric('Normalized Ω (rad/sample)', '.1'), span = numeric('Nyquist half-span (gain units)', '10');
   omega.input.min = '0'; omega.input.max = String(Math.PI); period.input.min = '.000001'; period.input.max = '100'; span.input.min = '.01'; span.input.max = '1000000';

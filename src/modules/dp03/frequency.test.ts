@@ -108,6 +108,19 @@ describe('DP03 independent frequency fixtures', () => {
 });
 
 describe('DP03 grammar and numerical boundaries', () => {
+  it('distinguishes pinned-editor one-token and grouped exponents', () => {
+    expect(convertLatexToMathMl('2^12')).toContain('<msup><mn>2</mn><mn>1</mn></msup><mn>2</mn>');
+    expect(convertLatexToMathMl('2^{12}')).toBe('<msup><mn>2</mn><mn>12</mn></msup>');
+  });
+  it.each(['2^12', 'q^12', String.raw`\frac{q^12}{2}`, 'q^-2', '2^-2', 'q^+2'])('requires a complete power box for %s', expression => {
+    expect(() => parseModel(expression)).toThrow(/power box/);
+  });
+  it('retains complete multi-digit/signed powers and independent order validation', () => {
+    expect(value(unitResponse(parseModel('2^{12}'), 1)).magnitude).toBe(4096);
+    expect(value(unitResponse(parseModel('2^{-2}'), 1)).magnitude).toBe(.25);
+    expect(value(unitResponse(parseModel('z^{-2}'), Math.PI / 2)).value.re).toBeCloseTo(-1, 13);
+    expect(() => parseModel('q^{12}')).toThrow(/order 4/);
+  });
   it('uses pinned-editor evidence for the mixed-number addition meaning', () => {
     expect(convertLatexToMathMl(String.raw`2\frac12`)).toContain('&#x2064;');
     expect(convertLatexToMathMl(String.raw`q{+1}`)).toContain('<mi>q</mi><mrow><mo>+</mo><mn>1</mn>');
@@ -166,7 +179,7 @@ describe('DP03 grammar and numerical boundaries', () => {
     expect(() => fromPhysical(100000, 100)).toThrow(/normalized/);
     expect(() => principalAngle(NaN)).toThrow(/finite/);
     expect(() => frequencySamples(model, .1, 601)).toThrow(/20–600/);
-    const tiny = parseModel('(0.000000000001)^14*(0.000000000001)^12*q^4');
+    const tiny = parseModel('(0.000000000001)^{14}*(0.000000000001)^{12}*q^4');
     expect(() => bilinear(tiny, .000001)).toThrow(/underflow/);
   });
 });
