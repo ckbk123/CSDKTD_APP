@@ -1,6 +1,6 @@
 # DS04 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Owned folder:** `src/modules/ds04/**`; [TASK](TASK.md)
@@ -105,3 +105,11 @@ This supersedes the historical MathML runtime-guard description and its brace-pr
 
 The native-input regression now explicitly covers current-primary guidance for intentional0e-999 (K remains0), representable1e-2 (K remains0.01), and nonzero1e-999 (error/stale-plot removal).57/57module tests pass. This test-only checkpoint leaves the browser implementation unchanged; QA remains deferred for DP03→DP04→coordinatorDP02, with no watcher/reservation active.
 
+
+### Final mixed-number correction browser evidence
+
+Actual production Chromium on this worker's preview8824 passed under a DS04 reservation. Ordinary keys plus the real fraction button built `2\frac12z+1`; UI Copy confirmed that canonical serialization, and the tool showed the specific +/× guidance. The actual parentheses button and an outside minus produced `-\left(2\frac12\right)z+1`, also correctly rejected. No computed graph remained for invalid input. Explicit `(2+1/2)z+1` built with the fraction button computed numerator coefficient5/2; at K=.5 its roots were -.125+/- .69597055j. The Systems keyboard × key plus a completed button-entered fraction produced `2\times\frac12z+1`, coefficient1; the same K=.5 gave .25+/- .66143783j. These differing coefficient/root oracles verify meaning, rather than relying on the coincident0<K<1 interval. Signed simple -1/2 remained accepted and gave -2<K<0. Incomplete fraction boxes displayed separate completion feedback.
+
+Native nonzero1e-999 showed finite-K feedback and ZERO SVG plots inside the computed-result region (equation toolbars have unrelated SVG icons). Intentional0e-999 selected K=0, and native1e-2 selected K=.01 normally. Reset/reveal restored0<K<5/2. Math fractions/parentheses/fonts and the Systems keyboard rendered visibly; Escape closed the keyboard. Phone390x844 measured scrollWidth=clientWidth=375 with the full baseline result, including the updated grammar note. The focused proof screenshot used1280x1000 to show the entered mixed expression and its feedback together. Browser error/warning log was empty. Viewport override was reset, own tab closed, QA released, and preview1042 stopped; primary8787 was untouched.
+
+Evidence artifact (outside Git): C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-2175-7122-ad9f-c01694059c6c/ds04-mixed-fraction.png. This focused browser pass supplements the original full reset/reopen/rapid-navigation/keyboard/phone evidence and the exact-singular selection pass above. No accepted bounded requirement or returned defect remains open; final independent review/integration is still the coordinator's responsibility. The implemented policy is the PURE lexical/visible-parentheses preflight above, not the earlier historical renderer prototype. The same PR#13 is retained. Final submission will record this clean HEAD after re-running57owned/99full tests, type/build and diff checks; source code is unchanged by this evidence-only commit.
