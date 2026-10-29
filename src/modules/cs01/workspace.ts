@@ -59,7 +59,7 @@ function polePlane(roots: readonly Root[], selected: number): SVGSVGElement {
   return svg;
 }
 interface Curve { readonly name: string; readonly values: readonly number[]; readonly style: string }
-function timePlot(times: readonly number[], curves: readonly Curve[], title: string): HTMLElement {
+function timePlot(times: readonly number[], curves: readonly Curve[], title: string, axisLabel = 'Amplitude [each state / output in its own units]'): HTMLElement {
   const figure = el('figure', undefined, 'cs-figure'); figure.append(el('figcaption', title));
   const svg = svgNode('svg', { viewBox: '0 0 640 290', role: 'img', 'aria-label': title });
   const all = curves.flatMap(curve => [...curve.values]); let low = Math.min(0, ...all), high = Math.max(0, ...all);
@@ -68,7 +68,7 @@ function timePlot(times: readonly number[], curves: readonly Curve[], title: str
   const px = (t: number): number => 70 + t / times[times.length - 1] * 540, py = (y: number): number => 235 - (y - low) / (high - low) * 195;
   svg.append(svgNode('line', { x1: 70, y1: py(0), x2: 610, y2: py(0), class: 'cs-axis' }), svgNode('line', { x1: 70, y1: 35, x2: 70, y2: 240, class: 'cs-axis' }));
   svgText(svg, 62, 44, formatted(high), 'end'); svgText(svg, 62, 235, formatted(low), 'end'); svgText(svg, 70, 260, '0');
-  svgText(svg, 610, 260, formatted(times[times.length - 1])); svgText(svg, 335, 282, 'Time t [s]'); svgText(svg, 72, 20, 'Amplitude [chosen state / output units]', 'start');
+  svgText(svg, 610, 260, formatted(times[times.length - 1])); svgText(svg, 335, 282, 'Time t [s]'); svgText(svg, 72, 20, axisLabel, 'start');
   for (const curve of curves) svg.append(svgNode('polyline', { points: curve.values.map((y, i) => `${px(times[i]).toFixed(3)},${py(y).toFixed(3)}`).join(' '), class: `cs-trace ${curve.style}` }));
   figure.append(svg); const legend = el('div', undefined, 'cs-legend');
   for (const curve of curves) legend.append(el('span', curve.name, curve.style)); figure.append(legend); return figure;
@@ -148,7 +148,7 @@ function mountView({ container, signal }: ModuleContext, { createEquationDisplay
         const maxFrequency = Math.max(0, ...visibleRoots.map(r => Math.abs(r.im))), count = Math.max(241, Math.ceil(seconds * maxFrequency * 24 / (2 * Math.PI)) + 1);
         if (count > 2049) throw new Error('Shorten the horizon to resolve the oscillation within 2,049 plot points.');
         const times = Array.from({ length: count }, (_, i) => seconds * i / (count - 1));
-        if (chosen) plotArea.append(timePlot(times, [{ name: 'Selected real mode', values: times.map(t => modeAt(chosen, useGeneralized, t)), style: 'cs-solid' }], 'Selected modal component (numerical)'));
+        if (chosen) plotArea.append(timePlot(times, [{ name: 'Selected real mode', values: times.map(t => modeAt(chosen, useGeneralized, t)), style: 'cs-solid' }], 'Selected modal component (numerical)', useGeneralized ? 'Generalized modal factor [s]' : 'Normalized modal factor [1]'));
         if (view.input.value === 'original') {
           const states = times.map(t => stateAt(model, initial, t)), c = model.c.map(num);
           plotArea.append(timePlot(times, [
@@ -158,7 +158,7 @@ function mountView({ container, signal }: ModuleContext, { createEquationDisplay
           const end = states[states.length - 1]; plotArea.append(el('p', `At t=${formatted(seconds)} s: x₁=${formatted(end[0])}, x₂=${formatted(end[1])}, y=${formatted(c[0] * end[0] + c[1] * end[1])}. One initial state can miss a mode; classification tests all states.`));
         } else {
           const impulse = times.map(t => impulseAt(analysis, t));
-          plotArea.append(timePlot(times, [{ name: 'h(t) for t>0 — solid', values: impulse, style: 'cs-solid' }], 'Scalar impulse response: h(t)=C exp(At) B for t>0'));
+          plotArea.append(timePlot(times, [{ name: 'h(t) for t>0 — solid', values: impulse, style: 'cs-solid' }], 'Scalar impulse response: h(t)=C exp(At) B for t>0', 'h(t) [output / (input · s)]'));
           plotArea.append(createEquationDisplay(`h(t)=${latexRat(model.d)}\\delta(t)+Ce^{At}B`, 'Distribution impulse term plus regular response'));
           plotArea.append(el('p', 'The regular impulse trace is for t>0, with zero pre-input state; it ignores the chosen free-response initial state. A D·δ(t) spike is a distribution and is not drawn as a finite-height point.'));
         }

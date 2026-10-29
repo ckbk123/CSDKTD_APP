@@ -1,8 +1,9 @@
 # CS01 implementation status
 
-- **Stage:** in-progress (implementation and automated checks pass; real-browser checks pending)
+- **Stage:** implemented (accepted bounded exercise and project/browser checks complete; independent review pending)
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
+- **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`
 - **Ownership:** `src/modules/cs01/**`; claim `worker-cs01-01a18701`; branch `codex/cs01-pole-stability-01a18701`.
 - **Contract:** [TASK.md](TASK.md), atlas CS01, continuous source audit S7 and [stage definitions](../../../docs/PROJECT_STATUS.md).
 
@@ -10,16 +11,16 @@
 
 | Accepted requirement | Implementation / evidence | Remaining |
 | --- | --- | --- |
-| Editable exercise, prediction and checked reveal | `workspace.ts`: visual A/B/C/D fields, two predictions, reveal with comparison; changed data invalidates results | Real-browser entry checks |
+| Editable exercise, prediction and checked reveal | `workspace.ts`: visual A/B/C/D fields, two predictions, reveal with comparison; changed data invalidates results | None |
 | Asymptotic/internal versus zero-state BIBO | `math.ts`: exact trace/determinant signs for two-state internal test; exact reduced denominator for BIBO; separate verdicts and assumptions | None in supported domain |
-| Selected pole/eigenvalue and its mode | All-root table, computed complex plane, selectable exponential or cosine component; generalized-mode checkbox for defective repeated root | Real-browser inspection |
-| Original realization versus reduced scalar transfer | View selector preserves A and all eigenvalues; shows exact numerator, characteristic polynomial, common factor and reduced transfer; free state versus regular impulse traces | Real-browser interaction |
+| Selected pole/eigenvalue and its mode | All-root table, computed complex plane, selectable exponential or cosine component; generalized-mode checkbox for defective repeated root | None |
+| Original realization versus reduced scalar transfer | View selector preserves A and all eigenvalues; shows exact numerator, characteristic polynomial, common factor and reduced transfer; free state versus regular impulse traces | None |
 | Imaginary-axis multiplicity and Jordan qualifications | Exact discriminant and A=λI test; algebraic multiplicity/eigenspace dimension; simple imaginary pair and semisimple/defective zero examples; explicit resonant/constant forcing qualification | None in supported domain |
-| Hidden unstable mode variation | TASK diag(1,-2), B=[0;1], C=[0,1] fixture; original state can grow while scalar transfer is 1/(s+2). Audit B=[1;1] variant also tested | Real-browser changed-data check |
-| Changed inputs and failures | `math.test.ts`: near cancellation, ±10⁻⁹ boundary shifts, fractions, dimension/grammar/bounds failures; module feedback clears stale results | Real-browser feedback |
-| Visual mathematics and readable plot labels | Shared equation input/display; local scoped Indigo/slate CSS; numeric initial states/horizon; units and line patterns | Font/keyboard/narrow-theme inspection |
-| Mount/reset/cleanup/isolation | Synchronous lazy public mount; abort/disposal guard on editor import; caller-owned drafts; per-result abort controller; no timers/observers/remote calls | Browser reset/reopen/fast navigation |
-| Independent fixtures and production integration | 35 pure math tests + 5 mocked-editor lifecycle/flow tests; all 82 project tests, type check and build pass | Final browser evidence and submission |
+| Hidden unstable mode variation | TASK diag(1,-2), B=[0;1], C=[0,1] fixture; original state can grow while scalar transfer is 1/(s+2). Audit B=[1;1] variant also tested | None |
+| Changed inputs and failures | `math.test.ts`: near cancellation, ±10⁻⁹ boundary shifts, fractions, dimension/grammar/bounds failures; module feedback clears stale results | None |
+| Visual mathematics and readable plot labels | Shared equation input/display; local scoped Indigo/slate CSS; numeric initial states/horizon; units and line patterns | Light theme not separately browser-tested; shared tokens unchanged |
+| Mount/reset/cleanup/isolation | Synchronous lazy public mount; abort/disposal guard on editor import; caller-owned drafts; per-result abort controller; no timers/observers/remote calls | None |
+| Independent fixtures and production integration | 35 pure math tests + 5 mocked-editor lifecycle/flow tests; all 82 project tests, type check and build pass | PR / claim submission pending below |
 
 ## Supported mathematical domain and limits
 
@@ -60,10 +61,24 @@ The first global run exposed MathLive's Node server export during catalogue entr
 
 ## Browser evidence / remaining delivery
 
-Not yet performed. Shared browser QA was busy (DR01, then DS03), so this worker has not used viewport/tab controls. Production preview is isolated at http://127.0.0.1:8841; primary checkout and port 8787 are untouched. Pending: actual equation entry/font/keyboard, changed/error inputs, classification and plots, reset/leave/reopen/rapid navigation, dark/light and narrow viewport, then release QA, record exact evidence, commit/push final branch and submit the claim.
+Production build inspected in the in-app Chromium browser at http://127.0.0.1:8841/#/module/CS01 on 2026-10-29, approximately 17:05–17:11 ICT. Exclusive CS01 QA reservation acquired 10:04:48 UTC, released 10:10:54 UTC. Primary checkout and preview 8787 were untouched. Only this worker's tab was used and closed; temporary viewport overrides were reset before release.
+
+- Baseline prediction/reveal: both correct predictions match; characteristic s²+3s+2, tr=-3, det=2; roots -2,-1; all state/BIBO verdicts correct. At 6 s, x1=0.00495136, x2=-0.00494522, y=0.00495136 for [1,0].
+- TASK hidden fixture: original eigenvalues -2,+1, internal unstable and scalar BIBO stable. Selecting +1 shows exp(t); at 6 s x1=403.429, x2=y=6.144e-6. Switching to reduced view lists only -2 and shows the decaying scalar impulse, while retaining the original internal verdict.
+- Oscillator is bounded/non-asymptotic and non-BIBO. Semisimple repeated zero is bounded/non-asymptotic; defective zero is unstable. Generalized-mode checkbox shows t exp(0t), and the free response reaches [6,1], y=6 at 6 s.
+- Actual visual typing: clicked first A cell and used ordinary Backspace/1 keys to change A11 from 0 to 1. The computed roots changed to -2.41421 and +0.414214; state and BIBO classifications became unstable. A malformed trailing number outside a matrix was rejected with matrix-entry guidance.
+- Actual D fraction-button entry: cleared D, inserted a fraction, typed numerator 1, ArrowDown, denominator 2; reveal accepted it and produced N=(1/2)s²+(3/2)s+2. This was real MathLive entry, not a scripted field-value assignment or mocked editor.
+- Empty D and incomplete power boxes get `Complete D and check its equation notation`; pi is rejected as outside the scalar-number grammar. Empty horizon and 31 s get the finite 0.05–30 s guidance. Edits clear old results.
+- Systems math keyboard displayed its symbols; Escape and Reset each closed it. Tab from initial x1 moves to initial x2. Matrix brackets, fractions, powers and result equations rendered with the local fonts. Stylesheet links were same-origin generated assets; browser warning/error log was empty.
+- Reset returned baseline fields, horizon 6 and [1,0]. Leaving to catalogue removed all math-field elements; reopening restored baseline. Three rapid CS01/CS02 navigation pairs left CS02 with zero old fields and no late CS01 content. Returning to CS01 and revealing worked normally; no console warnings/errors.
+- Desktop dark theme inspected at normal size and 1280x900; narrow dark theme at configured 390x844. Narrow document client/scroll width were both 375 px (scrollbar gutter), with no page-wide overflow. Figure widths were 307 px with their own 360/560 px scroll areas. Controls/matrices wrapped and remained readable. Light theme was not separately browser-tested; it uses the unchanged shared light tokens. The available browser controls expose viewport/visibility, not a color-scheme emulation switch.
+- Local screenshot: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-1ec8-7073-a23f-e744d40a5355/cs01-browser-evidence.jpg` (untracked evidence outside the repository).
+
+The accepted bounded mathematical and exercise requirements are complete. Remaining delivery steps are the final commit/push, one PR and exact claim submission. Independent technical review is deferred to integration; no verified stage is claimed.
 
 No shared dependency/API request is needed. No independent review has been claimed; the final worker stage will be implemented rather than verified. Checkpoints fd559dc, e614561, a42cbde and 8e8e4f5 preserve the audit and implementation. Branch checkpoints have been pushed for recovery.
 
 Input review also added MathLive's compact fraction serialization (single-digit unbraced arguments such as fraction 1/2) and mixed braced/unbraced forms. They use the same exact bounded rational validation and pass the local tests. Browser checks remain pending until the shared QA resource is released.
 
 Narrow-screen preparation keeps plot labels at a readable minimum scale with scrolling confined to each figure (rather than shrinking axes with the whole SVG). The production build still passes; actual viewport evidence remains pending.
+
