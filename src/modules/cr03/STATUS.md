@@ -1,27 +1,49 @@
 # CR03 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29
+- **Claim baseline:** `ecf398eb8dc32376e994a458e3bff3b666ce118a`, fresh committed primary main (v0.3.4)
+- **Owned scope:** `src/modules/cr03/**`
+- **Worker chat:** `01a186d2-0050-7de0-aa3f-c6616623f222`
+- **Branch:** `codex/cr03-state-realizations-01a186d2`
+- **Worktree:** `C:/Users/baokh/.codex/worktrees/cr03-state-realizations-01a186d2/CSDKTD APP`
+- **Contract:** [TASK.md](TASK.md)
+- **PR:** not yet created
 
-## Implemented and inspected
+## Accepted requirement audit before implementation
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Current source contains immutable-intended metadata and a blank synchronous mount. There are no local algorithms, controls or tests to preserve. The shared baseline banner is a notation preview, not a realization tool. Locked dependencies were installed in this new worktree with Node 24; no package files changed. No shared mathematical dependency is required.
 
-## Remaining acceptance work
+| Accepted requirement | Baseline | Planned implementation / missing evidence |
+|---|---|---|
+| Proper SISO TF/ODE/state conversion | absent | Bounded visual TF/ODE parser, editable matrix rows, normalized polynomial coefficients and reconstruction of C(sI−A)⁻¹B+D |
+| Build A,B,C,D and place numerator coefficients | absent | Numeric matrix candidate, row-linked integrator chain, canonical construction, properness and D/remainder reasoning |
+| Physical and canonical realizations | absent | Output-derivative modified states computed from observability rows; explicit input-derivative terms without a second input |
+| Chosen invertible coordinates | absent | Editable T, z=T x, transformed A/B/C/D and z(0)=T x(0); singular/ill-conditioned feedback |
+| Different state trajectories, same output | absent | Computed state/output comparison for a constant command and nonzero initial vector, with algebraic identities and numerical residuals distinguished from samples |
+| Accept equivalent student matrices | absent | Input/output polynomial equivalence checks rather than matrix/string equality; preserve nonminimal denominators and distinguish zero-state equivalence from state bijection |
+| Prediction/reveal and changed data | absent | Candidate matrices and initial-output prediction, canonical/physical/proposed/biproper presets, stale-answer invalidation |
+| Browser/lifecycle/limits | absent | Shared equation input/display, shared native-number reader, local abort-safe state/loading, scoped responsive styles; all real-browser checks pending |
+| Independent mathematical/project verification | absent | Baseline resolvent, proposed similarity, biproper D, arbitrary transformations, hidden modes and singularities; no module tests run yet |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Intended bounded mathematical domain
 
-## Evidence and next action
+The planned scope is continuous proper real SISO models with zero to four states, including static gains. Coefficients are in descending powers of s; matrices are row-major, B is a column, C a row and D a scalar. Denominator/characteristic polynomials are retained without silently discarding hidden modes. An improper transfer function cannot be forced into an ordinary standard realization.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+Given old state x, new state z=T x uses A_z=T A_x T⁻¹, B_z=T B_x, C_z=C_x T⁻¹, unchanged D and z(0)=T x(0). Physical derivative-corrected coordinates use the rows C A^k when their matrix is invertible. Singularity or lost observability is explicit; a transfer function does not recover a unique original physical model or its hidden initial state.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Time is seconds; input/output are normalized signal units and state-coordinate units follow the chosen scaling. Initial state is specified at 0−; a standard state is continuous across a step, while output may jump through D. Planned trajectories use a bounded matrix exponential for a constant command, with explicit finite horizons/sample limits and numerical tolerances. Final data/conditioning bounds will replace these intended limits after implementation and tests.
+
+The visual grammar will preserve actual MathLive meaning: ordinary prime/dot spellings, compact/signed numeric fractions and explicit multiplication; ambiguous mixed-number adjacency will be rejected before expansion. Native numeric cells use current shared readNumericInput, keeping their exponent grammar separate. Escape dismissal will avoid the raw-notation transition observed in the earlier CR02 browser exercise.
+
+## Independent fixtures and source distinction
+
+The metadata baseline A=[[0,1],[-2,-3]], B=[0;1], C=[1,0], D=0 has G=1/(s²+3s+2). The continuous audit R3/R4 labels the G=(s+4)/(s²+3s+2) example as a proposed verification fixture. Its canonical C=[4,1], B=[0;1] and modified-state C=[1,0], B=[1;1] are related by T=[[4,1],[-2,1]], det(T)=6. The audit's source anchors Ch2:76–77,83–93,97–101 and S04:4–5,7–11 identify the teaching family; they do not turn this proposed numeric example into an inspected original slide.
+
+A proposed independent biproper fixture is (2s²+7s+9)/(s²+3s+2): D=2 and the canonical remainder output row is [5,1]. A step begins at output 2 and gives y(t)=4.5−4e⁻ᵗ+1.5e⁻²ᵗ for zero state. Additional fixtures will distinguish hidden unobservable/uncontrollable modes and initial-state mapping from mere zero-state TF agreement.
+
+The worker read the repository atlas and relevant continuous audit and functional-specification sections. No new inspection of external original course decks is claimed. No implementation, module test, production build or CR03 browser functionality is claimed at this audit checkpoint.
+
+## Recovery and earlier contributions
+
+CR02 is separately submitted in [PR #12](https://github.com/ckbk123/CSDKTD_APP/pull/12) at 8faeb86640e29d02323fc2c8d5d978a22e82193a, with 57 module tests, 99 project tests and production-browser evidence. DR02 is preserved on [PR #5](https://github.com/ckbk123/CSDKTD_APP/pull/5), submitted a8d544aaafe122588b8b58fa88a8b06a4594813e, with coordinator-owned final visual gate and a numeric font-wrapper issue recorded for reopening. Their claims/worktrees stay intact. Review returns take priority after checkpointing this newer work. Only CR03 is actively implemented.
