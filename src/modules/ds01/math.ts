@@ -19,7 +19,26 @@ export function parsePole(latex: string): Complex {
     .replace(/\\(?:mathrm|operatorname)\{([ij])\}/g, '$1')
     .replace(/\\(?:,|;|!|quad|qquad)|\s/g, '')
     .replace(/\\(?:cdot|times)/g, '*').replace(/−/g, '-');
-  if (source.startsWith('(') && source.endsWith(')')) source = source.slice(1, -1);
+  const wholeGroup = (text: string): boolean => {
+    if (!text.startsWith('(') || !text.endsWith(')')) return false;
+    let depth = 0;
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === '(') depth++;
+      if (text[i] === ')') depth--;
+      if (depth < 0 || (depth === 0 && i < text.length - 1)) return false;
+    }
+    return depth === 0;
+  };
+  let outerSign = 1;
+  for (let groups = 0; groups < 4; groups++) {
+    if ((source[0] === '-' || source[0] === '+') && wholeGroup(source.slice(1))) {
+      if (source[0] === '-') outerSign *= -1;
+      source = source.slice(1);
+    }
+    if (!wholeGroup(source)) break;
+    source = source.slice(1, -1);
+  }
+  if (!source) throw new Error('Enter a numeric pole inside the parentheses.');
   const decimal = '(?:\\d+(?:\\.\\d*)?|\\.\\d+)';
   const number = new RegExp(`^${decimal}`);
   // TeX permits a single digit without braces; MathLive may emit \\frac12.
@@ -62,7 +81,7 @@ export function parsePole(latex: string): Complex {
   if (!Number.isFinite(re) || !Number.isFinite(im) || Math.hypot(re, im) > 2) {
     throw new Error('Use finite pole components with radius at most 2.');
   }
-  return { re, im };
+  return { re: re === 0 ? 0 : outerSign * re, im: im === 0 ? 0 : outerSign * im };
 }
 
 export function chainLength(structure: Structure): number {
