@@ -60,7 +60,9 @@ describe('CR02 applied model and experiment state',()=>{
     expect(view.container.textContent).toContain('Initial displacement is too small to represent');
     expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
     view.change('Initial displacement y(0−) (m)','0e-999');view.click('Reveal derivation & response');
-    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(false);view.close();
+    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(false);
+    view.change('Command amplitude / ramp slope','1e-2');view.click('Reveal derivation & response');
+    expect(view.container.querySelector('[aria-label="Numerical response at cursor"]')!.textContent).toContain('0.001997882');view.close();
   });
   it('explains the derivative of the same scalar input and the step velocity jump',()=>{
     const view=visit();view.click('Input-derivative example');view.click('Reveal derivation & response');
