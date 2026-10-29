@@ -7,7 +7,13 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, classN
   const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node;
 }
 const display = (latex: string, label: string) => createEquationDisplay(latex, label);
-const fmt = (n: number) => n === 0 ? '0' : Math.abs(n) < 1e-5 ? n.toExponential(6) : n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 8 });
+const fmt = (n: number) => {
+  if (n === 0) return '0';
+  if (Math.abs(n) >= 1e-5) return n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 8 });
+  const [mantissa, exponent] = n.toExponential(6).split('e');
+  const superscript = String(Number(exponent)).replace(/[-0-9]/g, digit => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(digit)]);
+  return `${mantissa} × 10${superscript}`;
+};
 function polynomial(p: Polynomial) {
   let out = '';
   for (let i = p.length - 1; i >= 0; i--) {

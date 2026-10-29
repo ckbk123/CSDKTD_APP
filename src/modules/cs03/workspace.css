@@ -13,6 +13,7 @@
 [data-module="CS03"] .cubic-tool fieldset { min-width: 0; border: 1px solid var(--line); border-radius: .6rem; padding: 1rem; margin: 0; }
 [data-module="CS03"] .cubic-tool legend { font-weight: 600; padding: 0 .35rem; }
 [data-module="CS03"] .c-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+[data-module="CS03"] .c-actions button { max-width: 100%; min-width: 0; overflow-wrap: anywhere; }
 [data-module="CS03"] .cubic-tool button { padding: .6rem .8rem; border: 1px solid var(--line); border-radius: .4rem; color: var(--text); background: var(--surface); cursor: pointer; font: inherit; font-weight: 600; }
 [data-module="CS03"] .cubic-tool button:hover { border-color: var(--accent); }
 [data-module="CS03"] .cubic-tool button:focus-visible, [data-module="CS03"] .cubic-tool input:focus-visible, [data-module="CS03"] .cubic-tool select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
