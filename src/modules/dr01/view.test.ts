@@ -78,6 +78,21 @@ describe('DR01 exercise flow with an equation-interface mock', () => {
     expect(second.rows().slice(0, 3).map(row => row[3])).toEqual(['1', '0.8', '0.64']);
     expect(second.field.value).toBe(String.raw`\frac{z}{z-0.8}`);
   });
+  it('dismisses Escape before editor mode changes and keeps presets usable', () => {
+    const previous = Object.getOwnPropertyDescriptor(window, 'mathVirtualKeyboard'), hide = vi.fn();
+    Object.defineProperty(window, 'mathVirtualKeyboard', { configurable: true, value: { hide } });
+    try {
+      const visit = open(), defaultModeChange = vi.fn();
+      visit.field.addEventListener('keydown', event => { if (!event.defaultPrevented) defaultModeChange(); });
+      const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+      visit.field.dispatchEvent(escape);
+      expect(escape.defaultPrevented).toBe(true); expect(defaultModeChange).not.toHaveBeenCalled(); expect(hide).toHaveBeenCalledOnce();
+      visit.click('Repeated pole'); visit.reveal();
+      expect(visit.rows().slice(0, 4).map(row => row[3])).toEqual(['1', '1', '0.75', '0.5']);
+    } finally {
+      if (previous) Object.defineProperty(window, 'mathVirtualKeyboard', previous); else Reflect.deleteProperty(window, 'mathVirtualKeyboard');
+    }
+  });
   it('hides old results for mixed-number adjacency and accepts an explicit operation', () => {
     const visit = open(); visit.reveal();
     for (const [expression, message] of [[String.raw`2\frac12`, 'Insert + for addition or × for multiplication'], [String.raw`q{+1}`, 'visible parentheses']]) {

@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** in-progress (mixed-number notation review return)
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -24,7 +24,7 @@
 
 ## Supported behavior and limits
 
-- Real SISO rational expressions in z or q=z^-1: sums, subtraction, products (including implicit multiplication), fractions, groups and integer powers -14 through 14. No functions, symbolic parameters, matrices, general CAS or automatic non-delay pole/zero cancellation.
+- Real SISO rational expressions in z or q=z^-1: sums, subtraction, products (including unambiguous implicit multiplication), fractions, visible parentheses and integer powers -14 through 14. Ambiguous numeric adjacency requires explicit +/×; standalone formatting braces may wrap only one unsigned number or variable. Fraction arguments and exponent positions retain intrinsic grouping. No functions, symbolic parameters, matrices, general CAS or automatic non-delay pole/zero cancellation.
 - After removing common q factors: numerator delay order <=14; denominator order <=2, normalized a0=1. Denominator memory is retained even with zero or canceling numerator, so specified history can activate a hidden recurrence mode.
 - Up to 600 input characters, 240 tokens, 24 group levels; intermediate degree <=48 and coefficient magnitude <=1e12. Visual numeric literals use decimals, not ambiguous e/E scientific text; typeset powers of ten are supported. Decimal literals are zero or have magnitude from 1e-12 through 1e6. Normalized coefficients have magnitude <=1e6. Numerical underflow/ill-scaled leading denominators are rejected.
 - Builders: integer delay 0-12, finite length 1-12, last FIR index <=14; gain magnitude <=1e6 and pole magnitude <=10, each zero or magnitude >=1e-12. Generated expressions preserve full floating-point coefficient precision; displayed coefficients/results round to 7 significant digits.
@@ -118,3 +118,14 @@ The guard was extended consistently to transparent groups and separately tokeniz
 A direct pinned-editor/source cross-check exposed the broader grouping issue: `q{+1}` produces MathML showing q+1, but the old arithmetic parser returned q×(+1). Likewise `q*{1+q}` could introduce invisible parentheses. Standalone braces now accept only one unsigned number or variable; compound/signed hidden groups request visible parentheses. Fraction arguments and exponent positions retain their intrinsic grouping. This preserves safe `-{2}×1/2`, normal fractions and integer powers while rejecting hidden sums/products, including nested ones. Independent visible-parenthesis and fraction-bar controls verify [0,1,1,...] and [1,1.5,.75,...] rather than repeating the parser's calculation.
 
 At 19:21, module tests pass **87/87**, full `npm test` **129/129**, and production/type checks pass with the existing shared MathLive chunk warning. All changes remain in this module. The review return is still in-progress: actual fraction-button adjacency/visible-parenthesis checks and Escape-then-preset behavior must be verified in the shared browser slot before final clean exact-HEAD resubmission. Earlier completed browser evidence remains preserved above.
+
+## Final mixed-number and keyboard verification — 29 October 2026
+
+The armed helper wait acquired DR01 after CF02 released. A coordinator scheduling message acknowledged the race and explicitly allowed an already-started check to finish safely. A fresh worker-owned Chromium tab used production port 13517; no other holder/tab or primary preview was changed.
+
+- Ordinary keys plus the fraction button formed 2½. Reveal showed the explicit-sign guidance and hid results. The same real-button workflow formed 2+½→2.5,0,0,... and 2×½→1,0,0,... . Signed −2½ and a nested fraction containing it were rejected with the same useful feedback.
+- Ordinary visible q×(1+q) computed 0,1,1,0,... . A raw hidden-group clipboard shortcut was unavailable in the browser bridge, so no successful raw-paste/serialization claim is made. Hidden-group rejection and correct fraction/exponent grouping have independent pinned-MathLive MathML/parser fixtures above.
+- A clean reset reproduced the older shared Escape defect: toggling the keyboard, pressing Escape and selecting Repeated pole left an invalid editor draft. A module-local capture listener now cancels Escape before MathLive changes mode, hides the keyboard and uses the mount signal for cleanup. After rebuilding/reloading, the same actual actions produced 1,1,.75,.5,... and the keyboard toggle reported false. The event-order/preset regression passes in unit tests; no shared file was changed.
+- Reset again restored baseline 1,.8,.64,... . At 390×844 the document clientWidth and scrollWidth were both 375 px. Console warning/error inventory was empty. The viewport was restored, owned tab closed, preview stopped and QA released for the coordinator's DS01 slot. Earlier full edit/history/reopen/rapid-navigation/font evidence remains preserved above.
+
+Current module tests pass **88/88**, full `npm test` **130/130**, and type/production build pass with the unchanged shared MathLive chunk warning. The correction and this evidence are committed together and final checks are repeated at their exact clean HEAD before push/ready-PR/claim resubmission. No accepted requirement remains open within the declared domain. Final independent acceptance and the approved shared numeric-reader adaptation remain coordinator integration work. DP03 is preserved separately at `289ab6d` for its remaining browser pass.

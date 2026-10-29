@@ -38,6 +38,10 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     results.hidden = true; error.hidden = false; error.textContent = 'Inputs changed. Predict again, then reveal the checked sequence.';
   };
   const equation = createEquationInput({ label: 'Zero-history transform X₀(z)', value: String.raw`\frac{z}{z-0.8}`, signal, onChange: value => { draft = value; invalidate(); } });
+  equation.element.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault(); event.stopPropagation(); window.mathVirtualKeyboard.hide();
+  }, { capture: true, signal });
   root.append(equation.element); draft = equation.getValue();
 
   const builder = el('details', '', 'dr01-card'); builder.append(el('summary', 'Build from a sequence'));
