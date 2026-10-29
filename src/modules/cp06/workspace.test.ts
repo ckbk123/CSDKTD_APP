@@ -41,4 +41,3 @@ describe('deferred visit ownership', () => {
     success.parent.abort(); success.dispose(); expect(cleanup).toHaveBeenCalledTimes(1);
   });
 });
-

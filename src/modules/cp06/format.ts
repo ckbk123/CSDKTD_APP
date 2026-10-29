@@ -18,4 +18,3 @@ export function numericLatex(value: number): string {
   const text = numeric(value), match = /^(.+)e([+-]?\d+)$/.exec(text);
   return match ? `${match[1]}\\times10^{${Number(match[2])}}` : text;
 }
-

@@ -54,4 +54,3 @@ export function toNumber(value: Rational, allowUnderflow = false): number {
   return result;
 }
 export function exactText(value: Rational): string { return value.d === 1n ? String(value.n) : `${value.n}/${value.d}`; }
-

@@ -52,8 +52,8 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     const feedback = node('p', 'Edit the inputs, make a prediction and construct the locus.', 'cp-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
     const output = node('div', undefined, 'cp-results'); let exercise: Exercise | undefined;
     const invalidate = (): void => { exercise = undefined; resultAbort?.abort(); output.replaceChildren(); feedback.textContent = 'Inputs changed. Construct the locus to check this model.'; };
-    const n = createEquationInput({ label: 'Numerator polynomial N(s)', value: '1', signal, onChange: invalidate }); inputs.push(n);
-    const d = createEquationInput({ label: 'Denominator polynomial D(s)', value: 's(s+2)(s+5)', signal, onChange: invalidate }); inputs.push(d);
+    let n = createEquationInput({ label: 'Numerator polynomial N(s)', value: '1', signal, onChange: invalidate }); inputs.push(n);
+    let d = createEquationInput({ label: 'Denominator polynomial D(s)', value: 's(s+2)(s+5)', signal, onChange: invalidate }); inputs.push(d);
     const equationInputs = node('div', undefined, 'cp-equation-inputs'); equationInputs.append(n.element, d.element); controls.append(equationInputs);
     const ki = numberInput('Fixed Ki (Kp per second)', 2.7, 0, 1000), gain = numberInput('Selected gain K or Kp', 70, 0, 1000), max = numberInput('Trace maximum gain', 140, .000000001, 1000);
     ki.element.hidden = true; const gains = node('div', undefined, 'cp-controls'); gains.append(ki.element, gain.element, max.element); controls.append(gains);
@@ -86,7 +86,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       summary.append(createEquationDisplay(`D(s)=${polynomial(model.denominator)},\\quad N(s)=${polynomial(model.numerator)}`, 'Effective loop polynomials'));
       summary.append(createEquationDisplay(`1+${parameter}\\frac{N(s)}{D(s)}=0,\\qquad Q(s,${parameter})=D(s)+${parameter}N(s)`, 'Normalized gain equation'));
       summary.append(createEquationDisplay(`Q(s,${fraction(selectedGain)})=${polynomial(characteristic(model, selectedGain))}`, 'Complete selected characteristic polynomial'));
-      if (degree(model.common)) summary.append(node('p', `The common factor ${polynomial(model.common)} creates retained fixed modes. Geometry uses the reduced loop; all roots of the full Q remain in the selected table. Fixed modes: ${model.fixed.map(p => `${pointText(p)} (multiplicity ${p.multiplicity})`).join('; ')}. A cancelled scalar factor does not remove this full-model mode.`, 'cp-warning'));
+      if (degree(model.common)) summary.append(createEquationDisplay(`F_{\\mathrm{common}}(s)=${polynomial(model.common)}`, 'Retained common factor'), node('p', `The common factor creates retained fixed modes. Geometry uses the reduced loop; all roots of the full Q remain in the selected table. Fixed modes: ${model.fixed.map(p => `${pointText(p)} (multiplicity ${p.multiplicity})`).join('; ')}. A cancelled scalar factor does not remove this full-model mode.`, 'cp-warning'));
       summary.append(table(['Effective open-loop pole', 'Multiplicity', 'Numerical location'], rootRows(model.poles)), table(['Effective finite zero', 'Multiplicity', 'Numerical location'], rootRows(model.zeros)));
       const prediction = node('p', undefined, 'cp-prediction'); const messages: string[] = [];
       if (predictionInfinity.input.value) messages.push(Number(predictionInfinity.input.value) === construction.asymptotes.count ? 'Infinity-branch prediction correct.' : `Infinity-branch prediction differs: n−m=${construction.asymptotes.count}.`);
@@ -160,7 +160,15 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     }, { signal });
     test.addEventListener('click', testCandidate, { signal });
     function applyPreset(index: number): void {
-      const item = presets[index]; preset.input.value = String(index); mode.input.value = item.mode; n.setValue(item.n); d.setValue(item.d); ki.input.value = String(item.ki); gain.input.value = String(item.gain); max.input.value = String(item.max); pointRe.input.value = String(item.re); pointIm.input.value = String(item.im); ki.element.hidden = item.mode !== 'pi'; predictionInfinity.input.value = ''; predictionPoint.input.value = ''; Object.assign(reveals, { segments: false, asymptotes: false, tangents: false, vectors: false, angle: false, gain: false }); invalidate(); test.disabled = true;
+      const item = presets[index];
+      // A reset owns fresh editors, including their pending power/command selection state.
+      // The real browser exposed stale empty drafts when setValue reused a power-edited field.
+      const nextN = createEquationInput({ label: 'Numerator polynomial N(s)', value: item.n, signal, onChange: invalidate });
+      let nextD: EquationInput;
+      try { nextD = createEquationInput({ label: 'Denominator polynomial D(s)', value: item.d, signal, onChange: invalidate }); }
+      catch (error) { nextN.destroy(); feedback.textContent = 'Equation controls could not reset. Use Reset example to retry.'; throw error; }
+      inputs.splice(0).forEach(input => input.destroy()); n = nextN; d = nextD; inputs.push(n, d); equationInputs.replaceChildren(n.element, d.element);
+      preset.input.value = String(index); mode.input.value = item.mode; ki.input.value = String(item.ki); gain.input.value = String(item.gain); max.input.value = String(item.max); pointRe.input.value = String(item.re); pointIm.input.value = String(item.im); ki.element.hidden = item.mode !== 'pi'; predictionInfinity.input.value = ''; predictionPoint.input.value = ''; Object.assign(reveals, { segments: false, asymptotes: false, tangents: false, vectors: false, angle: false, gain: false }); invalidate(); test.disabled = true;
     }
     preset.input.addEventListener('change', () => applyPreset(Number(preset.input.value)), { signal }); baseline.addEventListener('click', () => applyPreset(0), { signal });
     return cleanup;

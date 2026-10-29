@@ -104,4 +104,3 @@ export function parsePolynomial(latex: string): Rational[] {
   }
   const result = expression(); if (position !== source.length) return fail(); return result;
 }
-

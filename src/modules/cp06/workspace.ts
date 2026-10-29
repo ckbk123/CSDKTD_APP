@@ -26,4 +26,3 @@ export function mountDeferred({ container, signal }: Parameters<ModuleMount>[0],
   return dispose;
 }
 export const mount: ModuleMount = context => mountDeferred(context, () => import('./view'));
-
