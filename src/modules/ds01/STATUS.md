@@ -4,7 +4,7 @@
 - **Assessed:** 2026-10-29; starting revision `c5d1135`; working implementation checkpoints `70f0889`, `b94d22c`
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`)
 - **Branch/worktree:** `codex/ds01-unit-circle-7b29f0e3`; `C:\Users\baokh\.codex\worktrees\ds01-unit-circle\CSDKTD APP`
-- **PR:** pending browser acceptance; exact-branch PR search found none.
+- **PR:** [#10](https://github.com/ckbk123/CSDKTD_APP/pull/10), draft while browser evidence is pending; attached to this worker chat.
 - **Ownership:** `src/modules/ds01/**`; [accepted contract](TASK.md)
 - **Review:** no independent technical review claimed; integration owner reviews the submitted branch.
 
@@ -63,3 +63,5 @@ Complete reserved real-browser verification of the production build, repair any 
 - Mount-failure regression: editor initialization errors now abort the partial exercise, remove incomplete controls and retain a visible reset/retry message. A dedicated exercise lifetime forwards the shell abort and is also aborted on disposal/failure. Targeted module tests now pass 67 tests (59 math, 8 mocked UI/lifecycle); build/type check pass. QA is still pending behind active workers.
 - Updated human/coordinator steering requests one PR per completed module before continuing to another module. No DS01 PR existed when searched. Added numeric fraction-token support for MathLive shorthand (`\frac12`, mixed braced/unbraced atoms) with positive/negative, complex and invalid/zero-denominator fixtures. Latest targeted run: 73 module tests passed; type check/build passed. Real-browser serialization remains to be inspected in the reserved slot.
 - Final pre-browser project run at the current implementation: `npm run check` passed and `npm test` passed all 115 tests in 8 files. `git diff --check` passed. The entire contribution diff remains inside `src/modules/ds01/**`. QA acquisition is deferred for the coordinator's reserved integration slot after CS01; no competing attempt will run until its release notice.
+
+- Draft PR #10 was created through the existing GitHub Git authentication after the connected integration returned HTTP 403 for PR creation. Exact-branch searches and API queries found no prior PR. It remains draft and the claim remains active until browser verification; no implementation/submission success is claimed.
