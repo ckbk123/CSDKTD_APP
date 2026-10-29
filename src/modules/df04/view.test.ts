@@ -69,6 +69,14 @@ describe('DF04 prediction/comparison wiring (mocked equation presentation)', () 
     expect(container.querySelector('.sp-summary')!.textContent).toContain('lambda at least 1/tau');
     expect(container.querySelectorAll('[data-plot]')).toHaveLength(3);
   });
+  it('does not grade an entirely unsupported comparison as a correct stability prediction', () => {
+    const { container, build, reveal, numeric } = visit(); numeric('rate', '0.5'); build('redesign'); reveal();
+    expect(container.querySelector('.sp-grade')!.textContent).toContain('No supported case');
+    expect(container.querySelector('.sp-grade')!.textContent).not.toContain('Correct numerical stability');
+    expect(container.querySelector<HTMLInputElement>('[data-number="cursor"]')!.disabled).toBe(true);
+    numeric('rate', '3'); build('redesign'); reveal();
+    expect(container.querySelector<HTMLInputElement>('[data-number="cursor"]')!.disabled).toBe(false);
+  });
   it('reports growth without substituting partial-horizon metrics', () => {
     const { container, numeric, build, reveal } = visit(); numeric('gain', '100'); numeric('horizon', '60'); numeric('t1', '1'); build('fixed'); reveal();
     expect(container.querySelector('.sp-summary')!.textContent).toContain('no partial metrics');

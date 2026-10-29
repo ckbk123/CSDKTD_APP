@@ -83,6 +83,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const area = get('.sp-detail'); area.replaceChildren();
     if (!comparison?.revealed) return;
     const item = comparison.cases[Number(choice('case').value)]; if (!item) return;
+    number('cursor').disabled = !item.run;
     say(area, label(item), 'h4');
     if (!item.model) { say(area, item.error ?? 'This case is unsupported.'); return; }
     const m = item.model, p = comparison.plant;
@@ -111,7 +112,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
     }
     comparison.revealed = true;
     const answer = choice('sum').value, stableCorrect = comparison.cases.every((item, index) => !item.model || get<HTMLInputElement>(`[data-predict="${index}"]`).checked === (item.model.stability === 'inside'));
-    get('.sp-grade').textContent = `${stableCorrect ? 'Correct numerical stability predictions.' : 'Revisit the stability predictions using the full scalar pole.'} ${answer === 'weighted' ? 'Correct: interval weights preserve the common seconds horizon.' : 'Use interval time weights. A raw sample sum changes scale when the sample count changes.'}`;
+    const stabilityGrade = !comparison.cases.some(item => item.model) ? 'No supported case could be checked for stability. Review the case feedback.' : stableCorrect ? 'Correct numerical stability predictions.' : 'Revisit the stability predictions using the full scalar pole.';
+    get('.sp-grade').textContent = `${stabilityGrade} ${answer === 'weighted' ? 'Correct: interval weights preserve the common seconds horizon.' : 'Use interval time weights. A raw sample sum changes scale when the sample count changes.'}`;
     const summary = get('.sp-summary'); summary.replaceChildren();
     summary.append(table(['Case / policy', 'K used', 'Full pole q ≈', 'Disk check', 'Target pole ≈', 'y(H) ≈', 'Stable y∞ ≈'], comparison.cases.map(item => [label(item), item.model ? n(item.model.gain) : 'Unsupported', item.model ? n(item.model.pole) : 'Unavailable', item.model?.stability ?? 'Unsupported', item.model?.targetPole === null || !item.model ? 'Not redesigned' : n(item.model.targetPole), item.run ? n(item.run.terminal) : 'Unavailable', item.model?.steadyOutput === null || !item.model ? 'No certified limit' : n(item.model.steadyOutput)]), 'Complete case poles and endpoints'));
     comparison.cases.forEach(item => { if (item.error) say(summary, `${label(item)}: ${item.error}`); });
@@ -126,7 +128,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
         const line = document.createElement('label'), checkbox = document.createElement('input'), swatch = document.createElement('span'); checkbox.type = 'checkbox'; checkbox.checked = true; checkbox.dataset.plot = String(index); swatch.className = `sp-swatch ${item.spec.policy === 'redesign' ? 'sp-redesign' : ''}`; swatch.dataset.period = String(item.position); swatch.setAttribute('aria-hidden', 'true'); line.append(checkbox, swatch, document.createTextNode(label(item))); legend.append(line);
       }
     });
-    number('cursor').value = '0'; renderPlots(); renderDetail(); results.hidden = false; message.textContent = 'Comparisons checked. Inspect policies, complete poles, weighted indices and the common terminal time.';
+    number('cursor').value = '0'; renderPlots(); renderDetail(); results.hidden = false;
+    const completeCount = comparison.cases.filter(item => item.run).length;
+    message.textContent = completeCount ? `${completeCount} of ${comparison.cases.length} cases have complete common-horizon trajectories. Inspect policies, poles and weighted indices; other cases retain their feedback.` : 'No complete trajectory is available. Review each case limit before comparing quality indices.';
   };
   const build = (policy: Policy | 'both') => {
     invalidate();

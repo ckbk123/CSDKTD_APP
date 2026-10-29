@@ -1,4 +1,4 @@
-[data-module="DF04"] .sp-tool { display:grid; gap:1rem; }
+[data-module="DF04"] .sp-tool, [data-module="DF04"] .sp-results { display:grid; grid-template-columns:minmax(0,1fr); gap:1rem; min-width:0; }
 [data-module="DF04"] .sp-card { border:1px solid var(--line); background:var(--surface); padding:1rem; border-radius:.75rem; min-width:0; }
 [data-module="DF04"] .sp-card h3 { margin:0 0 .7rem; font-size:1.1rem; }
 [data-module="DF04"] .sp-card h4 { margin:.8rem 0 .5rem; }

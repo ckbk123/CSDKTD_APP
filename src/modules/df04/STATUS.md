@@ -1,12 +1,13 @@
 # DF04 implementation status
 
-- **Stage:** in-progress (bounded comparison implemented; actual browser gate pending)
+- **Stage:** implemented
+- **Review:** independent coordinator integration review pending
 - **Assessed:** 2026-10-29, starting primary main `c45512eb7cd4f52f5f4d5f1ed5e96f546c447a6e`
 - **Owned scope:** `src/modules/df04/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Branch:** `codex/df04-sample-period-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\df04-sample-period-01a186d1\CSDKTD APP`
-- **PR:** [DF04 #23](https://github.com/ckbk123/CSDKTD_APP/pull/23), draft and attached; actual browser gate pending
+- **PR:** [DF04 #23](https://github.com/ckbk123/CSDKTD_APP/pull/23), attached; complete checked contribution prepared for integration
 
 ## Initial inspection and bounded exercise
 
@@ -16,16 +17,16 @@ Implement the complete comparison exercise for a declared physical SISO first-or
 
 | Accepted requirement | Starting evidence | Current delivered evidence / remaining check |
 |---|---|---|
-| Edit physical model/task | Metadata only | Shared visual first-order input and native controls;41 independent parser cases; actual entry pending |
+| Edit physical model/task | Metadata only | Shared visual first-order input/native controls;41 parser cases; actual toolbar, nested fractions, changed plant/reference/initial output checked |
 | Compare several T values | None | Three periods and fixed/redesigned/both actions; six labeled temporary cases; interface tests pass |
 | Student attempt/reveal | None | Unit-disk and weighted-sum predictions before checked reveal; correct/wrong feedback tested |
 | Fixed versus redesign reasoning | None | Derived a,b,q,target,K and actual gain/bias; separate policies and unused-control independence tested |
 | Common seconds horizon | None | Physical hold updates plus partial terminal hold; independent ln2/2.5T fixtures and interface inspector checked |
 | Weighted error/effort | None | Compensated left-rectangle ISE/IAE/ITAE and raw sum; ZOH energy; independent values/no terminal double count checked |
-| Visual reasoning | None | Computed common-time output/control plots, sample/reconstruction distinction, legends/visibility and interval contributions; actual browser view pending |
+| Visual reasoning | None | Computed plots/sample/reconstruction/legend/interval controls; actual six-case diagrams and numeric contributions inspected; phone overflow fixed and rechecked |
 | Changed data/failures | None | Changed plant/K/T/reference/initial/rate, impossible/conditioned redesign, boundary/growth/work/underflow fixtures pass |
-| Lifecycle/accessibility | Shell only | Local state/synchronous loading/guarded import/abort cleanup; five lifecycle and interface tests pass; actual keyboard/fonts/navigation/phone pending |
-| Delivery | None |70 module/510 project tests,type/build pass; actual gate/PR final evidence/exact submitted SHA pending |
+| Lifecycle/accessibility | Shell only | Local state/loading/child-signal failure cleanup; six lifecycle tests and actual keyboard/reset/reopen/rapid navigation/fonts/phone checks pass |
+| Delivery | None |71 module/511 project tests,type/build and private actual browser gate pass; one attached PR; exact final clean tested SHA recorded by claim |
 
 ## Conventions and supported limits
 
@@ -87,3 +88,23 @@ The named DD04/CP03/DR01/DP03 in-app order has finished; CD08 currently holds th
 The human authorized independent Firefox testing during the queue delay. Read the Windows Computer Use skill/guidance/API and inspected installed apps/version only. Firefox159.0 is present, but three existing windows were unowned and remained untouched. No window was selected/activated/launched, no page was inspected and no Firefox module evidence is claimed. The coordinator subsequently confirmed that native Firefox page inspection lacks supported URL-policy enforcement and that the separate-profile launch route was policy-blocked; it directed all workers to stop that route rather than work around the guard. This worker complied and is awaiting supported in-app QA. This is a concrete tool limitation, not a missing human permission. Browser gate and final submission remain incomplete.
 
 Before the browser gate, plot minimum width is set to its680px viewBox width so13px axis text stays at least13px rather than shrinking on a narrow screen. Scrolling stays local and numeric interval inspection remains available. Actual phone usability still requires the reserved browser check; source geometry alone is not that evidence.
+
+A final interface failure-path check reproduced an entirely unsupported redesign being given vacuous correct-stability feedback. The interface now states that no supported case was checked, disables its unavailable interval cursor and reports how many trajectories actually reach the common H. Valid case recovery reenables the cursor. The new71 module/511 full checks/type/build are pending rerun; no browser evidence is implied.
+
+## Completed private production-browser gate
+
+The preceding checkpoints are historical. After a controlled cross-chat isolation check, the human/coordinator replaced the overbroad global IAB lock for verified private contexts. This worker's browser inventory explicitly reported codexSessionId `01a186d1-a367-78f1-98f5-e1cf147ef306`, matching this chat, with no existing tabs. The obsolete global waiter had ended without acquiring. QA used only private browser2/tab7 and this worktree's production preview127.0.0.1:8796. No other reservation/tab/viewport or primary8787 was touched. Actual browser: ChatGPT in-app browser, system dark theme; its precise engine version is not exposed by the supported interface. No Firefox module testing is claimed.
+
+- Cold loading mounted the controls without a persistent scaffold/pending label. Baseline both-policy comparison prepared six cases; checking all six inside-disk predictions plus the interval-weighted sum graded correctly. Fixed poles were .71451225,.45619226,−.18040802. Redesigned gains1.7235682,1.4890508,.9744101 matched exp(−3T) poles .74081822,.54881164,.22313016. Stable modeled limits differed from fixed2/3 as declared. The computed output and held-control diagrams, legend, optional physical reconstruction and detailed coefficient/matching equations were visually inspected.
+- At selected redesigned T=.1,k=2, the interval showed y≈.28552761,e≈.71447239,u≈1.2314419,y_next≈.37554325 and weighted contributions. Hiding every plotted case left the metrics intact and showed explicit plot guidance. The reconstruction toggle distinguished sampled markers from the physical plant/hold curve.
+- Actual raw-sum preset/fixed action gave interval/raw counts10,5,4 atT=.1,.2,.3,H=1 while ISE=IAE=1 and held effort0 in every case. Enter activated comparison/reveal. Different left-rectangle ITAE values remained labeled approximations.
+- Alternating preset atT=ln2,H=3T gave q=−.5,y(H)=.75,raw1.25,ISE≈.86643398=1.25T,effort≈3.4657359=5T. TheT=1.2 case retained its outside pole−1.0964174 and no steady-limit claim. Changing H to2.5T invalidated prior results, then showed terminal .64644661,last weight .34657359,ISE .77979058=1.125T and effort3.1191623=4.5T. k=2 contributions matched; a fractional cursor removed interval tables and requested an integer rather than showing stale numbers. Redesign lambda2 atT=ln2,H=3T gaveK=.5,q=.25,y(H)=.328125,ISE1.4106628 and effort.3526657, matching the independent fixture.
+- Lambda=.5 with redesign-only showed no supported stability check, disabled the unavailable interval cursor and reported no complete trajectory. Both-policy mode retained three valid fixed cases and three explicit redesign errors. K=100,H=60 reported magnitude overflow in each case with unavailable metrics, never partial sums. H=0 hid stale results with range feedback. T=.001,H=3 hit the2000-interval limit only for that case while the other two remained complete.
+- Native K=1e−999 reported nonzero underflow and hid stale results. Genuine0e−999 was accepted with zero effort;1e−2 retainedK=.01 and the independently expected pole.495 atT=ln2. No programming-exponent meaning was borrowed for the visual field.
+- The real power/fraction toolbar constructed `\frac{1^1}{s+1}` and computed the baseline. Actual copied changed plant `\frac{2}{0.5s+1}` gave first pole .093653765 and stable limit.8. Changing R=2,y0=.5 gave initial e1.5,u3,y_next1.4969809. Actual nested-half numerator gave gain.5,first pole.80967484 and limit.5; explicit2+1/2 gave first pole.42902451 and limit5/6. A settled grouped power `\frac{1}{s^{+1}+1}` retained the baseline. Exact copied drafts were checked before interpreting results; transient empty/duplicate paste drafts were cleared and not counted as successful fixtures.
+- Actual copied mixed `\frac{2\frac{1}{2}}{s+1}` received explicit +/× guidance/no attempt. The ambiguous `s^1.0` tail received power-box guidance, and copied e-symbol input received the separate e/E-symbol error. The Systems keyboard opened, a real key changed the draft, Escape closed it without navigation, and Reset while open removed it and restored K2,H5. Leaving after K7 removed all .sp-tool/editor roots; reopening restored K2,T1=.1 and an unchecked baseline. Rapid library/module/library navigation left zero old roots/keyboard controls before a fresh visit.
+- The first390×844 check exposed page width949px: the .sp-results grid item retained an automatic min-content width. Owned .sp-tool/.sp-results now use a zero-minimum grid track, with min-width0 and local scrolling. After rebuilding/reloading, page width375px stayed within viewport390. Tables used273px viewports with789/881px content; plots retained680px content and readable13px axis text. Keyboard ArrowRight moved both plot and metric table40px locally. The phone keyboard opened without increasing page width; font status was loaded and KaTeX_Main available. Corrected phone and desktop screenshots were inspected. Light theme was not separately emulated.
+
+Browser warning/error logs were empty. Temporary viewport was reset, own tab closed and private preview stopped. Proof files outside Git in this worker's2026/10/29 visualization folder: `df04-baseline-comparison.png`, `df04-phone-plot-fixed.png` and `df04-phone-indices.png`; the pre-fix screenshot is diagnostic only. These are actual browser checks, not a claimed automated end-to-end command.
+
+Final commands with supported Node24.22.1: `npm test -- src/modules/df04`71 tests in4 files (11 math,41 parser,13 mocked interface,6 lifecycle); `npm run check`; `npm test`511 tests in23 files; `npm run build`. All pass. The view is about10.90kB gzip, with the existing MathLive221.50kB gzip warning/20 local fonts. No required bounded-exercise work or shared dependency remains. PR23 is reused/attached and prepared for review; the current primary claim helper records the exact clean pushed tested HEAD. No merge, version change, deployment or generated output is included.
