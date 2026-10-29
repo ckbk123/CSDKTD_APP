@@ -1,4 +1,5 @@
 import type { ModuleMount } from '../../core/module';
+import type { MathfieldElement } from 'mathlive';
 import { createEquationInput, createEquationDisplay, type EquationDraft } from '../../shared/equations/input';
 import { parseModel, type FrequencyModel } from './expression';
 import { bilinear, format, frequencySamples, fromPhysical, numberLatex, polynomialLatex, rationalAt, unitResponse, warpedResponse, type FrequencyResult, type WarpedModel } from './frequency';
@@ -29,6 +30,9 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   const invalidate = () => { current = undefined; output.hidden = true; message.hidden = false; message.textContent = 'Predict the response, then reveal the checked plots for these inputs.'; };
   root.append(el('h2', 'Follow a frequency around the unit circle'), el('p', 'Evaluate the entered discrete model exactly at z = exp(jΩ), then compare a bilinear construction on its correctly warped frequency axis.'));
   const editor = createEquationInput({ label: 'Discrete transfer function G(z)', value: String.raw`\frac{0.0544z+0.0493}{z^2-1.741z+0.741}`, signal, onChange: next => { draft = next; invalidate(); } });
+  // Keep every typed exponent digit inside this exercise's power box.
+  const mathField = editor.element.querySelector<MathfieldElement>('math-field');
+  if (mathField) mathField.smartSuperscript = false;
   editor.element.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     event.preventDefault(); event.stopPropagation(); window.mathVirtualKeyboard.hide();
