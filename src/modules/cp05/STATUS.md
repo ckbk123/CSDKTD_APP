@@ -1,6 +1,6 @@
 # CP05 implementation status
 
-- **Stage:** scaffold (claimed; implementation not started)
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary main v0.3.9)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
@@ -22,3 +22,13 @@ TASK, STATUS, metadata, blank workspace and primary current guides were inspecte
 | Verification/isolation | Source fixture L(j)=.4−1.2j atω1 and L(0)=2; changed first-order, simple/repeated/paired axis poles, full contour closure/conjugacy/arcs and failure tests, guarded lazy workspace and actual production browser editing/reset/navigation/keyboard/phone checks. |
 
 Original source decks were not newly inspected. The proposed bounded plan must be implemented and checked before any completion claim. No source contour, map, Bode or browser functionality is yet delivered. No shared/package/deployment edits requested. Resume after the priority CR01 correction; its spacing-argument parser fix must be incorporated before adapting a private grammar here. The known CR01 late-disposer guard is coordinator-owned at integration.
+
+## Mathematical core checkpoint — 22:44 local
+
+After CR01 spacing correction de30d8d was resubmitted, CP05 resumed here. Its local exact arithmetic/parser are adapted from this worker's corrected earlier code, with no sibling import. `nyquist.ts` evaluates real rational models, identifies imaginary-axis denominator factors exactly through degree3, preserves original removable denominator points and labels finite extensions separately. It constructs a complete finite clockwise RHP contour from upward axis segments, right-half-plane indent arcs and the actual closing outer arc. Finite mappings, response gain/phase, exact axis factor order and large-radius limit are separate. Numeric denominator roots use this worker's bounded analytic degree1–3 routine with residual and complete coefficient checks.
+
+18 independent tests and type checking pass. Fixtures include accepted L(0)=2,L(j)=.4−1.2j,L(j sqrt2)=−4j/(3sqrt2), actual outer-arc midpoint1/33 atR10, full closure/clockwise signed area, real-coefficient conjugacy, changed first-order .5−.5j, proper feedthrough limit2, simple/repeated origin arcs, paired axis roots, three axis roots, removable s/s retaining the original undefined0, exact pole/zero samples in Bode data, outer/endpoint/neighbor collision errors and near-axis nonidentity. The corrected spacing-argument controls are covered independently here too.
+
+Current bounds: proper real rational N/D, denominator degree1–3 and numerator no higher; primitive height≤10,000, normalized coefficients≤10⁶; R from0.01 to10,000, epsilon from10⁻⁵ to1 and<R/4; disjoint indents separated from other poles, no outer-arc pole collision. Axis segments/indents use65 samples per segment and the outer arc129, total≤1,200. Frequency samples use241 positive logarithmic values plusDC and exact known axis poles/zeros. Denominator numerical threshold10⁻¹⁰ relative to construction scale, zero/phase threshold10⁻¹⁴. No pole/zero is silently canceled, no finite sample curve is a stability criterion, and no P/N/Z count is supplied.
+
+Workspace/UI remain blank and all real CP05 browser gates remain open. No full application/build or completed-module claim is made. Next: linked source/map and Bode plots with numeric cursors and arrows, prediction before reveal, explicit indentation/limit/omission explanations, scoped responsive controls, lifecycle tests and the actual production-browser gate. CS05 PR29 remains a frozen draft for its inherited parser return; a coordinator reopening takes priority.
