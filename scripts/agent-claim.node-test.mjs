@@ -301,6 +301,77 @@ test('submission revalidates a stored isolated worktree checkpoint', () => {
   assert.equal(JSON.parse(fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8')).state, 'active');
 });
 
+test('submission rejects tracked, staged and nonignored untracked changes without changing claims or Git state', () => {
+  for (const dirtyKind of ['tracked', 'staged', 'untracked']) {
+    const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+    runCommand('update', options(record, refs), f.root);
+    const changedFile = path.join(refs.worktree, 'src/modules/cr01', dirtyKind === 'untracked' ? 'new fixture.txt' : 'STATUS.md');
+    fs.appendFileSync(changedFile, '\nUncommitted review correction\n');
+    if (dirtyKind === 'staged') git(refs.worktree, 'add', changedFile);
+    if (dirtyKind === 'untracked') git(f.root, 'config', '--local', 'status.showUntrackedFiles', 'no');
+    const indexPath = git(refs.worktree, 'rev-parse', '--path-format=absolute', '--git-path', 'index');
+    const before = {
+      claim: fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8'),
+      index: fs.readFileSync(indexPath),
+      refs: git(f.root, 'show-ref'), head: git(refs.worktree, 'rev-parse', 'HEAD'),
+      contents: fs.readFileSync(changedFile, 'utf8'),
+    };
+    assert.throws(() => runCommand('submit', options(record), f.root), { code: 'DIRTY_WORKTREE' }, dirtyKind);
+    assert.equal(fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8'), before.claim);
+    assert.deepEqual(fs.readFileSync(indexPath), before.index);
+    assert.equal(git(f.root, 'show-ref'), before.refs);
+    assert.equal(git(refs.worktree, 'rev-parse', 'HEAD'), before.head);
+    assert.equal(fs.readFileSync(changedFile, 'utf8'), before.contents);
+    assert.equal(fs.existsSync(path.join(path.dirname(recordFile(f.context, 'CR01')), '.mutation-lock')), false);
+  }
+});
+
+test('submission requires the recorded commit to be the exact clean worktree HEAD', () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+  runCommand('update', options(record, { ...refs, commit: record.baseCommit }), f.root);
+  const before = fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8');
+  assert.throws(() => runCommand('submit', options(record), f.root), { code: 'SUBMISSION_NOT_HEAD' });
+  assert.equal(fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8'), before);
+  const result = runCommand('submit', options(record, { commit: refs.commit }), f.root);
+  assert.equal(result.claim.state, 'submitted'); assert.equal(result.claim.commit, git(refs.worktree, 'rev-parse', 'HEAD'));
+});
+
+test('dirty work and older checkpoints remain preservable through active update and partial handoff', () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+  const statusFile = path.join(refs.worktree, 'src/modules/cr01/STATUS.md');
+  fs.appendFileSync(statusFile, '\nPartial correction\n'); git(refs.worktree, 'add', statusFile);
+  const newFile = path.join(refs.worktree, 'src/modules/cr01/unfinished.test.ts'); fs.writeFileSync(newFile, 'Preserved untracked progress\n');
+  const indexPath = git(refs.worktree, 'rev-parse', '--path-format=absolute', '--git-path', 'index');
+  const beforeIndex = fs.readFileSync(indexPath), beforeRefs = git(f.root, 'show-ref');
+  const checkpoint = runCommand('update', options(record, { ...refs, commit: record.baseCommit }), f.root);
+  assert.equal(checkpoint.claim.state, 'active'); assert.equal(checkpoint.claim.commit, record.baseCommit);
+  const handoff = runCommand('handoff', options(record, { reason: 'partial' }), f.root);
+  assert.equal(handoff.claim.state, 'handoff'); assert.equal(handoff.claim.commit, record.baseCommit);
+  assert.deepEqual(fs.readFileSync(indexPath), beforeIndex); assert.equal(git(f.root, 'show-ref'), beforeRefs);
+  assert.equal(fs.readFileSync(statusFile, 'utf8').includes('Partial correction'), true);
+  assert.equal(fs.readFileSync(newFile, 'utf8'), 'Preserved untracked progress\n');
+});
+
+test('clean exact-HEAD submission allows an explicit in-progress gate and ignored outputs without refreshing the index', () => {
+  const f = fixture({ CR01: 'in-progress' }); const record = claim(f.root, 'CR01'); const refs = workerBranch(f);
+  fs.writeFileSync(path.join(refs.worktree, '.gitignore'), 'ignored-output/\n');
+  git(refs.worktree, 'add', '.gitignore');
+  git(refs.worktree, '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '--quiet', '-m', 'Fixture ignored build output');
+  const commit = git(refs.worktree, 'rev-parse', 'HEAD');
+  fs.mkdirSync(path.join(refs.worktree, 'ignored-output')); fs.writeFileSync(path.join(refs.worktree, 'ignored-output/build.js'), 'Ignored generated output\n');
+  // Change only file timestamps so ordinary status would refresh cached stat data.
+  const statusFile = path.join(refs.worktree, 'src/modules/cr01/STATUS.md');
+  const later = new Date(Date.now() + 10000); fs.utimesSync(statusFile, later, later);
+  const indexPath = git(refs.worktree, 'rev-parse', '--path-format=absolute', '--git-path', 'index');
+  const beforeIndex = fs.readFileSync(indexPath), beforeStat = fs.statSync(indexPath, { bigint: true });
+  const result = runCommand('submit', options(record, { ...refs, commit }), f.root);
+  assert.equal(result.claim.state, 'submitted'); assert.equal(result.claim.commit, commit);
+  assert.equal(runCommand('list', {}, f.root).modules[0].stage, 'in-progress');
+  assert.deepEqual(fs.readFileSync(indexPath), beforeIndex);
+  assert.equal(fs.statSync(indexPath, { bigint: true }).mtimeNs, beforeStat.mtimeNs);
+  assert.equal(fs.readFileSync(path.join(refs.worktree, 'ignored-output/build.js'), 'utf8'), 'Ignored generated output\n');
+});
+
 test('protects primary branches and rejects a worktree on a different branch', () => {
   const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerBranch(f);
   for (const branch of ['main', 'master']) assert.throws(() => runCommand('update', options(record, { branch }), f.root), { code: 'PROTECTED_BRANCH' });

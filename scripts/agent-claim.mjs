@@ -346,6 +346,15 @@ export function runCommand(command, options = {}, cwd = process.cwd()) {
       if (!next.branch || !next.worktree || !next.commit) fail('SUBMISSION_REFS_REQUIRED', 'Provide a private branch, registered isolated worktree and recorded commit before submission/handoff.');
       // Check stored checkpoints again: a worktree/ref may have changed since update.
       validatePatch(context, next, {});
+      if (command === 'submit') {
+        const head = git(next.worktree, ['rev-parse', '--verify', 'HEAD^{commit}']);
+        if (next.commit !== head) fail('SUBMISSION_NOT_HEAD', 'Submit the exact tested worktree HEAD, not an older checkpoint. Commit and check the final changes first.');
+        // Status normally refreshes the index. Disable optional locks so this
+        // verification never writes it, and explicitly include untracked files.
+        if (git(next.worktree, ['--no-optional-locks', 'status', '--porcelain=v1', '--untracked-files=all', '--ignore-submodules=none'])) {
+          fail('DIRTY_WORKTREE', 'Submission requires a clean worktree and index, including nonignored untracked files. Commit and check the intended final changes first.');
+        }
+      }
       if (command === 'handoff' && !['partial', 'blocked'].includes(options.reason)) fail('INVALID_REASON', 'Handoff reason must be partial or blocked; put details in module STATUS.md.');
       next.state = command === 'submit' ? 'submitted' : 'handoff';
       if (command === 'handoff') next.reason = options.reason;

@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.4 — 29 October 2026
+
+- CS01: edit a two-state continuous realization, predict internal and scalar BIBO stability, inspect exact transfer cancellation and eigenmodes, and compare hidden unstable states, imaginary-axis pairs and Jordan boundaries.
+- Accept [PR #8](https://github.com/ckbk123/CSDKTD_APP/pull/8), source `75d3528d20f62d082a3151d6a734a4fe237589bd`, with [independent review and production-browser evidence](src/modules/cs01/STATUS.md). All 254 application tests, type checking and production build pass. Native state/horizon controls use the shared underflow guard with 11 new regressions.
+- Final worker submissions must identify the clean exact worktree HEAD; older checkpoints and dirty corrections cannot be submitted as finished. Active checkpoints/partial handoffs remain recoverable. The helper has 32 passing coordination tests. Continuous workers still open one PR per module and immediately claim their next eligible task within their configured budgets.
+
 ## 0.3.3 — 29 October 2026
 
 - DS02: build mirrored Jury rows, check a predicted strict gain interval, inspect the exact inequality intersection and boundary roots, and compare the .2K/.1K worksheet families. The supported domain is explicitly monic quadratics affine in K.

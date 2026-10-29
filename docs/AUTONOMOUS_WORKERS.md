@@ -109,11 +109,11 @@ For completed work, run the module tests, `npm run check`, `npm test`, `npm run 
 3. Create its PR against `main` with a concrete student-facing title and description of the exercise, changed behavior, mathematical limits, actual checks and unresolved issues. The goal authorizes creation. Prefer structured connector arguments. With `gh`, write the exact multiline body to a temporary UTF-8 file outside tracked source, then use `gh pr create --repo ckbk123/CSDKTD_APP --base main --head <branch> --title "Implement DP02 pole mapping exercise" --body-file <absolute-body-file>`. Use a body file when updating descriptions too.
 4. **Attach every created PR and every existing PR you work on** with the app's `attach_artifact` tool (`artifact_type: pull_request`, exact URL). Printing a link is not attachment. If the tool is unavailable, preserve the URL and report attachment pending to the coordinator; do not create a replacement PR.
 5. Record its PR URL, responsible worker chat ID, branch/worktree and verification evidence in the owned STATUS. Commit/push that delivery record. Ensure the final submitted tree is the verified implementation and update the PR/checks if edits change behavior. The URL can be added after PR creation; the claim must ultimately name the final tested commit including this record.
-6. Release QA, verify the final branch/remote/SHA, then submit:
+6. Release QA and verify the final branch/remote/SHA. Submission requires a **clean worktree and index, including nonignored untracked files**, and the recorded tested commit must equal that worktree's current HEAD. Commit and check the final correction and delivery record before submitting; an older checkpoint does not represent later dirty fixes. `DIRTY_WORKTREE` or `SUBMISSION_NOT_HEAD` means preserve the edits, finish the intended commit/checks, then submit that exact HEAD; do not reset work to satisfy the check. Use the current primary helper even if your preserved branch has an older copy:
 
 ```text
 git push -u origin <unique-worker-branch>
-node scripts/agent-claim.mjs submit --module DP02 --token <token> --branch <unique-worker-branch> --worktree "<absolute-workspace-path>" --commit <tested-final-sha>
+node "C:\Users\baokh\OneDrive\BKHCM\2026-2027\CSDKTD\CSDKTD APP\scripts\agent-claim.mjs" submit --module DP02 --token <token> --branch <unique-worker-branch> --worktree "<absolute-workspace-path>" --commit <tested-final-sha>
 ```
 
 Leave the submitted reservation and worktree intact. Keep the PR branch stable until the coordinator reopens it for corrections. Record the ID, PR, exact SHA, supported behavior and evidence, then **immediately choose the next eligible module**. Do not issue a goal-complete final after one PR. The coordinator can review asynchronously and version an accepted integration. A submitted claim records delivery/ownership, not mathematical certification.
@@ -128,7 +128,7 @@ When work remains and the run must hand off, update STATUS and commit a recovera
 node scripts/agent-claim.mjs handoff --module DP02 --token <token> --branch <unique-worker-branch> --worktree "<absolute-workspace-path>" --commit <checkpoint-commit> --reason partial
 ```
 
-Use `--reason blocked` for an actual unresolved dependency, with its concrete details in STATUS. Follow the goal runtime's budget/blocker rules; a partial handoff is not completion of the accepted exercise. If interrupted too abruptly to hand off, the last `active` record and checkpoint remain for recovery.
+Use `--reason blocked` for an actual unresolved dependency, with its concrete details in STATUS. Active `update` and partial `handoff` still permit dirty recoverable progress or an older checkpoint; the strict clean/exact-HEAD rule applies to final `submit`. These transitions do not certify uncommitted changes. Follow the goal runtime's budget/blocker rules; a partial handoff is not completion of the accepted exercise. If interrupted too abruptly to hand off, the last `active` record and checkpoint remain for recovery.
 
 An unstarted reservation may be released with `release --module <ID> --token <token>`; releases are archived. Once work/refs have been recorded, use submission/handoff and deliberate integration recovery instead of making partial work disappear from the queue.
 
