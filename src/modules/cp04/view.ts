@@ -102,7 +102,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     const dispose = (): void => { signal.removeEventListener('abort', abort); controller.abort(); fields.forEach(field => field.input.destroy()); element.remove(); };
     const row: Row = { id, element, position, kind, fields, guess, dispose }; rows.push(row); factorArea.append(element); showFormula(); refreshChoices();
     for (const input of [position.input, guess.input]) input.addEventListener(input === guess.input ? 'input' : 'change', invalidate, { signal: controller.signal });
-    kind.input.addEventListener('change', () => { fields[2].input.element.hidden = kind.input.value !== 'second'; showFormula(); invalidate(); }, { signal: controller.signal });
+    kind.input.addEventListener('change', () => { window.mathVirtualKeyboard?.hide({ animate: false }); fields[2].input.element.hidden = kind.input.value !== 'second'; showFormula(); invalidate(); }, { signal: controller.signal });
     remove.addEventListener('click', () => { dispose(); rows = rows.filter(r => r !== row); refreshChoices(); invalidate(); }, { signal: controller.signal });
   }
   function readModel(): Model {
@@ -157,7 +157,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   origin.input.addEventListener('change', invalidate, { signal }); guessGain.input.addEventListener('input', invalidate, { signal }); units.input.addEventListener('change', () => updateUnit(units.input.value as FrequencyUnit), { signal });
   magnitude.input.addEventListener('change', redraw, { signal }); factorChoice.input.addEventListener('change', redraw, { signal }); [lower, upper, cursor].forEach(control => control.input.addEventListener('input', redraw, { signal }));
   presets.input.addEventListener('change', () => {
-    invalidate(); const model = baseline(); const example: Model = presets.input.value === 'delay' ? { ...model, delay: 0.5 } : presets.input.value === 'origin' ? { ...model, originPower: -1 } : presets.input.value === 'quadratic' ? { gain: 1, delay: 0, originPower: 0, factors: [{ kind: 'second', position: 'pole', a0: 4, a1: 1, a2: 1 }] } : presets.input.value === 'rhp' ? { ...model, factors: [...model.factors, { kind: 'first', position: 'zero', a0: 1, a1: -1, a2: 0 }] } : model;
+    window.mathVirtualKeyboard?.hide({ animate: false }); invalidate(); const model = baseline(); const example: Model = presets.input.value === 'delay' ? { ...model, delay: 0.5 } : presets.input.value === 'origin' ? { ...model, originPower: -1 } : presets.input.value === 'quadratic' ? { gain: 1, delay: 0, originPower: 0, factors: [{ kind: 'second', position: 'pole', a0: 4, a1: 1, a2: 1 }] } : presets.input.value === 'rhp' ? { ...model, factors: [...model.factors, { kind: 'first', position: 'zero', a0: 1, a1: -1, a2: 0 }] } : model;
     rows.forEach(row => row.dispose()); rows = []; nextId = 0; unit = 'rad/s'; units.input.value = unit; magnitude.input.value = 'db'; gain.input.setValue(String(example.gain)); delay.input.setValue(String(example.delay)); origin.input.value = String(example.originPower);
     lower.input.value = '0.01'; upper.input.value = '100'; cursor.input.value = '1'; guessGain.input.value = '1'; example.factors.forEach(f => addRow(f)); factorChoice.input.value = 'all'; updateUnit(unit); invalidate();
   }, { signal });
