@@ -21,6 +21,18 @@ describe('CR02 bounded visual ODE entry', () => {
     expect(parseOde(odeLatex(model))).toEqual(model);
     expect(parseOde("y''+y'+2y'+y+y=u+u")).toEqual({ ...BASELINE, b: 2 });
   });
+  it('preserves signed and grouped numeric coefficients without moving signs across sums', () => {
+    for(const coefficient of ['-\\frac12','\\left(-\\frac12\\right)','\\frac{-1}2','(-0.5)','-(-(-0.5))']) expect(parseOde(`y''+3y'+2y=${coefficient}u+u'`)).toEqual({...BASELINE,b:-.5,d:1});
+    expect(parseOde("y''+3y'+2y=u'+(-0.5)u")).toEqual({...BASELINE,b:-.5,d:1});
+    expect(parseOde("y''+3y'+2y=u'--0.5u")).toEqual({...BASELINE,b:.5,d:1});
+    for(const text of ["y''+3y'+2y=+-", "y''+3y'+2y=(-)u", "y''+3y'+2y=(-0.5u"]) expect(()=>parseOde(text)).toThrow();
+  });
+  it('accepts presentation-only numeric font wrappers from editor paste without accepting symbolic wrappers', () => {
+    for(const coefficient of ['\\frac{\\mathrm{1}}{2}','\\frac{1}{\\mathrm{2}}','\\frac{\\mathit{1}}{\\mathbf{2}}']) expect(parseOde(`y''+3y'+2y=${coefficient}u`)).toEqual({...BASELINE,b:.5});
+    expect(parseOde("y''+3y'+2y=-\\frac{\\mathrm{1}}{\\mathrm{2}}u")).toEqual({...BASELINE,b:-.5});
+    expect(parseOde("y''+3y'+2y=\\mathrm1u")).toEqual(BASELINE);
+    for(const text of ["y''+3y'+2y=\\mathrm{e}u","y''+3y'+2y=\\text{u}"]) expect(()=>parseOde(text)).toThrow();
+  });
   it.each(['', '0=u', "y''+3y'+2y=", "y''+3y'+2y=s", "y''+3y'+2y=u''", "y''+3y'+y*y=u", "-y''+3y'+2y=u", "y''-3y'+2y=u", "y''+3y'-2y=u", "y''+3y'+2y=sin(u)", "y''+3y'+2y=NaN*u", "\\frac10y''+3y'+2y=u", "1e-9999y''+3y'+2y=u", "y''+3y'+2y=0.0000000001u", 'y'.repeat(601)])('rejects unsupported/invalid ODE %s', text => {
     expect(() => parseOde(text)).toThrow();
   });

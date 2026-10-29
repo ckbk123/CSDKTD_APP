@@ -51,6 +51,13 @@ export function parseOde(latex: string): Model {
   if (!latex.trim()) fail('Enter a second-order ODE.');
   if (latex.length > 600) fail('Keep the ODE under 600 characters.');
   let text = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:,|!|;|quad|qquad| )/g, '').replace(/\s/g, '').replace(/−/g, '-');
+  // Font wrappers around a numeric literal are presentation, not new algebra.
+  // Never remove them around variables, functions or arbitrary expressions.
+  while(true){
+    const next=text.replace(/\\(?:mathrm|mathit|mathbf|mathsf|mathtt|text)\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}/g,'$1').replace(/\\mathrm([0-9])/g,'$1');
+    if(next===text)break;
+    text=next;
+  }
   text = text.replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\ddot\{?y\}?/g, "y''").replace(/\\dot\{?y\}?/g, "y'").replace(/\\dot\{?u\}?/g, "u'")
     .replace(/\\prime/g, "'");
@@ -58,19 +65,25 @@ export function parseOde(latex: string): Model {
   text = expandFractions(text).replace(/([yu])\^\{('{1,2})\}/g, '$1$2').replace(/([yu])\^('{1,2})/g, '$1$2')
     .replace(/y''/g, 'Y2').replace(/y'/g, 'Y1').replace(/u'/g, 'U1').replace(/y/g, 'Y0').replace(/u/g, 'U0');
   const scalar = String.raw`[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?`;
-  text = text.replace(new RegExp(`\\((${scalar})\\)`, 'g'), '$1');
+  const unsigned = scalar.replace('[+-]?', '');
+  const numericGroup = new RegExp(`\\(([+-]*)(${unsigned})\\)`, 'g');
+  while (true) {
+    const next = text.replace(numericGroup, (_, signs: string, value: string) => `${[...signs].filter(s=>s==='-').length%2?'-':''}${value}`);
+    if(next===text)break;
+    text=next;
+  }
   const sides = text.split('=');
   if (sides.length !== 2 || sides.some(s => !s)) fail('Use one equality: m y″ + c y′ + k y = b u + d u′.');
   function collect(side: string, channel: 'Y' | 'U'): number[] {
     if (side === '0') return [0, 0, 0];
-    const term = new RegExp(`([+-]?)((${scalar.replace('[+-]?', '')})\\*?)?(${channel}[012])`, 'gy');
+    const term = new RegExp(`([+-]*)((${unsigned})\\*?)?(${channel}[012])`, 'gy');
     const values = [0, 0, 0]; let position = 0, count = 0;
     while (position < side.length) {
       term.lastIndex = position; const match = term.exec(side);
       if (!match || (position > 0 && !match[1]) || ++count > 16) fail('Use sums of numeric multiples of y″, y′, y on the left and u, u′ on the right.');
       const order = Number(match[4].slice(1));
       if (channel === 'U' && order > 1) fail('Only the first derivative of the same scalar input is supported.');
-      const coefficient = (match[1] === '-' ? -1 : 1) * (match[3] ? literal(match[3]) : 1);
+      const coefficient = ([...match[1]].filter(s=>s==='-').length%2 ? -1 : 1) * (match[3] ? literal(match[3]) : 1);
       values[order] += coefficient; position = term.lastIndex;
     }
     return values;

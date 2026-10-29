@@ -49,6 +49,17 @@ describe('CR02 applied model and experiment state',()=>{
     expect(view.container.textContent).toContain('visual editor treats e/E');
     expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);view.close();
   });
+  it('does not silently turn nonzero underflow in numeric cells or initial data into zero',()=>{
+    const view=visit();view.change('Damping c (N·s/m)','1e-999');
+    expect(view.container.textContent).toContain('Damping c is too small to represent');
+    view.click('Apply ODE');view.click('Reveal derivation & response');
+    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
+    view.click('Baseline');view.change('Initial displacement y(0−) (m)','-1e-999');view.click('Reveal derivation & response');
+    expect(view.container.textContent).toContain('Initial displacement is too small to represent');
+    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
+    view.change('Initial displacement y(0−) (m)','0e-999');view.click('Reveal derivation & response');
+    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(false);view.close();
+  });
   it('explains the derivative of the same scalar input and the step velocity jump',()=>{
     const view=visit();view.click('Input-derivative example');view.click('Reveal derivation & response');
     expect(view.container.textContent).toContain('not a second independent input');

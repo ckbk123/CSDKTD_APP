@@ -11,6 +11,7 @@ function control(label: string, value: number): { label: HTMLLabelElement; input
 }
 function numeric(input: HTMLInputElement, label: string, maximum: number): number {
   if (!input.value.trim() || !Number.isFinite(input.valueAsNumber) || Math.abs(input.valueAsNumber) > maximum) throw new Error(`${label} must be finite with magnitude at most ${maximum.toLocaleString()}.`);
+  if (input.valueAsNumber === 0 && /[1-9]/.test(input.value.split(/[eE]/)[0])) throw new Error(`${label} is too small to represent. Enter zero explicitly or a representable value.`);
   return input.valueAsNumber;
 }
 type Key = keyof Model;
