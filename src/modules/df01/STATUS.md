@@ -1,27 +1,30 @@
 # DF01 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29; starting revision `c5d1135`
+- **Ownership:** `src/modules/df01/**`; accepted contract: [TASK.md](TASK.md)
 
-## Implemented and inspected
+## Requirement audit before implementation
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The starting workspace is a blank synchronous mount, metadata is lazy, and no local tests exist. The shell equation preview does not feed a solver. Preserve metadata and shared lifecycle.
 
-## Remaining acceptance work
+| Accepted requirement | Starting evidence / next action |
+|---|---|
+| Editable TF, sample period and horizon | Absent; add shared visual field, bounded rational-polynomial parser and numeric controls |
+| Manually identify peak/settling before checking | Absent; add sample selectors, prediction feedback and answer reveal |
+| Stem response, final value, selectable band and markers | Absent; compute from input and label sample/time axes |
+| Samples and seconds with explicit timing | Absent; use k=0 at initial output, t=kT, unit input from k=0 |
+| All subsequent samples and sufficient horizon | Absent; combine observed suffix with a conservative state-matrix tail bound; otherwise report not established |
+| Compare recurrence and state with same initialization | Absent; independently step output recurrence and controllable state realization, both zero prehistory |
+| Independent baseline / changes / errors | Absent; derive closed-form first-order, alternating, repeated and conjugate-mode fixtures |
+| Browser/lifecycle and project validation | Not yet performed |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Planned bounded domain
 
-## Evidence and next action
+Real proper rational TFs in z, denominator degree 1 or 2; real decimal coefficients, sums/products, parentheses, powers 0–2 and a single fraction. Strictly disk-stable denominator without cancellation; nonzero final value. Zero prehistory, direct feedthrough permitted. Unit step input, 2%/5% bands relative to absolute DC final value, last index N=2–500 and T=0.000001–1000 seconds. No continuous plant/hold is supplied: no intersample reconstruction or continuous-peak claim.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+The source audit's DF1 entry supports recurrence/state comparison and sampled metrics (CH8:41–62; S13:6–11). Original slide assets have not been inspected by this worker. The default and additional fixtures are independently derived tests, not asserted slide transcriptions.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+## Remaining work
+
+Implementation, mathematical tests, actual browser checks, final project checks and delivery remain. No shared dependency changes are needed.
