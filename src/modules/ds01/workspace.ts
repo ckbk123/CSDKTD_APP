@@ -1,5 +1,5 @@
 import type { ModuleMount } from '../../core/module';
-import { createEquationDisplay, createEquationInput, type EquationDraft, type EquationInput } from '../../shared/equations/input';
+import type { EquationDraft, EquationInput } from '../../shared/equations/input';
 import { chainLength, classify, copies, locate, parsePole, radius, realDimension, realization, samples, validateModel, type Mode, type Structure } from './math';
 import './workspace.css';
 
@@ -71,7 +71,25 @@ function sequence(mode: Mode, period: number, horizon: number): HTMLElement {
   return figure;
 }
 
-export const mount: ModuleMount = ({ container, signal }) => {
+type Equations = typeof import('../../shared/equations/input');
+
+// The public mount stays synchronous. Load browser-only MathLive after mounting,
+// not when the catalogue checks workspace exports in Node. Never mount after abort.
+export const mount: ModuleMount = context => {
+  if (context.signal.aborted) return;
+  let cleanup: ReturnType<ModuleMount>;
+  let disposed = false;
+  const loading = el('p', 'Loading equation controls…'); context.container.append(loading);
+  void import('../../shared/equations/input').then(equations => {
+    if (context.signal.aborted || disposed) return;
+    loading.remove(); cleanup = mountExercise(context, equations);
+  }).catch(() => {
+    if (!context.signal.aborted && !disposed) loading.textContent = 'Equation controls could not load. Reset the tool to try again.';
+  });
+  return () => { disposed = true; loading.remove(); cleanup?.(); };
+};
+
+const mountExercise = ({ container, signal }: Parameters<ModuleMount>[0], { createEquationInput, createEquationDisplay }: Equations): ReturnType<ModuleMount> => {
   const root = el('div', undefined, 'ds01');
   const inputCard = el('section', undefined, 'ds-card');
   inputCard.append(el('h2', '1. Choose poles and predict stability'), el('p', 'Stability in discrete time depends on distance from the origin. Compare decay, persistent oscillation and growth, then test whether an output can hide an internal mode.'));
