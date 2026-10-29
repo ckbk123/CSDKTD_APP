@@ -19,6 +19,7 @@
 [data-module="DR03"] .dr03-results { display: grid; gap: 16px; min-width: 0; }
 [data-module="DR03"] [hidden] { display: none !important; }
 [data-module="DR03"] .dr03-scroll, [data-module="DR03"] .dr03-matrix, [data-module="DR03"] .equation-display { max-width: 100%; min-width: 0; overflow-x: auto; }
+[data-module="DR03"] .equation-display { padding: 12px 4px 20px; }
 [data-module="DR03"] .dr03-diagram svg { display: block; width: 100%; min-width: 570px; }
 [data-module="DR03"] .dr03-plot svg { display: block; width: 100%; min-width: 570px; }
 [data-module="DR03"] .dr03-svg-label { fill: var(--text); font-size: 13px; font-family: inherit; }
@@ -27,7 +28,7 @@
 [data-module="DR03"] .dr03-delay { fill: var(--background); stroke: var(--line); stroke-width: 1.5; }
 [data-module="DR03"] .dr03-delay.selected { fill: var(--tint); stroke: var(--accent); stroke-width: 2; }
 [data-module="DR03"] [data-state-index] { cursor: pointer; }
-[data-module="DR03"] .dr03-selected-equation { background: var(--tint); border-left: 3px solid var(--accent); padding: 12px; }
+[data-module="DR03"] .dr03-selected-equation { background: var(--tint); border-left: 3px solid var(--accent); padding: 12px 12px 20px; }
 [data-module="DR03"] .dr03-grid { stroke: var(--line); stroke-width: 1; }
 [data-module="DR03"] .dr03-stem { stroke: var(--accent); stroke-width: 1.5; }
 [data-module="DR03"] .dr03-point { fill: var(--accent); }

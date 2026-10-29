@@ -238,7 +238,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
     results.append(construction, inspection);
     if (result.controller && result.observer) {
       const maps = card('Same history, different coordinates');
-      maps.append(equation('x_{c,b}[0]=M x_h[0],\\qquad M=' + matrixTex(result.historyMap!), 'History to controller map'),
+      if (!n) maps.append(paragraph('This gain has no dynamic base coordinates to transform. Both realizations keep the same ' + m + ' input-delay samples in the same order; no empty coordinate solve is needed.'));
+      else maps.append(equation('x_{c,b}[0]=M x_h[0],\\qquad M=' + matrixTex(result.historyMap!), 'History to controller map'),
         equation('x_{o,b}[0]=Sx_{c,b}[0],\\qquad S=' + matrixTex(result.coordinateMap!), 'Controller to observer coordinate map'),
         paragraph('M matches the first n zero-future recurrence outputs after subtracting the forced response from the same m input-delay samples. S satisfies S A_c=A_o S, S B_c=B_o and C_o S=C_c. Copying coordinates without this map generally changes the response. Extra delay cells keep their common declared values.'));
       results.append(maps, canonicalCard(result.controller, 'Controller companion realization', 'c', m), canonicalCard(result.observer, 'Observer companion realization', 'o', m));
@@ -294,8 +295,12 @@ export const mount: ModuleMount = ({ container, signal }) => {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') return;
     const target = event.target instanceof Element ? event.target.closest('[data-state-index]') : null;
     if (!target || !result) return;
+    const keepFocus = target === document.activeElement || target.contains(document.activeElement);
     event.preventDefault();
-    safe(() => { selected = Number(target.getAttribute('data-state-index')); rowChoice.value = String(selected); setPredictionLabel(); showInspection(); });
+    safe(() => {
+      selected = Number(target.getAttribute('data-state-index')); rowChoice.value = String(selected); setPredictionLabel(); showInspection();
+      if (keepFocus) (root.querySelector('[data-state-index="' + selected + '"]') as HTMLElement | null)?.focus();
+    });
   };
   root.addEventListener('click', selectCell, { signal }); root.addEventListener('keydown', selectCell, { signal });
   const limits = element('details');

@@ -65,6 +65,7 @@ describe('DR03 teaching flow using only a public equation API stub', () => {
   it('selects a delay cell through its keyboard control and the numeric alternative stays synchronized', () => {
     const root = open(); reveal(root);
     const cell = root.querySelector('[data-state-index="3"]')!;
+    expect(cell.closest('svg')!.getAttribute('role')).toBe('group');
     cell.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     expect(control(root, 'Equation to inspect').value).toBe('3');
     expect(root.querySelector('[data-state-index="3"]')!.getAttribute('aria-pressed')).toBe('true');

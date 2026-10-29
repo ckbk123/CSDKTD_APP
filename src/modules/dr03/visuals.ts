@@ -12,6 +12,7 @@ export function delayDiagram(result: Result, selected: number | 'y'): SVGSVGElem
   const n = result.model.a.length - 1, L = result.history.labels.length - n;
   const cells = Math.max(n, L, 1), width = Math.max(570, 110 + cells * 135);
   const out = svg(width, 218, 'History register: one scalar sample per unit-delay cell. Output and input lanes shift once per sample.');
+  out.setAttribute('role', 'group');
   out.style.minWidth = width + 'px';
   const lane = (count: number, y: number, offset: number, symbol: string): void => {
     out.append(node('text', { x: 12, y: y + 23, class: 'dr03-svg-label' }, symbol + '[k]'));
