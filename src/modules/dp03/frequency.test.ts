@@ -110,6 +110,17 @@ describe('DP03 independent frequency fixtures', () => {
 describe('DP03 grammar and numerical boundaries', () => {
   it('uses pinned-editor evidence for the mixed-number addition meaning', () => {
     expect(convertLatexToMathMl(String.raw`2\frac12`)).toContain('&#x2064;');
+    expect(convertLatexToMathMl(String.raw`q{+1}`)).toContain('<mi>q</mi><mrow><mo>+</mo><mn>1</mn>');
+  });
+  it.each([String.raw`q{+1}`, String.raw`q{-1}`, String.raw`q*{1+q}`, String.raw`q{1+q}`, String.raw`{1+q}^2`, String.raw`\frac1{q{+1}}`])('rejects invisible grouping in %s', expression => {
+    expect(() => parseModel(expression)).toThrow(/visible parentheses/);
+  });
+  it('preserves visible parentheses and intrinsic fraction/power grouping', () => {
+    const fir = value(unitResponse(parseModel('q*(1+q)'), Math.PI / 2));
+    expect(fir.value.re).toBeCloseTo(-1, 13); expect(fir.value.im).toBeCloseTo(-1, 13);
+    const rational = value(unitResponse(parseModel(String.raw`\frac{1+q}{1-0.5q}`), Math.PI / 2));
+    expect(rational.value.re).toBeCloseTo(.4, 13); expect(rational.value.im).toBeCloseTo(-1.2, 13);
+    expect(value(unitResponse(parseModel('q^{2}'), Math.PI / 2)).value.re).toBeCloseTo(-1, 13);
   });
   it.each([
     String.raw`2\frac12`, String.raw`-{2}\frac12`, String.raw`q*2\frac12`,

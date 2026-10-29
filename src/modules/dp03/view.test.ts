@@ -67,7 +67,7 @@ describe('DP03 linked exercise flow', () => {
   it('rejects bad notation, invalid T and excessive order without leaving stale plots visible', () => {
     const visit = open(); visit.reveal();
     const editor = visit.container.querySelector('textarea')!;
-    for (const [expression, fragment] of [['1e-2', 'e/E scientific notation'], [String.raw`2\frac12`, 'mixed number'], ['1/(1+q^5)', 'order 4'], ['', 'Complete the visual transfer function']]) {
+    for (const [expression, fragment] of [['1e-2', 'e/E scientific notation'], [String.raw`2\frac12`, 'mixed number'], [String.raw`q{+1}`, 'visible parentheses'], ['1/(1+q^5)', 'order 4'], ['', 'Complete the visual transfer function']]) {
       editor.value = expression; editor.dispatchEvent(new Event('input')); visit.reveal();
       expect(visit.visible()).toBe(false); expect(visit.container.querySelector('.dp03-message')!.textContent).toContain(fragment);
     }
