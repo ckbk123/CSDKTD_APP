@@ -1,27 +1,33 @@
 # DP02 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29, starting commit `c5d1135`
+- **Ownership:** `src/modules/dp02/**`; [accepted contract](TASK.md)
+- **Worker:** `worker-dp02-01a186d1`, branch `codex/dp02-pole-mapping-01a186d1`
 
-## Implemented and inspected
+## Requirement audit before implementation
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The metadata/lazy loader and synchronous blank mount exist. No module tests or calculations exist. The shell equation preview is independent of this tool.
 
-## Remaining acceptance work
+| Accepted requirement | Existing evidence | Missing / next action |
+|---|---|---|
+| Map a pole and conjugate using exp(sT) | Baseline metadata only | Bounded calculation; independent baseline/changed-data tests |
+| Linked s/z planes and sequence | None | Computed SVG planes, radial/angular guides and modal stems with sample/time units |
+| Adjustable T and radius/angle interpretation | None | Visual pole input, numeric alternative, period and reference-period comparison |
+| Predict inward/outward movement before reveal | None | Prediction selector, hidden result, input invalidation and checked feedback |
+| Selected inverse-log branch | None | Branch integer, inverse formula and nonunique-frequency explanation |
+| Frequencies separated by 2pi/T alias | None | Input-dependent alias comparison with equal-sample residual |
+| Stability depends on radius, including negative real z | None | Negative-real preset, circle-boundary qualifications and tests |
+| Visual equation editor / bounded parser | Shared API available | Mount-owned input/draft; finite rectangular complex grammar and useful errors |
+| Lifecycle, keyboard, narrow layout, local fonts | Shell lifecycle exists | Scoped styles, abort listeners, cleanup; production browser checks |
+| Project verification and delivery | Not run for implementation | Module tests, check, all tests, build; commit/push and submitted claim |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Planned mathematical bounds
 
-## Evidence and next action
+One scalar pole s=sigma+j*omega and its conjugate for a real modal illustration, not a full transfer-function or closed-loop stability solver. T in [0.001,10] seconds; finite sigma/omega, bounded phase/exponent and 4–100 sample intervals. Unit initial modal amplitude: Re(exp(skT))=r^k cos(k theta). The sequence is a free-mode illustration, not a step response or an inferred intersample reconstruction. Principal angle in (-pi,pi], inverse branches integer -5 through 5. Exact identities evaluated with floating point; explicit boundary tolerance and computation limits will be tested and documented.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+## Source provenance and current verification
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Read TASK, atlas DP02, and docs/research/DISCRETE_EXERCISE_AUDIT.md (DP1). That audit cites S13:2,4,6,13–14 and CH8:4–6,43–44; original slides were not reinspected by this worker. The default (-2 ± 3j, T=0.1) is the accepted metadata fixture; expected numbers will be derived from exponential/trigonometric identities. Additional cases are independent analytic fixtures, not claimed source exercises.
+
+No implementation checks or browser QA performed yet. No shared dependency is required. All acceptance work above remains open at this checkpoint.
