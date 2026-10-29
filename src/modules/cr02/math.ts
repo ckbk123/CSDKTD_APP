@@ -154,6 +154,7 @@ export function initialPolynomial(model: Model, initial: Initial): readonly [num
 export function warnings(model: Model, horizon: number, count: number): string[] {
   const roots = poles(model).roots, result: string[] = [];
   if (Math.max(...roots.map(p => Math.abs(p.im))) * horizon / (count - 1) > Math.PI / 8) result.push('The plot spacing may miss fast oscillation. Reduce the horizon or increase samples; the connecting lines do not establish peaks.');
+  if (Math.max(...roots.map(p => Math.abs(p.re))) * horizon / (count - 1) > 1) result.push('The plot spacing may miss a fast decay transient. Reduce the horizon or increase samples before interpreting early-time shape.');
   const decayRates = roots.filter(p => p.re < 0).map(p => -p.re);
   if (decayRates.length && horizon * Math.min(...decayRates) < 5) result.push('This horizon is shorter than five slow decay time constants; it may not show settling.');
   if (roots.some(p => p.re === 0)) result.push('A pole has zero real part. Do not infer settling or a final value from this finite trace.');

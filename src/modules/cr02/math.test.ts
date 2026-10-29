@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { validateLatex } from 'mathlive/ssr';
 import { BASELINE, dcGain, equations, initialPolynomial, odeLatex, parseOde, poles, responseAt, responseSamples, warnings, type Experiment } from './math';
 
 const step: Experiment = { initial: { y: 0, v: 0 }, excitation: 'step', amplitude: 1 };
@@ -13,6 +14,7 @@ describe('CR02 bounded visual ODE entry', () => {
     for (const coefficient of ['\\frac12', '\\frac1{2}', '\\frac{1}2', '\\frac{1}{2}']) expect(parseOde(`${coefficient}y''+3y'+2y=u`)).toEqual({ ...BASELINE, m: .5 });
     expect(parseOde("2y''+5y'+3y=u'+4u")).toEqual({ m: 2, c: 5, k: 3, b: 4, d: 1 });
     expect(parseOde("y''+3y'+2y=\\frac1{100000000}u")).toEqual({ ...BASELINE, b: .00000001 });
+    expect(parseOde("y''+3y'+2y=-\\frac12u-\\frac{1}2u'")).toEqual({...BASELINE,b:-.5,d:-.5});
   });
   it('round trips physical coefficient edits without rounding model input', () => {
     const model = { m: .123456789012345, c: 1e-9, k: 1000, b: -.333333333333333, d: 0 };
@@ -40,6 +42,11 @@ describe('CR02 independent response and Laplace fixtures', () => {
     }
     expect(poles(BASELINE).roots.map(p => p.re).sort()).toEqual([-1, -2]);
     expect(dcGain(BASELINE)).toEqual({ kind: 'finite', value: .5, cancellation: false });
+  });
+  it('generates valid mathematical notation for normalized, Laplace and state views', () => {
+    for(const model of [BASELINE,{m:2,c:5,k:3,b:1,d:0},{m:1,c:3,k:2,b:4,d:1},{m:1,c:0,k:0,b:0,d:0}]){
+      for(const value of Object.values(equations(model,{y:1,v:-2})))expect(validateLatex(value)).toEqual([]);
+    }
   });
   it('worksheet mass normalization gives poles -1,-1.5 and DC gain 1/3', () => {
     const model = parseOde("2y''+5y'+3y=u");
@@ -117,6 +124,7 @@ describe('CR02 independent response and Laplace fixtures', () => {
     expect(warnings(BASELINE,1,301).join()).toContain('horizon');
     expect(warnings({...BASELINE,c:0,k:1000},60,2).join()).toContain('spacing');
     expect(warnings({...BASELINE,k:0},60,301).join()).toContain('zero real part');
+    expect(warnings({...BASELINE,m:.01,c:1000,k:0},1,2).join()).toContain('fast decay');
   });
   it('rejects invalid experiment and computational resource requests', () => {
     expect(()=>responseAt(BASELINE,{...step,amplitude:Infinity},1)).toThrow(/finite/);

@@ -50,7 +50,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       <div data-ui="derivation"></div><div data-ui="derivative"></div><div data-ui="warnings"></div>
       <div data-ui="plot"></div><div class="controls" data-ui="cursor-control"></div><div data-ui="cursor-result"></div>
       <details><summary>Inspect the computed sample table</summary><div class="scroll" tabindex="0" aria-label="Computed response table" data-ui="sample-table"></div></details>
-      <p class="muted">The curves join numerically computed points. They do not certify peaks or settling between points. Response values use floating-point arithmetic and are displayed to 7 significant digits; polynomial/Laplace identities are distinguished from these approximations. Running displacement/velocity magnitudes are bounded by 10¹². There is no saved state or external solver.</p>
+      <p class="muted">The curves join numerically computed points. They do not certify peaks or settling between points. Response values use floating-point arithmetic and are displayed to 7 significant digits; polynomial/Laplace identities are distinguished from these approximations. Running displacement/velocity magnitudes are bounded by 10¹².</p>
     </section>`;
   const ui = (name: string) => root.querySelector<HTMLElement>(`[data-ui="${name}"]`)!;
   const on = (node: HTMLElement, event: string, callback: () => void) => node.addEventListener(event, () => { if (!signal.aborted) callback(); }, { signal });
@@ -161,7 +161,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   function renderCursor():void {
     if(!shown)return;const t=numeric(cursor.input,'Time cursor',60);if(t<0||t>shown.horizon)throw new Error('Keep the time cursor inside the plotted horizon.');
     const point=responseAt(shown.model,shown.experiment,t);
-    ui('cursor-result').replaceChildren(createEquationDisplay(`y(${num(t)})=\\underbrace{${num(point.free)}}_{\\mathrm{zero\\ input}}+\\underbrace{${num(point.forced)}}_{\\mathrm{zero\\ state}}\\approx${num(point.total)}\\;\\mathrm{m}`,'Numerical response at cursor'),el('p',`Command u = ${fmt(point.input)} input units; total velocity = ${fmt(point.velocity)} m/s. At t = 0 the response is read on the 0+ side.`, 'muted'));
+    ui('cursor-result').replaceChildren(createEquationDisplay(`y(${num(t)})\\approx\\underbrace{${num(point.free)}}_{\\mathrm{zero\\ input}}+\\underbrace{${num(point.forced)}}_{\\mathrm{zero\\ state}}\\approx${num(point.total)}\\;\\mathrm{m}`,'Numerical response at cursor'),el('p',`Command u = ${fmt(point.input)} input units; total velocity = ${fmt(point.velocity)} m/s. At t = 0 the response is read on the 0+ side.`, 'muted'));
     renderPlot(shown.samples,t);
   }
   on(cursor.input,'input',()=>{try{renderCursor();if(shown)show('Time cursor updated. Values below refer to this time; reveal again to compare a new prediction.');}catch(reason){ui('cursor-result').replaceChildren();error(reason);}});
@@ -171,12 +171,14 @@ export const mount: ModuleMount = ({ container, signal }) => {
   }
   function renderPlot(samples:Response[],time:number):void {
     const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox','0 0 640 300');svg.setAttribute('role','img');svg.setAttribute('aria-label','Total, zero-input and zero-state displacement versus time in seconds. The same computed points are available in the sample table.');
-    const values=samples.flatMap(p=>[p.free,p.forced,p.total]),low=Math.min(0,...values),high=Math.max(0,...values),span=high-low||1,end=samples[samples.length-1].t;
-    const x=(t:number)=>65+555*t/end,y=(v:number)=>250-210*(v-low)/span;
+    const values=samples.flatMap(p=>[p.free,p.forced,p.total]);let low=Math.min(0,...values),high=Math.max(0,...values);
+    if(high===low){low-=1;high+=1;}const span=high-low,end=samples[samples.length-1].t;
+    const axis=(v:number)=>Math.abs(v)>=10000||(v!==0&&Math.abs(v)<.001)?v.toExponential(1).replace(/e\+?(-?\d+)/,'×10^$1'):Number(v.toPrecision(3)).toString();
+    const x=(t:number)=>95+525*t/end,y=(v:number)=>250-210*(v-low)/span;
     const line=(value:string,dash='')=>{const p=document.createElementNS(ns,'path');p.setAttribute('d',value);p.setAttribute('fill','none');p.setAttribute('stroke','currentColor');p.setAttribute('stroke-width','1.7');if(dash)p.setAttribute('stroke-dasharray',dash);svg.append(p);};
-    line(`M65 30V250H620`);line(`M65 ${y(0)}H620`);line(`M${x(time)} 30V250`,'2 4');
+    line(`M95 30V250H620`);line(`M95 ${y(0)}H620`);line(`M${x(time)} 30V250`,'2 4');
     for(const [key,dash]of [['total',''],['free','8 5'],['forced','2 4']]as const)line(samples.map((point,i)=>`${i?'L':'M'}${x(point.t)} ${y(point[key])}`).join(' '),dash);
-    for(const [label,px,py]of [['y (m)',65,18],[Number(high.toPrecision(3)).toString(),0,40],[Number(low.toPrecision(3)).toString(),0,250],['0',65,270],[fmt(end),590,270],['Time t (s)',285,294]]as const){const text=document.createElementNS(ns,'text');text.textContent=label;text.setAttribute('x',String(px));text.setAttribute('y',String(py));svg.append(text);}
+    for(const [label,px,py]of [['y (m)',95,18],[axis(high),0,40],[axis(low),0,250],['0',95,270],[fmt(end),590,270],['Time t (s)',285,294]]as const){const text=document.createElementNS(ns,'text');text.textContent=label;text.setAttribute('x',String(px));text.setAttribute('y',String(py));svg.append(text);}
     ui('plot').replaceChildren(svg,el('p','Total: solid · Zero input: dashed · Zero state: dotted · Vertical guide: time cursor','muted'));
   }
   apply();
