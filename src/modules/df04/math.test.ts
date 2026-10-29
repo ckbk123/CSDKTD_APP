@@ -72,6 +72,13 @@ describe('DF04 independent physical/weighted comparison fixtures', () => {
     expect(physicalOutputAt(run, 0.05)).toBeCloseTo(2 * (1 - Math.exp(-0.05)), 14);
     expect(run.holds[0].control).toBe(2); expect(run.holds[0].contribution.effort).toBe(0.4);
   });
+  it('retains the small physical tail over a long zero-control hold', () => {
+    expect(heldFlow(plant, 1, 0, 30) / Math.exp(-30)).toBeCloseTo(1, 12);
+    const run = simulate({ gain: 1, tau: 0.01 }, { ...task, initial: 1, horizon: 0.3 }, { ...fixed, period: 0.3, fixedGain: 0 });
+    expect(run.terminal / Math.exp(-30)).toBeCloseTo(1, 12);
+    const repeated = simulate({ gain: 1, tau: 0.01 }, { ...task, initial: 1, horizon: 1.5 }, { ...fixed, period: 0.3, fixedGain: 0 });
+    expect(repeated.holds).toHaveLength(5); expect(repeated.terminal / Math.exp(-150)).toBeCloseTo(1, 12);
+  });
   it('rejects invalid data, impossible redesign, numerical conditioning and work limits', () => {
     for (const bad of [{ gain: 0, tau: 1 }, { gain: 1, tau: NaN }, { gain: 21, tau: 1 }]) expect(() => validatePlant(bad)).toThrow();
     for (const bad of [{ ...task, reference: 0 }, { ...task, horizon: 0 }, { ...task, initial: Infinity }]) expect(() => validateTask(bad)).toThrow();

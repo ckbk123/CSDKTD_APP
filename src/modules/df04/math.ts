@@ -22,6 +22,7 @@ export interface Run {
 export const CIRCLE_TOLERANCE = 1e-9;
 export const MAX_INTERVALS = 2000;
 export const MAX_AMPLITUDE = 1e12;
+const exceedsRatio = (value: number) => value > 30 + 64 * Number.EPSILON;
 const fail = (message: string): never => { throw new Error(message); };
 function within(value: number, minimum: number, maximum: number, label: string): number {
   if (!Number.isFinite(value) || value < minimum || value > maximum) fail(`Use ${label} from ${minimum} to ${maximum}.`);
@@ -40,7 +41,7 @@ export function classifyPole(pole: number): Model['stability'] {
 export function modelAt(plant: Plant, task: Task, spec: CaseSpec): Model {
   const p = validatePlant(plant), t = validateTask(task);
   within(spec.period, 0.001, 10, 'sample period T (s)');
-  if (spec.period / p.tau > 30) fail('Use T/tau at most 30 so the physical sampled pole remains numerically resolvable.');
+  if (exceedsRatio(spec.period / p.tau)) fail('Use T/tau at most 30 so the physical sampled pole remains numerically resolvable.');
   const a = Math.exp(-spec.period / p.tau), b = p.gain * -Math.expm1(-spec.period / p.tau);
   let gain: number, targetPole: number | null = null;
   if (spec.policy === 'fixed') gain = within(spec.fixedGain, 0, 100, 'fixed controller gain K');
@@ -48,7 +49,7 @@ export function modelAt(plant: Plant, task: Task, spec: CaseSpec): Model {
     within(spec.rate, 0.01, 100, 'target physical decay rate lambda (1/s)');
     const excess = spec.rate - 1 / p.tau;
     if (excess < 0) fail('This nonnegative-gain redesign requires lambda at least 1/tau. A slower target would need a negative controller gain.');
-    if (spec.rate * spec.period > 30) fail('Use lambda*T at most 30 for a resolvable target pole.');
+    if (exceedsRatio(spec.rate * spec.period)) fail('Use lambda*T at most 30 for a resolvable target pole.');
     targetPole = Math.exp(-spec.rate * spec.period);
     // Difference of exponentials without subtracting nearly equal values.
     gain = within(a * -Math.expm1(-excess * spec.period) / b, 0, 100, 'redesigned controller gain K');
@@ -66,8 +67,12 @@ function finiteAmplitude(value: number): number {
 export function heldFlow(plant: Plant, output: number, control: number, duration: number): number {
   const p = validatePlant(plant);
   if (!Number.isFinite(duration) || duration < 0 || duration > 60) fail('Use a finite hold duration from 0 to 60 seconds.');
+  if (exceedsRatio(duration / p.tau)) fail('Use a hold duration/tau ratio at most 30 for a resolvable physical tail.');
   finiteAmplitude(output); finiteAmplitude(control);
-  return finiteAmplitude(output + -Math.expm1(-duration / p.tau) * (p.gain * control - output));
+  const ratio = duration / p.tau, weight = -Math.expm1(-ratio);
+  // The incremental form resolves short holds; the affine form retains a tiny
+  // decaying tail on long holds rather than subtracting almost equal outputs.
+  return finiteAmplitude(ratio < 0.5 ? output + weight * (p.gain * control - output) : Math.exp(-ratio) * output + weight * p.gain * control);
 }
 /** All weighted intervals reach exactly the same terminal physical time H. */
 export function simulate(plant: Plant, task: Task, spec: CaseSpec): Run {

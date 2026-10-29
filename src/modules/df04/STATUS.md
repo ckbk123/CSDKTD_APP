@@ -1,6 +1,6 @@
 # DF04 implementation status
 
-- **Stage:** in-progress (initial requirement audit; implementation and verification pending)
+- **Stage:** in-progress (bounded comparison implemented; actual browser gate pending)
 - **Assessed:** 2026-10-29, starting primary main `c45512eb7cd4f52f5f4d5f1ed5e96f546c447a6e`
 - **Owned scope:** `src/modules/df04/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
@@ -14,26 +14,26 @@ The owned folder has metadata and a blank synchronous mount, with no module calc
 
 Implement the complete comparison exercise for a declared physical SISO first-order family G(s)=g/(tau*s+1), g>0,tau>0, proportional negative unity feedback and zero-order-held control u[k]=K*(R-y[k]). The same plant, output initial value, reference step and seconds horizon apply to every compared case. Several T values have visibly distinct fixed-K and redesigned-K policies. Redesign maps a chosen physical decay rate lambda to q_target=exp(-lambda*T), then derives K_T=(a-q_target)/b from a=exp(-T/tau), b=g*(1-a). This changes K and generally the steady tracking bias; it must not claim identical final value or generic optimal design. Lambda must permit nonnegative K. The sample-to-sample model is discrete LTI; the whole clocked sampled/held system is not called ordinary continuous-time LTI.
 
-| Accepted requirement | Current evidence | Required implementation/check |
+| Accepted requirement | Starting evidence | Current delivered evidence / remaining check |
 |---|---|---|
-| Edit physical model/task | Metadata only | Shared visual first-order plant input; native reference/initial state/common horizon/gain/rate/three T values; bounded parser |
-| Compare several T values | None | Temporary cases sharing one physical task; label T, fixed/redesigned policy, actual K, complete scalar pole and validity |
-| Student attempt/reveal | None | Predict unit-disk stability and appropriate error accumulation before checked computations |
-| Fixed versus redesign reasoning | None | Show a,b,q,target,K equation and actual trajectory/steady-error changes; no silent gain reuse |
-| Common seconds horizon | None | Exact physical hold updates and terminal observation at common H; explicit partial final interval |
-| Weighted error/effort | None | Left-rectangle ISE/IAE/ITAE using actual interval weights; raw error sum alongside ISE; ZOH control energy; no terminal double count |
-| Visual reasoning | None | Common-time output/control plots, sampled/held/reconstructed distinctions, case legends and per-interval numerical contributions |
-| Changed data/failures | None | Changed plant/K/T/initial/reference/rate, impossible redesign, near-boundary/unstable, finite growth and input/resource feedback |
-| Lifecycle/accessibility | Shell only | Mount-local cases/drafts, synchronous loading/guarded deferred view and abort cleanup; actual keyboard/reset/reopen/fast navigation/fonts/phone |
-| Delivery | None | Independent fixtures, module/type/full/build checks, reserved actual browser gate, one attached PR and exact clean tested pushed claim |
+| Edit physical model/task | Metadata only | Shared visual first-order input and native controls;41 independent parser cases; actual entry pending |
+| Compare several T values | None | Three periods and fixed/redesigned/both actions; six labeled temporary cases; interface tests pass |
+| Student attempt/reveal | None | Unit-disk and weighted-sum predictions before checked reveal; correct/wrong feedback tested |
+| Fixed versus redesign reasoning | None | Derived a,b,q,target,K and actual gain/bias; separate policies and unused-control independence tested |
+| Common seconds horizon | None | Physical hold updates plus partial terminal hold; independent ln2/2.5T fixtures and interface inspector checked |
+| Weighted error/effort | None | Compensated left-rectangle ISE/IAE/ITAE and raw sum; ZOH energy; independent values/no terminal double count checked |
+| Visual reasoning | None | Computed common-time output/control plots, sample/reconstruction distinction, legends/visibility and interval contributions; actual browser view pending |
+| Changed data/failures | None | Changed plant/K/T/reference/initial/rate, impossible/conditioned redesign, boundary/growth/work/underflow fixtures pass |
+| Lifecycle/accessibility | Shell only | Local state/synchronous loading/guarded import/abort cleanup; five lifecycle and interface tests pass; actual keyboard/fonts/navigation/phone pending |
+| Delivery | None |69 module/509 project tests,type/build pass; actual gate/PR final evidence/exact submitted SHA pending |
 
-## Conventions and proposed limits
+## Conventions and supported limits
 
 Time is seconds; R,y,e use normalized output units, u normalized input units. g maps input to output, tau is seconds and K maps output error to input. A step is applied at t=0 with common y(0). Each tick reads y[k], computes e[k]=R-y[k] and holds u[k]=K e[k] until the next tick. The physical update over delta seconds is y_next=exp(-delta/tau)*y+g*(1-exp(-delta/tau))*u. There is no extra input/state delay, saturation, integral controller, hidden memory or cross-module handoff.
 
 Intervals cover [0,H) exactly with delta=min(T,H-t_k). Left-rectangle ISE=sum(delta*e_k^2), IAE=sum(delta*abs(e_k)), ITAE=sum(delta*t_k*abs(e_k)). If H is a multiple of T, ISE=T*sum(e_k^2). Show the differently scaled raw sum for diagnosis. Control energy sum(delta*u_k^2) is exact for the declared held control up to floating arithmetic. Error indices approximate the physical error integral and are not called exact. H is a terminal observation, not an extra weighted control interval. Samples alone do not establish intersample motion; any optional reconstruction must explicitly use the continuous plant/hold.
 
-Proposed bounds to validate/freeze: g .05–20,tau .01–10s,K0–100,R .1–10,abs(y0)<=10,lambda .01–100s^-1,T .001–10s,H .01–60s,at most2000 intervals/case and six cases. Require T/tau<=30 and lambda*T<=30 for a redesigned case to retain a resolvable positive exponential. Reject nonnegative-gain redesign when lambda<1/tau. Declare finite trajectory/accumulation limits; a truncated case cannot masquerade as a common-horizon result. This is local numerical computation, not arbitrary-order tuning or a general CAS.
+Enforced bounds: g .05–20,tau .01–10s,K0–100,R .1–10,abs(y0)<=10,lambda .01–100s^-1,T .001–10s,H .01–60s,at most2000 intervals/case and six cases. Require T/tau<=30 and lambda*T<=30 for a redesigned case to retain a resolvable positive exponential, allowing64 machine epsilons for ratio rounding. Reject nonnegative-gain redesign when lambda<1/tau. A truncated case cannot masquerade as a common-horizon result. This is local numerical computation, not arbitrary-order tuning or a general CAS.
 
 ## Independent fixtures and provenance
 
@@ -63,3 +63,13 @@ The proposed scalar/model/time/work limits above are enforced. Output/error/cont
 `input.ts` now parses a constant numerator over a linear real polynomial in s, normalizing only its constant denominator scale to obtain g,tau. It supports decimals, compact/signed/nested fractions, visible parentheses, polynomial arithmetic and literal powers0–2 before enforcing the first-order physical family. It does not cancel factors or accept rational sums, e/E symbols, hidden grouping, mixed-fraction adjacency or ambiguous one-atom TeX exponent tails. Semantic checks run independently of editor syntax feedback. The private parser carries forward tested bounded normalization techniques from this worker's earlier work, with no runtime sibling import or shared-file change.
 
 Input limits:512 source characters,128 expanded tokens,eight logical visible grouping/fraction levels, normalized nesting32, intermediate degree4 and coefficient magnitude10^12. Nonzero literal/product/quotient/normalization underflow is rejected; positive g/tau bounds then validate the physical model. `npm test -- src/modules/df04` passes51 cases in2 files (10 math,41 parser); `npm run check` passes. The interface/lifecycle, full-project/build and actual MathLive/browser gates remain unfinished. No browser slot or preview is held.
+
+## Interface checkpoint and remaining browser gate
+
+The full bounded interface now provides separate fixed/redesigned/both comparison actions, case-stability and weighted-sum predictions, checked reveal, complete scalar pole/terminal/steady-limit and weighted-metric tables, shared-time output/control plots, independent plot visibility and an interval contribution inspector. A partial final hold reaches the common H. Sample markers have no inferred connecting curve; optional reconstruction evaluates the declared physical plant and hold. Unsupported/overflowing cases retain explicit errors with unavailable metrics, while valid cases remain inspectable. Native controls use the shared reader; changing task/model data invalidates prior results.
+
+The synchronous workspace immediately displays a loading status, guards deferred view import/abort/disposal and shows recoverable initialization errors. All mutable cases/drafts are mount-local, static listeners use the signal, rebuilt tables/plots attach no listeners, and cleanup destroys the editor/removes the root. Chart SVG styles are scoped separately from MathLive equation SVGs. Narrow tables/plots use keyboard-focusable local scrolling.
+
+Initial combined checks passed68 module cases (10 math,41 parser,12 mocked interface,5 lifecycle),508 project tests/type/build. A subsequent numerical inspection added a meaningful long-hold fixture: the incremental flow formula lost relative precision in a small zero-control tail at duration/tau=30. It reproduced a1.66e-4 relative error. The flow now uses incremental arithmetic for short holds and affine exponential arithmetic for long holds, retaining the analytic positive tail; its ratio bound matches the supported case domain with a64-epsilon rounding allowance for interval subtraction. Repeated long holds are tested too. Extremely small decaying trajectory tails may eventually round to zero; full sampled poles remain displayed. Corrected checks pass69 module cases (11 math,41 parser,12 mocked interface,5 lifecycle),509 full-project tests, type checking and production build; final view about10.78kB gzip, with the existing MathLive221.50kB gzip warning/20 local fonts.
+
+Actual browser behavior is still unverified; no mocked-editor result is counted as fonts/keyboard evidence. The coordinator's fair order is current DD04 integration, then CP03 notation, DR01 exponent and DP03 exponent gates; this worker defers ordinary acquisition until those releases. No browser slot/tab/preview/viewport override is held. Next: final code/checkpoint and one draft PR, then reserved production-browser model/policy/partial-horizon/errors, actual fractions/powers/keyboard, reset/reopen/navigation and phone checks. Prior DD04/DP04 submitted worktrees remain frozen for review returns.
