@@ -8,7 +8,7 @@
 - **Branch:** `codex/cr02-ode-laplace-01a186d2`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr02-ode-laplace-01a186d2/CSDKTD APP`
 - **Contract:** [TASK.md](TASK.md)
-- **PR:** not created yet; one module PR will be recorded after implementation.
+- **PR:** [CR02 #12](https://github.com/ckbk123/CSDKTD_APP/pull/12), attached to this worker chat; draft pending production-browser QA.
 
 ## Requirement audit before implementation
 
@@ -38,6 +38,8 @@ The claimed baseline has only metadata and a blank mount. There are no local alg
 **Resumed after signed-fraction review:** DR02 was corrected and resubmitted at `a8d544aaafe122588b8b58fa88a8b06a4594813e`; its signed visual fraction gate remains with the coordinator. CR02 resumes from UI checkpoint `d98baee63a1bee87f7c6bc0cc0820bbdb974ef81` with no cross-module imports or combined commits.
 
 **Pre-browser checkpoint:** all 46 local tests pass (38 mathematical/parser/notation cases and eight caller-state/lifecycle cases), type checking and production build pass. The generated Laplace/state notation is checked with MathLive's SSR validator, separately from real-editor QA. Signed numeric fractions and raw e/E rejection are covered. Plot bounds handle an all-zero trajectory, and fast decay/oscillation plus insufficient-horizon warnings distinguish sampling limits. The current primary equation guide's semantic gates agree with these limits. No real-browser result is claimed yet.
+
+The complete current worktree also passes all 88 project tests and a rebuilt production bundle. Draft PR #12 contains only this module's changes from main snapshot `ae7daf3`; its body records that the browser gate remains pending. The shared QA reservation was busy at the first attempt, and no worker-owned browser reservation is held.
 
 Second-order passive mass/damper/spring models m y''+c y'+k y=b u+d u', with positive finite mass and nonnegative damping/stiffness. The model is SISO and linear; u' is the derivative of the same input. Zero and nonzero initial displacement/velocity are supported. The planned excitation modes are zero input, a step and a physical ramp, all starting with u(0−)=0. Step input derivatives require an explicitly shown velocity jump; a ramp avoids that impulse. No feedback connection is assumed.
 
