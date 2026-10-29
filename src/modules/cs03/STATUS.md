@@ -1,6 +1,6 @@
 # CS03 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cs03/**` only
@@ -62,11 +62,11 @@ Grading regressions reject a false1e-7-wide interval for the true width1e-18 and
 
 Workspace tests use a mocked editor only for caller state/lifecycle, not browser functionality. They verify changed data, exact fractional selection, prediction/error recovery, intentional zero/finite exponent/nonzero-underflow distinctions, fresh reopen, immediate abort and cold-load status. A partial-mount failure creates a button and document listener before throwing; both are removed/aborted immediately while the parent remains active. The wrapper owns its child signal/container, ignores late imports and provides a recoverable Reset message.
 
-Actual Node24 checks after the final browser-discovered root-plot correction:
+Actual Node24 checks after the latest spacing-argument correction:
 
-- `npm test -- src/modules/cs03`:63/63 passed (51math/parser,12workspace).
+- `npm test -- src/modules/cs03`:78/78 passed (65math/parser,13workspace).
 - `npm run check`:passed.
-- `npm test`:197/197 passed across13files on the recorded v0.3.2 baseline.
+- `npm test`:212/212 passed across13files on the recorded v0.3.2 baseline.
 - `npm run build`:passed; existing MathLive large-chunk warning only.
 - `git diff --check`:passed; owned files only, metadata unchanged, generated output untracked/ignored.
 
@@ -94,10 +94,14 @@ Own viewport override was reset, tab5 closed, and preview process72504 on port88
 
 The accepted bounded exercise and required worker checks are complete. PR#26 is open against main and attached to this worker chat. The final delivery record is committed, checked and pushed before the shared claim records its exact clean HEAD. Independent coordinator review and the approved native-reader adaptation remain integration responsibilities. No merge, version change or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
 
-## Returned notation correction — current work
+## Returned notation correction — resolved
 
-The coordinator reopened submitted5a4771b in the same PR#26: TeX spacing commands were removed before unbraced argument scope was known. Raw fraction forms with a spacing token in a box were misread as1/2, including a malformed student endpoint being graded correct; an unbraced power-spacing form could become4. Stage is in-progress for this correction; earlier delivered mathematics/browser evidence applies only to unchanged behavior. CS02 is cleanly checkpointed at24034b6 in its preserved worktree while this return takes priority.
+The coordinator reopened submitted5a4771b in the same PR#26: TeX spacing commands were removed before unbraced argument scope was known. Raw fraction forms with a spacing token in a box were misread as1/2, including a malformed student endpoint being graded correct; an unbraced power-spacing form could become4. The correction is now implemented and checked; earlier delivered mathematics/browser evidence applies to unchanged behavior. CS02 is cleanly checkpointed at24034b6 in its preserved worktree while this return takes priority.
 
-The preflight now checks original fraction/power argument tokens before removing spacing. Unbraced arguments must themselves be numeric tokens; a spacing command cannot borrow a subsequent digit. Properly braced numeric boxes may still contain harmless spacing. Focused parser/grading/workspace regressions and actual-editor error/recovery checks are being completed before resubmission. Approved native-reader integration remains coordinator-owned; no rebase/shared change is being made.
+The preflight now checks original fraction/power argument tokens before removing spacing. Unbraced arguments must themselves be numeric tokens; a spacing command cannot borrow a subsequent digit. Properly braced numeric boxes may still contain harmless spacing. Focused parser/grading/workspace regressions and actual-editor error/recovery checks pass. Approved native-reader integration remains coordinator-owned; no rebase/shared change is being made.
 
-Focused correction checks now pass78/78 (65math/parser,13workspace), plus type checking. Regressions reject unbraced spacing arguments in both polynomial coefficients and endpoints, preserve properly filled/braced spacing boxes and compact fractions, reject power spacing scope, and prevent the0<K<1/2 malformed-endpoint grading reproduction. Actual editor serialization/error/recovery and final full-project/build/PR evidence remain pending.
+Focused correction checks pass78/78 (65math/parser,13workspace), plus type checking and the production build. Regressions reject unbraced spacing arguments in both polynomial coefficients and endpoints, preserve properly filled/braced spacing boxes and compact fractions, reject power spacing scope, and prevent the0<K<1/2 malformed-endpoint grading reproduction. Full npm test passes212/212 across13files. The final clean HEAD including this evidence record is checked again before exact resubmission.
+
+Actual focused production-browser checks used own background tab6 on port8825 after rechecking the matching private-chat codexSessionId. Real power buttons entered D=s³+s²+s; g=2 and K=.25. Both raw endpoint reproductions were pasted through the actual editor, copied back to confirm their serialization, and rejected with number-box guidance and zero computed plots. Properly braced spacing in the denominator box recovered0<K<1/2, as did ordinary fraction-button1/2. The actual malformed power was rejected; the properly braced power control gave−2<K<−3/2, and the properly filled model fraction gave−1/4<K<1/4. Phone feedback wrapped within clientWidth=scrollWidth=375; reset/reveal restored0<K<70; warning/error logs were empty. This is focused browser delta evidence, with prior full lifecycle/navigation evidence retained for unchanged code.
+
+The inspected screenshot cs03-spacing-arguments.png under the earlier external evidence directory shows the actual malformed fraction and explicit feedback; it was displayed in the worker chat. Viewport override was reset, own tab6 closed and preview process38678 on port8825 stopped. No global QA reservation/waiter was used or left behind. The existing PR#26 is updated and reused for this correction; no duplicate contribution, merge or deployment is created.
