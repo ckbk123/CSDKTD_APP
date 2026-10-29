@@ -108,6 +108,70 @@ describe('stability and exact scalar channel reduction', () => {
   });
 });
 
+describe('free-response projections before exponential amplification', () => {
+  const expectState = (actual: readonly number[], expected: readonly number[]) => {
+    expected.forEach((value, i) => expect(Math.abs(actual[i] - value)).toBeLessThanOrEqual(1e-12 * Math.max(1, Math.abs(value))));
+  };
+  it.each([1, 1.1, -2.2, .3, 12.8, 1e-20])('keeps the unexcited fast dyadic mode exactly absent at scale %s', scale => {
+    // Eigenvalues 1/8 and 8; [1,1/8] is the slow eigenvector.
+    const model = make([['0', '1'], ['-1', '8.125']]);
+    const initial = [scale, scale / 8], growth = Math.exp(5 / 8);
+    const result = stateAt(model, initial, 5);
+    expectState(result, initial.map(value => value * growth));
+    expect(num(model.c[0]) * result[0] + num(model.c[1]) * result[1]).toBeCloseTo(scale * growth, 11);
+  });
+  it.each([[1, .1], [-3, -.3], [.1, .01], [7.5, .75]])('retains the exact decimal slow eigenvector %s, %s', (first, second) => {
+    // A[1,1/10]' = (1/10)[1,1/10]'; the other eigenvalue is 10.
+    const model = make([['0', '1'], ['-1', '10.1']], ['0', '1'], ['0', '1']);
+    const result = stateAt(model, [first, second], 4), growth = Math.exp(.4);
+    expectState(result, [first * growth, second * growth]);
+    expect(result[1]).toBeCloseTo(second * growth, 12);
+  });
+  it.each([[1, -3], [.5, -1.5], [-.4, 1.2]])('does not invent a growing mode in the decaying initial state %s, %s', (first, second) => {
+    const model = make([['0', '1'], ['6', '-1']]);
+    const expected = [first * Math.exp(-60), second * Math.exp(-60)];
+    const result = stateAt(model, [first, second], 20);
+    expected.forEach((value, i) => expect(result[i] / value).toBeCloseTo(1, 13));
+  });
+  it.each([
+    [.137500001, 1e-9], [.137499999, -1e-9],
+    [.137500000000001, 1e-15], [.137499999999999, -1e-15],
+    [.13750000000000004, 4e-17], [.13749999999999998, -2e-17],
+  ])('preserves the genuinely nonzero fast mode for initial velocity %s', (second, epsilon) => {
+    // Perturbing velocity by epsilon gives fast coefficient epsilon/(8-1/8).
+    const fast = epsilon * 8 / 63, slow = 1.1 - fast, t = 5;
+    const expected = [slow * Math.exp(t / 8) + fast * Math.exp(8 * t),
+      slow / 8 * Math.exp(t / 8) + fast * 8 * Math.exp(8 * t)];
+    expectState(stateAt(make([['0', '1'], ['-1', '8.125']]), [1.1, second], t), expected);
+  });
+  it('preserves initial values exactly at t=0, including small native exponent values', () => {
+    const initial = Object.freeze([1e-200, -.1375]);
+    const result = stateAt(make([['0', '1'], ['-1', '8.125']]), initial, 0);
+    expect(result).toEqual(initial); expect(result).not.toBe(initial);
+    const tiny = stateAt(make([['8', '0'], ['0', '-1']]), [1e-200, 1], 5);
+    expect(tiny[0] / (1e-200 * Math.exp(40))).toBeCloseTo(1, 13);
+  });
+  it('evaluates the repeated-root polynomial before amplifying it', () => {
+    // exp(8t)[-1/2+t/10, 1] is exactly [0,exp(40)] at t=5.
+    expectState(stateAt(make([['8', '.1'], ['0', '8']]), [-.5, 1], 5), [0, Math.exp(40)]);
+    expectState(stateAt(make([['-1', '1'], ['0', '-1']]), [.3, -.7], 2), [-1.1 * Math.exp(-2), -.7 * Math.exp(-2)]);
+  });
+  it('keeps complex-pair and near-repeated evaluation in the regular real basis', () => {
+    const t = 2.5, scale = Math.exp(-.3 * t), c = Math.cos(2 * t), s = Math.sin(2 * t);
+    expectState(stateAt(make([['-.3', '-2'], ['2', '-.3']]), [.3, -.7], t), [scale * (.3 * c + .7 * s), scale * (.3 * s - .7 * c)]);
+    const q = Math.sqrt(1e-9);
+    expectState(stateAt(make([['0', '1'], ['.000000001', '0']]), [0, 1], .01), [Math.sinh(q * .01) / q, Math.cosh(q * .01)]);
+  });
+  it('reports unresolved irrational projection cancellation instead of deleting a fast mode', () => {
+    const model = make([['0', '1'], ['2', '0']]);
+    expect(() => stateAt(model, [1, -1.4142135623730951], 20)).toThrow(/ill-conditioned/);
+    expect(analyze(model).freeClass).toBe('unstable');
+    // A nearby plainly excited mode remains calculable at the same horizon.
+    const q = Math.sqrt(2), fast = (1 - 1.4 / q) / 2, slow = (1 + 1.4 / q) / 2;
+    expectState(stateAt(model, [1, -1.4], 20), [fast * Math.exp(20 * q) + slow * Math.exp(-20 * q), q * (fast * Math.exp(20 * q) - slow * Math.exp(-20 * q))]);
+  });
+});
+
 describe('analytic free and modal traces', () => {
   it('derives baseline and Jordan impulse traces independently', () => {
     expect(impulseAt(analyze(baseline()), 1)).toBeCloseTo(Math.exp(-1) - Math.exp(-2), 14);

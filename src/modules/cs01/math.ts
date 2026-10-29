@@ -147,31 +147,102 @@ export function analyze(model: Model): Analysis {
     eigenvalues: roots(denominator), poles: roots(reducedDenominator), freeClass, bibo, defective, reason };
 }
 
+/** Native controls arrive as numbers; retain their finite decimal serialization
+ * during projection, including exponent notation outside the visual grammar. */
+function initialRational(value: number): Rational {
+  const [mantissa, exponent = '0'] = value.toString().split('e');
+  const [integer, fraction = ''] = mantissa.split('.');
+  const digits = BigInt(integer + fraction), scale = fraction.length - Number(exponent);
+  return scale < 0 ? rat(digits * 10n ** BigInt(-scale)) : rat(digits, 10n ** BigInt(scale));
+}
+function exactSquareRoot(value: Rational): Rational | undefined {
+  function root(n: bigint): bigint | undefined {
+    if (n < 0n) return undefined;
+    if (n < 2n) return n;
+    let x = 1n << BigInt(Math.ceil(n.toString(2).length / 2));
+    for (;;) { const next = (x + n / x) / 2n; if (next >= x) return x * x === n ? x : undefined; x = next; }
+  }
+  const numerator = root(value.n), denominator = root(value.d);
+  return numerator === undefined || denominator === undefined ? undefined : rat(numerator, denominator);
+}
+const conditioningMessage = 'The free-response projection is too ill-conditioned for a reliable numerical trace. Classification is still valid; change the initial state or inspect an earlier time.';
+/** Multiply only after exact zero has been decided. Log scaling also preserves a
+ * tiny nonzero coefficient when exponential growth makes its term representable. */
+function rationalExponential(coefficient: Rational, exponent: number): number {
+  if (!coefficient.n) return 0;
+  const value = num(coefficient), exponential = Math.exp(exponent), ordinary = value * exponential;
+  if (Number.isFinite(value) && value !== 0 && exponential !== 0 && Number.isFinite(ordinary) && ordinary !== 0) return ordinary;
+  const numerator = (coefficient.n < 0n ? -coefficient.n : coefficient.n).toString(), denominator = coefficient.d.toString();
+  const mantissa = Number('0.' + numerator.slice(0, 17)) / Number('0.' + denominator.slice(0, 17));
+  const logarithm = Math.log(mantissa) + (numerator.length - denominator.length) * Math.LN10 + exponent;
+  const result = (coefficient.n < 0n ? -1 : 1) * Math.exp(logarithm);
+  if (!Number.isFinite(result)) throw new Error(conditioningMessage);
+  return result;
+}
+function checkedSum(first: number, second: number, error: number): number {
+  const result = first + second;
+  if (!Number.isFinite(result) || !Number.isFinite(error) || error > 1e-10 * Math.max(1, Math.abs(result))) throw new Error(conditioningMessage);
+  return result;
+}
+
 /** e^(At)x, evaluated in closed form via Cayley-Hamilton; no time integration. */
 export function stateAt(model: Model, initial: readonly number[], t: number): number[] {
   if (initial.length !== 2 || initial.some(x => !Number.isFinite(x) || Math.abs(x) > 100) || !Number.isFinite(t) || t < 0 || t > 30) {
     throw new Error('Use two initial states of magnitude at most 100 and a time between 0 and 30 s.');
   }
-  const a = model.a.map(row => row.map(num));
-  const center = (a[0][0] + a[1][1]) / 2;
+  if (t === 0) return [...initial];
+  const a = model.a, centerExact = div(add(a[0][0], a[1][1]), rat(2n)), center = num(centerExact);
   const discriminant = add(mul(sub(model.a[0][0], model.a[1][1]), sub(model.a[0][0], model.a[1][1])), mul(rat(4n), mul(model.a[0][1], model.a[1][0])));
-  const delta = num(discriminant) / 4;
-  const largest = center + (delta > 0 ? Math.sqrt(delta) : 0);
+  const deltaExact = div(discriminant, rat(4n)), delta = num(deltaExact);
+  const exactQ = delta > 0 ? exactSquareRoot(deltaExact) : undefined;
+  const largest = exactQ ? num(add(centerExact, exactQ)) : center + (delta > 0 ? Math.sqrt(delta) : 0);
   if (largest * t > 40) throw new Error('This horizon exceeds the growth limit exp(40). Shorten the horizon; classification is still valid.');
-  const nx = [(a[0][0] - center) * initial[0] + a[0][1] * initial[1], a[1][0] * initial[0] + (a[1][1] - center) * initial[1]];
-  let f: number, g: number;
-  if (!discriminant.n) { f = Math.exp(center * t); g = t * f; }
-  else if (delta > 0) {
-    const q = Math.sqrt(delta), plus = Math.exp((center + q) * t), minus = Math.exp((center - q) * t);
-    // Keep separated exponentials separated. Forming cosh/sinh first can erase
-    // a fast decaying state in the presence of a growing eigenvalue.
-    if (q * t >= 0.1) return initial.map((x, i) => ((x + nx[i] / q) * plus + (x - nx[i] / q) * minus) / 2);
-    f = (plus + minus) / 2;
-    g = q * t < 0.1 ? Math.exp(center * t) * Math.sinh(q * t) / q : (plus - minus) / (2 * q);
-  } else {
-    const q = Math.sqrt(-delta), scale = Math.exp(center * t); f = scale * Math.cos(q * t); g = scale * Math.sin(q * t) / q;
+  const x = initial.map(initialRational);
+  const nx = [add(mul(sub(a[0][0], centerExact), x[0]), mul(a[0][1], x[1])),
+    add(mul(a[1][0], x[0]), mul(sub(a[1][1], centerExact), x[1]))];
+  if (!discriminant.n) {
+    const time = initialRational(t);
+    return x.map((value, i) => rationalExponential(add(value, mul(time, nx[i])), center * t));
   }
-  return initial.map((x, i) => f * x + g * nx[i]);
+  const q = Math.sqrt(Math.abs(delta));
+  if (delta > 0 && q * t >= 0.1) {
+    if (exactQ) {
+      const plusExponent = num(add(centerExact, exactQ)) * t, minusExponent = num(sub(centerExact, exactQ)) * t;
+      return x.map((value, i) => {
+        const projection = div(nx[i], exactQ);
+        const plus = rationalExponential(div(add(value, projection), rat(2n)), plusExponent);
+        const minus = rationalExponential(div(sub(value, projection), rat(2n)), minusExponent);
+        const error = 32 * Number.EPSILON * ((1 + Math.abs(plusExponent)) * Math.abs(plus) + (1 + Math.abs(minusExponent)) * Math.abs(minus));
+        return checkedSum(plus, minus, error);
+      });
+    }
+    // Irrational projections cannot vanish for nonzero rational component data.
+    // Refuse a rounded cancellation rather than silently deleting a fast mode.
+    const plusExponent = (center + q) * t, minusExponent = (center - q) * t;
+    const plusScale = Math.exp(plusExponent), minusScale = Math.exp(minusExponent);
+    return initial.map((value, i) => {
+      if (!x[i].n && !nx[i].n) return 0;
+      const shifted = num(nx[i]);
+      if (!Number.isFinite(shifted) || (nx[i].n !== 0n && shifted === 0)) throw new Error(conditioningMessage);
+      const projection = shifted / q, plusCoefficient = (value + projection) / 2, minusCoefficient = (value - projection) / 2;
+      if (!plusCoefficient || !minusCoefficient) throw new Error(conditioningMessage);
+      const plus = plusCoefficient * plusScale, minus = minusCoefficient * minusScale;
+      const projectionError = 16 * Number.EPSILON * (Math.abs(value) + Math.abs(projection));
+      const error = projectionError * (plusScale + minusScale) + 32 * Number.EPSILON * (1 + Math.abs(center * t) + q * t) * (Math.abs(plus) + Math.abs(minus));
+      return checkedSum(plus, minus, error);
+    });
+  }
+  const scale = Math.exp(center * t), angle = q * t;
+  const f = delta > 0 ? Math.cosh(angle) : Math.cos(angle), g = delta > 0 ? Math.sinh(angle) / q : Math.sin(angle) / q;
+  const derivativeF = delta > 0 ? Math.sinh(angle) : Math.sin(angle), derivativeG = delta > 0 ? Math.cosh(angle) : Math.cos(angle);
+  return initial.map((value, i) => {
+    const shifted = num(nx[i]);
+    if (!Number.isFinite(shifted) || (nx[i].n !== 0n && shifted === 0)) throw new Error(conditioningMessage);
+    const first = scale * f * value, second = scale * g * shifted;
+    const error = 32 * Number.EPSILON * ((1 + Math.abs(center * t)) * (Math.abs(first) + Math.abs(second))
+      + scale * angle * (Math.abs(value * derivativeF) + Math.abs(shifted * derivativeG / q)));
+    return checkedSum(first, second, error);
+  });
 }
 
 /** Regular impulse response of the exactly reduced scalar channel, excluding D delta(t). */
