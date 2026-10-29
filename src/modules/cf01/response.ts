@@ -123,5 +123,9 @@ export function futureEnvelope(response: Response, horizon: number): number {
     const maximumTime = Math.max(horizon, mode.power / -mode.pole.re);
     envelope += magnitude(mode.coefficient) * maximumTime ** mode.power * Math.exp(mode.pole.re * maximumTime);
   }
-  return envelope + 512 * Number.EPSILON * (1 + response.coefficientScale) * (1 + horizon * horizon);
+  return envelope + roundoffAllowance(response, horizon);
+}
+export function roundoffAllowance(response: Response, horizon: number): number {
+  if (!Number.isFinite(horizon) || horizon < 0 || horizon > 100) fail('Use a horizon from 0 to 100 seconds.');
+  return 512 * Number.EPSILON * (1 + response.coefficientScale) * (1 + horizon * horizon);
 }
