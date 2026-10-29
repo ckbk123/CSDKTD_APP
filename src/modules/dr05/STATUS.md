@@ -1,6 +1,6 @@
 # DR05 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Assessed:** 2026-10-29. Contribution base: 8696261267b7620bfc101ce2b5f13772bfaa529a. This delivery record accompanies the tested tree; the submitted claim names its exact final commit.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802
 - **Branch/worktree:** codex/dr05-zoh-f802; C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP
@@ -64,11 +64,13 @@ The local reader also explicitly rejects nonfinite values, and an optional predi
 
 workspace.ts now creates its own host and child AbortController, forwards parent abort, and aborts child resources immediately when lazy view mounting throws after partial allocation. Recovery replaces only the owned host. Disposal aborts/detaches once, calls normal cleanup if returned, and removes the host; unrelated container siblings survive. Tests register an actual signal-owned listener and abort cleanup before deliberately throwing, then verify immediate release while the parent remains active. Normal disposal and repeated cleanup are tested too.
 
-The focused regressions and complete automated checks pass below. Actual-browser Reveal/underflow/intentional-zero and normal reset/navigation checks on this corrected build remain pending under the shared QA order DD04 -> CP03 -> DR01 -> DP03 -> normal acquisition. Deliberate partial-mount failure is tested with an allocated-resource mock, not claimed as browser fault injection.
+The focused regressions and complete automated checks pass below. The second correction's production-browser pass is now complete in this worker's verified private IAB session, under the coordinator's updated isolation policy. Deliberate partial-mount failure is tested with an allocated-resource mock, not claimed as browser fault injection.
 
-The coordinator relayed the human-authorized Firefox fallback after extended IAB waiting. Installed Firefox 159.0 was verified and a new dedicated window (791364) was opened, separate from the three pre-existing Firefox windows. Binding that new window was blocked by the desktop tool: URL-policy enforcement is not yet supported for this Windows browser, and Computer Use was stopped for the turn. No Firefox page interaction or module evidence was obtained; no existing window/tab or IAB viewport was used. The new blank window remains because the stop precludes further native input. No IAB reservation or acquisition waiter is owned. Resume focused browser checks through a supported surface when the named queue permits.
+The coordinator relayed the human-authorized Firefox fallback after extended IAB waiting. Installed Firefox 159.0 was verified and a new dedicated window (791364) was opened, separate from the three pre-existing Firefox windows. Binding that new window was blocked by the desktop tool: URL-policy enforcement is not yet supported for this Windows browser, and Computer Use was stopped for that turn. No Firefox page interaction or module evidence was obtained; no existing window/tab was used. The new blank window was left intact because the stop precluded further native input. That unsupported route was not retried.
 
-A later IAB acquisition waiter incorrectly checked only helper ok instead of acquired. CD08 won the resource race, but the waiter reported acquisition and this worker ran its private tab, temporarily setting/resetting the shared viewport. The release helper exposed the mistake with NOT_QA_OWNER. This worker closed its tab and stopped browser actions without touching CD08's claim/tab. The observed corrected behavior is not counted as the required reserved final browser pass; repeat it after verifying acquired=true and the actual DR05 holder. The waiter must check acquisition/holder, not merely successful helper execution. This is a coordination failure, not a mathematical test failure.
+A later IAB acquisition waiter incorrectly checked only helper ok instead of acquired. CD08 won the resource race, but the waiter reported acquisition and this worker ran its private tab with a temporary viewport override before ownership was verified. The release helper exposed the mistake with NOT_QA_OWNER. This worker closed its tab and stopped browser actions without touching CD08's claim/tab. Those observations were excluded from final acceptance pending a repeat under valid QA authorization. The waiter was corrected to require acquired=true and matching module/owner. This was a coordination failure, not a mathematical test failure.
+
+The coordinator subsequently verified disjoint per-chat tab inventories and independent viewport sizes, and explicitly retired the overbroad global lock for verified private IAB sessions. This worker cancelled its replacement waiter, read the browser inventory, and confirmed browser 2 codexSessionId=01a18700-cc48-7482-ba96-f9aab107f802. The focused pass was then repeated in a new private tab under that updated rule. No other worker's reservation was released or tab used. The earlier acquisition-check mistake remains recorded; later isolation evidence does not erase that procedural error.
 
 ## Automated verification
 
@@ -79,7 +81,7 @@ Executed in this isolated worktree using Node 24.22.1/npm 10.8.2 (explicit bundl
 - npm run check: TypeScript passed.
 - npm test: **161 passed** across 11 files on this branch's recorded base, after the second review correction.
 - npm run build: type check/production Vite build passed; existing MathLive large-chunk advisory only. Generated output is untracked.
-- [GitHub check for reviewed code checkpoint bb301f8](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40869920735): passed. Final submitted SHA also includes this evidence record.
+- [GitHub check for second-correction checkpoint ed33052](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40890977337): passed. The final submitted SHA also includes the completed delivery record; its claim records exact HEAD.
 
 ## Real-browser verification
 
@@ -105,8 +107,17 @@ Final targeted checks on the corrected production build, completed 2026-10-29:
 
 One earlier immediate preset/reveal after automated viewport reset reported an unmounted/empty editor. Fresh reload and ordinary preset/reveal passed; normal reset/navigation did not reproduce it. Final targeted preset/reset/navigation checks pass. Other browser engines and light-theme screenshots were not tested.
 
+Second review correction, completed 2026-10-29 after verifying this worker's private IAB identity:
+
+- Baseline reveal gives y[1]=.09516258. With inspection draft 1e-400 and changed T=.2, Reveal preserves the exact draft, shows the localized underflow message, retains newly computed samples [0,.1812692,.32968,.4511884] and clears old plots instead of silently selecting zero.
+- Intentional 0e-400 reveals sample 0 and current plots. A valid index 20 with the count shortened to four clamps to index 3, with y[3]=.4511884 at t=.6. Empty/negative/noninteger preservation also has focused automated regressions.
+- Actually typing optional prediction 1e309 creates native badInput=true with an empty DOM value. Reveal rejects it and hides the result. The baseline preset clears that draft and restores the correct computation.
+- At 390x844, document client/scroll widths are 375/375 with the new owned host. Error feedback remains accessible. Existing real-editor font/visual checks above are retained; no Firefox evidence is substituted.
+- Reset with the math keyboard open removes it and restores baseline controls, blank prediction and hidden answers. Re-reveal inspects baseline k=1 and y[1]=.09516258. Leaving with the keyboard open removes it; repeated rapid leave/reopen ends with exactly one editor, one owned tool and hidden fresh answers. Warning/error log is empty.
+- Private viewport override was reset and tab 6 closed. No global reservation or acquisition waiter is owned under the updated private-session policy. Primary preview 8787 remains untouched.
+
 ## Remaining work and coordination
 
-Focused production-browser validation of the second review correction remains. This stage is in-progress until that evidence is recorded and the exact clean final tree is resubmitted. Independent final coordinator review/integration remains separate. No package, shell, routing, deployment or sibling-module edits are included.
+The accepted bounded exercise and the second review correction are implemented and checked. Independent final coordinator review/integration remains separate; this record does not claim verified status. The exact clean tested final revision is committed/pushed and named by the resubmitted claim. No package, shell, routing, deployment or sibling-module edits are included.
 
 This branch predates main v0.3.3's readNumericInput(input,label). Its tested equivalent local native-number guard is an approved carry-forward under the coordinator's 2026-10-29 instruction. The coordinator owns import adaptation and its checks during integration; no unowned shared file, rebase or merge was added for that rollout. The same PR/branch is preserved for exact clean resubmission and later review.
