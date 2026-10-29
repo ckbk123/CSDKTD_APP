@@ -93,6 +93,17 @@ describe('CR03 independent realization fixtures', () => {
     for (const t of [0, .1, 1, 5, 20]) arrayClose(at(freeMass, [1, 3], 2, t).state, [1 + 3 * t + t * t, 3 + 2 * t]);
     expect(samples(freeMass, [0, 0], 1, 2, 5).map(point => point.t)).toEqual([0, .5, 1, 1.5, 2]);
   });
+  it('checks large scaling, fast oscillation, repeated modes and forcing against analytic solutions', () => {
+    const cases = [
+      { model: { A: [[0, 1e6], [-1e-6, 0]], B: [0, 0], C: [1, 0], D: 0 }, initial: [1, 0], command: 0, expected: (t: number) => Math.cos(t) },
+      { model: { A: [[0, 1e6], [-1e6, 0]], B: [0, 0], C: [1, 0], D: 0 }, initial: [1, 0], command: 0, expected: (t: number) => Math.cos(1e6 * t) },
+      { model: { A: [[-1, 1e6], [0, -1]], B: [0, 0], C: [1, 0], D: 0 }, initial: [0, 1], command: 0, expected: (t: number) => 1e6 * t * Math.exp(-t) },
+      { model: { A: [[-1]], B: [1e6], C: [1], D: 0 }, initial: [0], command: 100, expected: (t: number) => 1e8 * (1 - Math.exp(-t)) },
+    ];
+    for (const item of cases) for (const t of [.01, .1, 1, 5, 20]) close(at(item.model, item.initial, item.command, t).output, item.expected(t));
+    const tiny = at({ A: [[-1]], B: [1], C: [1e-200], D: 0 }, [0], 1, 1).output, expected = 1e-200 * (1 - Math.exp(-1));
+    expect(Math.abs((tiny - expected) / expected)).toBeLessThan(2e-8);
+  });
 });
 
 describe('CR03 bounded failures and numerical qualification', () => {
