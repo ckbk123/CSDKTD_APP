@@ -107,6 +107,7 @@ describe('bounded grammar and failures', () => {
   it.each([
     String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`-{2}\frac12`,
     String.raw`2\,\frac{1}{2}`, String.raw`2{\frac12}`, String.raw`2{{\frac12}}`,
+    String.raw`2{1+\frac12}`, String.raw`{2}3`, '2 3',
     String.raw`q*2\frac12`, String.raw`q/2\frac12`,
     String.raw`\frac{2\frac12}{3}`, String.raw`\frac{1}{2\frac12}`,
   ])('rejects ambiguous mixed-number adjacency %s with explicit-operation guidance', expression => {
