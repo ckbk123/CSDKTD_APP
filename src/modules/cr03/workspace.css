@@ -1,0 +1,29 @@
+[data-module="CR03"] .cr03 { display: grid; gap: 20px; min-width: 0; font-size: 14px; line-height: 1.6; }
+[data-module="CR03"] .cr03 section { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 10px; }
+[data-module="CR03"] .cr03 h3 { font-size: 17px; margin: 0 0 10px; font-weight: 550; }
+[data-module="CR03"] .cr03 h4 { font-size: 14px; margin: 14px 0 6px; }
+[data-module="CR03"] .cr03 p { margin: 8px 0; }
+[data-module="CR03"] .cr03 .muted { font-size: 12px; color: var(--muted); }
+[data-module="CR03"] .cr03 .notice { padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--tint); overflow-wrap: anywhere; }
+[data-module="CR03"] .cr03 .controls, [data-module="CR03"] .cr03 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+[data-module="CR03"] .cr03 label { display: grid; gap: 4px; font-size: 12px; }
+[data-module="CR03"] .cr03 input, [data-module="CR03"] .cr03 select { width: 145px; max-width: 100%; min-height: 40px; border: 1px solid var(--line); border-radius: 6px; padding: 6px; color: var(--text); background: var(--surface); font: inherit; }
+[data-module="CR03"] .cr03 button { border: 1px solid var(--line); border-radius: 7px; padding: 8px 12px; font: inherit; font-size: 13px; color: var(--text); background: var(--surface); }
+[data-module="CR03"] .cr03 button:hover, [data-module="CR03"] .cr03 button.primary, [data-module="CR03"] .cr03 button[aria-pressed="true"] { background: var(--tint); border-color: var(--accent); }
+[data-module="CR03"] .cr03 .two-columns { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 18px; }
+[data-module="CR03"] .cr03 .two-columns > div { min-width: 0; }
+[data-module="CR03"] .cr03 .scroller, [data-module="CR03"] .cr03 .equation-display { max-width: 100%; overflow-x: auto; }
+[data-module="CR03"] .cr03 .matrix-draft { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; }
+[data-module="CR03"] .cr03 .matrix-draft > div { min-width: 0; max-width: 100%; }
+[data-module="CR03"] .cr03 table { border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+[data-module="CR03"] .cr03 th, [data-module="CR03"] .cr03 td { padding: 6px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line); }
+[data-module="CR03"] .cr03 [data-ui="table"] { max-height: 28rem; overflow: auto; }
+[data-module="CR03"] .cr03 [data-ui="table"] th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
+[data-module="CR03"] .cr03 [data-ui="table"] tr > :first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); }
+[data-module="CR03"] .cr03 [data-ui="table"] th:first-child { z-index: 3; }
+[data-module="CR03"] .cr03 td input { width: 90px; }
+[data-module="CR03"] .cr03 svg { display: block; width: 100%; min-width: 560px; height: auto; color: var(--accent); }
+[data-module="CR03"] .cr03 svg text { fill: var(--text); font-size: 13px; }
+[data-module="CR03"] .cr03 [hidden] { display: none; }
+@media(max-width:800px) { [data-module="CR03"] .cr03 .two-columns { grid-template-columns: minmax(0,1fr); } }
+@media(max-width:480px) { [data-module="CR03"] .cr03 section { padding: 12px; } }
