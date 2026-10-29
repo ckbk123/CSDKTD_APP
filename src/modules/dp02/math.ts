@@ -18,14 +18,34 @@ export function parsePole(latex: string): Pole {
     .replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
     .replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\s/g, '');
   source = source.replace(/^s=/, '');
-  // Expand only structurally balanced TeX fractions; depth is bounded below.
-  let passes = 0;
-  while (/\\frac/.test(source) && passes++ < 12) {
-    const next = source.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, '(($1)/($2))');
-    if (next === source) break;
-    source = next;
-  }
-  source = source.replace(/\{/g, '(').replace(/\}/g, ')');
+  // MathLive emits both braced fractions and TeX's single-token shorthand.
+  let cursor = 0;
+  const fraction = (depth: number): string => {
+    cursor += 5; // \\frac
+    return `((${argument(depth + 1)})/(${argument(depth + 1)}))`;
+  };
+  const argument = (depth: number): string => {
+    if (depth > 12) fail('Use at most 12 levels of parentheses or fractions.');
+    if (source[cursor] === '{') { cursor++; return group(depth, true); }
+    if (source.startsWith('\\frac', cursor)) return fraction(depth);
+    const token = source[cursor++];
+    if (!token || !/[0-9πj]/.test(token)) fail('Complete both parts of the fraction.');
+    return token;
+  };
+  const group = (depth: number, closing: boolean): string => {
+    if (depth > 12) fail('Use at most 12 levels of parentheses or fractions.');
+    let output = '';
+    while (cursor < source.length && source[cursor] !== '}') {
+      if (source.startsWith('\\frac', cursor)) output += fraction(depth);
+      else if (source[cursor] === '{') { cursor++; output += `(${group(depth + 1, true)})`; }
+      else output += source[cursor++];
+    }
+    if (closing) {
+      if (source[cursor++] !== '}') fail('Complete both parts of the fraction.');
+    } else if (source[cursor] === '}') fail('Check the grouping in the pole.');
+    return output;
+  };
+  source = group(0, false);
   if (/[^0-9.πj+*/()eE-]/.test(source)) fail('Use real numbers, j, π, fractions and + − × ÷ only; enter one pole.');
   if ((source.match(/j/g) ?? []).length > 1) fail('Enter one rectangular pole a + bj, with at most one j.');
   const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|π|j|[+*/()-]/g) ?? [];

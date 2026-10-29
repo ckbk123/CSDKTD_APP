@@ -9,9 +9,12 @@ describe('DP02 pole notation', () => {
     [String.raw`-2+3\times j`, -2, 3], ['-2+j(3/2)', -2, 1.5],
     [String.raw`-1\div2+4j`, -0.5, 4], ['−1÷2+4×j', -0.5, 4],
     ['1e-300+j', 1e-300, 1], ['0e-999+j', 0, 1],
+    [String.raw`-\frac12+4j`, -0.5, 4], [String.raw`-\frac1{20}+j`, -0.05, 1],
+    [String.raw`\frac{10}2+j\frac\pi2`, 5, Math.PI / 2],
+    [String.raw`\frac1\frac23+j`, 1.5, 1],
   ])('parses %s', (input, real, imag) => expect(parsePole(input)).toEqual({ real, imag }));
   it.each(['', 's=', '1/0', 'NaN', 'Infinity', 'x+2j', 'j*j', '1/(1+j)', 'sin(2)',
-    '2^3', '1..2', '2 3', '1+', '(1+2j', '1+2j)', '2=3', String.raw`\placeholder{}`, '1e999', '1'.repeat(257), '('.repeat(14) + '1' + ')'.repeat(14), Array(45).fill('1').join('+')])('rejects %s', input => {
+    '2^3', '1..2', '2 3', '1+', '(1+2j', '1+2j)', '2=3', String.raw`\placeholder{}`, String.raw`\frac1`, String.raw`\frac{1}{}`, String.raw`\frac{1}{2`, '1e999', '1'.repeat(257), '('.repeat(14) + '1' + ')'.repeat(14), Array(45).fill('1').join('+')])('rejects %s', input => {
     expect(() => parsePole(input)).toThrow();
   });
   it.each(['1e-999+j', '1e-300*1e-300+j', '1e-300/1e300+j', '1e-300j/1e300'])('rejects silent numeric underflow in %s', input => {

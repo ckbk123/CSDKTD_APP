@@ -22,7 +22,7 @@ The starting workspace was blank; no working mathematical features were replaced
 | Visual mathematical entry and validation | Shared createEquationInput/createEquationDisplay, visit-owned draft; bounded local parser and domain checks; keyboard division and visual fractions | None |
 | Local state, lazy metadata, abort/cleanup | Metadata unchanged. Synchronous workspace mount defers browser view; abort/dispose guards; mount-owned state, signal listeners and result-event cleanup; five lifecycle/error-path tests | Rapid-navigation browser scenario pending |
 | Keyboard and narrow layout | Direct typing, fraction boxes, Systems keyboard/Escape, Tab, Enter reveal, reset/reopen and 390×844 viewport checked in production Chromium before pause | Repeat final production check after notation fix |
-| Independent mathematics and project checks | 50 module tests; check, all 92 project tests, production build pass at 1baa7f3 | Final browser evidence and submission |
+| Independent mathematics and project checks | 57 module tests; check, all 99 project tests, production build pass at 1baa7f3 | Final browser evidence and submission |
 
 ## Supported mathematical domain
 
@@ -53,9 +53,9 @@ Runtime: Node 24.22.1. On this host, commands use that bundled node.exe and the 
 
 At implementation revision 1baa7f3:
 
-- npm test -- src/modules/dp02: **50 passed**, 2 files (45 math/parser, 5 lifecycle/error-path).
+- npm test -- src/modules/dp02: **57 passed**, 2 files (52 math/parser, 5 lifecycle/error-path).
 - npm run check: **passed**.
-- npm test: **92 passed**, 8 files.
+- npm test: **99 passed**, 8 files.
 - npm run build: **passed**, static output and 20 local font assets emitted. Existing MathLive large-chunk warning remains (about 221.49 kB gzip); DP02 view is about 7.58 kB gzip.
 
 An initial full-suite failure due to eagerly initializing MathLive in the non-browser catalogue inspection was resolved locally with the guarded deferred view. No shared test/configuration change was needed. Added lifecycle tests confirm synchronous return, single cleanup, no late mount after abort or explicit disposal, no already-aborted mount, and recoverable initialization feedback.
@@ -84,3 +84,8 @@ Remaining: obtain QA after the current holder releases it; finish the final prod
 ### Numerical hardening while waiting for QA
 
 A review of extreme inputs found that nonzero literals/products/quotients could underflow to zero before validation. The parser now rejects these explicitly; exact-zero literals remain valid and representable tiny values remain intact. Numeric component inputs reject the same literal underflow. Radial movement uses sign comparisons rather than a potentially underflowing product, so even the smallest representable nonzero σ retains its direction. Six new parser regressions plus tiny-pole direction assertions pass. Latest module tests: 50/50; full suite: 92/92; production build/type check pass. Final browser pass will include numeric underflow feedback. These changes preserve the accepted exercise and declared floating-point limits.
+
+
+### Compact visual fractions
+
+Another worker's browser evidence showed MathLive can serialize a completed fraction as the valid shorthand \\frac12. DP02 now reads bounded single-token and grouped fraction arguments, including nested forms, with seven new analytic/malformed fixtures. Module tests pass 57/57; full suite passes 99/99; type check and build pass. This closes an editor/parser compatibility gap before final browser QA; a completed fraction-button entry will be checked directly.
