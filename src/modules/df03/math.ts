@@ -19,6 +19,10 @@ export interface FrequencyAnalysis {
 export const CIRCLE_TOLERANCE = 1e-9;
 export const DROP_SQUARED = 10 ** (-3 / 10);
 const ROUND = 64 * Number.EPSILON;
+export function poleStatus(pole: Complex): Model['stability'] {
+  const radius = Math.hypot(pole.re, pole.im);
+  return radius > 1 + CIRCLE_TOLERANCE ? 'outside' : radius >= 1 - CIRCLE_TOLERANCE ? 'boundary' : 'inside';
+}
 
 function bounded(value: number, low: number, high: number, label: string) {
   if (!Number.isFinite(value) || value < low || value > high) throw new Error(`${label} must be between ${low} and ${high}.`);
@@ -48,8 +52,8 @@ export function createModel(loop: Loop): Model {
   coefficients(d, 'Denominator'); coefficients(n, 'Numerator');
   while (n.length > 1 && n[0] === 0) n.shift();
   const closed = d.map((x, i) => x + (n[i - (d.length - n.length)] ?? 0));
-  const poles = roots(closed), openPoles = roots(d), moduli = poles.map(p => Math.hypot(p.re, p.im));
-  const stability = moduli.some(x => x > 1 + CIRCLE_TOLERANCE) ? 'outside' : moduli.some(x => x >= 1 - CIRCLE_TOLERANCE) ? 'boundary' : 'inside';
+  const poles = roots(closed), openPoles = roots(d), statuses = poles.map(poleStatus);
+  const stability = statuses.includes('outside') ? 'outside' : statuses.includes('boundary') ? 'boundary' : 'inside';
   return { denominator: d, numerator: n, closed, poles, openPoles, stability };
 }
 function evaluate(p: number[], z: Complex): Complex {
@@ -57,7 +61,7 @@ function evaluate(p: number[], z: Complex): Complex {
   for (const coefficient of p) { const next = re * z.re - im * z.im + coefficient; im = re * z.im + im * z.re; re = next; }
   return { re, im };
 }
-function unit(angle: number): Complex {
+export function unitPoint(angle: number): Complex {
   return angle === 0 ? { re: 1, im: 0 } : angle === Math.PI ? { re: -1, im: 0 } : { re: Math.cos(angle), im: Math.sin(angle) };
 }
 export function coordinates(angle: number, T: number) {
@@ -65,7 +69,7 @@ export function coordinates(angle: number, T: number) {
   return { angle, omega: angle / T, hz: angle / (2 * Math.PI * T), warped: angle === Math.PI ? Infinity : 2 * Math.tan(angle / 2) / T };
 }
 export function frequency(loop: Loop, angle: number, T: number): Frequency {
-  const axes = coordinates(angle, T), z = unit(angle), numerator = evaluate(loop.numerator, z), denominator = evaluate(loop.denominator, z);
+  const axes = coordinates(angle, T), z = unitPoint(angle), numerator = evaluate(loop.numerator, z), denominator = evaluate(loop.denominator, z);
   const dn = Math.hypot(denominator.re, denominator.im), nn = Math.hypot(numerator.re, numerator.im);
   const dTiny = dn <= ROUND * loop.denominator.reduce((s, x) => s + Math.abs(x), 0);
   const nTiny = nn <= ROUND * loop.numerator.reduce((s, x) => s + Math.abs(x), 0);

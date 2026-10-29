@@ -11,14 +11,14 @@ export function decimal(value: number): string {
   const point = (mantissa.indexOf('.') < 0 ? mantissa.length : mantissa.indexOf('.')) + Number(exponent);
   return negative + (point <= 0 ? '0.' + '0'.repeat(-point) + digits : point >= digits.length ? digits + '0'.repeat(point - digits.length) : digits.slice(0, point) + '.' + digits.slice(point));
 }
-export function polynomial(values: number[]): string {
+export function polynomial(values: number[], digits?: number): string {
   const parts: string[] = [];
   values.forEach((value, i) => {
     if (value === 0) return;
-    const power = values.length - i - 1, sign = value < 0 ? '-' : parts.length ? '+' : '', coefficient = Math.abs(value);
+    const power = values.length - i - 1, sign = value < 0 ? '-' : parts.length ? '+' : '', coefficient = digits ? Number(Math.abs(value).toPrecision(digits)) : Math.abs(value);
     parts.push(sign + (power && coefficient === 1 ? '' : decimal(coefficient)) + (power === 0 ? '' : power === 1 ? 'z' : `z^{${power}}`));
   });
   return parts.join('') || '0';
 }
-export function loopLatex(loop: Loop) { return `\\frac{${polynomial(loop.numerator)}}{${polynomial(loop.denominator)}}`; }
+export function loopLatex(loop: Loop, digits?: number) { return `\\frac{${polynomial(loop.numerator, digits)}}{${polynomial(loop.denominator, digits)}}`; }
 export function complex(p: Complex) { return p.im === 0 ? number(p.re) : `${number(p.re)} ${p.im < 0 ? '−' : '+'} ${number(Math.abs(p.im))}j`; }

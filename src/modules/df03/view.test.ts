@@ -42,6 +42,8 @@ describe('DF03 interaction wiring (mocked equation presentation, not browser evi
     const v = visit(); v.edit('.4z/(z^2-1.4z+.9)'); v.action('prepare'); v.predict('inside', '2');
     expect(v.text('.fq-grade')).toContain('Correct crossing-set'); expect(v.container.querySelector('[aria-label="All unit-gain crossings and signed phase margins"]')!.querySelectorAll('tbody tr')).toHaveLength(2);
     v.edit('.5(z-1)/(z(z-1))'); v.action('prepare'); v.predict('boundary', '0'); expect(v.text('.fq-model')).toContain('boundary'); expect(v.text('.fq-crossings')).toContain('indeterminate');
+    const poleRows = [...v.container.querySelectorAll('[aria-label="Every full closed-loop pole"] tbody tr')].map(row => [...row.querySelectorAll('td')].map(cell => cell.textContent));
+    expect(poleRows).toEqual([['1', '1', 'boundary'], ['-0.5', '0.5', 'inside']]);
   });
   it('distinguishes constant-magnitude and negative-real continua from a finite margin list', () => {
     const v = visit(); v.edit('1/z'); v.action('prepare'); v.predict('boundary', 'continuum'); expect(v.text('.fq-crossings')).toContain('Unit-gain continuum');
@@ -73,6 +75,15 @@ describe('DF03 interaction wiring (mocked equation presentation, not browser evi
     const v = visit(); v.action('emulate'); v.predict('inside', '1'); const first = v.text('.fq-model'); expect(first).toContain('Actual emulation'); expect(first).toContain('backward'); expect(first).toContain('ZOH a');
     v.select('method', 'trapezoidal'); v.action('emulate'); v.predict('inside', '1'); expect(v.text('.fq-model')).toContain('trapezoidal'); expect(v.text('.fq-model')).not.toEqual(first);
     v.numeric('tau', '.01'); v.numeric('period', '1'); v.action('emulate'); expect(v.text('.fq-message')).toContain('T/tau'); expect(v.hidden()).toBe(true);
+  });
+  it('releases the prior caller-owned editor on whole-model presets and PI replacement', () => {
+    const v = visit(), first = v.container.querySelector('textarea')!;
+    first.value = 'unfinished'; first.dispatchEvent(new Event('input', { bubbles: true }));
+    v.container.querySelector<HTMLButtonElement>('[data-preset="baseline"]')!.click();
+    expect(first.isConnected).toBe(false); expect(v.container.querySelectorAll('textarea')).toHaveLength(1);
+    const second = v.container.querySelector('textarea')!; v.action('emulate');
+    expect(second.isConnected).toBe(false); expect(v.container.querySelectorAll('textarea')).toHaveLength(1);
+    v.predict('inside', '1'); expect(v.hidden()).toBe(false); v.controller.abort(); expect(v.container.querySelector('textarea')).toBeNull();
   });
   it('shows bounded visual parser errors and returns a fresh baseline after disposal', () => {
     const v = visit(); v.edit(String.raw`\frac{2\frac12}{z-.5}`); v.action('prepare'); expect(v.text('.fq-message')).toContain('explicit + or ×');
