@@ -38,6 +38,12 @@ The discrete source audit labels this baseline an independently checked bridge f
 
 27 independent parser/math tests pass, covering polynomial expansion, baseline/changed interval, root and transform residuals, mapping identity, exceptional endpoints, repeated roots, zero Routh rows, empty/all-real intervals and failure bounds. The first full-suite run exposed MathLive's Node/browser export boundary; the guarded local UI import fixed it (69/69 tests passed). Type check and production build passed. The large MathLive chunk warning is unchanged. Caller-state/lifecycle tests have been added and are being checked. Browser QA is still pending: its reservation was held by DP02 at the first attempt. No implementation-complete claim yet.
 
+### Paused at the user's request (2026-10-29)
+
+Latest completed checks before the pause: `npm test -- src/modules/ds03` passed 34/34; `npm run check` passed; `npm test` passed 76/76 across 8 files; `npm run build` passed with the existing MathLive chunk warning; `git diff --check` passed. Commands used bundled Node 24.22.1 and the installed npm CLI. Additional review corrected the double-zero auxiliary-polynomial explanation and added near-mapping-pole input feedback.
+
+Browser QA was acquired immediately before the pause request, but no browser was opened or controlled. The reservation is being released. No worker preview/helper process was started. Real-browser editing, fonts/keyboard, reset/reopen, rapid navigation and narrow-viewport checks remain outstanding. Stage remains **in-progress**, and this contribution is not submitted. Implementation checkpoint `7df99f6` was already pushed; the pause checkpoint preserves subsequent review changes locally. Resume in the existing worktree/branch and reserve QA again before browser work.
+
 Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
 
 Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.

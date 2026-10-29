@@ -41,6 +41,8 @@ describe('DS03 substitution and complete gain set', () => {
     expect(stableInterval(parseFamily('z^2+.2'))).toEqual({ lower: -Infinity, upper: Infinity, empty: false });
     expect(stableInterval(parseFamily('z^2+2')) .empty).toBe(true);
     expect(stableInterval(parseFamily('z^2+Kz+2')) .empty).toBe(true);
+    // K<-1 and K>-1 cannot both hold, even though each inequality has solutions.
+    expect(stableInterval(parseFamily('z^2+(3K+3)z+K')).empty).toBe(true);
     expect(stableInterval(parseFamily('z^2-Kz'))).toEqual({ lower: -1, upper: 1, empty: false });
   });
   it('diagnoses a zero Routh row and simultaneous degree loss in original roots', () => {
@@ -49,6 +51,8 @@ describe('DS03 substitution and complete gain set', () => {
     expect(analyze(f, 0).zRoots).toEqual([{ re: -0, im: 1 }, { re: -0, im: -1 }]);
     expect(stableInterval(f).empty).toBe(true);
     expect(analyze(parseFamily('(z+1)^2'), 0).wRoots).toEqual([null, null]);
+    expect(analyze(parseFamily('(z-1)^2'), 0).zRoots.map(z => z.re)).toEqual([1, 1]);
+    expect(analyze(parseFamily('(z-1)^2'), 0).special).toBe('zero-row');
     expect(analyze(parseFamily('z^2-2'), 0).classification).toBe('unstable');
     // Both ±sqrt(2) are outside the disk, so both transformed roots are in RHP.
     expect(analyze(parseFamily('z^2-2'), 0).signChanges).toBe(2);

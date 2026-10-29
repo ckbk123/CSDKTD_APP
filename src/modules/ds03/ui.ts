@@ -107,6 +107,8 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const updatePoint = () => {
     const r = re.value.trim() ? Number(re.value) : NaN, i = im.value.trim() ? Number(im.value) : NaN;
     if (![r, i].every(v => Number.isFinite(v) && Math.abs(v) <= 5)) { mapError.textContent = 'Choose finite real and imaginary parts between −5 and 5.'; return; }
+    const distance = Math.hypot(r + 1, i);
+    if (distance !== 0 && distance < 1e-8) { mapError.textContent = 'This point is too close to the mapping pole. Choose z = −1 exactly, or a point at least 10⁻⁸ away.'; return; }
     point = { re: r, im: i }; mapError.textContent = ''; renderMap();
   };
   re.addEventListener('input', updatePoint, { signal }); im.addEventListener('input', updatePoint, { signal });
@@ -149,8 +151,8 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
       ['Inspect w² row', 'Inspect w¹ row', 'Inspect w⁰ row'].forEach((label, i) => button(label, () => { row = i; render(); }, rows)); result.append(rows);
       const explanations = ['Start with even powers: the w² row reads [A, C].', 'The odd-power row reads [B, 0]. A zero B makes this entire row zero; use the original roots and the auxiliary polynomial Aw²+C.', 'For B ≠ 0, the final entry is (B·C−A·0)/B = C. Never divide by B when it vanishes.'];
       result.append(node('p', explanations[row]));
-      const specialMessage = r.special === 'degree-loss' ? 'A is zero or near zero: Q loses its highest term. Exactly A=0 means P(−1)=0: retain the missing z=−1 root at infinity. A constant Q can represent two such roots. Inspect the original roots below; do not classify the reduced Q as the full system.'
-        : r.special === 'zero-row' ? 'B is zero or near zero: the w¹ row vanishes. For exact B=0, Q=Aw²+C is the auxiliary polynomial; its roots are symmetric. If C/A>0 they lie on the imaginary axis, otherwise one is in each half-plane. Original z roots decide the strict-disk test.'
+      const specialMessage = r.special === 'degree-loss' ? 'A is zero or near zero. At exact A=0, Q loses its highest term and P(−1)=0: retain the missing z=−1 root at infinity. A constant Q can represent two such roots. Inspect the original roots below; do not classify the reduced Q as the full system.'
+        : r.special === 'zero-row' ? 'B is zero or near zero. At exact B=0, the w¹ row vanishes and Q=Aw²+C is the auxiliary polynomial; its roots are symmetric. For C/A>0 they lie on the imaginary axis; for C/A<0 one is in each half-plane; for C=0 both are at w=0 (z=+1). Original z roots decide the strict-disk test.'
         : r.special === 'zero-constant' ? 'C is zero or near zero: Q has a root at or near w=0, corresponding to z=+1. This is excluded from strict stability. Check the other original root too.'
         : `Regular first column: ${r.signChanges} sign change(s), hence ${r.signChanges} right-half-plane root(s) of Q. No zero-row rule is needed.`;
       result.append(node('p', specialMessage, 'ds-feedback'));
