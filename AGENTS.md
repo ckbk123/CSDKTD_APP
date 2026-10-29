@@ -40,6 +40,8 @@ Update the module's progress record with supported limits, exact checks, browser
 
 For the generic goal, delivery is one fully implemented and checked module on its own committed/pushed branch, with a submitted claim and updated STATUS evidence. Do not merge `main`, deploy or spawn additional agents under that worker prompt. The integration owner reviews and integrates submissions separately. Respect the user's configured goal budget; checkpoint early because a hard stop may prevent a final handoff, and never equate partial work or no eligible work with a completed exercise.
 
+The current ten-worker review batch and coordinator-owned release policy are recorded in [docs/COORDINATION.md](docs/COORDINATION.md). Module workers leave package/lockfile versions, changelog, tags and primary `main` to that coordinator. Each accepted integration receives a patch increment after review and combined checks; worker checkpoints do not receive release versions.
+
 ## Mathematics and student interface
 
 Implement the assigned exercise contract with explicit, tested limits. Declare coefficient order, dimensions, units, feedback sign, timing, tolerances and assumptions. Validate finite inputs, polynomial/matrix sizes and bounded computation. Report singularities, unsupported forms, nonconvergence and insufficient horizons clearly. Never substitute a canned result, an LLM/API call or a fake CAS for computation. Distinguish exact identities, numerical approximations and sampled illustrations; a sweep is not a proof of a complete parameter region.

@@ -113,6 +113,14 @@ function readReservation(directory, resource = false) {
     for (const key of ['branch', 'worktree', 'commit', 'integratedCommit', 'reason']) {
       if (record[key] !== undefined && typeof record[key] !== 'string') throw new Error('Invalid field.');
     }
+    if (record.reopenHistory !== undefined) {
+      const required = ['fromState', 'branch', 'worktree', 'commit', 'submittedAt', 'reopenedAt', 'reason'];
+      if (!Array.isArray(record.reopenHistory) || record.reopenHistory.some(entry => !entry || typeof entry !== 'object'
+        || !['submitted', 'handoff'].includes(entry.fromState)
+        || required.some(key => typeof entry[key] !== 'string' || !entry[key])
+        || (entry.handoffReason !== undefined && typeof entry.handoffReason !== 'string')
+        || Object.keys(entry).some(key => ![...required, 'handoffReason'].includes(key)))) throw new Error('Invalid reopen history.');
+    }
     return record;
   } catch {
     return { state: 'invalid', issue: 'Reservation exists without a valid record; inspect it before recovery.' };
@@ -284,6 +292,22 @@ export function runCommand(command, options = {}, cwd = process.cwd()) {
       const archivePath = archive(context, resource, { ...holder, releasedAt: new Date().toISOString() });
       return { ...base, released: true, archivePath };
     }
+    if (command === 'reopen') {
+      if (!['submitted', 'handoff'].includes(record.state)) fail('INVALID_REOPEN_STATE', 'Only submitted or handed-off work can be reopened for its existing owner.');
+      if (typeof options.reason !== 'string' || !options.reason.trim()) fail('REASON_REQUIRED', 'Record the concrete review or recovery reason.');
+      assertQaReleased(context, module.moduleId);
+      if (!record.branch || !record.worktree || !record.commit) fail('SUBMISSION_REFS_REQUIRED', 'Reopening requires the preserved submission branch, worktree and commit.');
+      validatePatch(context, record, {});
+      const now = new Date().toISOString();
+      const entry = { fromState: record.state, branch: record.branch, worktree: record.worktree, commit: record.commit,
+        submittedAt: record.updatedAt, reopenedAt: now, reason: options.reason.trim(),
+        ...(record.reason !== undefined ? { handoffReason: record.reason } : {}) };
+      const { reason: _previousReason, ...preserved } = record;
+      const next = { ...preserved, state: 'active', updatedAt: now, reopenHistory: [...(record.reopenHistory ?? []), entry] };
+      // Keep the reservation directory occupied; replacement is atomic under its mutation lock.
+      writeRecord(directory, next);
+      return { ...base, reopened: true, claim: next };
+    }
     if (command === 'resolve') {
       if (!['integrated', 'declined', 'requeue'].includes(options.resolution)) fail('INVALID_RESOLUTION', 'Resolution must be integrated, declined or requeue.');
       if (typeof options.reason !== 'string' || !options.reason.trim()) fail('REASON_REQUIRED', 'Record the explicit integration/recovery reason.');
@@ -334,6 +358,7 @@ export function runCommand(command, options = {}, cwd = process.cwd()) {
 const allowed = {
   list: [], claim: ['owner', 'module'], update: ['module', 'token', 'branch', 'worktree', 'commit'],
   submit: ['module', 'token', 'branch', 'worktree', 'commit'], handoff: ['module', 'token', 'branch', 'worktree', 'commit', 'reason'],
+  reopen: ['module', 'token', 'reason'],
   release: ['module', 'token'], resolve: ['module', 'token', 'resolution', 'reason', 'integrated-commit'], 'qa-claim': ['module', 'token'], 'qa-release': ['module', 'token'],
 };
 

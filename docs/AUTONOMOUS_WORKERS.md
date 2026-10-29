@@ -122,6 +122,16 @@ An unstarted reservation may be released with `release --module <ID> --token <to
 
 The integration owner inspects `agents:list`, reviews submitted branches and resolves them **one at a time**. It checks the full TASK, mathematical evidence, scope, dependencies and current-main integration, then merges/cherry-picks the intended commits, reruns combined checks, updates review evidence and pushes `main` under the project's authorized delivery scope. Shared API improvements are integrated deliberately rather than independently by every worker.
 
+The current review batch and coordinator-owned versioning rules are in [COORDINATION.md](COORDINATION.md). Workers do not bump package versions or create release tags. The coordinator assigns one patch increment per accepted integration after review and combined checks.
+
+When review returns a submitted contribution, the coordinator can reopen its existing reservation without an unclaimed interval:
+
+```text
+node scripts/agent-claim.mjs reopen --module DP02 --token <token> --reason "Concrete review defect and required correction"
+```
+
+This transition requires `submitted` or `handoff`, valid preserved refs and released browser QA. It retains the same owner, token, branch, worktree and checkpoint, records the prior submission and reason in `reopenHistory`, and changes the reservation back to `active`. Only the coordinator performs this review/recovery transition. The original worker continues in its preserved worktree, updates its checkpoint and submits again after correction and verification. Reopening does not make the prior submission accepted and does not consume a release number. Never free a completed reservation merely to return its work to the same owner.
+
 After an integrated contribution's recorded commit is included in the primary HEAD, the owner archives its reservation:
 
 ```text

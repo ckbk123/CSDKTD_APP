@@ -149,6 +149,114 @@ test('submitted and handoff work remain reserved across fresh worker attempts', 
   }
 });
 
+test('reopens submissions and handoffs for the same owner and preserves evidence through re-submission', () => {
+  for (const command of ['submit', 'handoff']) {
+    const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+    const submitted = runCommand(command, options(record, { ...refs, ...(command === 'handoff' ? { reason: 'partial' } : {}) }), f.root).claim;
+    const reopened = runCommand('reopen', options(record, { reason: '  Correct the changed-input fixture.  ' }), f.root);
+    assert.equal(reopened.reopened, true); assert.equal(reopened.claim.state, 'active');
+    for (const key of ['owner', 'token', 'branch', 'worktree', 'commit', 'baseCommit', 'createdAt']) {
+      assert.equal(reopened.claim[key], submitted[key]);
+    }
+    assert.equal(reopened.claim.reason, undefined);
+    const evidence = reopened.claim.reopenHistory[0];
+    assert.deepEqual(evidence, {
+      fromState: submitted.state, ...refs, submittedAt: submitted.updatedAt,
+      reopenedAt: reopened.claim.updatedAt, reason: 'Correct the changed-input fixture.',
+      ...(command === 'handoff' ? { handoffReason: 'partial' } : {}),
+    });
+    assert.equal(runCommand('claim', { owner: record.owner, module: 'CR01' }, f.root).claimed, false);
+    assert.equal(runCommand('claim', { owner: 'another-worker', module: 'CR01' }, f.root).claimed, false);
+    const listing = runCommand('list', {}, f.root).modules[0];
+    assert.equal(listing.eligible, false); assert.equal(JSON.stringify(listing).includes(record.token), false);
+    fs.writeFileSync(path.join(refs.worktree, 'src/modules/cr01/fix.txt'), 'Independent fixture correction\n');
+    git(refs.worktree, 'add', '.');
+    git(refs.worktree, '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '--quiet', '-m', 'Fixture review correction');
+    const revisedCommit = git(refs.worktree, 'rev-parse', 'HEAD');
+    const resubmitted = runCommand('submit', options(record, { commit: revisedCommit }), f.root).claim;
+    assert.equal(resubmitted.state, 'submitted'); assert.equal(resubmitted.commit, revisedCommit);
+    assert.deepEqual(resubmitted.reopenHistory, [evidence]);
+    const again = runCommand('reopen', options(record, { reason: 'Check the boundary case too.' }), f.root).claim;
+    assert.equal(again.reopenHistory.length, 2);
+    assert.deepEqual(again.reopenHistory[0], evidence);
+    assert.equal(again.reopenHistory[1].commit, revisedCommit);
+  }
+});
+
+test('reopening refuses wrong ownership, active state and absent review reasons without changing records', () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+  const file = recordFile(f.context, 'CR01');
+  let before = fs.readFileSync(file, 'utf8');
+  assert.throws(() => runCommand('reopen', options(record, { reason: 'Review correction.' }), f.root), { code: 'INVALID_REOPEN_STATE' });
+  assert.equal(fs.readFileSync(file, 'utf8'), before);
+  runCommand('submit', options(record, refs), f.root);
+  before = fs.readFileSync(file, 'utf8');
+  assert.throws(() => runCommand('reopen', options(record, { token: 'another-owner', reason: 'Review correction.' }), f.root), { code: 'NOT_OWNER' });
+  for (const reason of [undefined, '', '   ', 1]) {
+    assert.throws(() => runCommand('reopen', options(record, { reason }), f.root), { code: 'REASON_REQUIRED' });
+  }
+  assert.equal(fs.readFileSync(file, 'utf8'), before);
+  assert.equal(runCommand('claim', { owner: record.owner, module: 'CR01' }, f.root).claimed, false);
+});
+
+test('reopening requires released browser QA and preserves another module reservation', () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const other = claim(f.root, 'CR02'); const refs = workerCommit(f);
+  runCommand('submit', options(record, refs), f.root);
+  runCommand('qa-claim', options(record), f.root);
+  const before = fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8');
+  assert.throws(() => runCommand('reopen', options(record, { reason: 'Correct a reviewed edge case.' }), f.root), { code: 'QA_HELD' });
+  assert.equal(fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8'), before);
+  runCommand('qa-release', options(record), f.root);
+  runCommand('qa-claim', options(other), f.root);
+  assert.equal(runCommand('reopen', options(record, { reason: 'Correct a reviewed edge case.' }), f.root).reopened, true);
+  assert.equal(runCommand('list', {}, f.root).browserQa.moduleId, 'CR02');
+  assert.equal(runCommand('qa-claim', options(record), f.root).reason, 'busy');
+});
+
+test('reopening honors the existing mutation lock and revalidates preserved refs', () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+  runCommand('submit', options(record, refs), f.root);
+  const file = recordFile(f.context, 'CR01'); const before = fs.readFileSync(file, 'utf8');
+  const lock = path.join(path.dirname(file), '.mutation-lock'); fs.mkdirSync(lock);
+  assert.throws(() => runCommand('reopen', options(record, { reason: 'Review correction.' }), f.root), { code: 'CLAIM_BUSY' });
+  assert.equal(fs.readFileSync(file, 'utf8'), before); fs.rmdirSync(lock);
+  git(refs.worktree, 'switch', '--quiet', '-c', 'agents/different-owner');
+  assert.throws(() => runCommand('reopen', options(record, { reason: 'Review correction.' }), f.root), { code: 'WORKTREE_BRANCH_MISMATCH' });
+  assert.equal(fs.readFileSync(file, 'utf8'), before);
+});
+
+test('reopen history rejects malformed or token-bearing entries instead of leaking them in listings', () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+  runCommand('submit', options(record, refs), f.root);
+  const reopened = runCommand('reopen', options(record, { reason: 'Review correction.' }), f.root).claim;
+  const file = recordFile(f.context, 'CR01');
+  reopened.reopenHistory[0].token = 'nested-secret';
+  fs.writeFileSync(file, JSON.stringify(reopened));
+  const listing = runCommand('list', {}, f.root).modules[0];
+  assert.equal(listing.claim.state, 'invalid'); assert.equal(listing.eligible, false);
+  assert.equal(JSON.stringify(listing).includes('nested-secret'), false);
+  assert.throws(() => runCommand('reopen', options(record, { reason: 'Review correction.' }), f.root), { code: 'NO_VALID_CLAIM' });
+});
+
+test('reopen CLI accepts only ownership and review-reason arguments', async () => {
+  const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
+  runCommand('submit', options(record, refs), f.root);
+  const file = recordFile(f.context, 'CR01'); const before = fs.readFileSync(file, 'utf8');
+  const prefix = ['reopen', '--module', record.moduleId, '--token', record.token];
+  for (const arguments_ of [
+    ['--reason'], ['--reason', 'Review correction.', '--reason', 'Duplicate'],
+    ['--reason', 'Review correction.', '--branch', 'agents/replacement'],
+    ['--reason', 'Review correction.', '--owner', 'replacement'],
+    ['--reason', 'Review correction.', '--commit', refs.commit],
+  ]) {
+    const result = await cliResult(f.root, [...prefix, ...arguments_]);
+    assert.equal(result.code, 1); assert.equal(result.error.error.code, 'INVALID_ARGUMENT');
+    assert.equal(fs.readFileSync(file, 'utf8'), before);
+  }
+  const result = await cliResult(f.root, [...prefix, '--reason', 'Review correction.']);
+  assert.equal(result.code, 0); assert.equal(result.output.reopened, true);
+});
+
 test('validates refs, commits and worktree registration before recording a checkpoint', () => {
   const f = fixture(); const record = claim(f.root, 'CR01'); const refs = workerCommit(f);
   const before = fs.readFileSync(recordFile(f.context, 'CR01'), 'utf8');
@@ -282,6 +390,8 @@ test('submitted and partial handoffs can reserve browser QA for integration revi
 test('mutations leave Git refs, tracked files and the index unchanged', () => {
   const f = fixture(); const refs = workerBranch(f); const beforeHead = git(f.root, 'rev-parse', 'HEAD'); const beforeRefs = git(f.root, 'show-ref');
   const record = claim(f.root, 'CR01'); runCommand('update', options(record, refs), f.root);
+  runCommand('submit', options(record), f.root);
+  runCommand('reopen', options(record, { reason: 'Review requests changed-input evidence.' }), f.root);
   runCommand('submit', options(record), f.root);
   assert.equal(git(f.root, 'rev-parse', 'HEAD'), beforeHead); assert.equal(git(f.root, 'show-ref'), beforeRefs);
   assert.equal(git(f.root, 'status', '--porcelain'), '');
