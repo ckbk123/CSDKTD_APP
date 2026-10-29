@@ -19,7 +19,7 @@
 [data-module="DF04"] .sp-choices label, [data-module="DF04"] .sp-legend label { display:flex; align-items:baseline; gap:.5rem; line-height:1.5; }
 [data-module="DF04"] .sp-choices { border:1px solid var(--line); padding:.8rem; margin:.8rem 0; }
 [data-module="DF04"] .sp-figure { margin:.8rem 0; }
-[data-module="DF04"] .sp-plot>svg { width:100%; min-width:520px; max-width:850px; height:auto; display:block; }
+[data-module="DF04"] .sp-plot>svg { width:100%; min-width:680px; max-width:850px; height:auto; display:block; }
 [data-module="DF04"] .sp-plot text { fill:var(--muted); font:13px system-ui,sans-serif; }
 [data-module="DF04"] .sp-grid { stroke:var(--line); stroke-width:1; }
 [data-module="DF04"] .sp-reference { stroke:var(--text); stroke-dasharray:5 5; stroke-width:1; }
