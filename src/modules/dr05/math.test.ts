@@ -1,0 +1,123 @@
+import { describe, expect, it } from 'vitest';
+import { approximate, exactInterval, matrixExp, realize, run, transfer, type Experiment, type Matrix } from './math';
+import { parseModel } from './parser';
+const source = (s: string) => realize(parseModel(s));
+const base: Experiment = { T: 0.1, count: 11, density: 4, delay: 0, amplitude: 1, initial: [0], input: 'step', method: 'forward' };
+const near = (a: Matrix, b: Matrix, precision = 12): void => a.forEach((r, i) => r.forEach((v, j) => expect(v).toBeCloseTo(b[i][j], precision)));
+
+describe('DR05 exact held-input conversion', () => {
+  it('matches scalar e^-T and input integral with independently derived samples', () => {
+    const plant = source('1/(s+1)'), result = run(plant, base);
+    expect(result.exact.A[0][0]).toBeCloseTo(Math.exp(-0.1), 14);
+    expect(result.exact.B[0]).toBeCloseTo(-Math.expm1(-0.1), 14);
+    result.samples.forEach(r => expect(r.y).toBeCloseTo(1 - Math.exp(-r.t), 13));
+    expect(result.samples[1].y).toBeCloseTo(0.09516258196404043, 14);
+    const tf = transfer(plant, result.exact);
+    expect(tf.b[0]).toBe(0); expect(tf.b[1]).toBeCloseTo(0.09516258196404043, 14);
+    expect(tf.a[1]).toBeCloseTo(-0.9048374180359595, 14);
+  });
+  it('worksheet T=.2 changes the physical model, while drawing density does not', () => {
+    const plant = source('1/(s+1)');
+    const result = run(plant, { ...base, T: 0.2 });
+    expect(result.samples[1].y).toBeCloseTo(0.18126924692201818, 14);
+    expect(result.exact.A[0][0]).toBeCloseTo(0.8187307530779818, 14);
+    expect(run(plant, { ...base, density: 16 }).samples).toEqual(run(plant, { ...base, density: 2 }).samples);
+  });
+  it('handles singular A: single and double integrators without inverse(A)', () => {
+    const single = run(source('1/s'), base);
+    expect(single.exact).toEqual({ A: [[1]], B: [0.1] });
+    single.samples.forEach(r => expect(r.y).toBeCloseTo(r.t, 13));
+    const plant = source('1/s^2'), result = run(plant, { ...base, initial: [0, 0] });
+    near(result.exact.A, [[1, 0.1], [0, 1]]); near(result.exact.B.map(v => [v]), [[0.005], [0.1]]);
+    result.samples.forEach(r => expect(r.y).toBeCloseTo(r.t ** 2 / 2, 13));
+    const tf = transfer(plant, result.exact); near([tf.a], [[1, -2, 1]]); near([tf.b], [[0, 0.005, 0.005]]);
+  });
+  it('checks the separately declared delayed 5/s² source path', () => {
+    const plant = source('5/s^2');
+    const result = run(plant, { ...base, T: 0.2, delay: 1, initial: [0, 0], count: 5 });
+    near([result.samples.map(r => r.y)], [[0, 0, 0.1, 0.4, 0.9]]);
+    const tf = transfer(plant, result.exact); near([tf.a], [[1, -2, 1]]); near([tf.b], [[0, 0.1, 0.1]]);
+  });
+  it('checks oscillator rotation and input integral using sine/cosine identities', () => {
+    const T = 0.3, plant = source('1/(s^2+1)');
+    const result = run(plant, { ...base, T, initial: [0, 0] });
+    near(result.exact.A, [[Math.cos(T), Math.sin(T)], [-Math.sin(T), Math.cos(T)]]);
+    near([result.exact.B], [[1 - Math.cos(T), Math.sin(T)]]);
+    result.samples.forEach(r => expect(r.y).toBeCloseTo(1 - Math.cos(r.t), 12));
+    result.segments.flat().forEach(p => expect(p.y).toBeCloseTo(1 - Math.cos(p.t), 12));
+  });
+  it('checks repeated and distinct real modes against independent continuous step formulas', () => {
+    const critical = run(source('1/(s+1)^2'), { ...base, initial: [0, 0] });
+    critical.samples.forEach(r => expect(r.y).toBeCloseTo(1 - (1 + r.t) * Math.exp(-r.t), 12));
+    const mechanical = run(source('1/((s+1)(s+2))'), { ...base, initial: [0, 0] });
+    mechanical.samples.forEach(r => expect(r.y).toBeCloseTo(0.5 - Math.exp(-r.t) + 0.5 * Math.exp(-2 * r.t), 12));
+  });
+  it('retains direct feedthrough and right-hand jumps at sample instants', () => {
+    const result = run(source('(s+1)/(s+1)'), { ...base, input: 'pulse', delay: 2, count: 6 });
+    expect(result.samples.map(r => r.y)).toEqual([0, 0, 1, 0, 0, 0]);
+    expect(result.segments[2].at(-1)!.y).toBe(1); // t=3T left limit.
+    expect(result.segments[3][0].y).toBe(0); // t=3T right limit.
+  });
+  it('uses zero delayed-input history and initial plant state independently', () => {
+    const result = run(source('1/(s+1)'), { ...base, initial: [2], delay: 2 });
+    expect(result.samples[0].y).toBe(2);
+    expect(result.samples[2].y).toBeCloseTo(2 * Math.exp(-0.2), 13);
+    expect(result.samples[3].y).toBeCloseTo(2 * Math.exp(-0.3) + 1 - Math.exp(-0.1), 13);
+    const pulse = run(source('1/(s+1)'), { ...base, input: 'pulse' });
+    pulse.samples.slice(1).forEach(r => expect(r.y).toBeCloseTo((1 - Math.exp(-0.1)) * Math.exp(-(r.k - 1) * 0.1), 13));
+  });
+  it('uses physical sampled ramp values and exact held-interval reconstruction', () => {
+    const result = run(source('1/s'), { ...base, input: 'ramp' });
+    result.samples.forEach(r => expect(r.y).toBeCloseTo(0.1 ** 2 * r.k * (r.k - 1) / 2, 13));
+    result.segments[2].forEach(p => expect(p.y).toBeCloseTo(0.01 + 0.2 * (p.t - 0.2), 13));
+  });
+});
+
+describe('DR05 selected interval approximations and safeguards', () => {
+  it('checks all three methods against scalar rational formulas', () => {
+    const plant = source('1/(s+1)');
+    const f = approximate(plant, 0.1, 'forward'), b = approximate(plant, 0.1, 'backward'), t = approximate(plant, 0.1, 'trapezoid');
+    near(f.A, [[0.9]]); near([f.B], [[0.1]]);
+    near(b.A, [[1 / 1.1]]); near([b.B], [[0.1 / 1.1]]);
+    near(t.A, [[0.95 / 1.05]]); near([t.B], [[0.1 / 1.05]]);
+  });
+  it('compares finite-grid errors and refinement without changing the physical horizon', () => {
+    const coarse = run(source('1/(s+1)'), base), fine = run(source('1/(s+1)'), { ...base, T: 0.05, count: 21 });
+    expect(coarse.comparison![10].y).toBeCloseTo(1 - 0.9 ** 10, 13);
+    expect(coarse.maxError).toBeCloseTo(Math.exp(-1) - 0.9 ** 10, 12);
+    expect(fine.maxError!).toBeLessThan(coarse.maxError!);
+  });
+  it('keeps exact results when an implicit approximation is singular', () => {
+    const result = run(source('1/(s-1)'), { ...base, T: 1, count: 4, method: 'backward' });
+    expect(result.warning).toContain('singular'); expect(result.comparison).toBeUndefined();
+    expect(result.samples[3].y).toBeCloseTo(Math.exp(3) - 1, 11);
+  });
+  it('reports approximation blowup independently from a stable exact run', () => {
+    const result = run(source('1/(s+1)'), { ...base, T: 3, count: 120 });
+    expect(result.warning).toContain('Approximation unavailable'); expect(result.samples.at(-1)!.y).toBeCloseTo(1, 12);
+  });
+  it('validates the finite augmented matrix norm and input dimensions', () => {
+    expect(() => matrixExp([[65]])).toThrow(/norm/);
+    expect(() => matrixExp([[NaN]])).toThrow(/finite/);
+    expect(() => matrixExp([[0, 1]])).toThrow(/square/);
+    expect(() => exactInterval(source('1/s'), -1)).toThrow(/interval/);
+    near(matrixExp([[0, 1, 0], [0, 0, 1], [0, 0, 0]]), [[1, 1, 0.5], [0, 1, 1], [0, 0, 1]]);
+    expect(() => run(source('1/(s+1000)'), base)).toThrow(/norm/);
+  });
+  it.each([{ T: 0 }, { T: NaN }, { T: 11 }, { count: 121 }, { count: 3 }, { density: 1 }, { density: 17 }, { density: 2.1 }, { delay: 1.5 }, { delay: 13 }, { amplitude: Infinity }, { initial: [] }, { initial: [10001] }])('rejects out-of-domain inputs %j', edit => {
+    expect(() => run(source('1/(s+1)'), { ...base, ...edit })).toThrow();
+  });
+});
+
+describe('DR05 visual expression grammar', () => {
+  it('accepts braced and actual MathLive compact fraction forms and proper feedthrough', () => {
+    expect(parseModel(String.raw`G\left(s\right)=\frac{\frac12}{s+\frac12}`)).toEqual({ a: [1, 0.5], b: [0, 0.5] });
+    expect(parseModel(String.raw`\frac{s^2+2s+1}{(s+1)(s+2)}`)).toEqual({ a: [1, 3, 2], b: [1, 2, 1] });
+  });
+  it.each(['', 'G(z)=1/(z+1)', '\\sin(s)', 'NaN', '1/(s+)', '1/(s-s)', '1/(s^3+1)', 's^2/(s+1)', '1/(0.000000001s+1)', '1000001/(s+1)', '1/(s+1))'])('rejects malformed/unsupported %s', s => expect(() => parseModel(s)).toThrow());
+  it('bounds input length and rejects nonzero underflow before constructing a plant', () => {
+    expect(() => parseModel('s'.repeat(513))).toThrow(/512/);
+    const tiny = '0.' + '0'.repeat(400) + '1';
+    expect(() => parseModel(`${tiny}/(s+1)`)).toThrow(/nonzero decimal/);
+  });
+});

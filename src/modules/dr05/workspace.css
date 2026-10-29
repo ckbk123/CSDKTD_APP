@@ -1,0 +1,24 @@
+[data-module="DR05"] .zoh-tool { display: flex; flex-direction: column; gap: 24px; min-width: 0; font-size: 14px; line-height: 1.65; }
+[data-module="DR05"] section { border-bottom: 1px solid var(--line); padding-bottom: 22px; min-width: 0; }
+[data-module="DR05"] h3 { font-size: 17px; margin: 0 0 12px; }
+[data-module="DR05"] h4 { font-size: 14px; margin: 16px 0 8px; }
+[data-module="DR05"] p { overflow-wrap: anywhere; }
+[data-module="DR05"] .zoh-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+[data-module="DR05"] .zoh-controls { display: grid; grid-template-columns: repeat(auto-fit,minmax(185px,1fr)); gap: 12px; margin: 16px 0; }
+[data-module="DR05"] label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; min-width: 0; }
+[data-module="DR05"] input, [data-module="DR05"] select { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; min-width: 0; }
+[data-module="DR05"] .zoh-notice { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--tint); }
+[data-module="DR05"] .zoh-small { color: var(--muted); font-size: 12px; }
+[data-module="DR05"] .equation-display { max-width: 100%; overflow-x: auto; padding: 10px 2px; }
+[data-module="DR05"] .zoh-plot { border: 1px solid var(--line); border-radius: 8px; margin: 16px 0; overflow-x: auto; min-width: 0; }
+[data-module="DR05"] svg { width: 100%; min-width: 560px; height: auto; display: block; }
+[data-module="DR05"] svg text { fill: var(--muted); font-size: 12px; }
+[data-module="DR05"] .zoh-grid { stroke: var(--line); stroke-width: 0.8; }
+[data-module="DR05"] .zoh-clock { stroke: var(--line); stroke-width: 0.8; stroke-dasharray: 2 4; }
+[data-module="DR05"] .zoh-line { stroke: var(--accent); fill: none; stroke-width: 1.8; }
+[data-module="DR05"] .zoh-exact { stroke: var(--accent); fill: var(--accent); stroke-width: 1; }
+[data-module="DR05"] .zoh-approx { stroke: var(--muted); fill: var(--surface); stroke-width: 1.4; }
+[data-module="DR05"] .zoh-table { overflow: auto; max-height: 340px; margin-top: 12px; }
+[data-module="DR05"] table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+[data-module="DR05"] th, [data-module="DR05"] td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+@media (max-width:500px) { [data-module="DR05"] .zoh-controls { grid-template-columns: minmax(0,1fr); } [data-module="DR05"] .zoh-actions .button { flex: 1 1 110px; } }
