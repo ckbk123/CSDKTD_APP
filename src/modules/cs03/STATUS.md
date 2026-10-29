@@ -26,3 +26,8 @@ Current inspection confirms a metadata scaffold, empty synchronous mount and no 
 Chosen bounded domain: D(s)=s³+a s²+b s+d, constant scalar plant numerator g, real dimensionless feedback gain K, negative unity feedback. P(s,K)=s³+a s²+b s+(d+gK). a,b,d,g are editable bounded real values; zero g is supported as a gain-independent case. This completes the source cubic gain exercise and W06 variant without pretending to solve arbitrary K-dependent coefficients or higher-order regions. Strict stability is exactly a>0, b>0, d+gK>0, ab-d-gK>0. Algebra establishes the complete gain set; root plots are numerical checks.
 
 Time is normalized in seconds (s has inverse-second units); polynomial coefficients carry their corresponding powers and gK has the constant-term units. Original slides have not been inspected in this run; recorded source/audit provenance is retained. The baseline factors D=s(s+2)(s+5); proposed extra conditioning fixtures will be labeled independently derived. No shared helper/package/configuration change is required; private pure math remains in the owned folder. All accepted functionality and verification are still open at this initial checkpoint.
+
+## Checkpoint before earlier review correction
+
+Private exact-rational polynomial parsing, cubic Routh interval derivation, numerical cubic roots and interval grading are drafted in math.ts. Node 24 npm run check passes; no mathematical tests or interface/browser verification yet, so stage remains in-progress. CS03 is checkpointed while the worker addresses coordinator-returned DS04 PR #13 singular-gain plot consistency. Resume this preserved worktree afterward; no CS03 work was discarded.
+
