@@ -9,7 +9,7 @@
 
 ## Audit before implementation
 
-Current `workspace.ts` is an empty synchronous mount; `index.ts` is the correct lazy metadata. There are no local helpers or tests. The shell equation preview is not a solver.
+At the initial audit, `workspace.ts` was an empty synchronous mount and there were no local helpers or tests. `index.ts` is the correct lazy metadata. The shell equation preview is not a solver. The table below preserves the preimplementation requirement audit; later checkpoints record actual delivery.
 
 | Accepted requirement | Existing evidence | Work to deliver |
 |---|---|---|
@@ -44,10 +44,27 @@ Course provenance remains TASK/atlas Ch5:8-13, S07 and S03:5,13. The continuous 
 
 ## Current checks and remaining work
 
-The fresh worktree and unique branch are registered in the claim. Locked dependencies installed under bundled Node v24.22.1 (109 packages, zero audit vulnerabilities). Only this audit has been changed so far; implementation, numerical/parser tests, project checks, browser QA and PR delivery remain pending. No claim of implemented mathematics is made at this checkpoint.
+The fresh worktree and unique branch are registered in the claim. Locked dependencies installed under bundled Node v24.22.1 (109 packages, zero audit vulnerabilities). At the initial checkpoint only this audit existed. Later evidence follows; browser QA and final submission remain pending.
 
 ## Parser checkpoint
 
 `parser.ts` implements a bounded linear-polynomial entry prototype: decimals, s, sums/products, signed groups, constant-denominator fractions (including compact/mixed/nested numeric forms) and font wrappers from MathLive. It rejects raw e/E scientific algebra, powers/degree >1, variable denominators, empty/incomplete expressions, excessive nesting/size, nonfinite/oversized coefficients and nonzero arithmetic underflow.
 
 `node node_modules/vitest/vitest.mjs run src/modules/cf02/parser.test.ts`: 45 tests passed. `npm run check`: passed. No workspace computation or browser result is claimed. Exact coefficient cancellation must be retained before implementing limit classification; numeric roundoff must not change a numerator's zero order. Derivations and the proposed numerical trace are preserved in IMPLEMENTATION_NOTES.md. Solver, visual workspace, full mathematical fixtures, project/browser checks and PR remain unfinished.
+
+## Solver/workspace checkpoint — 29 October 2026
+
+The bounded exercise is now implemented locally, pending final project/browser verification. Exact rational coefficients preserve numerator zero order and cubic Hurwitz signs. The solver derives reference, plant-input-disturbance and sensor-noise transfer functions for comparator/physical error, Kp/Kv/Ka, finite limits and the full polynomial asymptote for stable loops. It refuses FVT for unstable/boundary full-loop polynomials, even where a channel cancellation might hide a mode. Zero excitation is an explicitly separate zero-initial-state identity.
+
+The workspace has two shared visual equation inputs, all native numeric readers use `readNumericInput`, optional predictions, eight changed-data presets, signal derivation before the type table, exact checked results and separately labeled numerical error curves/sample tables. Any edit clears prior results. New mounts/restore baseline reset all local state; abort guards lazy equation loading and destroys both inputs. Module CSS is scoped; index metadata is unchanged.
+
+Bounds: normalized pole rate a=0.1–10; gain=0.05–50 (b0 for a constant numerator, b1 otherwise); optional zero rate b0/b1=0.05–10; H=0.1–10; amplitude −10–10; horizon 0.1–120 s; exact rationals 4096 bits, parser 400 characters/160 operations/depth 12/intermediate magnitude ≤10^12. The numerical trace uses at most six augmented companion/input states, scaling/Taylor exponentiation, 600–40,000 intervals and a 10^12 state/signal cap. Cap/truncation and insufficient-horizon cautions are visible. This is a bounded family, not an arbitrary transfer-function CAS.
+
+Checks on this checkpoint under bundled Node v24.22.1:
+
+- `node node_modules/vitest/vitest.mjs run src/modules/cf02`: **94 tests pass** (45 parser, 5 rational, 37 math/trace, 7 workspace/lifecycle).
+- `npm run check`: passes.
+- Independent numerical oracles: baseline ramp inverse Laplace expression at every sample; type-0 step 1/3+(2/3)exp(−6t); direct-feedthrough P=2 algebraic loop; independent underdamped step for disturbance/noise; stable type-2 and nonunity-sensor asymptotes; known diagonal/nilpotent matrix exponentials. Exact fixtures include H=.8 cancellation and a nearby nonzero coefficient, cubic boundary/unstable cases, changed gain/scale/amplitude, input bounds and divergence truncation.
+- Mock-editor tests exercise result invalidation, source/prediction/reset, malformed and native-underflow input, immediate abort/late loading, initialization failure and new-mount baseline. They do not establish real MathLive functionality.
+
+Full application tests/build, real browser editing/keyboard/font/reset/fast-navigation/mobile evidence, PR creation and exact submitted commit remain unfinished. No shared dependency request is outstanding. Primary preview and shared browser remain untouched by this checkpoint.
