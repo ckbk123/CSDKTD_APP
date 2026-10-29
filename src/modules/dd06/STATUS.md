@@ -1,13 +1,13 @@
 # DD06 implementation status
 
-- **Stage:** in-progress
-- **Assessment:** 2026-10-29; bounded solver/parser/interface and actual browser checks complete. Explicit disposition of the inherited shared Escape dependency and final PR/exact submission remain; independent review is later.
+- **Stage:** implemented
+- **Assessment:** 2026-10-29; accepted bounded exercise implemented and checked. Independent integration review remains, with the inherited shared Escape repair/combined-main gate explicitly owned by the coordinator below.
 - **Contract:** [TASK.md](TASK.md); ownership `src/modules/dd06/**`.
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`; owner `worker-dd06-01a186d2-12d1`.
 - **Branch:** `codex/dd06-state-feedback-01a186d2`.
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dd06-state-feedback-01a186d2\CSDKTD APP`.
 - **Claimed base:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86`, primary main/package 0.3.9. This contribution does not stack CP03 or DF02.
-- **PR:** [#37](https://github.com/ckbk123/CSDKTD_APP/pull/37), attached draft. Reuse this contribution PR/branch for corrections; dependency disposition and final clean exact submission remain.
+- **PR:** [#37](https://github.com/ckbk123/CSDKTD_APP/pull/37), attached. Reuse this PR/branch/worktree for corrections; the claim binds the exact tested clean submission HEAD.
 
 ## Existing behavior and requirement audit
 
@@ -24,7 +24,7 @@ Initial inspection found metadata and an empty workspace with no local helpers/t
 | Sampled output and effort | Read/update timing, state/output/held-effort stems, all-sample linked inspection, bounded traces and window metrics | Two-mode formula, first holds, twenty nilpotent designs, deadbeat handsteps; actual N2000/cursor/regulator and partial unstable traces |
 | Prediction and reasoning | Controllability/tracking predictions and optional Nd estimate before reveal, intermediate steps and six presets | Native estimate underflow/blank/zero and actual prediction/reveal checks |
 | Lifecycle/accessibility | Owned loading/child abort/failure cleanup; scoped design; keyboard/numeric alternatives and local scrolling | Resource/failure/disposal tests; actual reset/open-keyboard/rapid re-entry, fonts and 390×844 checks; inherited shared Escape gate recorded below |
-| Delivery | Isolated claimed branch, pushed checkpoints and documented evidence | 84 module/744 full tests and type/build pass; one PR and clean exact submission still required after dependency disposition |
+| Delivery | Isolated branch, attached PR and documented evidence | 84 module/744 full tests and type/build pass; final exact tested HEAD bound in submitted claim; assigned shared integration gate remains |
 
 ### Interface checkpoint
 
@@ -65,10 +65,12 @@ Private record: `C:\Users\baokh\.codex\control-studio-workers\dd06-browser-evide
 
 ## Dependencies and source provenance
 
-Existing shared equation/numeric APIs suffice; no shared math/package changes are requested. The inherited Escape→raw-LaTeX defect found in DF02 also exists in this 0.3.9 shared source. The coordinator independently reproduced it in CF02 and owns the upstream capture-phase fix. DD06 used the supported keyboard toggle and reset/leave cleanup during its own QA rather than looping on that known old sequence. The same explicit upstream-repair/combined-main DD06 Escape→preset disposition has been requested; confirmation is pending. Do not copy shared source, merge/rebase main or claim that this older shared Escape sequence passes. Final submission must record the owner's disposition and later combined-main gate.
+Existing shared equation/numeric APIs suffice; no shared math/package changes are requested. The inherited Escape→raw-LaTeX defect found in DF02 also exists in this 0.3.9 shared source: the keyboard closes, but MathLive switches to raw-entry mode before the shared bubbling handler, so a later preset is rejected until reset. DD06 used the supported keyboard toggle and reset/leave cleanup rather than repeating that known old sequence; it does not claim the older shared Escape sequence passes.
+
+The coordinator explicitly confirmed the DD06 disposition, as for DF02: the upstream capture-phase repair is coordinator-owned, implemented, independently reviewed and real-browser checked with Escape→preset→typing, and is being published in the next main integration. This checked preserved module may be submitted without shared-file copies, merges or rebases. The coordinator must clear DD06's Escape→preset gate in combined current main before accepting integration. This assigned dependency is not an additional human approval gate. Source history and the old-base limitation remain visible here.
 
 Read TASK/atlas, current primary AGENTS/START_HERE/AUTONOMOUS_WORKERS/COORDINATION and project/contribution/development/design/equation guides. The recorded discrete audit DD5 cites CH9:34–48, S15:4,7–11 and W15; it distinguishes the common-mechanical fixture from deeper problems37/41 whose diagram matrices need final reconstruction. This worker did not newly inspect original decks. Do not assert a reconstructed original answer for those variants.
 
-`npm ci` passed here (109 packages, no vulnerabilities reported); no dependency files changed. `npm test -- src/modules/dd06` passed **84 tests in4 files**. `npm run check` passed. `npm test` passed **744 tests in30 files**, including after the grid and model-assumption changes on this preserved0.3.9 base. `npm run build` passed; the existing MathLive chunk advisory remains (805.31kB/221.50kB gzip). One PR, dependency disposition and final exact-HEAD checks/push/clean submission remain. There is no separate end-to-end command.
+`npm ci` passed here (109 packages, no vulnerabilities reported); no dependency files changed. `npm test -- src/modules/dd06` passed **84 tests in 4 files**. `npm run check` passed. `npm test` passed **744 tests in 30 files**, including after the grid and model-assumption changes on this preserved 0.3.9 base. `npm run build` passed; the existing MathLive chunk advisory remains (805.31kB/221.50kB gzip). Final module/type/full/build checks run again after the delivery commit, then remote/PR-head verification and clean exact-claim submission bind that tested HEAD. There is no separate end-to-end command.
 
-Checkpoints58fbf3f (audit),30f26f5 (math/parser,67 tests) andfe91ad6 (full interface) are pushed. No main merge, version/dependency change, deployment or extra agent was performed. CP03 PR#7 and DF02 PR#28 remain preserved submissions; review returns take priority after checkpointing this module.
+Checkpoints58fbf3f (audit),30f26f5 (math/parser,67 tests),fe91ad6 (interface),26638b0 (browser/grid repair) and56e2f75 (attached PR record) are pushed. Preview59624 was stopped, private tabs closed and viewport restored. No main merge, version/dependency change, deployment or extra agent was performed. CP03 PR#7 and DF02 PR#28 remain preserved submissions; review returns take priority after checkpointing the next module.
