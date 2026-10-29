@@ -70,6 +70,28 @@ describe('DP03 independent frequency fixtures', () => {
       }
     }
   });
+  it('checks a pure four-sample delay against its binomial W construction and linear phase', () => {
+    const model = parseModel('q^4'), transformed = bilinear(model, 2);
+    // q=(1-w)/(1+w); independently expanded fourth powers.
+    expect(transformed.b).toEqual([1, -4, 6, -4, 1]);
+    expect(transformed.a).toEqual([1, 4, 6, 4, 1]);
+    const quarter = value(unitResponse(model, Math.PI / 8));
+    expect(quarter.value.re).toBeCloseTo(0, 13);
+    expect(quarter.value.im).toBeCloseTo(-1, 13);
+    expect(quarter.magnitude).toBeCloseTo(1, 13);
+    expect(quarter.phase).toBeCloseTo(-Math.PI / 2, 13);
+    const endpoint = value(warpedResponse(model, transformed, Math.PI).result);
+    expect(endpoint.value.re).toBeCloseTo(1, 13); expect(endpoint.value.im).toBeCloseTo(0, 13);
+  });
+  it('reports a Nyquist-contour pole rather than fabricating an infinite-W gain', () => {
+    const model = parseModel('1/(1+q)');
+    expect(value(unitResponse(model, 0)).magnitude).toBe(.5);
+    expect(unitResponse(model, Math.PI).kind).toBe('pole');
+    expect(unitResponse(model, -Math.PI).kind).toBe('pole');
+    const endpoint = warpedResponse(model, bilinear(model, .1), Math.PI);
+    expect(endpoint.frequency).toBeNull(); expect(endpoint.endpoint).toBe(true);
+    expect(endpoint.result.kind).toBe('pole');
+  });
   it('relates physical, normalized, aliased and warped frequencies without silently changing coefficients', () => {
     expect(fromPhysical(2, .1)).toEqual({ raw: .2, angle: expect.closeTo(.2, 12), aliased: false });
     expect(fromPhysical(2, .2).angle).toBeCloseTo(.4, 12);
