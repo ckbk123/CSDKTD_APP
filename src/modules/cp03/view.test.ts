@@ -84,4 +84,11 @@ describe('CP03 exercise flow and ownership', () => {
     v.button('Reveal calculation and linked plots').click();
     expect(v.container.querySelectorAll('figure')).toHaveLength(4);
   });
+  it('reports an unresolved fast transient rather than presenting an aliased trace', () => {
+    const v = open(); v.change(v.container.querySelector('textarea')!, 's^2/(s^2+0.01s+100)');
+    v.change(v.field('Frequency ω'), '0.01'); v.change(v.field('Window start'), '0'); v.apply();
+    expect(v.container.textContent).toContain('cannot resolve the transient');
+    expect((v.container.querySelector('input[type="checkbox"]') as HTMLInputElement).disabled).toBe(true);
+    v.button('Reveal calculation and linked plots').click(); expect(v.container.querySelectorAll('figure')).toHaveLength(4);
+  });
 });

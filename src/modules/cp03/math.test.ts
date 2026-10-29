@@ -13,7 +13,7 @@ describe('CP03 bounded equation parser', () => {
     expect(parsePlant('-s^2/(s^2+1)').numerator).toEqual([0, 0, -1]);
     expect(parsePlant('0.5')).toEqual({ numerator: [0.5], denominator: [1] });
   });
-  it.each(['', 'NaN', 'Infinity', 'exp(s)', '1/(s+)', '1/0', '\\frac{}{s}', 's^3', 's^{1.5}', '1/(s+1)^2/(s+2)', 's^2/(s+1)', '1/(s+101)', '1e999', '1/(0.000000001s+1)', '(s+1', '\\placeholder{}'])('rejects malformed or unsupported input %s', source => {
+  it.each(['', 'NaN', 'Infinity', 'exp(s)', '1/(s+)', '1/0', '\\frac{}{s}', 's^3', 's^{1.5}', '1/(s+1)^2/(s+2)', 's^2/(s+1)', '1/(s+101)', '1e999', '1/(0.000000001s+1)', '(s+1', '\\placeholder{}', '1.2.3/(s+1)', '1/(s+1..2)'])('rejects malformed or unsupported input %s', source => {
     expect(() => parsePlant(source)).toThrow();
   });
   it('bounds input length, nesting and expanded coefficients', () => {

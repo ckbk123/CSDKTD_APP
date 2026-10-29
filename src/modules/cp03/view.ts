@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { experiment, frequency, measure, parsePlant, poles, type Plant } from './math';
+import { evaluatePolynomial, experiment, frequency, measure, parsePlant, poles, type Complex, type Plant } from './math';
 import { numberLabel as fmt, plot, type Series } from './plots';
 import './workspace.css';
 
@@ -22,6 +22,7 @@ function polynomial(p: number[]): string {
   return p.map((v, i) => v === 0 ? '' : `${v >= 0 ? '+' : '-'}${mf(Math.abs(v))}${i === 1 ? 's' : i === 2 ? 's^2' : ''}`).reverse().join('').replace(/^\+/, '') || '0';
 }
 const degrees = (rad: number) => rad * 180 / Math.PI;
+const complexLatex = (z: Complex) => `${mf(z.re)}${z.im < 0 ? '-' : '+'}${mf(Math.abs(z.im))}j`;
 
 export const mount: ModuleMount = ({ container, signal }) => {
   const root = node('div', '', 'cp03-tool');
@@ -68,7 +69,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const limits = node('details', '', 'cp03-card cp03-limits'); limits.append(node('summary', 'Supported models and conventions'));
   limits.append(node('p', 'Real proper rational polynomials in s, degree 0–2, expanded or factored; numbers, fractions, products, sums and integer powers −2…2. Optional G(s)=. No delays or other functions. Expanded coefficients ≤10000, normalized coefficients ≤10⁶, leading denominator magnitude ≥10⁻⁸, pole magnitudes ≤100 rad/s, at most 300 characters.'));
   limits.append(node('p', 'u(t)=A sin(ωt) starts at t=0 with zero canonical states. A is in arbitrary input units; y uses the corresponding output units. Open-loop SISO LTI plant; no feedback or sampling. Denominator modes are retained without pole-zero cancellation, so “stable” is a conservative denominator-mode classification, not a hidden-state assertion.'));
-  limits.append(node('p', 'The window spans three periods. Start 0–1000 s; total time ≤3000 s; 901 time samples and 301 frequency samples plus the cursor. Curves illustrate analytic formulas, not sampled proofs. Phase is principal (−180° to 180°), and marker phase is modulo one period. Zero/near-zero frequency response has undefined phase. Singular frequencies are rejected (relative denominator tolerance 10⁻¹⁰). Values are rounded for display; no solver iteration is used.'));
+  limits.append(node('p', 'The window spans three periods. Start 0–1000 s; total time ≤3000 s; 901 particular-sinusoid samples, at most 12001 transient samples, and 301 frequency samples plus the cursor. An unresolved transient window is reported instead of drawing an aliased trace. Curves illustrate analytic formulas, not sampled proofs. Phase is principal (−180° to 180°), and marker phase is modulo one period. Zero/near-zero frequency response has undefined phase. Singular frequencies are rejected (relative denominator tolerance 10⁻¹⁰). Values are rounded for display; no solver iteration is used.'));
   root.append(intro, form, view, limits); container.append(root); draft = plantInput.getValue();
 
   function render(keepReveal = false): void {
@@ -85,13 +86,19 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const e = experiment(plant, w, A), f = e.value, t1 = t0 + 3 * e.period;
       const times = Array.from({ length: 901 }, (_, i) => t0 + (t1 - t0) * i / 900);
       const samples = times.map(t => ({ t, ...e.particular(t) }));
-      let actual: ReturnType<typeof e.sample>[] | undefined;
-      let actualError = '';
-      try { actual = times.map(t => e.sample(t)); }
-      catch (cause) { actualError = cause instanceof Error ? cause.message : 'The zero-state response could not be displayed.'; }
       const responseAmplitude = A * f.magnitude;
       const bound = e.tailBound(t0), tolerance = Math.max(1e-9, responseAmplitude * 0.01);
       const settled = e.stable && bound <= tolerance;
+      let actual: ({ t: number } & ReturnType<typeof e.sample>)[] | undefined;
+      let actualError = '';
+      // Resolve each retained mode with at least ten points per inverse pole
+      // magnitude. A proven small tail needs no extra visual resolution.
+      const rate = Math.max(w, ...poles(plant).map(p => Math.hypot(p.re, p.im)));
+      const steps = settled ? 900 : Math.max(900, Math.ceil((t1 - t0) * rate * 10));
+      try {
+        if (steps > 12000) throw new Error('This three-period window cannot resolve the transient within 12001 samples. Increase ω, choose slower modes, or move to a settled window.');
+        actual = Array.from({ length: steps + 1 }, (_, i) => { const t = t0 + (t1 - t0) * i / steps; return { t, ...e.sample(t) }; });
+      } catch (cause) { actualError = cause instanceof Error ? cause.message : 'The zero-state response could not be displayed.'; }
       const traceCard = node('section', '', 'cp03-card');
       traceCard.append(node('h3', '2. Measure before revealing'));
       const classification = node('p', e.classification, 'cp03-badge'); traceCard.append(classification);
@@ -140,11 +147,11 @@ export const mount: ModuleMount = ({ container, signal }) => {
             { label: e.stable ? 'Steady sinusoid yₛ · solid' : 'Formal particular yₚ · solid', style: 'output', points: samples.map(s => ({ x: s.t, y: s.particular })) },
           ];
           if (showTransient.checked && actual) {
-            series[1] = { label: 'Zero-state output y · solid', style: 'output', points: samples.map((s, i) => ({ x: s.t, y: actual![i].output })) };
-            series.push({ label: 'Transient y−yₚ · dotted', style: 'transient', points: samples.map((s, i) => ({ x: s.t, y: actual![i].transient })) });
+            series[1] = { label: 'Zero-state output y · solid', style: 'output', points: actual.map(s => ({ x: s.t, y: s.output })) };
+            series.push({ label: 'Transient y−yₚ · dotted', style: 'transient', points: actual.map(s => ({ x: s.t, y: s.transient })) });
           }
           const extrema = series.flatMap(s => s.points.flatMap(p => p ? [p.y] : []));
-          const lo = Math.min(0, ...extrema), hi = Math.max(0, b, ...extrema), pad = Math.max(1e-4, (hi - lo) * 0.12);
+          const lo = Math.min(0, ...extrema), hi = Math.max(0, b, ...extrema), pad = Math.max(1e-12, (hi - lo) * 0.12);
           plotHost.replaceChildren(plot({ title: showTransient.checked ? 'Input, actual zero-state output and transient' : 'Input and particular sinusoid', xLabel: 'Time t (s)', yLabel: 'Signal amplitude (u / y units)', series,
             xRange: [t0, t1], yRange: [lo - pad, hi + pad],
             marks: [{ x: inputTime, label: `tᵤ=${fmt(inputTime)} s` }, { x: outputTime, label: `tᵧ=${fmt(outputTime)} s` }, { y: b, label: `B=${fmt(b)}` }],
@@ -159,7 +166,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
         revealed = true; lastRevealed = true; reveal.disabled = true; reveal.textContent = 'Calculation revealed';
         checked.append(node('h3', '3. Compare and explain'));
         checked.append(createEquationDisplay(String.raw`G(s)=\frac{${polynomial(plant.numerator)}}{${polynomial(plant.denominator)}},\quad u(t)=${mf(A)}\sin(${mf(w)}t)`, 'Normalized plant and input'));
-        checked.append(createEquationDisplay(String.raw`s=j\omega,\quad j^2=-1,\quad G(j${mf(w)})\approx ${mf(f.re)}${f.im < 0 ? '-' : '+'}${mf(Math.abs(f.im))}j`, 'Substitute frequency and divide complex numbers'));
+        const numerator = evaluatePolynomial(plant.numerator, w), denominator = evaluatePolynomial(plant.denominator, w);
+        checked.append(createEquationDisplay(String.raw`s=j\omega,\quad j^2=-1,\quad G(j${mf(w)})\approx\frac{${complexLatex(numerator)}}{${complexLatex(denominator)}}\approx ${complexLatex(f)}`, 'Substitute frequency and divide complex numbers'));
         checked.append(createEquationDisplay(String.raw`|G|=\sqrt{(\Re G)^2+(\Im G)^2}\approx ${mf(f.magnitude)},\quad B=A|G|\approx ${mf(responseAmplitude)}`, 'Calculated gain and output amplitude'));
         if (f.phase !== null) {
           checked.append(createEquationDisplay(String.raw`\varphi=\operatorname{atan2}(\Im G,\Re G)\approx ${mf(f.phase)}\ \mathrm{rad}=${mf(degrees(f.phase))}^{\circ}`, 'Calculated signed principal phase'));

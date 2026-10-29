@@ -80,7 +80,10 @@ export function parsePlant(latex: string): Plant {
     while (i < tokens.length) {
       const t = peek();
       if (t === '*' || t === '/') { i++; value = combine(value, atom(), t); }
-      else if (t === 's' || t === '(' || t === '{' || t === '\\frac' || /^(?:\d|\.)/.test(t ?? '')) value = combine(value, atom(), '*');
+      else if (t === 's' || t === '(' || t === '{' || t === '\\frac' || /^(?:\d|\.)/.test(t ?? '')) {
+        if (/^(?:\d|\.)/.test(t ?? '') && /^(?:\d|\.)/.test(tokens[i - 1] ?? '')) fail('Check the decimal number; separate factors with a multiplication sign.');
+        value = combine(value, atom(), '*');
+      }
       else break;
     }
     return value;
@@ -115,13 +118,13 @@ export function poles(plant: Plant): Complex[] {
   const r = a + (a >= 0 ? 1 : -1) * Math.sqrt(delta);
   return [{ re: r, im: 0 }, { re: r === 0 ? 0 : d[0] / r, im: 0 }];
 }
-function evaluate(p: number[], w: number): Complex {
+export function evaluatePolynomial(p: number[], w: number): Complex {
   return { re: (p[0] ?? 0) - (p[2] ?? 0) * w * w, im: (p[1] ?? 0) * w };
 }
 export interface FrequencyValue extends Complex { magnitude: number; phase: number | null; db: number | null }
 export function frequency(plant: Plant, w: number): FrequencyValue {
   if (!Number.isFinite(w) || w < 0.01 || w > 100) fail('Frequency must be between 0.01 and 100 rad/s.');
-  const n = evaluate(plant.numerator, w), d = evaluate(plant.denominator, w);
+  const n = evaluatePolynomial(plant.numerator, w), d = evaluatePolynomial(plant.denominator, w);
   const scale = plant.denominator.reduce((v, c, i) => v + Math.abs(c) * w ** i, 0);
   if (Math.hypot(d.re, d.im) <= 1e-10 * scale) fail('G(jω) is singular or too close to a denominator zero. Choose another frequency.');
   const q = d.re * d.re + d.im * d.im;

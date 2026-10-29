@@ -23,6 +23,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     if (closed || signal.aborted) return;
     loading.textContent = 'The experiment could not load. Reset the tool to try again.';
     loading.setAttribute('role', 'alert');
+    container.replaceChildren(loading);
   });
   return cleanup;
 };

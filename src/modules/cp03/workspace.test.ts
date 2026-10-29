@@ -26,4 +26,11 @@ describe('CP03 deferred browser view', () => {
     const container = document.createElement('section'); mount({ container, signal: controller.signal });
     expect(container.childElementCount).toBe(0);
   });
+  it('keeps a failed browser view load visible and recoverable by reset', async () => {
+    mock.mount.mockImplementationOnce(() => { throw new Error('view initialization failed'); });
+    const container = document.createElement('section'), controller = new AbortController();
+    const dispose = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(container.querySelector('[role="alert"]')?.textContent).toContain('Reset the tool'));
+    controller.abort(); if (typeof dispose === 'function') dispose(); expect(container.childElementCount).toBe(0);
+  });
 });
