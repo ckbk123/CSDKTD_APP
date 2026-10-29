@@ -1,6 +1,6 @@
 # CP01 implementation status
 
-- **Stage:** scaffold (reserved; requirement audit complete, solver not yet implemented)
+- **Stage:** in-progress (local polynomial/scalar prototype; response solver not yet implemented)
 - **Last assessed:** 2026-10-29
 - **Assessed code baseline:** fresh primary-main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5)
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a`, host local.
@@ -72,3 +72,11 @@ Read current primary AGENTS, START_HERE, AUTONOMOUS_WORKERS, COORDINATION, PROJE
 The atomic claim records this fresh primary baseline, unique branch and isolated worktree. Locked dependencies installed locally under bundled Node v24.22.1 (109 packages, zero vulnerabilities); `npm run check` passes. No module mathematics or browser functionality is claimed by this foundation check. No preview or QA resource is held; the coordinator released the temporary DS01 order, so normal future QA acquisition may resume while respecting any current holder.
 
 Only this audit is delivered at the setup checkpoint. Full solver/UI implementation, mathematical/project/browser verification and PR submission remain required. Prior submitted worktrees/claims remain intact for review.
+
+## Prototype checkpoint / priority review return
+
+Added private bounded rational arithmetic and a degree-at-most-two visual polynomial parser prototype. No response engine or workspace UI is implemented, and no parser/math tests have been run yet. The scalar helper is copied locally from the prior owned CF02 contribution; there are no sibling imports or shared edits. This is not implemented CP01 mathematics.
+
+The coordinator reopened CF02 PR #18 for a confirmed lexical mixed-number bypass (`s2` followed by 1/2). CP01's new prototype uses the same accumulated-constant guard and must receive the corrected lexical rule and regression coverage when resumed. Preserve this checkpoint/reservation, suspend CP01 implementation and repair CF02 in its preserved worktree/PR first. The current browser order is DP03→DP04→coordinator DP02; do not acquire another QA slot until its release notice. No CP01 preview/QA resource is held.
+
+The proposed general proper order-1/2 realization, response basis and pulse handling are preserved in IMPLEMENTATION_NOTES.md. Full accepted TASK and this requirement audit remain the contract; no scope has been dropped.
