@@ -1,3 +1,5 @@
+import { rejectSpacingArguments } from '../../shared/tex-arguments';
+
 /** Private DS01 model: real Jordan blocks, or their real conjugate-pair form. */
 export interface Complex { readonly re: number; readonly im: number }
 export type Structure = 'simple' | 'independent' | 'jordan2' | 'jordan3';
@@ -15,6 +17,7 @@ export const RADIUS_TOLERANCE = 1e-9;
 export function parsePole(latex: string): Complex {
   if (!latex.trim()) throw new Error('Enter a pole, such as −0.8 or 0.6 + 0.8j.');
   if (latex.length > 200) throw new Error('Use a short numeric pole (at most 200 characters).');
+  rejectSpacingArguments(latex);
   let source = latex.replace(/\\(?:left|right)/g, '')
     // Pasted numeric text can retain an upright font inside a fraction. Font
     // commands are removable only around a numeric literal, never arbitrary algebra.

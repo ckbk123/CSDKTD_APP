@@ -86,7 +86,9 @@ Distinguish TeX argument braces from visible parentheses. Fraction arguments and
 
 An exponent also consumes one unbraced TeX token. For example, `q^12` renders q to the first power followed by 2, whereas `q^{12}` puts both digits in the exponent. Preserve that distinction or reject ambiguous unbraced multi-character/signed exponents with power-box guidance. Include `q^12` versus `q^{12}` and `2^12` versus `2^{12}` in tests; fixtures intending the twelfth power must use the properly grouped notation.
 
-Spacing commands and some Unicode blanks also consume an unbraced argument. Do not erase them before identifying fraction/exponent boxes: `\frac1\;2` does not mean 1/2, whereas `\frac1{\;2}` has a real denominator box containing 2. Delimiter sizing commands must keep their actual delimiter boundaries too. A bounded parser may conservatively reject unsupported forms with completion guidance; it must not silently reinterpret the displayed equation. CF02 has local regression coverage; a broader shared preflight is still under separate review until published.
+Spacing commands and some Unicode blanks also consume an unbraced argument. Do not erase them before identifying fraction/exponent boxes: `\frac1\;2` does not mean 1/2, whereas `\frac1{\;2}` has a real denominator box containing 2. Delimiter sizing commands must keep their actual delimiter boundaries too. A bounded parser may conservatively reject unsupported forms with completion guidance; it must not silently reinterpret the displayed equation.
+
+Call the stateless `rejectSpacingArguments(source)` from `src/shared/tex-arguments.ts` before a private grammar erases spacing/sizing tokens. It checks actual fraction/script arguments and supported delimiter tokens, including nested fences and significant Unicode blanks; it does not validate the whole expression or supply a mathematical grammar. The v0.3.11 rollout covers DP01, DP02, DS01, DS02, DS03 and CS01. Older pending modules require integration hooks and focused invalid/valid controls. CF02 already preserves these boundaries inside its local linear grammar.
 
 ### Native numeric controls
 

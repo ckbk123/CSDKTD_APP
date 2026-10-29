@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.11 — 29 October 2026
+
+- Correct CS01 free-response modal projection: an exactly absent fast mode stays absent, while genuinely small nonzero components remain. Ill-conditioned numerical traces receive explicit feedback without changing exact stability classification.
+- Add a stateless TeX argument preflight to DP01, DP02, DS01, DS02, DS03 and CS01 before spacing/delimiter normalization. Malformed blank fraction/power arguments cannot silently become different equations; valid boxed fractions and fences remain supported.
+- All 1,176 application tests, type checking and production build pass. Independent numerical/scaling and renderer-backed lexical reviews passed, along with production CS01 baseline, hidden-mode, Escape/preset and cleanup checks. No deployment occurred.
+
 ## 0.3.10 — 29 October 2026
 
 - CF02: predict and derive steady-state error for reference, plant-input disturbance and sensor noise, distinguish comparator and physical tracking errors, and compare exact limits or polynomial asymptotes with a qualified numerical trace.

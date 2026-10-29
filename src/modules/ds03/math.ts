@@ -1,3 +1,5 @@
+import { rejectSpacingArguments } from '../../shared/tex-arguments';
+
 /** Local degree-two mathematics. All coordinates and K are dimensionless. */
 export interface Affine { readonly slope: number; readonly constant: number }
 export interface Family { readonly b: Affine; readonly c: Affine }
@@ -25,6 +27,7 @@ function multiply(a: Polynomial, b: Polynomial): Polynomial {
 export function parseFamily(latex: string): Family {
   if (!latex.trim()) throw new Error('Enter a characteristic polynomial.');
   if (latex.length > 300) throw new Error('Keep the polynomial within 300 characters.');
+  rejectSpacingArguments(latex);
   let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(/^P\(z\)=/, '');
   const numericFraction = /\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g;

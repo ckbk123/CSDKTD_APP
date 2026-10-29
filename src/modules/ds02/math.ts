@@ -1,3 +1,5 @@
+import { rejectSpacingArguments } from '../../shared/tex-arguments';
+
 /** Exact rational arithmetic for the bounded quadratic Jury lesson. */
 export interface Rational { readonly n: bigint; readonly d: bigint }
 const abs = (n: bigint) => n < 0n ? -n : n;
@@ -120,6 +122,7 @@ function rejectMixedNumberAdjacency(text: string): void {
 /** Recursive descent; no evaluation of code, functions or arbitrary macros. */
 export function parseFamily(source: string): Family {
   if (!source.trim() || source.length > 400) throw new Error('Enter a polynomial of at most 400 characters.');
+  rejectSpacingArguments(source);
   let text = source.replace(/\\(?:left|right)/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!;: ]/g, '').replace(/\s/g, '');
   text = text.replace(/^P\(z\)=/, '');
   rejectMixedNumberAdjacency(text);
