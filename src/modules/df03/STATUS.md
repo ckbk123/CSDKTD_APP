@@ -1,13 +1,13 @@
 # DF03 implementation status
 
-- **Stage:** in-progress
-- **Review:** owned implementation/browser gate complete; shared Escape integration disposition pending
+- **Stage:** implemented
+- **Review:** independent coordinator integration review pending; shared Escape correction remains a reported coordinator-owned integration note
 - **Assessed:** 2026-10-29; isolated base primary main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86`
 - **Owned scope:** `src/modules/df03/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Branch:** `codex/df03-sampled-frequency-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\df03-sampled-frequency-01a186d1\CSDKTD APP`
-- **Delivery:** own branch checkpointed/pushed; final PR and exact clean submission pending
+- **PR:** [DF03 #31](https://github.com/ckbk123/CSDKTD_APP/pull/31), attached; checked contribution prepared for integration
 
 ## Accepted exercise and delivered evidence
 
@@ -63,7 +63,7 @@ The first inspection found aggregate stability repeated in each pole row. Each r
 
 Keyboard Systems7 changed the actual draft, Escape closed it without navigation, Reset while open restored the baseline and closed keyboard. Leave/reopen after editedT removed old roots/fields and restoredT.1; rapid library/module/library left zero old controls. At390×844, page width375px, loaded fonts/KaTeX_Main, one tool/editor; tables use271px viewports with560–1051px content, plots271/680px. ArrowRight moved both table and plot40px locally. The phone keyboard did not widen the page. Full-precision PI input/approximate results also stayed375px. Logs were empty; all temporary viewports reset, tabs closed and preview stopped.
 
-An additional phone Escape→PI-build sequence reproduced the coordinator-known shared setValue/mode defect (empty field). DF03 now treats whole-model presets/PI construction as fresh caller-owned editor sessions: destroy old input, create/append new shared input, read its initial draft. A regression verifies old inputs disconnect and exactly one new input remains. Actual rebuilt390px Escape→backward PI, Escape→trapezoidal PI and Escape→two-crossing preset all prepare/reveal correctly, retain expected values, one field and375px page. Navigation removes replacement resources and reopening restores baseline. The broader shared Escape behavior is under coordinator repair; its integration disposition remains requested, not silently treated as fixed in this older shared source.
+An additional phone Escape→PI-build sequence reproduced the coordinator-known shared setValue/mode defect (empty field). DF03 now treats whole-model presets/PI construction as fresh caller-owned editor sessions: destroy old input, create/append new shared input, read its initial draft. A regression verifies old inputs disconnect and exactly one new input remains. Actual rebuilt390px Escape→backward PI, Escape→trapezoidal PI and Escape→two-crossing preset all prepare/reveal correctly, retain expected values, one field and375px page. Navigation removes replacement resources and reopening restores baseline. The broader shared Escape behavior remains reported to the coordinator, whose active shared correction is separate from this owned contribution. No shared file was changed here and no global fix is claimed. The complete DF03 whole-model workflow now passes on this branch itself; the shared note accompanies independent integration review rather than withholding an already repaired owned flow.
 
 Proof files outside Git in the worker's2026/10/29 visualization folder: `df03-baseline-crossings.png`, `df03-phone-cursor.png`, `df03-phone-plot.png`, `df03-phone-emulation.png`, `df03-phone-replacement-fixed.png`. Browser screenshots were visually inspected and selected proofs embedded in chat; these are actual manual/tool checks, not a nonexistent end-to-end command.
 
@@ -71,4 +71,4 @@ Proof files outside Git in the worker's2026/10/29 visualization folder: `df03-ba
 
 Supported Node24.22.1: `npm test -- src/modules/df03`88 tests in5 files (21 math,41 parser,8 formatting,12 mocked interface,6 lifecycle), `npm run check`, `npm test`748 tests in31 files, `npm run build` and `git diff --check` pass. Existing MathLive221.50kB gzip warning/20 local fonts remain; DF03 view≈14.48kB gzip. Generated output is not committed.
 
-No owned mathematical/UI requirement is deferred. Final delivery awaits the broader shared Escape integration disposition, final PR record, clean exact tested HEAD push/claim submission. Earlier review returns retain priority. No main merge, version change, deployment, dependency change or new agents.
+No owned mathematical/UI requirement or new shared API dependency remains. PR31 is reused/attached and prepared for independent review with the shared-component note above. Final submission records the exact clean pushed tested HEAD through the current primary claim helper. Earlier review returns retain priority; submission is a contribution milestone in the continuous goal. No main merge, version change, deployment, dependency change or new agents.
