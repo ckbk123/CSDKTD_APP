@@ -100,6 +100,7 @@ describe('DD04 bounds and useful failures', () => {
     expect(() => derive({ ...baseline, kp: Infinity })).toThrow();
     expect(() => derive({ ...baseline, ki: 10001 })).toThrow();
     expect(() => derive({ ...baseline, ki: Number.MIN_VALUE })).toThrow(/too small/);
+    expect(() => derive({ ...baseline, kp: Number.MIN_VALUE, derivative: 'filtered', ki: 0, kd: 0 })).toThrow(/too small/);
     const model = derive(baseline);
     expect(() => simulate(model, zero, [])).toThrow(); expect(() => simulate(model, zero, Array(41).fill(1))).toThrow();
     expect(() => simulate(model, zero, [NaN])).toThrow(); expect(() => simulate(model, zero, [10001])).toThrow();

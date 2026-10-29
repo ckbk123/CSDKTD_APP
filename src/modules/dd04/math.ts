@@ -47,7 +47,7 @@ export function derive(p: Parameters): Model {
   const beta = p.derivative === 'backward' ? divide(p.kd, p.period)
     : p.derivative === 'tustin' ? divide(2 * p.kd, p.period) : divide(p.kd, p.tau + p.period);
   if (p.kd !== 0 && beta === 0) fail('The derivative gain is too small to represent. Increase its magnitude.');
-  const b = [p.kp + c0 + beta, -p.kp * (1 + alpha) + c1 - alpha * c0 - 2 * beta, p.kp * alpha - alpha * c1 + beta] as const;
+  const b = [p.kp + c0 + beta, -multiply(p.kp, 1 + alpha) + c1 - multiply(alpha, c0) - 2 * beta, multiply(p.kp, alpha) - multiply(alpha, c1) + beta] as const;
   return { ...p, c0, c1, alpha, beta, b, a: [1, -(1 + alpha), alpha] };
 }
 
