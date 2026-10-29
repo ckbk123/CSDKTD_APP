@@ -7,7 +7,7 @@ import { parsePolynomial } from './parser';
 import { plane, type Plane } from './plots';
 import { decimal, toNumber, ZERO, type Rational } from './rational';
 import type { RootCount } from './roots';
-import { mapAt, winding, type Complex, type WindingResult } from './winding';
+import { mapAt, sampledCurve, winding, type Complex, type WindingResult } from './winding';
 import './style.css';
 
 const presets = [
@@ -127,7 +127,11 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
     event.preventDefault(); if (disposed || signal.aborted) return; stopResult(); results.replaceChildren();
     try {
       const m = makeModel(parsed(numerator, 'the numerator N(z)'), parsed(denominator, 'the denominator D(z)'), exactNumber(gain, 'Loop gain K'), exactNumber(period, 'Sample period T'));
-      const run = winding(m); resultEvents = new AbortController(); const local = resultEvents.signal;
+      const run = winding(m);
+      // Drawing density is separate from the guarded count. Preserve adaptive points as well.
+      const drawingPoints = run.kind === 'checked' ? [...new Map([...sampledCurve(m), ...run.points].map(p => [p.theta, p] as const)).values()].sort((a, b) => a.theta - b.theta) : run.points;
+      const omittedPoints = drawingPoints.filter(p => p.omitted).length;
+      resultEvents = new AbortController(); const local = resultEvents.signal;
       const modelSection = card(results, '3. Establish the model and pole accounting');
       display(modelSection, `L(z)=\\frac{${fraction(m.gain)}\\left(${polynomial(m.rawNumerator)}\\right)}{${polynomial(m.denominator)}}=\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}`, 'Normalized retained loop');
       const direct = m.rawNumerator[m.order] ?? ZERO;
@@ -155,7 +159,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
         display(countSection, `W=${run.winding},\\quad Z_{\\mathrm{out,pred}}=${m.openRoots.outside}-(${run.winding})=${m.openRoots.outside - run.winding!}`, 'Guarded numerical winding and predicted outside count');
         paragraph(countSection, `The complete path passes a guarded numerical arc check: ${run.acceptedArcs} accepted arcs, ${run.arcChecks} arc checks, phase change ≈ ${numeric(run.turns!)} turns. This is a numerical result with an exclusion check, not a count inferred from a coarse picture or an interval-arithmetic proof.`);
       } else paragraph(countSection, run.reason!);
-      if (run.omittedPoints) paragraph(countSection, `The displayed curve omits ${run.omittedPoints} point(s) whose normalized denominator is too small or whose loop magnitude exceeds 10⁶. Gaps remain gaps; no finite pole value or indentation is invented. The displayed drawing is incomplete at those gaps.`);
+      if (omittedPoints) paragraph(countSection, `The displayed curve omits ${omittedPoints} point(s) whose normalized denominator is too small or whose loop magnitude exceeds 10⁶. Gaps remain gaps; no finite pole value or indentation is invented. The displayed drawing is incomplete at those gaps.`);
       const certificate = element('details'); certificate.append(element('summary', 'How the numerical arc check avoids a coarse-curve shortcut')); countSection.append(certificate);
       display(certificate, '\\widehat p=p/\\sum_i|p_i|,\\quad M_p=\\sum_i i|\\widehat p_i|', 'Positive coefficient normalization and derivative bound');
       display(certificate, '|\\widehat p(\\theta)-\\widehat p(\\theta_m)|\\leq M_p h,\\quad p\\in\\{Q,D\}', 'Polynomial variation on an angular half arc');
@@ -181,7 +185,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
       const cursorValues = element('div'); cursorSection.append(cursorValues);
       let current = mapAt(m, 0), sourcePlot: Plane, mappedPlot: Plane;
       function renderPlanes(): void {
-        sourcePlot = plane(m, run.points, true); mappedPlot = plane(m, run.points, false, zoom.value === 'critical'); plotGrid.replaceChildren(sourcePlot.element, mappedPlot.element);
+        sourcePlot = plane(m, drawingPoints, true); mappedPlot = plane(m, drawingPoints, false, zoom.value === 'critical'); plotGrid.replaceChildren(sourcePlot.element, mappedPlot.element);
         sourcePlot.update(current); mappedPlot.update(current);
         plotNote.textContent = `${sourcePlot.outside} retained root marker(s), with multiplicity, lie outside the source box. ${zoom.value === 'critical' ? `${mappedPlot.outside} sampled image points lie outside this clipped critical view.` : 'The full view fits all finite displayed curve samples and the critical point; it cannot restore omitted gaps.'}`;
       }
@@ -226,7 +230,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
   paragraph(limits, 'Discrete-time real SISO LTI loops in z, with negative unity feedback, z as the advance variable, and T in seconds. Proper numerator/denominator degree 0–2, nonzero D, including a well-posed static/direct path. The full D realization is retained through cancellations. Strict internal root stability requires every retained closed-loop root strictly inside the unit disk; the transfer curve alone does not certify hidden modes. A transfer in s requires an explicit sampling model and is unsupported here.');
   paragraph(limits, 'Visual polynomials accept decimals, visible parentheses, sums/products, numeric fractions and powers0–2. Mixed numbers/joined digits, hidden grouping, e/E literals, unsupported symbols/functions, negative or ambiguous bare powers are rejected with guidance. Bounds:400 characters,160 primaries, nesting12, intermediate coefficients10⁹ and exact fractions4096bits. After denominator leading-scale normalization, each raw coefficient has magnitude≤20 and fraction denominator≤10⁹. K is−10 to10, denominator≤10⁹; T is.001–10s. Native numeric controls accept normal exponent notation and reject nonzero underflow.');
   paragraph(limits, 'The complete source circle runs counterclockwise, θ=0–2π; W counts counterclockwise image turns about−1. Poles/zeros on the contour receive a boundary outcome, without an invented indentation. The numerical winding checks at most32768 arcs at depth20, uses a10⁻¹² normalized floating guard and requires closure within10⁻⁷ turns. It is a guarded double-precision check, not a formal interval proof. Unresolved cases assert no winding; exact degree≤2 root inequalities remain an independent algebraic result.');
-  paragraph(limits, 'Checked curves use accepted arc endpoints; boundary/unresolved displays use1024 intervals as illustrations. Curve points with relative denominator≤10⁻¹⁰ or |L|>10⁶ are omitted as gaps. Root positions and curve samples are numerical; counts use exact rational comparisons. Plotted root markers outside the source box remain in the complete table. The critical view explicitly clips the image; a finite drawing or a positive-frequency half alone is not the full stability criterion.');
+  paragraph(limits, 'Drawings use 1024 uniform intervals; checked contours also retain their adaptive endpoints (at most 33794 displayed points in total). Drawing density is separate from the guarded winding calculation. Curve points with relative denominator ≤ 10⁻¹⁰ or |L| > 10⁶ are omitted as gaps. Root positions and curve samples are numerical; counts use exact rational comparisons. Plotted root markers outside the source box remain in the complete table. The critical view explicitly clips the image; a finite drawing or a positive-frequency half alone is not the full stability criterion.');
   paragraph(root, 'This guided full-contour lesson is an instructor-review extension of the course frequency-analysis material; it is not presented as a complete worked local slide example.', true);
   return dispose;
 };

@@ -25,7 +25,8 @@ export function plane(model: Model, points: readonly MappingPoint[], source: boo
     else {
       let minX = -1, maxX = 0, minY = 0, maxY = 0;
       for (const p of points) if (p.loop) { minX = Math.min(minX, p.loop.re); maxX = Math.max(maxX, p.loop.re); minY = Math.min(minY, p.loop.im); maxY = Math.max(maxY, p.loop.im); }
-      cx = (minX + maxX) / 2; cy = (minY + maxY) / 2; extent = Math.max(maxX - minX, maxY - minY, 1) * .575;
+      // Real coefficients give conjugate symmetry. Keep the real axis exactly at zero.
+      cx = (minX + maxX) / 2; cy = 0; extent = Math.max((maxX - minX) / 2, Math.abs(minY), Math.abs(maxY), .5) * 1.15;
     }
   }
   const minX = cx - extent, maxY = cy + extent, scale = size / (2 * extent);
@@ -61,15 +62,22 @@ export function plane(model: Model, points: readonly MappingPoint[], source: boo
       if (root.multiplicity > 1) data.append(svg('text', { x: String(px + 9), y: String(py - 7) }, `×${root.multiplicity}`));
     }
   } else {
-    let d = '', connected = false;
+    let d = '', connected = false, previous: Complex | undefined, totalLength = 0;
+    const segments: { a: Complex; b: Complex; end: number }[] = [];
     for (const p of points) {
-      if (!p.loop) { connected = false; continue; }
+      if (!p.loop) { connected = false; previous = undefined; continue; }
       d += `${connected ? 'L' : 'M'}${x(p.loop.re).toFixed(3)} ${y(p.loop.im).toFixed(3)} `; connected = true;
+      if (previous) {
+        const length = Math.hypot(p.loop.re - previous.re, p.loop.im - previous.im);
+        if (length) { totalLength += length; segments.push({ a: previous, b: p.loop, end: totalLength }); }
+      }
+      previous = p.loop;
       if (!inside(p.loop)) outside++;
     }
     data.append(svg('path', { d, class: 'dn-image-curve', fill: 'none' }));
-    for (const angle of [Math.PI / 4, 3 * Math.PI / 4, 5 * Math.PI / 4, 7 * Math.PI / 4]) {
-      const i = points.findIndex(p => p.theta >= angle); if (i > 0 && points[i - 1].loop && points[i].loop) arrow(points[i - 1].loop!, points[i].loop!);
+    // Distribute arrows along the drawn length, preserving the actual increasing-theta direction.
+    for (const fraction of [.125, .375, .625, .875]) {
+      const segment = segments.find(s => s.end >= totalLength * fraction); if (segment) arrow(segment.a, segment.b);
     }
     const px = x(-1), py = y(0);
     data.append(svg('path', { d: `M${px - 6} ${py} L${px + 6} ${py} M${px} ${py - 6} L${px} ${py + 6}`, class: 'dn-critical' }));

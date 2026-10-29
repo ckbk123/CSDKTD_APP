@@ -1,107 +1,107 @@
 # DS05 implementation status
 
-- **Stage:** in-progress
-- **Current checkpoint:** full bounded guided workspace implemented; actual-browser QA, final delivery record and PR submission remain.
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
-- **Assessed code baseline:** fresh primary-main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9)
+- **Base:** fresh primary-main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
 - **Branch/worktree:** `codex/ds05-discrete-nyquist-7393`; `C:/Users/baokh/.codex/worktrees/ds05-discrete-nyquist-7393/CSDKTD APP`.
-- **PR:** none yet. Prior CP01 [PR #24](https://github.com/ckbk123/CSDKTD_APP/pull/24) is corrected/resubmitted at clean tested `cfaccb5be0e7477a423b34d3d98d41c17094b78e`; CF02 [PR #18](https://github.com/ckbk123/CSDKTD_APP/pull/18) is resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`. Preserve both for asynchronous review; requested corrections take priority. DS01 PR #10 was accepted v0.3.6.
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **PR:** creation pending; this delivery record will receive its single PR URL before exact submission.
+- **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md).
+- **Earlier contributions:** DS01 PR #10 accepted v0.3.6; CF02 PR #18 resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`; CP01 PR #24 corrected/resubmitted at `cfaccb5be0e7477a423b34d3d98d41c17094b78e`. Preserve prior worktrees/claims for asynchronous review; returned corrections take priority.
 
-## Implemented and inspected
+## Scope and provenance
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The claimed module was a blank mount with metadata and no local mathematics/tests. `index.ts` remains metadata-only. All source changes are confined to `src/modules/ds05/**`; no sibling imports, shared API/dependency, package/version, shell or deployment changes.
 
-## Remaining acceptance work
+Read current primary AGENTS, START_HERE, AUTONOMOUS_WORKERS, COORDINATION, PROJECT_STATUS, CONTRIBUTING, DEVELOPMENT, DESIGN and EQUATION_INPUT; module TASK/index/workspace/STATUS, matching atlas and relevant discrete/source audits. Original decks have **not** been newly inspected. Ch8/E10 establish broader frequency-analysis relevance; the complete guided discrete contour tutor remains an **instructor-review extension**, also stated in the student view. It is not attributed to a nonexistent full worked local slide exercise. The fixtures below are independently derived verification examples.
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+Primary theorem reference actually read: [Berkeley complex-analysis lecture 23](https://math.berkeley.edu/~avizeff/complex_analysis_S26/lecture_23.html), including multiplicity, poles, winding and zero-minus-pole accounting. A Caltech Feedback Systems search-index excerpt independently stated the CCW convention; opening that PDF timed out, so no full-PDF inspection is claimed. General theorem references do not change the local course-provenance limits.
 
-## Evidence and next action
+## Requirement-to-evidence assessment
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
-
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
-
-## Fresh claim and requirement audit — 29 October 2026
-
-Current primary guides, PROJECT_STATUS, CONTRIBUTING, DEVELOPMENT, DESIGN, EQUATION_INPUT, TASK/index/workspace/STATUS, matching atlas, shared math README and relevant discrete/source-audit anchors have been inspected. The module still has a blank mount and no tests. No existing module behavior is being replaced. All source changes will stay in this folder. Original slides have not been newly inspected; the full discrete Nyquist contour tutor remains an **instructor-review extension**, rather than a claimed worked slide exercise. Ch8/E10 establish its broader frequency-analysis relevance.
-
-| Accepted requirement | Existing behavior | Required implementation/evidence |
+| Accepted requirement | Implementation | Verification |
 |---|---|---|
-| Editable loop and prediction | Metadata only | Visual N(z), D(z), scalar gain, sample period; meaningful predicted winding/closed-loop root count before reveal |
-| Unit-circle and mapped curve | Absent | This module's paired full unit-circle and complex loop-image plots, arrow orientation and a linked numeric/keyboard cursor |
-| Explicit discrete contour convention | Absent | Derive the chosen counterclockwise unit-disk convention, relate inside and outside counts; never copy a continuous positive-frequency sign shortcut |
-| Open-loop unstable poles | Absent | Count all retained open-loop denominator roots outside the unit disk; preserve cancellation effects on internal modes |
-| Predicted versus actual closed-loop count | Absent | Derive the winding relation and independently classify the full characteristic polynomial; distinguish a sampled image from a certified count |
-| Boundary/singular handling | Absent | Separate open-loop contour poles, closed-loop roots on the circle, direct-feedback degeneracy, numerical gap/conditioning limits and failed winding resolution |
-| Baseline/changed examples | Unverified metadata | Independent baseline z=.3 and changed open-unstable/stabilized, closed-unstable, boundary, cancellation and quadratic fixtures |
-| Input validation and limits | Absent | Bounded real rational family, finite/sample/gain/order checks, displayed-meaning parser and shared native reader |
-| Teaching/lifecycle/accessibility | Scaffold only | Revealable intermediate equations/counts; immutable metadata, synchronous owned loading node, child-signal partial-failure cleanup, reset/reopen, keyboard and narrow browser checks |
-| Delivery | Setup only | Mathematical/project tests, actual private production-browser evidence, single attached PR and exact clean tested submission |
+| Editable loop and prediction | Visual N(z)/D(z), scalar K/T; optional P_out/W/Z_out prediction, reveal and thirteen changed experiments | Parser/model/flow tests; actual editor/prediction/preset checks |
+| Own unit-circle and image curve | Equal-scale complex planes, full positive/negative frequency path, real direction arrows, linked source/image dot and return-difference ray | Independent cardinal/circle/conjugacy oracles; actual geometry/screenshots |
+| Explicit contour convention | CCW unit disk, W positive CCW about −1; visible derivation W=Z_in−P_in and Z_out=P_out−W | Opposite-sign and ±2 winding fixtures; actual numerical count displays |
+| Open-loop unstable poles and cancellations | Exact full-D inside/on/outside counts; common factor retained in both D/Q; complete root tables | Hidden outside-factor and zero-gain fixtures; actual cancellation experiment |
+| Predicted versus actual closed roots | Guarded numerical full-path winding independent of exact Q root classification; comparison shown | Factored real/complex fixtures and a test that changes the root-count answer without changing the winding calculation |
+| Contour poles and strict boundaries | Exact boundary screen, no invented finite pole/indentation; independent polynomial classification; no ordinary winding at boundary/unresolved outcomes | ±1/complex boundary cases, actual pole and critical-point cursor |
+| Bounds/conditioning | Bounded grammar, exact model/root algebra, native reader, finite arc work, guarded unresolved feedback and explicit plot gaps/clipping | Relevant error/work-budget tests; actual malformed/native inputs and near-contour example |
+| Time/frequency meaning | z advance convention, T seconds, θ rad/sample, physical/signed alias frequency; T preserves fixed discrete coefficients | Independent mapping-T invariant and actual same-path/changed-frequency checks |
+| Lifecycle/accessibility | Owned loading node, child abort on partial failure, result listener cleanup, fresh reset/reopen; numeric/range/cardinal controls and focusable scrolling | Deferred/flow tests; actual editor/keyboard/reset/navigation/mobile checks |
+| Delivery evidence | 150 local tests, 810 application tests, type/build and actual production-browser checks | Exact commands and evidence below; independent integration review remains |
 
-## Mathematical direction to establish
+## Supported mathematics and assumptions
 
-A proper real first/second-order rational family is the proposed bounded domain. Final coefficient, period/gain and adaptive-work limits still need derivation/testing. Negative unity feedback gives Q(z)=D(z)+N(z) (or D+K N if K is a separate scalar). Retain the full denominator realization and characteristic polynomial through cancellations; reject a singular algebraic direct loop rather than silently dropping its degree.
+Real discrete-time SISO LTI, negative unity feedback, L(z)=K N(z)/D(z), z as the advance variable. Proper numerator/denominator degree 0–2; D nonzero. Sample time is t=kT, T in seconds. Frequency response is zero-state; root stability concerns all initial states of the retained scalar realization. A continuous transfer in s needs an explicit sampling model and is unsupported here.
 
-Proposed contour: z=exp(jθ), θ from 0 to 2π counterclockwise around the unit **disk**. For F=1+L=Q/D, its counterclockwise winding W about zero (equivalently L about −1) satisfies W=Z_in−P_in when there is no zero/pole on the contour. With equal retained degree n, P_out=n−P_in and Z_out=n−Z_in give **Z_out=P_out−W**. This convention and its derivation must be visible. The mapped orientation can differ from the source-circle orientation; do not label every image counterclockwise.
+Leading-scale normalization is exact and preserves negative leading signs. Displayed polynomials use descending powers; internal arrays use ascending powers. For a biproper loop, d0 is the leading normalized raw numerator coefficient and 1+Kd0 must be nonzero. A singular algebraic direct loop is rejected, rather than silently dropping its retained degree. A well-posed static loop has degree zero and no dynamic roots.
 
-A coarse polyline alone cannot certify W. Investigate an adaptive arc bound that keeps each image subarc in a convex disk excluding the critical point, then a guarded phase increment sum; explicitly report unresolved work/conditioning if its budget is reached. Exact polynomial root classification supplies an independent closed-loop check. Do not use the same root count to manufacture both the predicted winding and its supposed verification. Root/contour boundaries require their own exact checks before a generic winding computation.
+D is the retained realization's characteristic polynomial. Q=D+K N has the same degree when well posed. Common factors remain in both root tables/counts even when they cancel from the quotient. This explicitly distinguishes the selected internal realization from a reduced transfer curve. Strict stability requires every retained closed-loop root strictly inside |z|=1. Unit-circle roots fail strict stability; no general bounded-trajectory claim is made at a boundary.
 
-Independent proposed fixtures (not yet tested or newly sourced from slides):
+The contour z=exp(jθ), θ=0–2π, traverses the unit **disk** counterclockwise. W is the signed counterclockwise image winding about −1, equivalently F=1+L about zero. With no relevant contour roots/poles, the argument principle gives W=Z_in−P_in. Equal retained degree n gives **Z_out=P_out−W**. Common factors cancel in the difference but remain in the individual internal-mode counts. This is not a continuous positive-frequency shortcut. The image direction may differ from the source direction.
 
-- Baseline L=(1/2)/(z−4/5), Q=z−3/10. P_in=1, P_out=0, W=0, Z_in=1, Z_out=0: strict closed-loop stability. θ=0 gives L=5/2; θ=π gives −5/18. The loop-image circle has center 10/9 and radius 25/18, hence does not enclose −1; it runs clockwise around its own center.
-- Change denominator to z−6/5, keep N=1/2. Open-loop P_out=1 but Q=z−7/10 is stable; W=+1 is required by the declared disk convention. This catches the wrong sign/open-loop-count shortcut.
-- Keep baseline D=z−4/5, set N=2. Q=z+6/5 gives one outside closed-loop pole and W=−1. N=9/5 instead gives Q=z+1, a strict-stability boundary rather than a certified winding away from −1.
-- D=z−1 has a pole on the contour: no ordinary complete contour certificate. A sampled finite value near its singular point is not a pole-free curve.
-- N=(1/2)(z−6/5), D=(z−6/5)(z−1/5): common unstable factor remains in Q=(z−6/5)(z+3/10). A reduced transfer plot can hide the retained internal unstable pole; full P_out=Z_out=1 and W=0.
-- Add independently derived quadratic complex-pair, repeated and ±1 boundary cases; include nearly boundary coefficients, signed gain and a well-posed biproper case if supported.
+Linear/quadratic locations and multiplicities use exact rational comparisons, not rounded root radii. Real radical roots are compared against ±1 without subtracting rounded square roots. A conjugate pair is classified by its exact radius squared. Repeated roots retain multiplicity. Root positions and displayed radicals/decimals are separate; near-circle rounded positions are labeled.
 
-## Setup checks and next action
+## Numerical method and explicit limits
 
-Atomic claim and fresh managed worktree/unique branch record the exact primary baseline. Locked dependencies installed independently under bundled Node v24.22.1: 109 packages, zero vulnerabilities. `npm run check` passes. These are foundation checks only; no DS05 solver, curve, winding proof or browser behavior exists yet.
+The winding is a **guarded numerical check**, not interval-arithmetic certification. It does not read the exact inside/outside root answer to manufacture its integer. Exact boundary checks occur first. D and Q are each normalized by their positive coefficient 1-norm. On an angular half arc h, a polynomial's variation is bounded by h·Σ i|p_i|. Both guarded relative disks must be below 1/8; their quotient then stays within relative radius 2/7 of its midpoint, excluding zero. This justifies continuous replacement of each accepted arc by its endpoint chord under the stated floating guard. Complete principal-angle increments are summed with compensation, and must close within 10^-7 turns of an integer.
 
-No preview, browser tab, QA waiter/reservation or native focus is held. The coordinator's explicit per-chat IAB isolation authorization is in force: verify this chat's session metadata and use only its own tabs/private preview before actual QA; restore its viewport and close its tabs afterward. Native Firefox page inspection is unavailable under the current guard and must not be retried.
+- Visual grammar: decimals, visible parentheses, sums/products, numeric fractions, integer powers 0–2 and supported atomic font wrappers. True compact MathLive fraction arguments are preserved. Mixed-number/joined-digit adjacency, hidden grouping, e/E literals, negative or ambiguous bare powers and unsupported symbols/functions receive explicit guidance.
+- Parser: 400 characters, 160 primaries, nesting 12, intermediate coefficient magnitude 10^9. Exact fractions: at most 4096 bits. After leading normalization, every raw coefficient has magnitude ≤20 and denominator ≤10^9. K∈[−10,10], fraction denominator ≤10^9; T∈[.001,10] s. Native controls use shared `readNumericInput` and preserve ordinary exponents/intentional zero while rejecting nonzero underflow.
+- Winding: 128 initial arcs, at most 32,768 arc checks, split depth 20, normalized floating guard 10^-12. Failure to separate an arc or close its phase yields **no asserted winding count**; an exact root classification may still be shown independently. Retained contour poles/zeros are boundary outcomes; no indentation is fabricated.
+- Drawing: 1024 uniform intervals; checked contours also retain their adaptive endpoints, with a conservative maximum 33,794 displayed points. Drawing density is separate from count validity. Increasing-θ arrows are distributed along actual curve length. Real-coefficient conjugacy keeps the horizontal real axis centered exactly at zero.
+- Plot values with relative denominator ≤10^-10 or |L|>10^6 are omitted as gaps. The full displayed view fits finite samples/critical point; the optional critical view explicitly clips true coordinates. Source axes are fixed at ±1.6; roots outside the box remain in the complete numerical tables/counts and are reported. No root or cursor is clamped to a false finite position.
+- θ is 0–360° (0–2π rad/sample). Physical unwrapped ω=θ/T; the signed equivalent uses θ−2π above π, so 360° aliases 0°. Changing T with fixed discrete coefficients relabels frequencies and does not change the contour image. Principal phase at one cursor is not accumulated winding. F is evaluated from Q/D before subtractive cancellation in 1+rounded L.
 
-Next: verify the contour/count derivation against a primary technical reference, freeze supported mathematical/work bounds, implement/test the bounded parser and exact retained root classification, and independently certify/diagnose the mapped winding. Then finish the full workspace and actual browser/delivery contract above. This setup checkpoint is not implementation success.
+## Independent fixtures and project checks
 
-## Mathematical prototype checkpoint / priority CP01 review return
+Baseline L=(1/2)/(z−4/5): Q=z−3/10, P_out=0, W=0, Z_out=0. Cardinal images are L(1)=5/2, L(−1)=−5/18, L(j)=−10/41−(25/82)j. The complete image circle has center 10/9 and radius 25/18 and runs clockwise around its center; −1 is outside it. These derive from |z|=1 and z=4/5+(1/2)/L.
 
-Added local rational/degree-two visual-parser helpers adapted from the prior owned CP01 code, with no sibling imports; exact rational linear/quadratic root accounting, retained model/negative-feedback characteristic polynomial and exact common-factor detection. `parser.test.ts` and `roots.test.ts` pass **92 tests** under bundled Node24. `npm run check` passes. The model currently supports proper real degree0–2 loops, normalized raw coefficient magnitudes≤20 and fraction denominators≤10^9, K∈[−10,10] with denominator≤10^9, T∈[.001,10]s, and rejects the singular direct loop 1+Kd=0.
+Changed exact cases include:
 
-`winding.ts` is a new **untested prototype**: normalize Q and D by positive coefficient 1-norms, bound each polynomial's variation over a half arc h by h·Σi|p_i| with a 10^-12 floating guard, and require both relative disks below1/8. Their quotient remains in a relative disk below2/7, excludingzero; this can justify endpoint-chord phase increments. Limits are32768 arcchecks/depth20, with explicit unresolved/boundary outcomes and a sampled fallback. This is a guarded numerical check, not interval-arithmetic certification; no winding result/UI/browser acceptance is claimed yet. Verify this derivation and implementation independently before building the workspace.
+- D=z−6/5, N=1/2: open outside pole, Q=z−7/10, W=+1, stable closed loop.
+- Baseline D with N=2: Q=z+6/5, W=−1 and one outside closed root. N=9/5 instead gives Q=z+1, a strict boundary.
+- D=(z−1.2)(z−1.3), N=2z−1.5: Q=(z−.2)(z−.3), W=+2. Reverse these target/open polynomials for W=−2.
+- D=z²−.6z+.25 and N=1.25: conjugate open roots of radius .5, closed roots of radius sqrt(1.5), W=−2.
+- D=(z−1.2)(z−.2), N=.5(z−1.2): a common outside factor remains in Q=(z−1.2)(z+.3); W=0, P_out=Z_out=1. Zero gain also retains the original internal modes.
+- Repeated, ±1 and complex unit-circle roots; singular versus well-posed direct paths; static gain; exact near-boundary root inequalities; denominator gaps, mapped critical zero, a reached work budget and near-contour numerical nonresolution.
 
-Primary mathematical reference read: [Berkeley complex-analysis argument-principle notes, lecture23](https://math.berkeley.edu/~avizeff/complex_analysis_S26/lecture_23.html), including multiplicity, poles and winding. The Caltech Feedback Systems search-index excerpt also states the CCW zero-minus-pole theorem; opening its PDF timed out, so no full-PDF inspection is claimed. These support the general mathematical theorem; they do not turn this instructor-review extension into a local worked slide exercise.
+Tests: **150 / 6 files** — 92 parser/model/root, 26 winding/mapping, 3 meaningful gap/clipping plot cases, 25 workspace-flow and 4 deferred lifecycle. The deferred failure fixture registers a child-signal window resource then throws while the parent remains active, and confirms immediate resource abort and recovery. Flow tests mock equation fields only for caller draft/ownership behavior; they are not editor/browser evidence.
 
-The coordinator reopened CP01 PR24 for confirmed modal cancellation/iteration contamination: G=1/[(s−2)(s+3)], free x(0−)=[1,−3] should be exp(−3t), but direct transition multiplication/iteration invents growth at horizons20/30. Preserve DS05 and return to the original CP01 branch/PR first. Required repair: stable modal contributions before amplification or explicit loss-of-accuracy feedback; regress direct sample and trace at20/30 and nearby IC with a genuine unstable component; verify in the actual private browser, update evidence and resubmit exact clean revision. CP01 corrections take priority; DS05 remains active and checkpointed without preview/browser resources.
+Final local commands under bundled Node v24.22.1:
 
-## Resumed core verification
+- `node node_modules/vitest/vitest.mjs run src/modules/ds05`: **150 tests / 6 files pass**.
+- `npm run check`: passes.
+- `npm test`: **810 tests / 32 files pass**.
+- `npm run build`: passes, including type check; existing MathLive chunk-size advisory only.
+- `git diff --check`: passes.
 
-CP01's requested correction is complete and resubmitted on the same PR at clean `cfaccb5be0e7477a423b34d3d98d41c17094b78e`: 198 module / 542 full tests, type/build, actual returned/perturbed fixtures in the private production browser and final-head CI pass. Its preserved worktree remains available for review. DS05 resumed only after that exact resubmission.
+These application totals reflect this isolated v0.3.9-based branch. The integration owner owns combined current-main checks. No all-browser/device support or deployment is claimed.
 
-DS05 now has **118 passing local tests / 3 files** (parser, exact model/root counts, guarded winding). Independent mapping checks derive the baseline image circle center10/9 and radius25/18, its clockwise orientation, cardinal points/conjugacy and exact endpoint closure. Guarded winding fixtures yield W=0,+1,−1,+2,−2 with independently factored real/complex characteristic roots, including open-unstable stabilization, hidden unstable cancellation, zero gain and well-posed biproper/static loops. A test deliberately changes the root-classification answer without changing polynomial coefficients, confirming the winding routine does not read that answer to manufacture its result. Exact contour poles/critical crossings remain boundary outcomes; near-contour and exhausted work limits produce no asserted integer. Sample-period changes preserve a fixed discrete loop's mapping.
+## Actual browser evidence — 29 October 2026
 
-One initial winding assertion distinguished IEEE−0 from+0 at a mathematically zero imaginary coordinate; its norm-based zero check now reflects the mathematical requirement. The numerical winding cases otherwise passed. The depth-limit message now reports the actual requested bounded depth.
+Verified browser 2 inventory `codexSessionId=01a186d1-f1f0-7393-88e7-377fbac7299a` with an initially empty tab list, then used only newly created tab 6 and this worktree's production preview `http://127.0.0.1:8801/#/module/DS05`. Current primary rules authorize parallel verified-private IAB QA; no global reservation, other worker tab, native focus or Firefox launch was used. Primary8787 was untouched. Browser name: ChatGPT in-app browser; its engine/version was not exposed by the inventory/read-only page surface.
 
-Checks under bundled Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/ds05` **118 pass**; `npm run check` passes; preliminary `npm test` **778 tests / 29 files pass**; preliminary `npm run build` passes with the existing MathLive chunk advisory; `git diff --check` passes. Since the workspace is still blank, build compatibility is not browser/UI acceptance.
+Passed actual checks:
 
-The guided workspace, paired source/mapped plots with real direction arrows, prediction/reveal flow, full inside/outside accounting, numerical cursor, visible boundary/conditioning feedback and real-browser checks remain required. No preview/browser/QA resource held. Continue implementation against the full audit; do not submit this core-only checkpoint as a finished teaching module.
+- All thirteen presets render two plots and the expected exact root counts. W sequence for the first six is 0,+1,−1,+2,−2,−2. Closed boundary and open contour-pole presets assert no ordinary winding; the near-contour preset reports no checked integer; cancelled/zero-gain outside modes remain unstable. Static and biproper cases remain well posed.
+- Correct P_out=1,W=+1,Z_out=0 predictions agree for stabilization of an open outside pole; changing the predicted winding to−1 receives the correct +1 feedback without changing the calculation.
+- Real fraction button 1, Tab, 2 copies from the owned field as actual `application/x-latex` `\frac12` and recovers baseline Q=z−3/10. Real power button builds D=z²; Q=z²+1/2 and L(j)=−.5 are computed. The math keyboard toggles true/false and Escape dismisses it. An incomplete fraction gets completion feedback and leaves no plots.
+- Actual pasted mixed forms `z2\frac12`, `(z+1)2\frac12`, styled `z\mathrm{2}\frac12`, bare `z^12`, grouped `z^{12}`, `1e-2`, hidden `{z+1}2`, variable fraction denominator and singular N=−z receive explicit feedback and zero old plots. Valid `2z\frac12+1` produces Q=2z+1/5. Negative-leading N=−.5,D=−z+.8 normalizes back to the baseline.
+- Native K drafts ±1e-999, empty and11 reject; 0e-999 gives the correct zero-gain retained Q, and1e-2 produces Q=z−159/200. T underflow rejects. Invalid cursor underflow retains the previous valid table and both marker coordinates, with explicit feedback.
+- Cardinal cursor points give the expected conjugate L(j), L(−j), L(−1), exact closure at360° and signed-frequency alias labels. With T changed .1→.2, the mapped path and value stay identical while ω at90° halves to7.853982rad/s; at270° the signed frequency is−7.853982 and at360° it is0. ArrowRight moves the range cursor90→93.6° and recomputes.
+- At D=z−1 and θ=0, the source marker remains visible, mapped marker/value is absent and an explicit gap notice appears. At closed Q=z+1 and θ=180°, L=−1,F=0 and argF is undefined. At D=z−20, both outside source markers are reported and remain in complete counts rather than clamped onto the box edge. Critical-view clipping is labeled and leaves the count unchanged.
+- Desktop1280×720 dark mode: equal source/image inner width and height, correct axes/root positions, source CCW versus baseline image CW arrows, full ±2-loop examples and typeset count derivation visually inspected. The first picture exposed unnecessarily sparse plotting; a 1024-interval drawing mesh plus adaptive points now smooths the computed curve without changing its independent winding check. Direction arrows use curve length; real-axis centering avoids a spurious tiny floating offset tick.
+- Narrow390×844 dark mode: page scroll width equals client width375; equation fields277px wide; plots have420px content in275px focusable regions. ArrowRight scrolls only the focused source plot, leaving the image region at0. Long equations/tables remain locally scrollable. Fonts report loaded; zero module MathLive display-error nodes. Light theme was not separately browser-tested.
+- Leave with math keyboard open removes all DS05 fields, plots and root; reopen reports keyboard unpressed. Shell Reset example produces two fresh fields, K=1,T=.1 and no old plots. Repeated rapid catalogue↔DS05 routes followed by reveal restore W=0,Q=z−3/10, with exactly two fields/two plots and no loading/scaffold leftovers. No forced network delay was used; deterministic pending-import/partial-failure tests cover those controlled cases separately.
+- Console warning/error log is empty. Viewport override reset and verified1280×720; owned tab closed and inventory empty; private preview stopped. No own QA waiter/reservation/native resource remains.
 
-## Guided workspace checkpoint
+Screenshots outside Git, in `C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d1-f1f0-7393-88e7-377fbac7299a/`: `ds05-baseline-planes.png`, `ds05-two-windings-planes.png`, `ds05-two-windings-count.png`, `ds05-mobile-controls.png`, `ds05-mobile-plane.png`.
 
-`view.ts`, scoped `style.css` and `plots.ts` now supply the complete bounded student flow: thirteen baseline/changed/boundary/cancellation/static experiments; visual N/D, scalar K/T inputs; optional open-pole, winding and closed-root predictions; full contour convention and inside/outside derivation; independent Q root comparison; and a linked direct-evaluation frequency cursor with numeric/keyboard/cardinal controls. Fixed discrete coefficients stay unchanged when T relabels physical frequency. Boundary/unresolved cases do not acquire a fabricated ordinary winding integer. The instructor-review extension provenance is visible.
+## Checkpoints and disposition
 
-Source and mapped complex planes use equal x/y scales, actual increasing-angle direction arrows, open/closed root symbols, a linked cursor and return-difference ray. The fixed source view explicitly counts root markers outside its box; a selectable critical view clips true coordinates instead of clamping false markers. Missing finite points remain gaps; the source cursor remains available at a mapped pole. Complete roots/counts stay in their tables regardless of plot clipping.
+Setup/audit `96031c6` followed the atomic claim and fresh worktree. Core prototype `3550f6b` was preserved before prioritizing CP01's returned numerical defect. After CP01's corrected exact resubmission, root/winding checkpoint `ede12e0` passed118 local /778 full tests. Full workspace checkpoint `c0646fc` passed150 local /810 full tests before the final visual density/axis refinements. All references are historical checkpoint evidence, not a substitute for the final exact submitted source.
 
-The synchronous workspace wrapper appends an owned loading node and gives its deferred view a child abort signal. Parent abort, disposal and partial initialization failure release child-owned resources. Per-result listeners abort on changed inputs/reveal. Input errors clear stale checked results; invalid cursor drafts retain the previous valid cursor. No state crosses visits.
-
-Current local tests: **150 / 6 files pass** (118 math/parser, 3 meaningful gap/clipping plot cases, 25 workspace-flow and 4 deferred lifecycle). Workspace-flow mocks the equation component only to inspect caller drafts/state; it is not actual editor evidence. `npm run check` passes. Real-browser editing/fonts/buttons, geometry/direction/axis inspection, reset/reopen/rapid navigation, keyboard and narrow viewport still require actual evidence before marking implemented or submitting.
-
-Workspace project checks also pass: `npm test` **810 tests / 32 files**, and `npm run build` including type check, with the existing MathLive chunk advisory. `git diff --check` passes. This checkpoint is being preserved before private production-browser QA; generated output is not committed.
+The full accepted bounded exercise is implemented and verified as recorded above. Independent coordinator review/integration remains. Create/attach this module's single PR, record its URL, commit/push the delivery record and submit only its clean exact tested HEAD via the current primary helper. Preserve the branch/worktree for same-PR corrections; no release/version/main/deployment change is authorized to this worker. No shared-helper dependency remains.
