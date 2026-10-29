@@ -1,12 +1,12 @@
 # DD04 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented (worker checks complete; independent review pending)
 - **Assessed:** 2026-10-29, starting primary main ae7daf3
 - **Owned scope:** src/modules/dd04/**; [accepted contract](TASK.md)
 - **Worker chat:** 01a186d1-a367-78f1-98f5-e1cf147ef306
 - **Branch:** codex/dd04-digital-pid-01a186d1
 - **Worktree:** C:\Users\baokh\.codex\worktrees\dd04-digital-pid-01a186d1\CSDKTD APP
-- **PR:** [DD04 #9](https://github.com/ckbk123/CSDKTD_APP/pull/9), draft and attached
+- **PR:** [DD04 #9](https://github.com/ckbk123/CSDKTD_APP/pull/9), single contribution and attached
 
 ## Starting audit and accepted scope
 
@@ -82,16 +82,35 @@ Coordinator disposition (2026-10-29): DD04 keeps its independently tested equiva
 
 | Accepted requirement | Delivered evidence | Remaining |
 |---|---|---|
-| Editable integration and derivative rules | view.ts selectors; derive maps forward/backward/trapezoidal I and backward/Tustin/filtered D; future-input forward D is rejected explicitly | Browser rule variations |
+| Editable integration and derivative rules | view.ts selectors; derive maps forward/backward/trapezoidal I and backward/Tustin/filtered D; future-input forward D is rejected explicitly | None |
 | Positional/incremental identities and C(z) | math.ts derives c0/c1,alpha/beta,b0…b2; view.ts shows I/D, C(q), denominator clearing, C(z) and both execution forms | None |
-| Read, calculate, commit memory | calculate returns immutable next state; view.ts separates preview/commit and shows old-read highlighting; tests verify no early shift | Final keyboard recheck |
+| Read, calculate, commit memory | calculate returns immutable next state; view.ts separates preview/commit and shows old-read highlighting; tests verify no early shift | None |
 | Baseline and changed T | Independent math fixtures verify14.1,-23.9,10; outputs14.1,4.3; T=.2 gives9.2,-13.8,5; earlier browser pass confirmed these | None |
-| Explicit initial memory | e0,e[-1],I0,D0 initialize consistent output/increment histories; nonzero memory fixture and interface restart check | Final changed-memory browser recheck |
-| Distinct filtered controller/state | First-order backward-Euler derivative filter has its own D and τ; analytic fixtures and earlier D0=2 browser check give u1=10.1 | Remaining rule/keyboard check |
-| Editable visual errors and failures | Shared editor; bounded real parser with compact/signed/nested fractions; rejects e/E,powers,ambiguous adjacency and singular/large/malformed inputs; separate native numeric grammar | Actual fraction-button entry and browser failures |
-| Student reasoning and comparison | Optional next-output prediction; explicit P/I/D arithmetic and both output forms with scale-aware residual; committed sample table and stem plots | Browser interaction and plot readability |
-| Bounded, local and isolated | 1–40 samples; pure helpers; synchronous deferred mount, abort/error/cleanup tests; scoped styles and no cross-module state | Actual reset/reopen/rapid-navigation check |
+| Explicit initial memory | e0,e[-1],I0,D0 initialize consistent output/increment histories; nonzero memory fixture and interface restart check | None |
+| Distinct filtered controller/state | First-order backward-Euler derivative filter has its own D and τ; analytic fixtures and earlier D0=2 browser check give u1=10.1 | None |
+| Editable visual errors and failures | Shared editor; bounded real parser with compact/signed/nested fractions; rejects e/E,powers,ambiguous adjacency and singular/large/malformed inputs; separate native numeric grammar | None |
+| Student reasoning and comparison | Optional next-output prediction; explicit P/I/D arithmetic and both output forms with scale-aware residual; committed sample table and stem plots | None |
+| Bounded, local and isolated | 1–40 samples; pure helpers; synchronous deferred mount, abort/error/cleanup tests; scoped styles and no cross-module state | None |
 | Numeric shared API | Current native guards are behaviorally equivalent and tested; coordinator owns the approved shared-reader adaptation during integration | Coordinator integration check, not worker functional scope |
-| Verification/delivery |94 module tests (24 math,58 input,8 mocked view,4 lifecycle),136 full-project tests, build/type check pass after the powers message; draft PR9 attached | Final real-browser gate, evidence/ready/submission |
+| Verification/delivery |94 module tests (24 math,58 input,8 mocked view,4 lifecycle),136 full-project tests, build/type check pass after the powers message; PR9 attached | No exercise work; PR/claim track final submission |
 
 This table records current evidence, not a verified-stage claim. Original course slides were not reinspected; accepted baseline/source-audit fixtures and independently derived analytic checks remain distinguished above. No plant simulation or closed-loop stability claim is made.
+
+## Final production-browser evidence (2026-10-29)
+
+The worker acquired the shared QA resource atomically at11:28:56Z, used its own production preview at8794 and its own in-app Chromium tab, then restored the viewport, closed the tab, released QA and stopped the preview. The coordinator was notified promptly for its scheduled CS01 integration slot. The tested code is the b0d0006/3346863 checkpoint (the latter adds evidence only).
+
+- Calculate left the old memory text unchanged, showed P=4,I=.1,D=10,u1=14.1 and matched the student's14.1 prediction. Commit shifted memory; the second commit gave u2=4.3. Enter activated Derive, Calculate, Commit and Run without a pointer-only dependency.
+- T=.2 displayed b=9.2,-13.8,5 and first outputs9.2,4.6. Forward integration gave u1=14; backward integration gave14.2. Ideal Tustin D in incremental view gave24.1,-15.7,24.5; positional/incremental differences were at most3.56e-15 in these rows. Forward D gave the explicit e[k+1]/causality explanation and hid the lesson.
+- Initial I0=2.5 gave u1=16.6. Filtered D with D0=2 gave D1=1+5=6 and u1=10.1; its incremental calculation used the consistent prior increment and matched the positional output. Invalid T=0 produced its .001–10 s range message.
+- Native Kp=1e-999 produced nonzero-underflow feedback. Kp=1e-2,Ki=0,Kd=0e-999 executed a pure proportional output.01, confirming normal native exponents and intentional zeros. A visual e symbol produced the distinct unsupported-symbol explanation. These actual browser checks complement the independent bounded-parser tests, including malformed and singular fractions.
+- A real fraction-button entry was constructed by typing/selecting1, inserting the fraction, typing denominator2, exiting it and typing comma1. The resulting half,1 error list computed u1=7.05 and u2=9.2. Fractions and powers in the derivation rendered with local fonts. document.fonts reported loaded and KaTeX_Main was available.
+- The Systems keyboard opened, a number-key click invalidated the old experiment, and Escape closed it. Global Reset while the keyboard was open restored baseline and hid the lesson/keyboard. Editing Kp to7, leaving and reopening restored4; the library had zero old .pid-tool roots and zero DD04 keyboard controls. Rapid module/library navigation left zero stale tool roots on the final library page, and reopening restored the default workspace.
+- At390×844, document width was375 px within viewport390. Each plot retained a400 px SVG inside a281 px local scroll region; labels use12-unit text without shrinking below that rendered scale. ArrowRight scrolled the focused plot and sample table40 px; an immediate table query preceded the browser's smooth-scroll update, while the subsequent observation confirmed40 px. Inputs, stacked memory/plots, local equation/table scrolling and captions remained usable. Browser warning/error logs were empty.
+- Worker-local proof (outside Git): C:\Users\baokh\.codex\visualizations\2026\10\29\01a186d1-a367-78f1-98f5-e1cf147ef306\dd04-phone-plots.png. System dark theme was checked; light theme uses the shared tokens and was not separately inspected by this worker.
+
+## Final checks and delivery
+
+Node24.22.1, locked dependencies unchanged. npm test -- src/modules/dd04: **94 passed in4 files** (24 math,58 input,8 mocked view,4 deferred lifecycle); npm run check: **passed**; npm test: **136 passed in10 files**; npm run build: **passed**. DD04 view is about8.29kB gzip, with20 local font assets; the existing MathLive large-chunk warning remains about221.49kB gzip. Git whitespace checks pass. The exact tested final SHA, including this record, is named in the submitted claim.
+
+[PR #9](https://github.com/ckbk123/CSDKTD_APP/pull/9) is the single attached DD04 contribution; its final description and ready state are updated at submission. Every accepted bounded exercise requirement is implemented and checked. The coordinator-approved shared numeric-reader adaptation remains an integration-owner task, with its required validation recorded above; no worker functionality is deferred. This is implemented, not self-certified verified. No shared/configuration/dependency change, rebase, primary-main merge, version bump or deployment was performed. Preserve this branch/worktree for review and continue the generic goal on a fresh current-primary worktree after submission.
