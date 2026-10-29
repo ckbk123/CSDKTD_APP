@@ -111,9 +111,16 @@ export function roots(b: number, c: number): readonly [Complex, Complex] {
 }
 /** null denotes the point at infinity. Near the pole is reported separately in UI. */
 export function mapToW(z: Complex): Complex | null {
-  const denominator = (z.re + 1) ** 2 + z.im ** 2;
-  if (denominator === 0) return null;
-  return { re: (z.re ** 2 + z.im ** 2 - 1) / denominator, im: 2 * z.im / denominator };
+  const a = z.re + 1, b = z.im, c = z.re - 1;
+  if (a === 0 && b === 0) return null;
+  // Divide (c+jb)/(a+jb) using the larger denominator component. Expanding
+  // re²+im²−1 loses im² near z=−1, incorrectly moving points onto the boundary.
+  if (Math.abs(a) >= Math.abs(b)) {
+    const ratio = b / a, denominator = a + b * ratio;
+    return { re: (c + b * ratio) / denominator, im: (b - c * ratio) / denominator };
+  }
+  const ratio = a / b, denominator = b + a * ratio;
+  return { re: (c * ratio + b) / denominator, im: (b * ratio - c) / denominator };
 }
 export function analyze(f: Family, k: number) {
   if (!Number.isFinite(k) || Math.abs(k) > 100) throw new Error('Choose a finite gain K between −100 and 100.');

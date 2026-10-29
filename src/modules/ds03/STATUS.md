@@ -17,8 +17,8 @@
 | Apply Routh and derive complete strict gain set | Inspectable quadratic Routh rows, arithmetic, sign changes, affine inequality intersection and equivalent Jury conditions | Browser inspection |
 | Preserve exceptional boundary cases | Degree loss retains z=-1 root(s); zero row uses auxiliary polynomial; C=0 retains z=+1; original root/radius table | Browser endpoint checks |
 | Student attempt, reveal and changed-data experiment | Prediction selection, staged/all reveal, .1K variation, inspectable finite interval endpoints | Browser interaction |
-| Independent mathematical checks | 27 parser/math tests: expanded baseline, .1K variation, roots/transform residuals, disk-map identity, singular/repeated roots, empty/all-real intervals, unsupported input limits | None known |
-| Visit isolation, accessibility and scoped UI | Synchronous `workspace.ts` mount, guarded local UI import, abort-driven listeners/input disposal, fresh mount state; 8 caller-state/lifecycle tests; scoped CSS; retained step-button focus | Real-browser reset/reopen/rapid navigation, keyboard, narrow viewport |
+| Independent mathematical checks | 28 parser/math tests: expanded baseline, .1K variation, roots/transform residuals, disk-map identity, singular/repeated roots, empty/all-real intervals, unsupported input limits | None known |
+| Visit isolation, accessibility and scoped UI | Synchronous `workspace.ts` mount, guarded local UI import, abort-driven listeners/input disposal, fresh mount state; 9 caller-state/lifecycle tests; scoped CSS; retained step-button focus | Real-browser reset/reopen/rapid navigation, keyboard, narrow viewport |
 | Integration and delivery | Type check and production build pass; private branch/checkpoints exist and earlier implementation checkpoint was pushed | Final full suite, browser evidence, final push and submitted claim |
 
 ## Supported domain and conventions
@@ -38,9 +38,9 @@ Expanding `(1+w)^2+(K-1)(1-w^2)+.2K(1-2w+w^2)` gives `(2-.8K)w^2+(2-.4K)w+1.2K`.
 
 ## Validation log
 
-- `npm test -- src/modules/ds03`: **35/35 passed** (27 math/parser, 8 caller-state/lifecycle tests), after resume.
+- `npm test -- src/modules/ds03`: **35/35 passed** (27 math/parser, 9 caller-state/lifecycle tests), after resume.
 - `npm run check`: **passed** after resume.
-- `npm test`: **77/77 passed across 8 files** after resume.
+- `npm test`: **79/79 passed across 8 files** after resume.
 - `npm run build`: **passed** after resume (bundled Node 24.22.1 and installed npm CLI). Existing large MathLive chunk warning remains; no new package/config change.
 - `git diff --check`: passed before pause; final rerun pending.
 - First full-suite attempt exposed MathLive's Node/browser export distinction when catalogue tests imported the workspace. A guarded local UI import corrected this without changing shared files; subsequent suite passed.
@@ -49,3 +49,9 @@ Expanding `(1+w)^2+(K-1)(1-w^2)+.2K(1-2w+w^2)` gives `(2-.8K)w^2+(2-.4K)w+1.2K`.
 ## Recovery / remaining work
 
 Initial audit checkpoint `78c869a`; implementation checkpoint `7df99f6` pushed; user-requested pause checkpoint `568a9e1` preserved locally. Work resumed on the same branch and claim. No preview/helper was started during the paused run. Remaining: reserve browser QA, inspect the production module at desktop/narrow widths including equation fonts and Systems keyboard, edit/failure/reset/reopen/rapid navigation/cleanup checks, record evidence, run final checks, commit/push and submit this claim. This record makes no independent-review or completed-delivery claim yet.
+
+## Coordinator numerical review and correction
+
+The coordinator independently reviewed checkpoint `00c3d01` and reported a P2 defect: the difference-of-squares formula for Re(w) lost the small imaginary square at z=-1+1e-8j, displaying 0 instead of 1. `mapToW` now divides (z-1)/(z+1) using a ratio of the smaller denominator component to the larger, avoiding that cancellation while preserving exact z=-1 as infinity.
+
+Independent regression expectations: at z=-1+jb, w=1+2j/b (tested b=±1e-8 and 1e-6); exactly represented dyadic offsets ±2^-26 give explicit expected real/imaginary parts; z=1+1e-8j retains its tiny positive real component. A caller-state regression verifies that the accepted near-pole input displays w=1+200000000j and reports it outside the plotted view. Relevant tests passed 37/37, full suite 79/79, type check/build and whitespace checks passed after the correction. The coordinator also reported agreement on the interval derivation across 805 independent changed/boundary cases; this is review of the earlier checkpoint, not final-revision certification. Browser QA and final submission remain pending.

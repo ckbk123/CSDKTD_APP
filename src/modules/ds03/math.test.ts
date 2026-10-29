@@ -79,6 +79,21 @@ describe('DS03 substitution and complete gain set', () => {
   it.each([NaN, Infinity, -101, 101])('rejects invalid gain %s', k => expect(() => analyze(parseFamily(BASELINE), k)).toThrow());
 });
 describe('DS03 disk map', () => {
+  it('preserves the real component near z=-1 without subtracting nearly equal squares', () => {
+    // At z=-1+jb, direct division (-2+jb)/(jb) gives 1+2j/b.
+    for (const b of [1e-8, -1e-8, 1e-6]) {
+      const w = mapToW({ re: -1, im: b })!;
+      expect(w.re).toBe(1); expect(w.im).toBe(2 / b);
+    }
+    // Exactly represented dyadic offsets make both expected components explicit.
+    const epsilon = 2 ** -26;
+    expect(mapToW({ re: -1 + epsilon, im: epsilon })).toEqual({ re: 1 - 2 ** 26, im: 2 ** 26 });
+    expect(mapToW({ re: -1 - epsilon, im: epsilon })).toEqual({ re: 1 + 2 ** 26, im: 2 ** 26 });
+    // The opposite boundary point must also retain a small positive real part.
+    const nearOne = mapToW({ re: 1, im: 1e-8 })!;
+    expect(nearOne.re / 2.5e-17).toBeCloseTo(1, 14);
+    expect(nearOne.im / 5e-9).toBeCloseTo(1, 14);
+  });
   it('maps inside/outside and unit boundary using an independent real-part identity', () => {
     for (const z of [{ re: .2, im: .4 }, { re: 2, im: -1 }, { re: 0, im: 1 }]) {
       const w = mapToW(z)!;

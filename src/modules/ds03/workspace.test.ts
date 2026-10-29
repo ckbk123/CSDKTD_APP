@@ -65,6 +65,13 @@ describe('DS03 exercise and visit state', () => {
     edit(angle, ''); expect(container.textContent).toContain('Choose an angle');
     edit(container.querySelectorAll('input')[3], '6'); expect(container.textContent).toContain('finite real and imaginary');
   });
+  it('shows the reviewed near-pole value without turning it into a boundary point', async () => {
+    const { container } = await open();
+    edit(container.querySelectorAll('input')[3], '-1');
+    edit(container.querySelectorAll('input')[4], '0.00000001');
+    expect(container.textContent).toContain('w = 1 + 200000000j.');
+    expect(container.textContent).toContain('outside this view');
+  });
   it('checks a prediction and uses the original roots for zero-row cases', async () => {
     const { container } = await open();
     edit(container.querySelector('textarea')!, 'z^2+Kz+1'); edit(container.querySelector('input')!, '0');
