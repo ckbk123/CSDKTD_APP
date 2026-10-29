@@ -1,27 +1,35 @@
 # DR05 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29; baseline `8696261267b7620bfc101ce2b5f13772bfaa529a`
+- **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
+- **Branch/worktree:** `codex/dr05-zoh-f802`, `C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP`
+- **Contract:** [TASK.md](TASK.md)
 
-## Implemented and inspected
+## Initial requirement audit
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+At the claimed baseline, metadata/lazy loader exist, workspace is blank, and there are no local mathematical tests. The shared banner is only a notation preview. Preserve metadata and shell behavior.
 
-## Remaining acceptance work
+| Accepted requirement | Planned evidence | Initial gap |
+|---|---|---|
+| Editable continuous source and sampled target | Shared visual equation entry; bounded real proper first/second-order TF parser; canonical state conversion | Not implemented |
+| Exact ZOH, including singular A | Augmented exponential [A B;0 0] to obtain Ad and the input integral without inverse(A) | Not implemented |
+| Selected approximation comparison | Forward Euler, backward Euler and trapezoidal propagation for each constant held-input interval; explicitly label approximation/timing | Not implemented |
+| Continuous trajectory, held input, sample clock | Actual held-input reconstruction via exp(A dt), sample markers and independent plot-density control | Not implemented |
+| Resulting recurrence and intermediate reasoning | Continuous matrices, exponential/integral, sample state update and zero-state rational discrete TF | Not implemented |
+| Integer delay | Explicit causal input delay mT, input history zero; reject fractional m instead of rounding | Not implemented |
+| Attempt/reveal, changed data | First-sample prediction; T=.1/.2, integrator and delayed double-integrator experiments | Not implemented |
+| Independent tests | Scalar exponential/geometric checks; nilpotent double integrator; sine/cosine oscillator; delayed 5/s^2 path | Not implemented |
+| Lifecycle/browser delivery | Abort-guarded lazy view; input cleanup; actual editor, reset/reopen/fast navigation/keyboard/narrow checks | Not implemented |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Proposed bounds/conventions
 
-## Evidence and next action
+Time in seconds; normalized input/output units; canonical state coordinates. Proper real TF order 1–2 with decimal coefficients and textbook fractions/products/powers. T=0.0001–10 s; 4–120 sample instants; 2–16 visual subdivisions per interval; m=0–12 integer sample input delay before the plant; arbitrary finite initial plant states and zero input prehistory. The held value u[k−m] acts on [kT,(k+1)T); y[k] is the right-hand output Cx[k]+D u[k−m]. Zero-state TF is separate from selected initial state. Matrix exponential uses bounded scaling/squaring with a Taylor convergence test; implicit approximation singularities get explicit feedback. No shared API/package change is planned.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+## Source and fixture provenance
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Read TASK, atlas DR05 and the recorded discrete source audit DR3/DR4. Audit cites Ch7/S12 and the .2 s worksheet; original decks have not been newly inspected. Baseline uses e^(−T), 1−e^(−T); integrators/oscillator are independently derived fixtures. The delayed 5/s^2 test covers the audit's separately declared ZOH plant path, not an unverified full original feedback topology.
+
+## Checks and remaining work
+
+All exercise implementation and checks remain pending at this early checkpoint. DP01 is preserved separately as submitted PR #6; it is not included in this branch. Implement only DR05; prioritize coordinator review returns before continuing this newer module.
