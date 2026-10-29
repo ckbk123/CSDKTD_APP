@@ -24,6 +24,10 @@ describe('DS04 bounded exact polynomial entry', () => {
     expect(() => parsePolynomial('z+1E-2')).toThrow();
     expect(parsePolynomial('z+0.01')[0]).toEqual(rational(1, 100));
   });
+  it('preserves outer grouping/minus and signed numeric fraction arguments', () => {
+    for (const text of [String.raw`-\frac12`, String.raw`\frac{-1}{2}`, String.raw`\frac1{-2}`, String.raw`-\left(\frac12\right)`, String.raw`\left(-\frac{1}2\right)`]) expect(parsePolynomial(text)[0]).toEqual(rational(-1, 2));
+    expect(() => parsePolynomial(String.raw`\frac{\frac12}{3}`)).toThrow();
+  });
 });
 describe('DS04 complete exact gain partition', () => {
   it('derives the baseline independently from P=z²+(K-1)z+K/5', () => {

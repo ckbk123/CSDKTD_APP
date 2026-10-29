@@ -8,7 +8,7 @@ function shape(parent: SVGElement, tag: string, attrs: Record<string, number | s
   const item = document.createElementNS(ns, tag); for (const [key, value] of Object.entries(attrs)) item.setAttribute(key, String(value));
   if (text !== undefined) item.textContent = text; parent.append(item);
 }
-const short = (n: number) => Number(n.toPrecision(4)).toString();
+const short = (n: number) => n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 4 });
 export function locusPlot(model: Model, gain: number, minimum: number, maximum: number): HTMLElement {
   const figure = document.createElement('figure'), caption = document.createElement('figcaption'); caption.textContent = 'Closed-loop roots in the z plane'; figure.append(caption);
   const out = svg('Sampled discrete root locus with unit-circle crossings', '0 0 360 300');
@@ -41,7 +41,7 @@ export function locusPlot(model: Model, gain: number, minimum: number, maximum: 
   }
   figure.className = 'g-locus'; figure.append(out);
   const note = document.createElement('p'); note.className = 'g-small';
-  note.textContent = `Dimensionless z; × current roots; ○ unit roots at critical gains inside the sampled window. 401 samples over ${minimum} ≤ K ≤ ${maximum}; solid/dashed paths show both roots and break at a=0. The view follows the selected roots (extent capped at 10); it does not prove the gain set.${gain < minimum || gain > maximum ? ' Selected K is outside the sampled gain window.' : ''}${omitted ? ` ${omitted} sampled/selected points exceed the view; selected roots are listed numerically.` : ''}`;
+  note.textContent = `Dimensionless z; × current roots; ○ unit roots at critical gains inside the sampled window. 401 samples over ${short(minimum)} ≤ K ≤ ${short(maximum)}; solid/dashed paths show both roots and break at a=0. The view follows the selected roots (extent capped at 10); it does not prove the gain set.${gain < minimum || gain > maximum ? ' Selected K is outside the sampled gain window.' : ''}${omitted ? ` ${omitted} sampled/selected points exceed the view; selected roots are listed numerically.` : ''}`;
   figure.append(note); return figure;
 }
 export function gainBar(model: Model, gain: number, minimum: number, maximum: number): HTMLElement {
@@ -55,6 +55,6 @@ export function gainBar(model: Model, gain: number, minimum: number, maximum: nu
   }
   for (const k of set.critical.map(numberOf)) if (k >= minimum && k <= maximum) shape(out, 'circle', { cx: x(k), cy: 46, r: 5, class: 'g-crossing' });
   if (gain >= minimum && gain <= maximum) { shape(out, 'line', { x1: x(gain), x2: x(gain), y1: 15, y2: 76, class: 'g-selected' }); shape(out, 'text', { x: x(gain), y: 98, 'text-anchor': 'middle' }, `K=${short(gain)}`); }
-  shape(out, 'text', { x: 30, y: 20 }, String(minimum)); shape(out, 'text', { x: 330, y: 20, 'text-anchor': 'end' }, String(maximum)); figure.append(out);
+  shape(out, 'text', { x: 30, y: 20 }, short(minimum)); shape(out, 'text', { x: 330, y: 20, 'text-anchor': 'end' }, short(maximum)); figure.append(out);
   const note = document.createElement('p'); note.className = 'g-small'; note.textContent = 'Tint = strict stability. Open circles mark exact critical gains; none is included. All real-gain intervals and boundary equations are listed below, including those beyond this window.'; figure.append(note); return figure;
 }

@@ -1,53 +1,74 @@
 # DS04 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
+- **Owned folder:** `src/modules/ds04/**`; [TASK](TASK.md)
 - **Branch:** `codex/ds04-gain-regions-2175`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/ds04-gain-regions-2175/CSDKTD APP`
 - **Starting primary main:** `ae7daf3477c322d980418ec094b35585e43e109c`
-- **Contract:** [TASK.md](TASK.md)
+- **Independent final review:** pending coordinator review of the submitted SHA; this worker does not claim `verified` status.
 
-## Initial audit and chosen bounded exercise
+## Accepted requirements and evidence
 
-The inspected folder has immutable metadata, an empty synchronous mount and no local tests. No existing mathematical feature is being replaced. Own only this folder; no shared APIs/dependencies or sibling imports are needed.
+| Requirement | Delivered behavior / evidence |
+|---|---|
+| Editable loop and feedback characteristic | Shared visual N(z) and D(z) inputs; explicit negative unity feedback; P=D+KN; numeric K/window; bounded independently tested parser |
+| All real and complex circle crossings | Exact zeros of P(+1), P(-1), a-c; genuine conjugate crossings verified by cosine condition; angles in rad/degrees; non-crossing equalities distinguished |
+| Complete stable gain set, including disconnected components | Exact rational critical-gain ordering and sign partition; every open cell checked; all intervals displayed; no sweep is used as proof |
+| Singular/fixed-boundary cases | a=0 identified as ill-posed algebraic feedback; finite roots plus roots at infinity retained; identically-zero characteristic and fixed circle-mode identities explained |
+| Locus and gain-interval bar | Own stateless `plots.ts` functions draw both sampled root paths, current-root crosses, in-window crossing circles and stable segments; complete numeric root list accompanies truncated views |
+| Boundary equations and Jury/Routh checks | Each critical gain has its equation, exact fraction/decimal, crossing type, full root set and inspect button; normalized quadratic Jury inequalities and transformed Routh first column agree |
+| Student attempt/reveal/changed data | Predict zero/one/two stable intervals, reveal derivation and checked set; complex-crossing and disconnected-set experiments; normal equation edits and keyboard/numeric controls |
+| Mathematical validation | 32 local parser/math tests cover independent baseline/changed/disconnected fixtures, root residuals, conditioning, all-real/empty/fixed cases, degree loss and invalid/resource-limited input |
+| Visit isolation and accessibility | Guarded synchronous mount, caller-owned drafts/state, signal-driven listeners, input disposal; 8 workspace/lifecycle tests and actual browser reset/reopen/rapid-navigation/keyboard checks |
+| Responsive integration | Scoped CSS, bounded equation/table scrolling, readable root/interval graphics; actual 375px content-width phone check without page-wide overflow; project checks pass |
 
-| Accepted requirement | Current evidence | Remaining implementation |
-|---|---|---|
-| Editable L(z) and negative-unity characteristic equation | Baseline metadata only | Visual N(z), D(z), numeric K; P=D+KN; retain uncancelled roots |
-| Every real/complex unit-circle crossing | Absent | Solve P(1), P(-1), a=c; check conjugate angles; distinguish fixed-boundary identities and degree loss |
-| Complete stable gain set, including disconnected sets | Absent | Exact rational affine critical gains and sign partition; Jury/transformed-Routh equivalence; exclude singular feedback |
-| Locus, interval bar and complete root list | Absent | Bounded sampled graph with branch continuity, gain bar, selected roots and all boundary equations |
-| Prediction/reveal and changed-data experiment | Absent | Student interval-count prediction; .5 numerator-zero variation and proposed disconnected-set fixture |
-| Independent mathematical checks | Absent | Baseline 0<K<2.5; changed complex crossing K=2; disconnected (-infinity,2/3) union (2,infinity); residual and failure tests |
-| Browser/lifecycle/project evidence | Empty mount only | Shared equation controls, abort/cleanup, scoped responsive layout, real-browser reservation/checks, final tests/build |
+## Supported domain and limits
 
-Support plan: proper or biproper real N(z)/D(z), degree N<=2, monic degree-2 D, with bounded decimal/numeric-fraction polynomial grammar. Gain K is real, negative unity feedback, z dimensionless. P=a(K)z^2+b(K)z+c(K). Complete Jury conditions are (a+b+c)/a>0, (a-b+c)/a>0, (a-c)/a>0. Each affine sign is constant between its exact rational zeros; partition those gains algebraically rather than infer a region from the locus samples. Leading a=0 is an algebraic-loop/degree-loss exclusion. Nonminimal factors are retained and disclosed.
+- Real proper or biproper N(z)/D(z), degree N<=2 and monic quadratic D. Coefficients are stored in ascending order internally; visual fields accept expanded/factored polynomials, optional N(z)=/D(z)= prefixes, sums/products/parentheses, powers 0/1/2 and fractions of signed numeric literals. Compact/mixed-brace fraction arguments preserve TeX's one-token rule; outer minus/grouping preserves meaning. Nested fraction notation, other variables/functions and e/E scientific-literal interpretation are explicitly unsupported. Students use ordinary decimals or numeric fractions instead.
+- Each polynomial: <=300 characters, <=160 tokens, <=12 nested groups; <=6 decimal places and 9 digits per numeric literal. Final nonzero coefficient magnitudes: 1e-8..100. Reduced fraction numerator/denominator magnitudes <=10^12; exact-arithmetic intermediates capped at 2048 bits with controlled precision feedback.
+- K is real with negative unity feedback, P(z,K)=D(z)+KN(z). Selected K and locus-window endpoints are finite in [-100,100], with minimum<maximum. HTML numeric controls retain their separate exponent grammar. Their browser Number is interpreted through its decimal serialization for exact coefficient arithmetic. The complete symbolic/rational result covers all real gains, beyond the plotted window.
+- z and K are dimensionless; no sample period, physical frequency, initial-history simulation or additional feedback topology is inferred. No cancellation is performed: the entered uncancelled characteristic roots are retained, including common factors and K=0 modes. A claim about a unique hidden physical realization is not made from a TF alone.
+- Exact gain partition: a, P(+1), P(-1), a-c are affine. Their signs are fixed between consecutive exact rational zeros. Strict stability requires a!=0 and the other three signs equal to sign(a). This permits negative leading coefficients and disconnected sets. At a=0, the biproper feedback interconnection is algebraically singular and is excluded even if its reduced polynomial has stable finite roots.
+- Root coordinates are numerical, using a cancellation-resistant quadratic formula with the discriminant formed exactly before conversion. Radius tolerance is 1e-8; relative near-leading-zero warning is 1e-10. Tiny crossing angles use exact half-angle quantities rather than a rounded acos argument. Decimal results use up to eight significant digits; interval endpoints remain exact fractions. No iterative convergence claim is involved.
+- The locus uses 401 samples (helper bounded to 3..1001), nearest-pair branch continuation and breaks at/across a=0. It is an illustration, not the stability proof. Its view follows selected roots, capped at extent 10; clipped samples/current roots are disclosed and all current roots remain listed numerically. Crossing markers are restricted to the sampled gain window; global crossing equations remain listed separately.
 
-Original course slides have not been inspected in this run. Course/audit anchors retain their recorded evidence status. The disconnected biproper fixture is an independently derived proposed variation, not a claimed slide transcription. All accepted functionality and verification remain open at this initial checkpoint.
+## Independent fixtures and provenance
 
-## Implementation checkpoint (2026-10-29)
+Original course slides were not inspected in this run. Recorded course/audit anchors retain their existing provenance; no new transcription claim is made. The disconnected biproper example is an independently derived proposed variation.
 
-The initial-audit table above records the starting scaffold. Its computation and interface rows are now implemented in `math.ts`, `plots.ts`, `ui.ts`, scoped `workspace.css`, and the guarded synchronous `workspace.ts` loader. Both visual polynomial fields use the shared equation components and caller-owned drafts/signals. No sibling imports or shared/package/configuration edits were made.
+- Baseline N=z+1/5, D=z(z-1): P=z²+(K-1)z+K/5. P(+1)=6K/5, P(-1)=2-4K/5, a-c=1-K/5 yield **0<K<5/2**. At K=0 roots are +1 and 0; at K=5/2 roots are -1 and -1/2. K=5 is an a=c candidate with real roots, not a complex circle crossing.
+- N=z+1/2, same D: strict set **0<K<2**; at K=2 the roots are -1/2±sqrt(3)j/2, theta=±120 degrees. The .1 variation independently gives upper endpoint 20/9.
+- N=-z²+z/2, D=z²: roots are 0 and -K/[2(1-K)]. Their strict-disk set is **K<2/3 or K>2**. K=1 is singular feedback, not an ordinary stable first-order system.
+- Negative N=-1/2, D=z(z-1): **-2<K<0**. Actual fraction-button entry with an outer minus reproduced this result in the browser.
+- Changed-family root residuals and exact sign partitions are compared independently; fixed unit roots use a justified 1e-10 margin in floating residual checks. Conditioning fixtures preserve `(z-1)(z-(1-1e-8))` modes and a roughly 1e-8-radian conjugate crossing at a far critical gain.
 
-- Exact reduced rational coefficients preserve input decimals and numeric fractions, including actual MathLive shorthand such as `\frac12`. Numeric literals: at most 6 decimal places and 9 digits. Final reduced coefficient numerators/denominators: at most 10^12; magnitude of nonzero coefficients: 1e-8 to 100. Input/token/nesting bounds are stated in the UI. Exact arithmetic intermediates are capped at 2048 bits.
-- The real gain line is partitioned at every exact zero of a, P(+1), P(-1), a-c. Signs of these affine functions are constant in each open cell; one exact rational test point establishes its complete Jury classification. All candidate gains are excluded, and identically-zero constraints are separately explained. The sign test allows negative leading coefficients, so disconnected sets are retained.
-- Numerical quadratic roots use a cancellation-resistant formula, and all finite roots plus missing roots at infinity/identically-zero feedback are listed. Unit-circle radius tolerance is 1e-8; near-zero leading coefficient warning is relative at 1e-10. Selected gain and locus-window bounds are [-100,100]. The exact interval result covers all real gains, including beyond the displayed window.
-- The locus is explicitly a sampled illustration (401 samples), follows both roots by nearest-pair continuation, and breaks at/algebraically across a=0. The view follows selected roots, capped at extent 10, and reports omitted points. A gain bar shows stable components within the plot window; exact global intervals remain visible independently.
-- The baseline yields 0<K<5/2; changing N to z+.5 yields a complex unit-circle pair at K=2 with theta=±120 degrees and strict set 0<K<2. The proposed biproper variation N=-z²+.5z, D=z² gives K<2/3 or K>2, with singular feedback at K=1. No source-transcription claim is made for that synthetic variation.
+## Verification
 
-Verification completed in this private worktree (Node 24.22.1, installed npm CLI):
+Run in this worktree with bundled Node **24.22.1** and the installed npm CLI, avoiding the system Node 20 wrapper:
 
-- `npm test -- src/modules/ds04`: **37/37 passed** (29 math/parser and 8 caller-state/lifecycle tests).
+- `npm test -- src/modules/ds04`: **40/40 passed** (32 math/parser, 8 workspace/lifecycle).
 - `npm run check`: **passed**.
-- `npm test`: **79/79 passed across 8 files** (this worktree's baseline is independent of pending DS03).
-- `npm run build`: **passed**; existing MathLive chunk warning only.
+- `npm test`: **82/82 passed across 8 files** on this contribution's recorded primary baseline.
+- `npm run build`: **passed**; existing MathLive large-chunk warning remains. No dependency/configuration change.
 - `git diff --check`: **passed**.
 
-Independent tests include exact baseline/changed/disconnected sets, +1/-1/complex crossings, no-crossing affine equality, fixed boundary modes, nonminimal factors, all-real/empty sets, arbitrarily close rational critical gains, stable root residuals, degree-loss/identically-zero cases, numerical-locus segmentation and invalid inputs/work bounds. A raw floating root-radius assertion initially rounded a fixed z=1 root slightly inward; the invariant test now uses a justified 1e-10 disk margin, while the exact partition retains its zero constraint. Root ordering is compared as a set where appropriate.
+Actual production browser checks used an exclusive DS04 reservation, own in-app Chromium tab and preview **8824**, system dark preference. Default content width 1265px; phone override 390x844 produced content width 375px.
 
-Remaining acceptance work: actual browser QA of visual fields/fonts/Systems keyboard, input/edit/reset/reopen/rapid navigation, plots/crossings and narrow layout; repair any findings, record browser evidence and final checks, then create/attach one module PR and submit the tested SHA. Stage remains **in-progress**. Per coordinator scheduling, do not acquire a new QA slot until its DS03 integration-slot release notice. No DS04 preview or browser session has been started yet.
+- Baseline prediction and 0<K<5/2; every displayed root; critical gains/types; complex preset with theta=±120 degrees; disconnected union with two components; K=1 singular root at infinity.
+- Ordinary keys plus visual fraction/power buttons entered N=z+1/2 and D=z²-z and produced 0<K<2. An outer-minus fraction entered as -1/2 produced -2<K<0. Compact fraction output was accepted. Typed `z+1e-2` remained a displayed algebraic expression and was rejected rather than read as 0.01.
+- Empty/incomplete polynomials, empty numeric K and reversed plotting window showed distinct useful feedback and cleared stale graphs. Numeric input then recovered the computed view.
+- Systems keyboard rendered, inserted a z key, closed on Escape; opening it from the second equation and resetting dismissed it and restored both fields, K=1, plot window and unrevealed result. Tab from the complete D field reached its fraction button; Enter activated checking without shell navigation.
+- Reset and leave/reopen restored the actual baseline. Rapid DS04->CR01->DS04->CR01 navigation with the keyboard open left **zero DS04 containers and zero math fields** on CR01 and no stale keyboard.
+- Full phone result view measured **scrollWidth=clientWidth=375**. Tables/equations scroll internally; both root/interval graphics and numeric controls remain available. Default desktop measured **scrollWidth=clientWidth=1265**. Equations, signed fractions/powers and local math fonts rendered visibly. Browser error/warning log was empty.
+- Final rebuilt production page was reloaded and baseline/disconnected results rechecked. Temporary viewport was reset, tab closed, QA released and this worker's preview stopped. Port8787 was untouched. Light preference and other engines were not separately exercised.
 
-Additional numerical review before browser QA: exact coefficient/discriminant arithmetic now preserves close modes, including `(z-1)(z-(1-1e-8))`. Complex crossing angles use the exact half-angle quantities 1±cos(theta), avoiding acos rounding to zero near ±1. A regression at K=1e8 independently checks a genuine roughly 1e-8-radian crossing. The selected browser Number is interpreted through its decimal serialization for exact coefficient arithmetic; the stated 2048-bit intermediate resource bound applies. Small nonzero outputs are displayed without an arbitrary zero cutoff. The locus and gain bar use compact viewboxes for phone legibility, and crossing markers are restricted to the sampled gain window; exact global crossings remain listed separately. Latest module tests: 38/38; type check/build pass. Browser QA is still pending; the coordinator's reserved integration slot is finished, and the currently held normal slot belongs to DD04.
+Local evidence artifacts (not committed):
 
-The coordinator's wider notation review found that other modules had misread visually typed `1e-2` as scientific notation. DS04 already rejects e/E in its polynomial grammar. A dedicated semantic regression now verifies rejection of that notation while accepting the decimal 0.01 as exactly 1/100. Numeric K controls are separate HTML number fields. Latest local test count is 39/39; no browser functionality is claimed from these tests.
+- `C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-2175-7122-ad9f-c01694059c6c/ds04-browser.png`
+- `C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-2175-7122-ad9f-c01694059c6c/ds04-phone.png`
+
+## Delivery / remaining work
+
+No accepted bounded-exercise requirement remains open. Higher-order or non-rational coefficient families remain outside this declared tool. Final independent review/integration belongs to the coordinator. Only this module's folder changed. The branch and exact tested submission will be preserved for review; no version bump, merge or deployment is performed here. One module PR URL will be recorded below after creation and attached to the worker chat before claim submission. The continuous worker goal proceeds to another eligible module after submission and prioritizes any coordinator rework.
