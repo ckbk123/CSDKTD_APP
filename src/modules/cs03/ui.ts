@@ -93,7 +93,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
       result.append(el('h3', 'Derive and intersect the strict inequalities'));
       result.append(display(String.raw`a>0,\quad b>0,\quad c(K)>0,\quad ab-c(K)>0`, 'Necessary and sufficient cubic Hurwitz conditions'));
       result.append(el('p', 'For a monic real cubic, these four strict conditions are necessary and sufficient. When a>0, the Routh first column is 1, a, (ab−c)/a, c. Each condition is constant or affine in K, so solving and intersecting the half-lines gives the complete real-gain set. No gain sweep is used as a proof.'));
-      result.append(display(`${latexOf(m.d)}+(${latexOf(m.g)})K>0,\qquad ${latexOf(sub(mul(m.a, m.b), m.d))}-(${latexOf(m.g)})K>0`, 'Both affine gain inequalities'));
+      result.append(display(String.raw`${latexOf(m.d)}+(${latexOf(m.g)})K>0,\qquad ${latexOf(sub(mul(m.a, m.b), m.d))}-(${latexOf(m.g)})K>0`, 'Both affine gain inequalities'));
       const answer = set.kind === 'finite' ? `${textOf(set.lower!)} < K < ${textOf(set.upper!)}` : set.kind === 'all' ? 'All real K' : 'Empty set: no strictly stable real gain'; result.append(el('p', answer, 'c-answer'));
       if (set.kind === 'empty') result.append(el('p', 'At least one necessary condition has no common solution. Changing only the constant term cannot repair a≤0 or b≤0. For g=0 every condition is gain-independent.'));
       if (set.kind === 'all') result.append(el('p', 'Here g=0 and D is strictly Hurwitz, so changing K does not move any mode.'));

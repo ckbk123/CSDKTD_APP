@@ -56,3 +56,6 @@ Actual checks on this isolated Node24 worktree:
 - git diff --check:passed.
 
 Real-browser visual editing/font/keyboard, reset/reopen/fast navigation, narrow viewport and final PR/commit/submission remain open. DS04 review correction is frozen pending its shared QA slot; CS03 offline work proceeds independently without simultaneous edits in DS04. No shared files/configuration/dependencies/version/deployment were changed.
+
+DS04 correction is now resubmitted at6be898d in its preserved PR#13; CS03 resumes as the only active implementation. The affine inequality display now preserves its typesetting spacing command through String.raw. Browser QA remains explicitly deferred until DD04 and the coordinator's next integration slot are complete; no pending acquisition watcher remains and this worker holds no QA reservation. The prepared own preview8825 is independent of primary8787.
+
