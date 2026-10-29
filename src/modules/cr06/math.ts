@@ -63,15 +63,28 @@ function check(x: number[], label: string): void {
   if (x.some(v => !Number.isFinite(v) || Math.abs(v) > 1e10)) fail(label + ' exceeds magnitude 10¹⁰. Shorten the horizon or reduce input/initial states.');
 }
 
+/** Qualify a rounded exponential projection before cancellation can turn an
+ * accurate-looking small answer into fabricated truth. This is a conservative
+ * floating-point screen, not an interval proof or removal of small modes. */
+function project(a: Matrix, x: number[]): number[] {
+  return a.map(row => {
+    const value = row.reduce((sum, coefficient, i) => sum + coefficient * x[i], 0);
+    const absoluteProducts = row.reduce((sum, coefficient, i) => sum + Math.abs(coefficient * x[i]), 0);
+    const allowance = 64 * Number.EPSILON * (absoluteProducts + Math.abs(value));
+    if (!Number.isFinite(allowance) || allowance > 1e-8 * Math.max(1, Math.abs(value))) fail('The state projection is numerically unresolved because large exponential terms cancel. Shorten the horizon or rescale the initial state/model; no state trajectory is reported.');
+    return value;
+  });
+}
+
 /** Continuous constant-input solution, evaluated independently at each t.
  * Augmentation provides ∫exp(Aτ)B dτ without inverse(A), including singular A. */
 function point(m: Model, e: Experiment, t: number): Point {
   const n = m.A.length;
   const augmented = m.A.map((row, i) => [...row, m.B[i]]).concat([Array(n + 1).fill(0) as number[]]);
   const exp = matrixExp(scale(augmented, t)), phi = exp.slice(0, n).map(row => row.slice(0, n)), integral = exp.slice(0, n).map(row => row[n]);
-  const free1 = mv(phi, e.initial1), free2 = mv(phi, e.initial2), forced = integral.map(v => v * e.input);
+  const free1 = project(phi, e.initial1), free2 = project(phi, e.initial2), forced = integral.map(v => v * e.input);
   const total1 = free1.map((v, i) => v + forced[i]), total2 = free2.map((v, i) => v + forced[i]);
-  const difference = mv(phi, e.initial2.map((v, i) => v - e.initial1[i]));
+  const difference = project(phi, e.initial2.map((v, i) => v - e.initial1[i]));
   const yFree1 = dot(m.C, free1), yFree2 = dot(m.C, free2), yForced = dot(m.C, forced) + m.D * e.input;
   const y1 = yFree1 + yForced, y2 = yFree2 + yForced;
   check([...free1, ...free2, ...forced, ...total1, ...total2, ...difference, yFree1, yFree2, yForced, y1, y2], 'The computed state/output');
