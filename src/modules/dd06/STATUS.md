@@ -7,7 +7,7 @@
 - **Branch:** `codex/dd06-state-feedback-01a186d2`.
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dd06-state-feedback-01a186d2\CSDKTD APP`.
 - **Claimed base:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86`, primary main/package 0.3.9. This contribution does not stack CP03 or DF02.
-- **PR:** none yet; create/reuse one contribution PR after implementation and checks, attach it and record its URL.
+- **PR:** [#37](https://github.com/ckbk123/CSDKTD_APP/pull/37), attached draft. Reuse this contribution PR/branch for corrections; dependency disposition and final clean exact submission remain.
 
 ## Existing behavior and requirement audit
 
