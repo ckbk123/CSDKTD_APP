@@ -51,3 +51,13 @@ Read current primary guides, atlas DP04 and research audit DP3 (CH8:20–31,E10,
 ## Checkpoint and remaining work
 
 Locked npm ci completed with Node24.22.1 and zero vulnerabilities. No implementation tests, build or browser checks have run yet. Every table requirement remains implementation/verification work. Earlier submitted DP02 and DD04 contributions stay preserved for review; coordinator returns take priority.
+
+## Mathematical checkpoint
+
+math.ts now computes the unreduced quadratic root set with scaled residual checks, continuous square-root branches and sampled traces including discriminant collision gains. It derives real-axis parity with fixed numerator sign, centroid/asymptote directions, D′B−DB′ break candidates, singular/common-root exclusions and direct complex candidate gain/phase. Both roots are always retained, including coincident and near-common-factor cases. Unit root-mode samples and principal inverse interpretation remain distinct from a forced system response.
+
+Current tested numeric limits: normalized coefficient magnitude≤100, nonzero numerator scale≥.0001, open poles/zero radius≤20, gain0–100 and trace window.01–100. Root residual tolerance10^-10; circle band10^-9; candidate angle tolerance10^-7rad plus scaled imaginary-gain tolerance10^-8. Modal roots support radius≤20000,4–30 intervals and finite amplitude≤10^150; tiny decaying tails may round to zero. T is .001–10s. The parser and interface must surface these bounds before delivery.
+
+npm test -- src/modules/dp04 passes16 independent math/edge cases; npm run check passes. The first run exposed signed-zero output and an overly strict exact assertion on a binary-floating candidate gain. Signed zeros are normalized for displayable outputs and the independently derived2.5 oracle uses a justified10^-14 tolerance; no physical result was changed. Baseline/changed zero, both break points, signed/constant numerator, conjugate poles, collision continuity, unreduced fixed roots, candidate singularities and modal interpretation pass.
+
+Visual parser, UI, lifecycle tests, full-project/build checks and browser verification remain unfinished. Browser acquisition is deferred for the coordinator's CR02→CP03→mixed-fraction integration order until its release notice. The planned parser must reject mixed number/fraction adjacency (including signed/grouped variants) with explicit +/× guidance, preserving normal compact/nested fractions. The current primary helper additionally requires a clean worktree/index and submitted SHA equal to HEAD; final delivery will use that helper, without resetting edits to satisfy it.
