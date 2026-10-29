@@ -2,6 +2,11 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.12 — 29 October 2026
+
+- CR01: expand editable polynomial products, explain coefficient contributions, verify exact rational factors through degree four, inspect residual-checked numerical roots/multiplicities, and compare rational expressions with their original excluded points retained.
+- Accept [PR #25](https://github.com/ckbk123/CSDKTD_APP/pull/25), source `de30d8db22261fb315533a3053e099e935e0fa7d`, with shared argument preflight and late-disposer cleanup. All 1,261 application tests/type/build and desktop/phone production checks pass; [independent evidence](src/modules/cr01/STATUS.md#independent-coordinator-acceptance--0312) records bounds and actual checks.
+
 ## 0.3.11 — 29 October 2026
 
 - Correct CS01 free-response modal projection: an exactly absent fast mode stays absent, while genuinely small nonzero components remain. Ill-conditioned numerical traces receive explicit feedback without changing exact stability classification.

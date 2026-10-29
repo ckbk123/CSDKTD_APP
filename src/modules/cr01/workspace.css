@@ -1,0 +1,27 @@
+[data-module="CR01"] .cr01-tool { display: grid; gap: 1rem; min-width: 0; color: var(--text); }
+[data-module="CR01"] .cr01-tool h2, [data-module="CR01"] .cr01-tool h3, [data-module="CR01"] .cr01-tool p { margin: 0; }
+[data-module="CR01"] .cr01-tool p { line-height: 1.6; }
+[data-module="CR01"] .cr01-card { display: grid; gap: .8rem; padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--surface); min-width: 0; }
+[data-module="CR01"] details.cr01-card { display: block; }
+[data-module="CR01"] details.cr01-card > :not(summary) { margin-top: .8rem; }
+[data-module="CR01"] summary { cursor: pointer; font-weight: 600; }
+[data-module="CR01"] .cr01-actions, [data-module="CR01"] .cr01-coefficients { display: flex; gap: .6rem; flex-wrap: wrap; min-width: 0; }
+[data-module="CR01"] .cr01-coefficients > * { flex: 1 1 9rem; min-width: 0; }
+[data-module="CR01"] .cr01-tool button, [data-module="CR01"] .cr01-tool input, [data-module="CR01"] .cr01-tool select { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: .4rem; padding: .55rem .7rem; max-width: 100%; }
+[data-module="CR01"] .cr01-tool button { cursor: pointer; white-space: normal; }
+[data-module="CR01"] .cr01-tool button:hover { background: var(--tint); }
+[data-module="CR01"] .cr01-field { display: grid; gap: .3rem; min-width: 0; }
+[data-module="CR01"] .cr01-poles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+[data-module="CR01"] .cr01-poles fieldset { display: grid; gap: .6rem; min-width: 0; border: 1px solid var(--line); }
+[data-module="CR01"] .cr01-output { display: grid; gap: 1rem; min-width: 0; }
+[data-module="CR01"] [hidden] { display: none !important; }
+[data-module="CR01"] .cr01-tool table { width: 100%; border-collapse: collapse; font-size: .9rem; overflow-wrap: anywhere; }
+[data-module="CR01"] .cr01-tool th, [data-module="CR01"] .cr01-tool td { text-align: left; border-bottom: 1px solid var(--line); padding: .5rem .25rem; }
+[data-module="CR01"] .cr01-scroll { overflow-x: auto; min-width: 0; }
+[data-module="CR01"] svg { display: block; width: 100%; min-width: 320px; max-height: 360px; }
+[data-module="CR01"] svg text { fill: var(--muted); font: 11px system-ui; }
+[data-module="CR01"] .cr01-axis { stroke: var(--line); stroke-width: 1; }
+[data-module="CR01"] .cr01-root { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+[data-module="CR01"] .cr01-message { padding: .6rem 0; }
+[data-module="CR01"] :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 600px) { [data-module="CR01"] .cr01-poles { grid-template-columns: minmax(0, 1fr); } [data-module="CR01"] .cr01-card { padding: .7rem; } }
