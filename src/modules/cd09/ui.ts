@@ -51,7 +51,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const tau = numeric(controlRow, 'Innovation-filter τ (s; 0 = off)', 'tau', '0'), horizon = numeric(controlRow, 'Plot horizon (s)', 'horizon', '5');
   const syncMode = () => { held.disabled = connected.checked; reference.disabled = !connected.checked; };
   for (const controls of [initialControls, experimentControls]) controls.addEventListener('input', () => { syncMode(); invalidate(); }, { signal });
-  const actions = element('div'); actions.className = 'observer-actions'; actions.append(button('Apply experiment', 'apply'), button('Try velocity sensor', 'velocity'), button('Try faster observer −12, −14', 'faster'), button('Try conjugate observer −4 ± 3j', 'complex'), button('Try measurement noise', 'noise'), button('Try filtered innovation', 'filter'), button('Restore course model', 'baseline'));
+  const actions = element('div'); actions.className = 'observer-actions'; actions.append(button('Apply experiment', 'apply'), button('Try velocity sensor', 'velocity'), button('Try faster observer −12, −14', 'faster'), button('Try conjugate observer −4 ± 3j', 'complex'), button('Try measurement noise', 'noise'), button('Try filtered innovation', 'filter'), button('Try authored unstable-filter example', 'unstable'), button('Restore course model', 'baseline'));
   const limits = element('details'); limits.append(element('summary', 'Supported model, units and numerical limits'),
     element('p', 'Real continuous two-state SISO: A2×2, B2×1, C1×2, D=0, state columns. The observer uses only measured scalar yₘ and known input u; true x is available only for this simulation’s comparisons. Independent initial states/estimates are editable. Matrix cells accept literal decimals or signed numeric fractions. Targets are real monic quadratic polynomials in s, with both coefficients positive. Expanded/factored forms, repeated and conjugate roots work. Visual e/E literals, hidden algebraic braces and mixed-number adjacency are unsupported.'),
     element('p', 'Time is in seconds, noise frequency in rad/s and phase in radians; other units follow the supplied model. Noise is the prescribed deterministic input n(t)=a sin(ωt+φ), not a random/Kalman model. Filtering is applied to the innovation, not to simulated truth. τ>0 adds a state and changes the actual error poles; the filter is initialized from measured innovation at t=0.'),
@@ -65,7 +65,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const padding = (high - low) * .1; low -= padding; high += padding;
     const duration = applied.horizon, X = (i: number) => 88 + 385 * i / (current.samples.length - 1), Y = (y: number) => 185 - 155 * (y - low) / (high - low);
     const svg = svgElement('svg', { viewBox: '0 0 500 225', role: 'img', 'aria-label': `${title}. ${lines.map(line => line.label).join('; ')}. Time0 to${duration} seconds. Values in the sample table.` });
-    svg.append(svgElement('line', { x1: 88, x2: 478, y1: 185, y2: 185, class: 'observer-axis' }), svgElement('line', { x1: 88, x2: 88, y1: 25, y2: 185, class: 'observer-axis' }), svgElement('text', { x: 83, y: 30, 'text-anchor': 'end' }, axis(high)), svgElement('text', { x: 83, y: 185, 'text-anchor': 'end' }, axis(low)), svgElement('text', { x: 88, y: 204 }, '0'), svgElement('text', { x: 465, y: 204 }, format(duration)), svgElement('text', { x: 235, y: 222 }, 'Time t (s)'));
+    svg.append(svgElement('line', { x1: 88, x2: 478, y1: 185, y2: 185, class: 'observer-axis' }), svgElement('line', { x1: 88, x2: 88, y1: 25, y2: 185, class: 'observer-axis' }), svgElement('text', { x: 83, y: 30, 'text-anchor': 'end' }, axis(high)), svgElement('text', { x: 83, y: 185, 'text-anchor': 'end' }, axis(low)), svgElement('text', { x: 88, y: 204 }, '0'), svgElement('text', { x: 465, y: 204 }, format(duration)), svgElement('text', { x: 235, y: 219 }, 'Time t (s)'));
     const index = Math.round(selectedTime / duration * (current.samples.length - 1));
     for (const line of lines) {
       svg.append(svgElement('path', { d: line.values.map((v, i) => `${i ? 'L' : 'M'}${X(i).toFixed(3)},${Y(v).toFixed(3)}`).join(' '), class: line.style }), svgElement('circle', { cx: X(index), cy: Y(line.values[index]), r: 3, class: 'observer-marker' }));
@@ -103,7 +103,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const connection = element('section'); connection.append(element('h3', '5. Check the complete plant and estimator connection'));
       if (feedback) connection.append(createEquationDisplay(`u=-K\\hat x+Nr,\\quad K=${matrix(feedback.K, 2)},\\quad N=${tex(current.referenceGain)}`, 'Estimated-state feedback and reference gain'),
         createEquationDisplay(`A-BK=${matrix(feedback.closed, 2)}`, 'Actual controller matrix'),
-        element('p', feedback.prefilter === null ? `No supported unity-tracking prefilter (${feedback.dcGain === null ? 'DC solve is poorly conditioned' : `DC gain=${format(feedback.dcGain)}`}). This experiment uses N=1 and makes no unity-tracking claim.` : `The ideal steady reference gain is N=${format(feedback.prefilter)}. It corrects model-based tracking; it does not remove estimation error or measurement noise.`));
+        element('p', feedback.prefilter === null ? `No supported unity-tracking prefilter (${feedback.dcGain === null ? 'DC solve is poorly conditioned' : `DC gain=${format(feedback.dcGain)}`}). This experiment uses N=1 and makes no unity-tracking claim.` : `With exact state estimates and no measurement disturbance, N=${format(feedback.prefilter)} gives ideal constant-reference tracking. Estimator/filter stability and persistent noise still determine whether this experiment converges.`));
       else connection.append(element('p', `Observer-only experiment: the same known constant input u=${format(applied.heldInput)} drives the plant and estimator. Designing an observer alone does not stabilize the plant.`));
       connection.append(element('p', `${feedback ? 'Actual controller' : 'Open plant'} modes: ${modes(current.plantPoles)}. All ${current.allPoles.length} plant/observer/filter homogeneous modes: ${modes(current.allPoles)}.`), element('p', 'The complete spectrum follows from block-triangular dynamics in true-state/error coordinates. Prescribed noise is an external forcing; its simulation oscillator is not counted as a plant or estimator mode.'));
       const simulation = element('section'); simulation.append(element('h3', '6. Compare truth, estimate, innovation and effort'), element('p', `Current experiment: ${applied.filterTau ? `innovation filter τ=${format(applied.filterTau)}s` : 'unfiltered observer'}. ${comparison ? 'Error and effort comparisons include a separate unfiltered run with the same initial states, input/reference and prescribed noise. Each run retains its own plant truth.' : ''} Lines are numerical samples. State-component RMS values are reported separately in their model units; no finite horizon is declared settled.`));
@@ -146,7 +146,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const action = (event.target as Element).closest<HTMLButtonElement>('button[data-action]')?.dataset.action; if (!action) return;
     try {
       if (action === 'apply') apply();
-      else if (['baseline', 'velocity', 'faster', 'complex', 'noise', 'filter'].includes(action)) {
+      else if (['baseline', 'velocity', 'faster', 'complex', 'noise', 'filter', 'unstable'].includes(action)) {
         if (action === 'baseline') {
           editors.forEach((e, i) => e.setValue(INITIAL[i]));
           for (const [input, value] of [[x1, '1'], [x2, '0'], [hat1, '0'], [hat2, '0'], [held, '0'], [reference, '1'], [amplitude, '0'], [frequency, '20'], [phase, '0'], [tau, '0'], [horizon, '5']] as const) input.value = value;
@@ -156,7 +156,13 @@ export const mount: ModuleMount = ({ container, signal }) => {
         if (action === 'faster') editors[3].setValue('q(s)=(s+12)(s+14)');
         if (action === 'complex') editors[3].setValue('q(s)=(s+4)^2+9');
         if (action === 'noise' || action === 'filter') { amplitude.value = '.05'; frequency.value = '20'; phase.value = '0'; tau.value = action === 'filter' ? '.1' : '0'; }
+        if (action === 'unstable') {
+          editors[0].setValue(String.raw`A=\begin{bmatrix}1&0\\0&2\end{bmatrix}`); editors[1].setValue(String.raw`B=\begin{bmatrix}1\\1\end{bmatrix}`); editors[2].setValue(String.raw`C=\begin{bmatrix}1&1\end{bmatrix}`); editors[3].setValue(INITIAL[3]); editors[4].setValue(INITIAL[4]);
+          for (const [input, value] of [[x1, '.1'], [x2, '0'], [hat1, '0'], [hat2, '0'], [held, '0'], [reference, '1'], [amplitude, '0'], [frequency, '20'], [phase, '0'], [tau, '1'], [horizon, '3']] as const) input.value = value;
+          connected.checked = true; syncMode();
+        }
         invalidate(); apply();
+        if (action === 'unstable') status.textContent = 'Authored variation applied: an unstable plant with stable nominal feedback/observer targets. Inspect all actual modes after adding the innovation filter.';
       } else if (action === 'row') { secondRow = !secondRow; render(); }
       else if (action === 'reveal') { revealed = !revealed; render(); }
       else if (action === 'check') {
@@ -168,7 +174,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         if (value < 0 || value > applied.horizon) throw new Error('Inspection time must lie inside the plotted horizon.'); selectedTime = value; render();
       }
     } catch (error) {
-      if (action === 'apply' || ['baseline', 'velocity', 'faster', 'complex', 'noise', 'filter'].includes(action)) view.replaceChildren();
+      if (action === 'apply' || ['baseline', 'velocity', 'faster', 'complex', 'noise', 'filter', 'unstable'].includes(action)) view.replaceChildren();
       status.textContent = error instanceof Error ? error.message : 'Check the experiment inputs.';
     }
   }, { signal });

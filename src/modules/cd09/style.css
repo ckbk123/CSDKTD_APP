@@ -31,4 +31,4 @@
 [data-module="CD09"] .observer-tool caption { text-align:left; color:var(--muted); }
 [data-module="CD09"] .observer-tool td, [data-module="CD09"] .observer-tool th { border:1px solid var(--line); padding:8px; text-align:left; }
 [data-module="CD09"] .observer-tool td { white-space:nowrap; }
-@media(max-width:700px) { [data-module="CD09"] .observer-inputs, [data-module="CD09"] .observer-plots { grid-template-columns:minmax(0,1fr); } [data-module="CD09"] .observer-tool td, [data-module="CD09"] .observer-tool th { padding:6px; font-size:11px; } }
+@media(max-width:700px) { [data-module="CD09"] .observer-inputs, [data-module="CD09"] .observer-plots { grid-template-columns:minmax(0,1fr); } [data-module="CD09"] .observer-tool svg text { font-size:20px; } [data-module="CD09"] .observer-tool td, [data-module="CD09"] .observer-tool th { padding:6px; font-size:11px; } }

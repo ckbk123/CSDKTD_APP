@@ -44,6 +44,7 @@ describe('observer exercise state and native controls', () => {
     const v = open(); v.action('filter').click(); v.action('reveal').click(); expect(v.root.textContent).toContain('All 5 plant/observer/filter homogeneous modes');
     expect(v.root.textContent).toContain('(132)'); expect(v.root.textContent).toContain('(420)'); expect(v.root.textContent).toContain('Unfiltered run');
     expect(v.row('Injected signal ν').cells.length).toBe(3); expect(v.row('Injected signal ν').cells[1].textContent).toBe('1'); expect(v.row('Sample RMS e₁')).toBeDefined(); expect(v.row('Sample RMS e₂')).toBeDefined();
+    v.action('unstable').click(); v.action('reveal').click(); expect(v.root.textContent).toContain('Authored variation applied'); expect(v.root.textContent).toContain('Homogeneous error dynamics: unstable'); expect(v.root.textContent).toContain('(-2)');
   });
   it('rejects native underflow and range failures, while preserving intentional zero/exponents', () => {
     const v = open(); v.action('reveal').click(); v.set('amplitude', '1e-999'); v.action('apply').click(); expect(v.root.textContent).toContain('too small to represent'); expect(v.root.querySelectorAll('svg')).toHaveLength(0);
