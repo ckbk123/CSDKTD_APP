@@ -70,6 +70,12 @@ describe('independently derived pole-placement and reference fixtures', () => {
   it('verifies the actual matrix characteristic polynomial rather than desired labels', () => {
     close(characteristic([0, 1, -8, -6]), [6, 8]); close(characteristic([-2, 3, -3, -2]), [4, 13]);
   });
+  it('retains tiny nonzero gains and evaluates slow forced response without steady-state cancellation', () => {
+    const tiny = design({ A: [0, 1, 0, 0], B: [0, 1], C: [1, 0] }, [1e-14, 1e-14]);
+    close(tiny.K.map(x => x * 1e14), [1, 1]); expect(tiny.prefilter).toBeCloseTo(1e-14, 24);
+    // At t=.1, y≈N t²/2; no subtraction of two ~1/N steady-state terms.
+    expect(response(tiny, tiny.prefilter!, [0, 0], 1, .1, 2)[1].output).toBeCloseTo(5e-17, 27);
+  });
 });
 
 describe('bounded visual semantics', () => {
