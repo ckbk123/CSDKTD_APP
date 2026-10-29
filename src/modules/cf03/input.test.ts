@@ -7,6 +7,7 @@ describe('CF03 displayed mathematical meaning', () => {
     expect(parseController('C(s)=4')).toEqual({kp:4,ki:0});
     expect(parseController(String.raw`C(s)=\frac{4s+2}s`)).toEqual({kp:4,ki:2});
     expect(parseController(String.raw`\frac1s`)).toEqual({kp:0,ki:1});
+    for(const source of[String.raw`\frac12`,String.raw`\frac{1}2`,String.raw`\frac1{2}`])expect(parseController(source)).toEqual({kp:.5,ki:0});
   });
   it('preserves outer unary signs without changing the sign of a following sum', () => {
     expect(parseController('-1+2')).toEqual({kp:1,ki:0});
@@ -20,6 +21,8 @@ describe('CF03 displayed mathematical meaning', () => {
   });
   it('keeps numeric wrappers and explicit grouping distinct from invisible grouping', () => {
     expect(parsePlant(String.raw`\frac{1{2}}{s+1}`).g).toBe(12);
+    expect(parseController(String.raw`-{2}{3}`)).toEqual({kp:-23,ki:0});
+    expect(()=>parseController(String.raw`-{2+3}`)).toThrow(/visible parentheses/);
     expect(parsePlant(String.raw`\frac{{.2}}{s^{2}+3s+2}`).g).toBe(.2);
     expect(parsePlant(String.raw`\frac{1+2}{s+1}`).g).toBe(3);
     expect(()=>parsePlant(String.raw`\frac{1{+2}}{s+1}`)).toThrow(/visible parentheses/);
