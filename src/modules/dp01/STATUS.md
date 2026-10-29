@@ -33,7 +33,15 @@ Real proper rational models with denominator degree 1–2 and polynomial express
 
 TASK/atlas cites Ch8:41–44,46–62 and S13. `docs/research/DISCRETE_EXERCISE_AUDIT.md` DP1 records the negative-pole worksheet and modal reasoning. Original slides have not been newly inspected by this worker. ±0.8 and equal-radius comparisons remain proposed teaching fixtures; expected values will be derived independently.
 
-## Remaining acceptance work
+## Implementation checkpoint
+
+- `math.ts`: bounded visual rational parser; normalized first/second-order recurrence; causal step/impulse/physical-ramp/free calculation; original poles, free modal decomposition and mode comparisons.
+- `workspace.ts`, `plot.ts`, `workspace.css`: equation entry/results, prediction/reveal, history and fixtures, stems with sample/time axes, optional labeled held guide, sample arithmetic, full accessible table and equal-radius angle comparison. All state is mount-local, listeners use the abort signal and the equation input is destroyed on cleanup.
+- `math.test.ts`: 40 passing tests. Independent baseline is y[k]=1−0.8^k; impulse 0.2·0.8^(k−1) for k≥1; physical ramp T[k−5+5·0.8^k]; nonzero-history mode c·0.8^(k+1). Changed sign, conjugates, repeated poles, delays, feedthrough, cancelled hidden mode, time scaling and invalid/bounded work are covered.
+- `npm test -- src/modules/dp01/math.test.ts`: 40/40 pass. `npm run check`: pass (bundled Node v24.22.1; npm 10.8.2; locked dependencies installed inside this worktree).
+- Full suite/build and real-browser checks are still pending. Stage remains in-progress.
+
+## Remaining acceptance work (at initial audit)
 
 - [ ] Working exercise inputs, declared supported domain and mathematical validation.
 - [ ] Input-dependent computation and the full mathematical checks in TASK.md.
