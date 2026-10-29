@@ -89,6 +89,7 @@ describe('CR03 linear ODE grammar', () => {
   });
   it('supports fourth derivatives and static ODEs within the same proper convention', () => {
     expect(parseOde(String.raw`y^{(4)}+10y^{(3)}+35y''+50y'+24y=u`)).toEqual({ numerator: [1], denominator: [1, 10, 35, 50, 24] });
+    expect(parseOde(String.raw`y^{\prime}^{\prime}^{\prime}^{\prime}+10y^{\prime}^{\prime}^{\prime}+35y^{\prime}^{\prime}+50y^{\prime}+24y=u`)).toEqual({ numerator: [1], denominator: [1, 10, 35, 50, 24] });
     expect(parseOde('2y=6u')).toEqual({ numerator: [3], denominator: [1] });
     expect(parseOde(String.raw`y=10^{-2}u`)).toEqual({ numerator: [.01], denominator: [1] });
   });

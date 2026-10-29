@@ -9,7 +9,7 @@
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr03-state-realizations-01a186d2/CSDKTD APP`
 - **Contract:** [TASK.md](TASK.md)
 - **PR:** [CR03 #21](https://github.com/ckbk123/CSDKTD_APP/pull/21), attached to this worker chat; draft pending real-browser QA
-- **Current remaining work:** actual CR03 production-browser verification and any repairs it reveals, followed by final evidence and exact clean submission. Historical global-browser deferrals below are superseded by verified private per-chat IAB testing.
+- **Current remaining work:** finish actual fraction/power-button and font-entry checks, keyboard/fonts, lifecycle and phone layout; repair any findings and finish the delivery evidence. Mathematical browser checks are recorded below. Historical global-browser deferrals are superseded by verified private per-chat IAB testing.
 
 ## Accepted requirement audit before implementation
 
@@ -97,3 +97,23 @@ Current accepted-scope coverage:
 | Lifecycle, keyboard, local fonts and responsive layout | Synchronous owned loading/child abort, failure/disposal tests, local Escape capture and scoped CSS | Actual fonts/keyboard, reset/reopen/rapid navigation and narrow width |
 
 Resumption checks pass: **93 module tests in five files**, **347 project tests in 22 files**, `npm run check`, `npm run build` and `git diff --check`. The usual MathLive chunk-size warning remains. The existing private production preview session `97622` on port 8864 was confirmed live and serves the rebuilt bundle. The worker will verify its own IAB inventory identity and use only its private tabs/viewport; no global QA reservation or Firefox retry is needed. No actual CR03 browser evidence is claimed yet. Stage remains `in-progress` until that accepted gate is completed.
+
+## Production-browser mathematical checkpoint
+
+Private IAB inventory explicitly matched this worker's chat ID. Its new owned tab 4 uses the rebuilt production preview on 8864; no global reservation was taken or another chat's browser changed. Actual reveal/row selection and computed table values pass:
+
+| Changed browser case | Independently expected and observed result |
+|---|---|
+| Baseline, 201 samples over 5 s | At 1 s: x1/y = 0.1997882, x2 = 0.2325442; zero initial output and matched mapped output |
+| Proposed numerator with physical T and x(0−)=[1,0] | z(0−)=[4,−2], y(0+)=4, y(1)=2.968303; original/mapped states differ while output agrees to the recorded numerical tolerance |
+| Biproper example | D=2, remainder s+5, initial output 2, y(1)=3.231485; physical derivative correction uses the same u and its derivatives |
+| Hidden-mode matrix example | Controllability 1/2, observability 2/2; nonzero initial mode retained and y(1)=3.150614 |
+| Hand-derived shear candidate | Different A/B/C entries are accepted as input/output equivalent; a changed C entry reports a mismatch. Adopting the supplied matrices recovers the baseline TF and maps their different state trajectory back to the same output |
+| Static matrix gain | D=3, command 2 gives output 6 at 0+ and throughout the table, with no dynamic states |
+| Fourth-order cascade | Denominator s⁴+10s³+35s²+50s+24, all four state rows, y(1)=0.006652554; State 4 exposes the correct final derivative row |
+
+Ordinary keyboard typing of y″+3y′+2y=u′+4u serializes to successive MathLive prime superscripts and gives numerator s+4 and y(1)=1.031697. Four ordinary primes also serialize correctly and recover the fourth-order cascade above; that exact real-editor serialization is now included in a parser regression. Actual copied hidden formatting groups and mixed numbers show the intended guidance, hide stale answers, and recover with visible parentheses or explicit addition. The corrected grouped plant gives y(1)=0.2838338; explicit (2+1/2)/(s+1) gives 1.580301. Improper and bare signed-power forms receive specific feedback. The visible difference between unbraced s^04 and braced s^{04} is preserved: static gain 1/4 versus four integrators, whose unit-step value at 1 s is 1/24.
+
+Native-control browser checks distinguish singular T=0, a nonzero underflow, an empty cell and representable 1e−2. The valid coordinate scale has condition 100 and preserves the output; condition above 10⁸ is rejected. Excessive/insufficient sample counts, horizon and command underflow hide answers with explicit bounds. Intentional 0e−999 gives finite zero curves and 401 actual table rows; native 1e−2 scales the four-integrator output correctly. A matrix free mode A=100 with initial state 1 reports the 10¹⁰ trajectory bound on a 1 s horizon; shortening to 0.1 s computes e¹⁰≈22026.47. A zero-transfer unobservable mode retains x(1)=e, output zero and its denominator; unavailable derivative coordinates explain the singular map while identity coordinates remain usable.
+
+Visual inspection found that a single long state/output equation made the two comparison panels unnecessarily wide. Each panel now typesets dynamics and output on separate aligned lines; the actual rebuilt layout was inspected with both complete equations visible in the two-state case. Numerical matrices and algorithms are unchanged. The partial structured browser evidence is saved outside Git as `cr03-browser-progress.json` in the worker visualization directory. Keyboard/fonts, fraction/power-button entry, lifecycle and narrow viewport remain to be completed; this checkpoint does not claim those checks.

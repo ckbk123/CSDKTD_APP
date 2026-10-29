@@ -14,7 +14,7 @@ function linearTerms(values: readonly number[], name: string): string {
   return kept.length ? kept.map(({ value, order }, i) => `${value < 0 ? '-' : i ? '+' : ''}${Math.abs(value) === 1 ? '' : num(Math.abs(value))}${derivative(name, order)}`).join('') : '0';
 }
 function stateEquations(model: StateModel, name: string): string {
-  return model.A.length ? `\\dot{${name}}=${matrixLatex(model.A)}${name}+${matrixLatex(column(model.B))}u,\\qquad y=${matrixLatex([model.C])}${name}+(${num(model.D)})u` : `y=(${num(model.D)})u,\\quad\\text{no dynamic states}`;
+  return model.A.length ? `\\begin{aligned}\\dot{${name}}&=${matrixLatex(model.A)}${name}+${matrixLatex(column(model.B))}u\\\\y&=${matrixLatex([model.C])}${name}+(${num(model.D)})u\\end{aligned}` : `y=(${num(model.D)})u,\\quad\\text{no dynamic states}`;
 }
 interface MatrixFields { A: HTMLInputElement[][]; B: HTMLInputElement[][]; C: HTMLInputElement[][]; D: HTMLInputElement }
 interface Shown {
