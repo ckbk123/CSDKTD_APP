@@ -1,27 +1,74 @@
 # DF03 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** implemented
+- **Review:** independent coordinator integration review pending; shared Escape correction remains a reported coordinator-owned integration note
+- **Assessed:** 2026-10-29; isolated base primary main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86`
+- **Owned scope:** `src/modules/df03/**`; [accepted contract](TASK.md)
+- **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
+- **Branch:** `codex/df03-sampled-frequency-01a186d1`
+- **Worktree:** `C:\Users\baokh\.codex\worktrees\df03-sampled-frequency-01a186d1\CSDKTD APP`
+- **PR:** [DF03 #31](https://github.com/ckbk123/CSDKTD_APP/pull/31), attached; checked contribution prepared for integration
 
-## Implemented and inspected
+## Accepted exercise and delivered evidence
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Initial inspection found only immutable metadata and a blank synchronous mount, with no module tests. The primary folder was clean/unreserved when atomically claimed; this fresh worktree excludes earlier unmerged contributions and preserves primary8787. Locked npm ci under Node24.22.1 passed with zero vulnerabilities. `index.ts`, shared files, dependencies and other modules are untouched. The local parser adapts techniques from this worker's DP04 source without any runtime sibling import.
 
-## Remaining acceptance work
+| Accepted requirement | Delivered evidence / remaining work |
+|---|---|
+| Editable data, attempt and checked reveal | Shared visual L(z) input; native T/horizon/targets; three required predictions; changed-input invalidation and honest unavailable grades; parser/interface tests and actual editor/button checks |
+| Exact unit-circle cursor | Direct complex evaluation at requested Ω, numerical real/imaginary/magnitude/phase, unit-circle point and full-pole diagram; singular/zero feedback; actual Ω=π/2 and π checked |
+| Physical and warped axes | Ω rad/sample, ω=Ω/T rad/s, f Hz and ν=(2/T)tan(Ω/2) rad/s; Nyquist ν=∞; actual physical/warped selections and out-of-plot cursor feedback |
+| Complete gain/phase crossing sets | Degree<=2 equations in cosΩ; all roots/endpoints/touches, unit-gain continuum, negative-real continuum intervals, zeros/poles/unreduced0/0; independent fixtures and actual two-crossing/continuum/singularity checks |
+| Margins and bandwidth | Every finite geometric GM/PM; absence/continuum/undefined/infinite labels; first downward−3dB threshold and table of all threshold hits; DC/full-stability guards and two-threshold analytic fixture |
+| Full poles and sampled transient | Every unreduced D+N pole with its own disk label; full aggregate stability; actual zero-state recurrence, inspected samples, observed overshoot/rise/settling with finite-horizon qualification; independent closed forms and roundoff guard |
+| Sampling/transient targets and emulation | Target/Nyquist comparison, all-crossing phase target and observed response targets; no exact PM/overshoot claim; physical ZOH plus backward/trapezoidal PI builder assessed as actual discrete loop; changed-T and both-method browser checks |
+| Lifecycle/accessibility/phone | Synchronous loading/owned child signal, partial-mount cleanup tests; fresh whole-model editor sessions; keyboard/Enter/Escape/reset/leave/reopen/rapid navigation, local scroll/fonts and390px browser checks pass. Broader shared Escape mode correction remains coordinator-owned/pending disposition below |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Supported mathematics and numerical limits
 
-## Evidence and next action
+Real strictly proper L(z)=N(z)/D(z), denominator degree1 or2, numerator degree strictly smaller; coefficients in descending z powers, normalized to monic D. Each nonzero normalized coefficient has magnitude1e-9–100. Negative unity feedback uses Q=D+N without pole cancellation. All roots of Q are retained even if the input/output transfer cancels. Disk boundary band is1e-9; a boundary result is not strict asymptotic stability.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+Visual input: decimals, signed/compact/nested fractions, polynomial arithmetic/factors, visible parentheses and literal integer powers0–2. No function-name labels, e/E symbols, mixed-number adjacency or hidden grouping. TeX's one-atom power/fraction arguments are preserved, with explicit +/× and raised-box feedback for ambiguous forms. Bounds:512 source characters,128 expanded tokens,8 logical grouping levels,32 normalized internal nesting, degree4 intermediates and magnitude1e12 intermediates; literal/product/quotient/normalization underflow is rejected. Native controls use shared `readNumericInput`, retaining legitimate exponent notation and intentional zero.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Frequency covers Ω∈[0,π], T=.001–10s. |p(exp(jΩ))|² is a quadratic in c=cosΩ. Stable quadratic roots give complete gain/threshold sets; the negative-real equation is sinΩ(A+BcosΩ)=0 with Re(L)<0, including both endpoints. Constant-magnitude and negative-real continua are separately declared, not represented by a finite list. A64-epsilon cosine endpoint band handles roundoff; a nonzero discriminant within its arithmetic-error estimate is explicitly unresolved, never called a complete set. Direct zero/denominator residuals use64-epsilon coefficient-norm thresholds. Roots/crossings are numerical approximations, not exact symbolic certificates.
+
+GM is the positive gain multiplier at each negative-real intersection. Signed PM is the nearest negative-axis phase reserve in(−180,180]degrees, not an unconditional robustness/stability theorem. The complete pole set remains decisive. Bandwidth requires every full closed pole inside the disk and finite nonzero closed-loop DC gain; it selects the first downward−3dB crossing relative to DC (squared ratio10^(−3/10)). Other threshold intersections remain visible. No crossing below Nyquist is labeled beyond/unresolved, not silently infinite; unstable/zero-DC/singular cases are undefined.
+
+Unit reference step at k=0, zero prehistory, y[0]=0. N=10–2000 integer intervals; horizon NT and times use seconds. The strictly proper Q/N recurrence computes every sample. Output magnitude beyond1e12 gives no partial curve or transient metrics. A conservative roundoff-amplification estimate convolves local64-epsilon absolute-term errors with rho^lag (order1) or(lag+1)rho^lag (order2), using an inflated numerical root radius. An estimate above1e-7*max(1,|y|) makes the response unavailable; shorter horizons may recover. This is a conservative support guard, not an exact error theorem for every floating-point operation. It prevents a hidden unstable cancelled mode's arithmetic leak from being presented as an actual zero-state trajectory.
+
+Stable modeled DC limit, maximum observed normalized overshoot, first sampled10–90% rise and observed2% settling candidate are distinguished. No finite trace proves the infinite settling tail or excludes a later peak; unstable/zero-limit/insufficient-horizon cases retain their qualification. Response plots show at most201 actual sample markers without physical interpolation. Frequency plots use401 display points, ±80dB clipping and phase-wrap/singularity gaps; analytic tables establish crossings. Warped plots stop at.98π while direct coordinates retain the infinite Nyquist endpoint. Numeric tables/plots scroll locally, preserving680px chart text.
+
+PI builder: P(s)=g/(τs+1), C(s)=Kp+Ki/s; g=.05–20,τ=.01–10s,Kp=0–20,Ki=.001–20s⁻¹,T/τ≤20 plus the same coefficient bounds. Read error/update controller/hold u at each tick. Exact ZOH a=exp(−T/τ),b=g(1−a), plant b/(z−a); controller integrator Tz/(z−1) backward or T(z+1)/(2(z−1)) trapezoidal. The resulting D=(z−a)(z−1) and actual numerator are round-tripped through the visual parser at full coefficient precision. Displayed derived equations are explicitly approximate to eight significant digits. No continuous-only emulation guarantee is claimed.
+
+## Independent fixtures and provenance
+
+Course anchors remain Ch8:33–45, Ch9 design sections, E10/E11. Original slides were not reinspected; these bounded numerical exercises are proposed independently derived fixtures, not transcribed source answers. Primary definitions inspected: [MathWorks margins](https://www.mathworks.com/help/control/ref/dynamicsystem.allmargin.html), [bandwidth](https://www.mathworks.com/help/control/ref/dynamicsystem.bandwidth.html), [PI integrator formulas](https://www.mathworks.com/help/control/ref/pid.html). No licensed external solver was used as an oracle.
+
+- Baseline .5/(z−.8): full pole.3; DC5/7; y[k]=(5/7)(1−.3^k). Gain crossing cosΩ=(1+.8²−.5²)/(2*.8), Ω≈.51812359,ω≈5.1812359rad/s atT.1; PM≈97.903208°. Nyquist GM3.6≈11.12605dB. Closed bandwidth cosΩ=(1+.3²−.7²/10^(−3/10))/.6,ω≈13.824829rad/s; rise.1s, observed settling.4s.
+- Resonant .4z/(z²−1.4z+.9): gain equation3.6c²−5.32c+1.81=0 gives both Ω≈.32801256,1.010906; their PMs175.38036°,12.229519° coexist with observed89% overshoot. Changing only T rescales seconds/frequency axes, retaining discrete poles/angles.
+- H=.5/(z²−.25), from L=.5/(z²−.75): stable poles±.5 and two −3dB threshold intersections; the first downward hit is bandwidth. L=.5z/(z²+.5) has a tangency atΩ=π/2. L=1/z has a unit-gain continuum and boundary full pole−1. L=z/(z²+1) has singularΩ=π/2 and negative-real continuum(π/2,π].
+- .5(z−1)/(z(z−1)): full poles1,−.5 remain, even though the transfer cancels z−1; DC cursor0/0 and stable bandwidth/limit are not certified. The per-row disk labels are boundary and inside, respectively.
+- .1(z−2)/((z−2)(z−.2)): exact zero-state y[k]=(1−.1^k)/9 while the hidden full pole2 remains. Short recurrence matches; long recurrence is rejected by roundoff amplification. A stable complex2000-interval case remains supported.
+- PI g2,τ1,Kp.5,Ki1,T=ln2: a=.5,b1,D=z²−1.5z+.5. Backward numerator(.5+ln2)z−.5; trapezoidal numerator(.5+ln2/2)z−.5+ln2/2. Both stable limits1; actual observed overshoot19.314718% versus24.632072%, settling candidates3T versus7T.
+
+## Actual production-browser evidence and repairs
+
+Own in-app browser inventory explicitly matched codexSessionId `01a186d1-a367-78f1-98f5-e1cf147ef306`, with no existing tabs. Only private tabs8/9 and preview127.0.0.1:8797 were used; no global lock, other tab/viewport/reservation or primary8787 was touched. In-app browser/system dark theme; precise engine version was not exposed. Light theme was not separately emulated. No Firefox testing or native-window input is claimed.
+
+Actual baseline Enter prepare/reveal, all predictions, independent values above, direct Ω=π/2 real/imag values, physical/warped axes, Nyquist infinity and invalid cursor/sample feedback were checked. Resonant two-crossing, changed-T target above Nyquist, cancellation/0/0/full-pole cases and negative-real continuum/singular cursor were checked. Real fraction and power buttons constructed copied `\frac{1}{z^1}`, giving the unit-gain continuum. Copied nested `\frac{\frac12}{z-.8}` retained baseline; actual mixed adjacency, e-symbol and unbraced z^1.0 drafts received their specific errors. Rapid paste/clear batching produced one incomplete compound draft; it was cleared and not counted. Subsequent whole-field entry separately observed empty, then settled typing and copied actual source before interpreting results.
+
+Native1e-999 target hid stale results with underflow feedback;0e-999 and T=1e-2 were accepted;2001 and fractional interval counts were rejected. The cancellation fixture showed no partial long-horizon response, disabled sample inspection, then recovered sample2=.11 atN10. Actual backward/trapezoidal PI methods atln2 matched the analytic fixture; T/τ excess hid results with useful bounds feedback.
+
+The first inspection found aggregate stability repeated in each pole row. Each row now uses its own modulus classification, with regression and actual rebuilt browser evidence (1 boundary,−.5 inside). Endpoint z coordinates now use the same exact endpoint convention as complex evaluation. Rounded derived equations are labeled approximate while all model input/PI coefficients retain full precision.
+
+Keyboard Systems7 changed the actual draft, Escape closed it without navigation, Reset while open restored the baseline and closed keyboard. Leave/reopen after editedT removed old roots/fields and restoredT.1; rapid library/module/library left zero old controls. At390×844, page width375px, loaded fonts/KaTeX_Main, one tool/editor; tables use271px viewports with560–1051px content, plots271/680px. ArrowRight moved both table and plot40px locally. The phone keyboard did not widen the page. Full-precision PI input/approximate results also stayed375px. Logs were empty; all temporary viewports reset, tabs closed and preview stopped.
+
+An additional phone Escape→PI-build sequence reproduced the coordinator-known shared setValue/mode defect (empty field). DF03 now treats whole-model presets/PI construction as fresh caller-owned editor sessions: destroy old input, create/append new shared input, read its initial draft. A regression verifies old inputs disconnect and exactly one new input remains. Actual rebuilt390px Escape→backward PI, Escape→trapezoidal PI and Escape→two-crossing preset all prepare/reveal correctly, retain expected values, one field and375px page. Navigation removes replacement resources and reopening restores baseline. The broader shared Escape behavior remains reported to the coordinator, whose active shared correction is separate from this owned contribution. No shared file was changed here and no global fix is claimed. The complete DF03 whole-model workflow now passes on this branch itself; the shared note accompanies independent integration review rather than withholding an already repaired owned flow.
+
+Proof files outside Git in the worker's2026/10/29 visualization folder: `df03-baseline-crossings.png`, `df03-phone-cursor.png`, `df03-phone-plot.png`, `df03-phone-emulation.png`, `df03-phone-replacement-fixed.png`. Browser screenshots were visually inspected and selected proofs embedded in chat; these are actual manual/tool checks, not a nonexistent end-to-end command.
+
+## Checks and next action
+
+Supported Node24.22.1: `npm test -- src/modules/df03`88 tests in5 files (21 math,41 parser,8 formatting,12 mocked interface,6 lifecycle), `npm run check`, `npm test`748 tests in31 files, `npm run build` and `git diff --check` pass. Existing MathLive221.50kB gzip warning/20 local fonts remain; DF03 view≈14.48kB gzip. Generated output is not committed.
+
+No owned mathematical/UI requirement or new shared API dependency remains. PR31 is reused/attached and prepared for independent review with the shared-component note above. Final submission records the exact clean pushed tested HEAD through the current primary claim helper. Earlier review returns retain priority; submission is a contribution milestone in the continuous goal. No main merge, version change, deployment, dependency change or new agents.
