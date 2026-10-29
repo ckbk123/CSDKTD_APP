@@ -74,6 +74,17 @@ export const mount: ModuleMount = ({ container, signal }) => {
     parent.append(table);
   }
   function render(): void {
+    const active = document.activeElement instanceof HTMLElement && lesson.contains(document.activeElement) ? document.activeElement : null;
+    const action = active?.dataset.action, actionValue = active?.dataset.value;
+    const inputName = active instanceof HTMLInputElement ? active.name : null;
+    renderContent();
+    if (!active || active.isConnected) return;
+    const replacement = action ? Array.from(lesson.querySelectorAll<HTMLButtonElement>('button[data-action]')).find(b => b.dataset.action === action && b.dataset.value === actionValue)
+      : inputName ? Array.from(lesson.querySelectorAll<HTMLInputElement>('input[name]')).find(input => input.name === inputName) : null;
+    const focusTarget = replacement ?? lesson.querySelector<HTMLElement>('h3');
+    if (focusTarget) { if (!replacement) focusTarget.tabIndex = -1; focusTarget.focus({ preventScroll: true }); }
+  }
+  function renderContent(): void {
     if (signal.aborted || dirty) return;
     const cs = conditions(family), interval = intersect(cs), current = at(family, selectedK);
     lesson.replaceChildren();

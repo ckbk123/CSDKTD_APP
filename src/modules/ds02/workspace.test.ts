@@ -24,6 +24,18 @@ function open() {
   return { root, click, set, controller, cleanup };
 }
 describe('quadratic teaching flow', () => {
+  it('preserves keyboard focus through result, gain, condition, boundary and sweep redraws', () => {
+    const v = open();
+    const activate = (action: string) => {
+      const before = v.root.querySelector<HTMLButtonElement>(`button[data-action="${action}"]`)!;
+      before.focus(); before.click();
+      expect(before.isConnected).toBe(false);
+      expect(document.activeElement?.getAttribute('data-action')).toBe(action);
+      expect(document.activeElement?.isConnected).toBe(true);
+    };
+    activate('reveal'); activate('reveal'); activate('reveal');
+    activate('gain'); activate('condition-1'); activate('boundary'); activate('sweep'); activate('clearSweep');
+  });
   it('checks a row and prediction before revealing computed conditions', () => {
     const v = open(); expect(v.root.textContent).not.toContain('Complete strict intersection');
     v.set('row0', '24/25'); v.set('row1', '0'); v.click('row'); expect(v.root.textContent).toContain('Both entries are correct');

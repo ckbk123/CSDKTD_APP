@@ -56,3 +56,7 @@ Initial failures were corrected: system Node 20 was accidentally used by the fir
 
 Real-browser editing/calculation, reset, reopen, fast navigation/late updates, keyboard/font assets and narrow viewport remain mandatory. The shared QA reservation is actively held by another worker; DS02 has not used browser controls. No shared-helper request is needed. Do not mark implemented or submitted until actual browser evidence is recorded. Independent technical review remains for the integration owner.
 
+
+## Review correction checkpoint (2026-10-29)
+
+Coordinator preliminary inspection found that lesson redraws disconnected the currently focused button. `ui.ts` now captures the focused lesson action/value (or input name) and restores the matching recreated control, with an intentional heading fallback. `workspace.test.ts` checks focus through Reveal/Hide, gain, condition, exact boundary, sweep and clear-sweep. Module tests now pass 31 tests; type check passes. Real keyboard verification remains mandatory. Fractional sweep bounds also retain exact fractions across repeated redraws rather than becoming unsupported long decimals.
