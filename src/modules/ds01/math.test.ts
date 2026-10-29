@@ -8,8 +8,10 @@ describe('bounded visual complex-pole grammar', () => {
     ['0.8', .8, 0], ['(-.8)', -.8, 0], ['−1', -1, 0], ['j', 0, 1], ['-i', 0, -1],
     [String.raw`\left(\frac{3}{5}+\frac{4}{5}\mathrm{j}\right)`, .6, .8],
     [String.raw`0.6-0.8\cdot j`, .6, -.8], ['-j+0.2', .2, -1], [String.raw`\frac{-1}{2}`, -.5, 0],
+    [String.raw`\frac12`, .5, 0], [String.raw`-\frac1{20}`, -.05, 0], [String.raw`\frac{12}8`, 1.5, 0],
+    [String.raw`\frac35+\frac45j`, .6, .8],
   ])('parses %s', (text, re, im) => expect(parsePole(text)).toEqual({ re, im }));
-  it.each(['', 'NaN', 'Infinity', '3', '2+2j', 'z^2', '0.8^k', '0.2+0.3', 'j+j', '1/2', 'sin(1)', '1+', '+', String.raw`\frac{1}{0}`, String.raw`\placeholder{}`, '1e-2', '1**j', '0.5jtrash', '0.8*', 'x'.repeat(201)])('rejects %s', text => expect(() => parsePole(text)).toThrow());
+  it.each(['', 'NaN', 'Infinity', '3', '2+2j', 'z^2', '0.8^k', '0.2+0.3', 'j+j', '1/2', 'sin(1)', '1+', '+', String.raw`\frac{1}{0}`, String.raw`\frac10`, String.raw`\frac123`, String.raw`\placeholder{}`, '1e-2', '1**j', '0.5jtrash', '0.8*', 'x'.repeat(201)])('rejects %s', text => expect(() => parsePole(text)).toThrow());
 });
 
 describe('independent modal fixtures', () => {

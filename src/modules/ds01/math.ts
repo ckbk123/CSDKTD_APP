@@ -22,7 +22,9 @@ export function parsePole(latex: string): Complex {
   if (source.startsWith('(') && source.endsWith(')')) source = source.slice(1, -1);
   const decimal = '(?:\\d+(?:\\.\\d*)?|\\.\\d+)';
   const number = new RegExp(`^${decimal}`);
-  const fraction = new RegExp(`^\\\\(?:dfrac|tfrac|frac)\\{([+-]?${decimal})\\}\\{([+-]?${decimal})\\}`);
+  // TeX permits a single digit without braces; MathLive may emit \\frac12.
+  const numericAtom = `(?:\\{[+-]?${decimal}\\}|\\d)`;
+  const fraction = new RegExp(`^\\\\(?:dfrac|tfrac|frac)(${numericAtom})(${numericAtom})`);
   let re = 0, im = 0, realSeen = false, imaginarySeen = false, terms = 0;
   while (source.length) {
     if (++terms > 2) throw new Error('Use one real part and one imaginary part; no sums of expressions.');
@@ -36,8 +38,9 @@ export function parsePole(latex: string): Complex {
       const ratio = fraction.exec(source);
       const scalar = number.exec(source);
       if (ratio) {
-        if (Number(ratio[2]) === 0) throw new Error('A numeric fraction cannot have a zero denominator.');
-        value = Number(ratio[1]) / Number(ratio[2]);
+        const numerator = Number(ratio[1].replace(/[{}]/g, '')), denominator = Number(ratio[2].replace(/[{}]/g, ''));
+        if (denominator === 0) throw new Error('A numeric fraction cannot have a zero denominator.');
+        value = numerator / denominator;
         source = source.slice(ratio[0].length);
       } else if (scalar) {
         value = Number(scalar[0]); source = source.slice(scalar[0].length);
