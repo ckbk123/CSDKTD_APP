@@ -26,6 +26,7 @@ describe('CD03 complete design flow with mocked equation UI', () => {
     const v = start(); v.click('suggest'); expect(v.field('lag').checked).toBe(true); expect(Number(v.field('z').value)).toBe(.1);
     v.click('compute'); expect(v.part('prediction').textContent).toContain('Accuracy: met. Full step targets: failed'); expect(v.part('table').textContent).toContain('0.05'); expect(v.part('roots').textContent).toContain('Complete full-loop poles');
     v.click('near'); expect(Number(v.field('p').value)).toBeCloseTo(.002); expect(Number(v.field('z').value)).toBeCloseTo(.02); v.click('compute'); expect(v.part('reasoning').textContent).toContain('z/p=10');
+    v.field('kv').value = '20.000000001'; v.click('compute'); expect(v.part('prediction').textContent).toContain('Accuracy: unknown'); expect(v.part('prediction').textContent).toContain('not counted as a pass');
   });
   it('reports horizon limits and full-loop instability instead of an unconditional ramp result', () => {
     const v = start(); v.field('horizon').value = '1.21'; v.click('compute'); expect(v.part('table').textContent).toContain('Not established in H');

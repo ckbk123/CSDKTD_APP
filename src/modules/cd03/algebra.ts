@@ -2,7 +2,7 @@
  * Every public operation receives a caller-owned work budget. No float trimming. */
 export type Q = Readonly<{ n: bigint; d: bigint }>;
 export type Poly = readonly Q[];
-export type Gain = Readonly<{ n: Poly; d: Poly }>;
+export type Gain = Readonly<{ n: Poly; d: Poly; cancelled?: boolean }>;
 export class Work {
   private left: number;
   constructor(limit = 200000) { this.left = limit; }
@@ -45,24 +45,24 @@ function pGcd(a: Poly, b: Poly, w: Work): Poly {
   while (!zeroPoly(b)) { const r = divrem(a, b, w)[1]; a = b; b = r; }
   return a.map(x => over(x, a.at(-1)!, w));
 }
-export function rational(n: Poly, d: Poly, w: Work): Gain {
+export function rational(n: Poly, d: Poly, w: Work, cancelled = false): Gain {
   n = trim([...n]); d = trim([...d]);
   if (zeroPoly(d)) throw new Error('A gain denominator is identically zero.');
-  if (zeroPoly(n)) return { n: [Z], d: [O] };
+  if (zeroPoly(n)) return { n: [Z], d: [O], cancelled: cancelled || d.length > 1 };
   const common = pGcd(n, d, w); n = divrem(n, common, w)[0]; d = divrem(d, common, w)[0];
   const lead = d.at(-1)!;
-  return { n: n.map(x => over(x, lead, w)), d: d.map(x => over(x, lead, w)) };
+  return { n: n.map(x => over(x, lead, w)), d: d.map(x => over(x, lead, w)), cancelled: cancelled || common.length > 1 };
 }
 export const constant = (n: bigint, d = 1n): Gain => ({ n: [q(n, d)], d: [O] });
 export const variable = (): Gain => ({ n: [Z, O], d: [O] });
 export const isZero = (a: Gain) => zeroPoly(a.n);
-export const negate = (a: Gain): Gain => ({ n: a.n.map(negQ), d: a.d });
-export function add(a: Gain, b: Gain, w: Work): Gain { return rational(pAdd(pMul(a.n, b.d, w), pMul(b.n, a.d, w), w), pMul(a.d, b.d, w), w); }
+export const negate = (a: Gain): Gain => ({ ...a, n: a.n.map(negQ) });
+export function add(a: Gain, b: Gain, w: Work): Gain { return rational(pAdd(pMul(a.n, b.d, w), pMul(b.n, a.d, w), w), pMul(a.d, b.d, w), w, !!a.cancelled || !!b.cancelled); }
 export function sub(a: Gain, b: Gain, w: Work) { return add(a, negate(b), w); }
-export function mul(a: Gain, b: Gain, w: Work): Gain { return rational(pMul(a.n, b.n, w), pMul(a.d, b.d, w), w); }
+export function mul(a: Gain, b: Gain, w: Work): Gain { return rational(pMul(a.n, b.n, w), pMul(a.d, b.d, w), w, !!a.cancelled || !!b.cancelled); }
 export function div(a: Gain, b: Gain, w: Work): Gain {
   if (isZero(b)) throw new Error('Singular equations: division by an identically zero gain.');
-  return rational(pMul(a.n, b.d, w), pMul(a.d, b.n, w), w);
+  return rational(pMul(a.n, b.d, w), pMul(a.d, b.n, w), w, !!a.cancelled || !!b.cancelled);
 }
 function integerForm(g: Gain): [bigint[], bigint[]] {
   let lcm = 1n;

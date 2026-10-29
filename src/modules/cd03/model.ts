@@ -16,7 +16,9 @@ const real = (x: number): Complex => ({ re: x, im: 0 });
 /** Descending coefficients for all numerical polynomials in this module. */
 export function poly(coefficients: number[], s: Complex): Complex { return coefficients.reduce((v, c) => add(mul(v, s), real(c)), real(0)); }
 export function parsePlant(value: string): Plant {
-  const c = coefficients(parseGain(value));
+  const gain = parseGain(value);
+  if (gain.cancelled) throw new Error('A pole-zero factor was canceled in the plant entry. Enter the original degree-two family without hidden canceled factors; this exercise cannot certify extra internal modes.');
+  const c = coefficients(gain);
   if (c.numerator.length !== 1 || c.denominator.length !== 3 || c.denominator[0] !== '0') throw new Error('Use G(s)=b/[s(s+a)] with positive a and b; enter only the gain expression.');
   const lead = Number(c.denominator[2]), a = Number(c.denominator[1]) / lead, b = Number(c.numerator[0]) / lead;
   if (![a, b].every(Number.isFinite) || a < .2 || a > 20 || b < .05 || b > 20) throw new Error('Use plant a from 0.2 to 20 s⁻¹ and b from 0.05 to 20 in consistent units.');

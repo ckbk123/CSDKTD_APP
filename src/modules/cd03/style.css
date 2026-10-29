@@ -21,6 +21,7 @@
 [data-module="CD03"] .cd03-point { fill: var(--accent); }
 [data-module="CD03"] .cd03 table { border-collapse: collapse; min-width: 650px; font-size: 13px; }
 [data-module="CD03"] .cd03 th, [data-module="CD03"] .cd03 td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; }
+[data-module="CD03"] .cd03 caption { text-align: left; padding: 12px 0; color: var(--text); }
 [data-module="CD03"] .cd03 .equation-display { max-width: 100%; overflow-x: auto; }
 [data-module="CD03"] .cd03 [hidden] { display: none !important; }
 @media(max-width:600px) { [data-module="CD03"] .cd03 section { padding: 13px; } }

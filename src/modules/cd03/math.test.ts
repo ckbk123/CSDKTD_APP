@@ -5,6 +5,7 @@ const baseline: Design = { a: 2, b: 1, k: 4, lag: false, p: .01, z: .1 };
 describe('CD03 plant, full roots and tracking', () => {
   it('derives the original proportional model, complete pair and ramp limit', () => {
     expect(parsePlant(String.raw`\frac1{s(s+2)}`)).toEqual({ a: 2, b: 1 });
+    expect(parsePlant(String.raw`\frac2{s^2+3s}`)).toEqual({ a: 3, b: 2 });
     const m = model(baseline); expect(m.denominator).toEqual([1, 2, 4]); expect(m.kv).toBe(2); expect(m.rampError).toBe(.5);
     expect(m.baselineRoots[0].re).toBe(-1); expect(Math.abs(m.baselineRoots[0].im)).toBeCloseTo(Math.sqrt(3), 14);
   });
@@ -41,6 +42,13 @@ describe('CD03 plant, full roots and tracking', () => {
   it('retains all real and repeated roots without using order-dependent labels', () => {
     expect(roots([1, 6, 11, 6]).map(p => p.re).sort((a, b) => a - b)).toEqual([-3, -2, -1]);
     expect(roots([1, 3, 3, 1]).every(p => Math.abs(p.re + 1) < 1e-12 && Math.abs(p.im) < 1e-12)).toBe(true);
+  });
+  it('rejects hidden input factors and retains the chosen controller cancellation in the complete root list', () => {
+    expect(() => parsePlant(String.raw`\frac{s-1}{s(s+2)(s-1)}`)).toThrow(/canceled/);
+    expect(() => parsePlant(String.raw`\frac1{s(s+2)}\times\frac{s+1}{s+1}`)).toThrow(/canceled/);
+    const m = model({ ...baseline, lag: true, z: 2 }), r = response(m.numerator, m.denominator, m.fullRoots);
+    expect(m.fullRoots).toHaveLength(3); expect(r.poles).toHaveLength(3);
+    const at = m.fullRoots.findIndex(p => Math.abs(p.re + 2) < 1e-10 && p.im === 0); expect(at).toBeGreaterThanOrEqual(0); expect(abs(r.residues[at])).toBeLessThan(1e-10);
   });
 });
 describe('full response and bounded measurements', () => {

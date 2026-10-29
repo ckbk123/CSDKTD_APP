@@ -52,10 +52,12 @@ export const mount: ModuleMount = ({ container, signal }) => {
       try { fullResponse = d.lag ? response(m.numerator, m.denominator, m.fullRoots) : baselineResponse; fullMetrics = d.lag ? measure(fullResponse, horizon, band) : baseMetrics; } catch (error) { issues.push(`Full response: ${(error as Error).message}`); fullResponse = undefined; }
     } else issues.push(`Full loop is ${m.stability === 'unstable' ? 'unstable' : 'on/near the Routh boundary'}. Step targets and the final ramp limit are not established.`);
     const baseAssessment = assess(baseMetrics, targetMp, targetTs), fullAssessment = assess(fullMetrics, targetMp, targetTs);
-    const accuracy = m.stability === 'unstable' ? 'failed' : m.stability === 'boundary' ? 'unknown' : m.kv >= targetKv * (1 - 1e-10) ? 'met' : 'failed';
+    const kvDifference = m.kv - targetKv, kvTolerance = 1e-10 * Math.max(1, m.kv, targetKv);
+    const accuracy = m.stability === 'unstable' ? 'failed' : m.stability === 'boundary' ? 'unknown' : m.kv === targetKv ? 'met' : Math.abs(kvDifference) <= kvTolerance ? 'unknown' : kvDifference > 0 ? 'met' : 'failed';
     const transient = m.stability === 'unstable' ? 'failed' : fullAssessment.all;
     const prediction = accuracy === 'unknown' || transient === 'unknown' ? 'unknown' : accuracy === 'met' && transient === 'met' ? 'both' : accuracy === 'met' ? 'accuracy' : transient === 'met' ? 'transient' : 'neither';
     part('prediction').textContent = `Accuracy: ${accuracy}. Full step targets: ${transient}. ${select('prediction').value ? select('prediction').value === prediction ? 'Your prediction agrees.' : 'Review your prediction using the complete roots and measured response.' : 'Choose a prediction before your next experiment.'}`;
+    if (accuracy === 'unknown' && m.stability === 'stable') part('prediction').append(text('span', ' The Kv difference is within the relative10⁻¹⁰ comparison margin; it is not counted as a pass.'));
     const reasoning = part('reasoning');
     eq(reasoning, `K_{v,0}=\\frac{Kb}{a}=${num(m.baselineKv)},\\quad K_v=${d.lag ? 'K_{v,0}\\frac{z}{p}' : 'K_{v,0}'}=${num(m.kv)}`, 'Velocity constants for the applied controller');
     reasoning.append(text('p', d.lag ? `The chosen section multiplies low-frequency gain by z/p=${fmt(m.beta)}. The current requirement needs a ratio of at least ${fmt(targetKv / m.baselineKv)}. This accuracy relation alone does not preserve the transient response.` : 'Lag is disabled: C=C₀=K, so the accuracy ratio is 1. The p/z entries are a design draft.'));
@@ -63,16 +65,19 @@ export const mount: ModuleMount = ({ container, signal }) => {
     if (d.lag) { eq(reasoning, 'D(s)=s^3+(a+p)s^2+(ap+Kb)s+Kbz', 'Complete characteristic before numeric substitution'); eq(reasoning, `\\rho=(a+p)(ap+Kb)-Kbz\\approx${num(m.routh)}`, 'Full cubic Routh numerator'); }
     eq(reasoning, `T(s)\\approx\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}`, 'Full unit-step transfer, coefficients rounded to seven significant digits');
     const table = document.createElement('table'); table.innerHTML = '<thead><tr><th>Check</th><th>Proportional reference</th><th>Chosen full loop</th></tr></thead>'; const body = document.createElement('tbody');
+    const targetSummary = `Retained targets: Kv≥${fmt(targetKv)}s⁻¹; overshoot≤${fmt(targetMp)}%; ${fmt(band * 100)}% settling≤${fmt(targetTs)}s.`;
+    table.prepend(text('caption', targetSummary));
     const cell = (label: string, base: string, full: string) => { const row = document.createElement('tr'); for (const v of [label, base, full]) row.append(text('td', v)); body.append(row); };
     cell('Velocity constant Kv (s⁻¹)', fmt(m.baselineKv), fmt(m.kv)); cell('Unit-ramp final error (output units)', fmt(1 / m.baselineKv), m.rampError === undefined ? 'Not established' : fmt(m.rampError));
-    const os = (v?: Metrics) => v ? `${fmt(v.overshoot * 100)}% ${v.peakEstablished ? '(future peak excluded)' : '(observed through H)'}` : 'Not established';
+    const os = (v?: Metrics) => v ? `${fmt(v.overshoot * 100)}% ${v.peakEstablished ? '(future larger peak ruled out)' : '(observed through H)'}` : 'Not established';
     cell('Step overshoot', os(baseMetrics), os(fullMetrics)); cell(`${fmt(band * 100)}% measured settling (s)`, baseMetrics?.settling === undefined ? 'Not established in H' : fmt(baseMetrics.settling), fullMetrics?.settling === undefined ? 'Not established in H' : fmt(fullMetrics.settling));
     cell('Retained overshoot / settling targets', `${baseAssessment.overshoot} / ${baseAssessment.settling}`, `${fullAssessment.overshoot} / ${fullAssessment.settling}`); cell('Future output envelope at H', baseMetrics ? fmt(baseMetrics.tail) : 'Unavailable', fullMetrics ? fmt(fullMetrics.tail) : 'Unavailable');
     table.append(body); part('table').append(table);
     part('roots').append(text('h3', `Complete full-loop poles — ${m.stability}`), text('p', m.fullRoots.map(pole).join('; ')), text('p', `Proportional reference poles: ${m.baselineRoots.map(pole).join('; ')}. Numerator zeros do not remove poles from this list.`));
     part('placement').append(placement(d, m)); part('poles').append(polePlot(d, m));
     part('angle').textContent = d.lag ? `At the original upper reference pole ${pole(m.s0)}: chosen-section angle ${fmt(m.angle)}°, magnitude ${fmt(m.magnitude)}. A magnitude-only gain adjustment would be K=${fmt(m.magnitudeGain)}. Magnitude alone does not put the original point on the compensated locus; its angle must agree too.` : `Lag is disabled. Original upper reference pole ${pole(m.s0)}; applied section 1 has angle0° and magnitude1. Enable lag to inspect the draft section’s vectors.`;
-    part('response').append(transientPlot(baseMetrics, fullMetrics, horizon, band, d.lag));
+    part('response').append(text('p', targetSummary), transientPlot(baseMetrics, fullMetrics, horizon, band, d.lag));
+    if (!fullMetrics) part('response').append(text('p', `Chosen full response unavailable. ${issues.join(' ')}`));
     if (fullMetrics) part('response').append(text('p', `Full response used ${fullMetrics.intervals} intervals; midpoint interpolation discrepancy ${fmt(fullMetrics.interpolationError)}. Settling requires the future modal envelope, not the last sample. The added real pole/zero changes all full-loop roots and modal weights; a small angle change can still leave a measurable slow tail.`));
     part('feedback').textContent = issues.join(' ') || 'Complete model checked. Compare accuracy with the retained transient requirements before accepting this lag.';
   }
