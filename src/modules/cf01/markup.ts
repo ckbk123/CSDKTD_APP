@@ -1,0 +1,30 @@
+export const markup = `
+<section class="cf1-card"><h3>1. Set requirements and choose the closed-loop model</h3>
+  <p>T₂(s) is already the reference-to-output transfer. Use a unit step and zero initial states. Optional unity-DC factors compare a full chosen cascade while keeping the target pair fixed; no separate feedback loop is inferred.</p>
+  <div class="cf1-equation"></div>
+  <div class="cf1-controls"><label>Maximum overshoot (%)<input name="overshoot" type="number" min="0" max="99" step="any" value="20"></label><label>Maximum settling time (s)<input name="settling" type="number" min="0.05" max="100" step="any" value="4"></label><label>Settling band<select name="band"><option value="1">1%</option><option value="2" selected>2%</option><option value="5">5%</option></select></label></div>
+  <label class="cf1-toggle"><input name="include-pole" type="checkbox">Include added stable pole</label>
+  <div class="cf1-controls"><label>Added pole parameter p (s⁻¹)<input name="pole" type="number" min="0.02" max="50" step="any" value="1" disabled></label></div>
+  <label class="cf1-toggle"><input name="include-zero" type="checkbox">Include added zero</label>
+  <div class="cf1-controls"><label>Added zero parameter z (s⁻¹)<input name="zero" type="number" min="-50" max="50" step="any" value="1" disabled></label></div>
+  <p class="cf1-muted">Pole at −p: factor p/(s+p). Zero at −z: factor 1+s/z; negative z gives a RHP zero. Chosen denominator factors are retained even when a zero cancels one in the output transfer.</p>
+  <div class="cf1-controls"><label>Common horizon H (s)<input name="horizon" type="number" min="0.05" max="100" step="any" value="10"></label><label>Rise-time definition<select name="rise"><option value="10-90">First 10% to first 90%</option><option value="0-100">Step start to first 100%</option></select></label><label>Curve refinement tolerance<select name="tolerance"><option value="0.001">0.001</option><option value="0.0001" selected>0.0001</option><option value="0.00001">0.00001</option></select></label></div>
+  <div class="cf1-actions"><button type="button" class="button" data-action="compute">Calculate responses</button><button type="button" class="button" data-action="slow">Add slow pole p=0.2</button><button type="button" class="button" data-action="zero">Add RHP zero z=−1</button><button type="button" class="button" data-action="remove">Remove added factors</button><button type="button" class="button" data-action="baseline">Baseline inputs</button></div>
+  <p class="cf1-status" role="status" aria-live="polite"></p><div class="cf1-target-steps"></div>
+</section>
+<section class="cf1-card"><h3>2. Inspect the response and target region</h3>
+  <div class="cf1-controls"><label>Inspection time (s)<input name="time" type="number" min="0" max="10" step="any" value="5"></label></div>
+  <p class="cf1-muted">Scroll plots sideways on narrow screens. Use the time field for numeric inspection. Both curves use the same positive final value.</p>
+  <div class="cf1-response cf1-plot"></div><p class="cf1-inspection" aria-live="polite"></p><div class="cf1-poles cf1-plot"></div>
+  <p class="cf1-muted">The shaded pole region uses standard damping/decay guidelines. Added poles and zeros can change measured performance; the region is not a full-model guarantee.</p>
+  <div class="cf1-controls"><label>Your full-model prediction<select name="prediction"><option value="">Choose a prediction</option><option value="met">Both targets are met</option><option value="not">At least one target fails</option><option value="unknown">Not established from this horizon</option></select></label></div>
+  <button type="button" class="button" data-action="reveal">Check prediction and reveal measurements</button><p class="cf1-feedback" role="status"></p>
+</section>
+<section class="cf1-card cf1-answer" hidden><h3>3. Compare predictions with the full response</h3><div class="cf1-table"></div><p class="cf1-target-result"></p><div class="cf1-reasoning"></div></section>
+<details class="cf1-card"><summary>Measurement conventions and supported limits</summary>
+  <p>Base: positive constant numerator, stable denominator s²+a₁s+a₀. Natural frequency 0.05–20 rad/s, damping ratio 0.02–3, numerator 10⁻⁹–1000. One added stable real pole p and one LHP/RHP zero z, with p and |z| in 0.02–50 s⁻¹. H is 0.05–100 s. Exact critical/repeated factors work; unresolved near-coincident poles or conditioning return feedback.</p>
+  <p>Visual decimal coefficients, products, visible parentheses, one fraction and powers 0–2: at most 512 characters, 128 polynomial tokens, 16 numeric-wrapper levels and original coefficient magnitudes 10⁶. Raw parenthesized/multi-digit unbraced exponents, hidden algebraic braces, mixed/nested fractions, e-symbol notation and other transfer orders are unsupported. Use the visual fraction and power boxes.</p>
+  <p>Rise uses first upward 10%/90% crossings, or step start t=0 to first 100%. A non-overshooting asymptotic response has no finite 100% crossing. Overshoot is relative to the positive DC step value; no saturation is modeled. Peak time is the largest detected overshoot peak, with a future-envelope check distinguishing it from a horizon-only result. Zero positive overshoot does not exclude undershoot.</p>
+  <p>Settling is the last detected band crossing only after a future modal envelope, including roundoff allowance, fits inside the band at H. Otherwise it is not established; the endpoint is never substituted. Repeated tᵏe⁻σᵗ terms use their future maximum. Values/derivative extrema use at most 16384 intervals and grid-halving checks, not interval-certified global extrema or exact-time proofs.</p>
+  <p>Conventional settling guidelines: 4/(ζωₙ) at 2%, 3/(ζωₙ) at 5%, 4.6/(ζωₙ) at 1%. These are approximations for underdamped/critical pairs; overdamped pairs use the measured curve. Near a target by the selected numerical margin, checks report not established. The course baseline's first in-band 1 ms sample is 4.039 s; its refined crossing is about 4.03817 s.</p>
+</details>`;

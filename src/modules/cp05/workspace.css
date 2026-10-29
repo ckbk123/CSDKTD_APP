@@ -1,0 +1,32 @@
+[data-module="CP05"] .cp05-tool, [data-module="CP05"] .cp05-workspace { display: grid; gap: 1rem; min-width: 0; color: var(--text); }
+[data-module="CP05"] [hidden] { display: none !important; }
+[data-module="CP05"] .cp05-tool p, [data-module="CP05"] .cp05-tool h2, [data-module="CP05"] .cp05-tool h3 { margin: 0; }
+[data-module="CP05"] .cp05-tool p { line-height: 1.6; }
+[data-module="CP05"] .cp05-card { display: grid; gap: .8rem; padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--surface); min-width: 0; }
+[data-module="CP05"] details.cp05-card { display: block; }
+[data-module="CP05"] details.cp05-card > :not(summary) { margin-top: .8rem; }
+[data-module="CP05"] summary { cursor: pointer; font-weight: 600; }
+[data-module="CP05"] .cp05-grid, [data-module="CP05"] .cp05-plots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; min-width: 0; }
+[data-module="CP05"] .cp05-plots > .cp05-card:nth-child(n+3) { grid-column: 1 / -1; }
+[data-module="CP05"] .cp05-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+[data-module="CP05"] .cp05-field { display: grid; gap: .3rem; min-width: 0; }
+[data-module="CP05"] .cp05-tool input, [data-module="CP05"] .cp05-tool button { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: .4rem; padding: .55rem .7rem; max-width: 100%; }
+[data-module="CP05"] .cp05-tool button { cursor: pointer; white-space: normal; }
+[data-module="CP05"] .cp05-tool button:hover { background: var(--tint); }
+[data-module="CP05"] .cp05-message { padding: .5rem 0; }
+[data-module="CP05"] .cp05-scroll { overflow-x: auto; min-width: 0; }
+[data-module="CP05"] svg { width: 100%; min-width: 360px; display: block; overflow: hidden; max-height: 380px; }
+[data-module="CP05"] svg.cp05-wide { min-width: 600px; }
+[data-module="CP05"] svg text { fill: var(--muted); font: 11px system-ui; }
+[data-module="CP05"] .cp05-axis { stroke: var(--line); stroke-width: 1; }
+[data-module="CP05"] .cp05-curve { fill: none; stroke: var(--accent); stroke-width: 1.6; }
+[data-module="CP05"] .cp05-negative-axis { stroke-dasharray: 6 4; }
+[data-module="CP05"] .cp05-indent { stroke-dasharray: 2 3; }
+[data-module="CP05"] .cp05-outer-arc { stroke-dasharray: 10 3 2 3; }
+[data-module="CP05"] .cp05-arrowhead { fill: var(--accent); }
+[data-module="CP05"] .cp05-selected { fill: none; stroke: var(--text); stroke-width: 2.6; }
+[data-module="CP05"] .cp05-pole { fill: none; stroke: var(--muted); stroke-width: 1.8; }
+[data-module="CP05"] .cp05-prediction { fill: none; stroke: var(--accent); stroke-width: 2; }
+[data-module="CP05"] .cp05-cursor { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+[data-module="CP05"] :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 700px) { [data-module="CP05"] .cp05-grid, [data-module="CP05"] .cp05-plots { grid-template-columns: minmax(0, 1fr); } [data-module="CP05"] .cp05-card { padding: .7rem; } }

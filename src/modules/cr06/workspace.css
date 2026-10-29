@@ -1,0 +1,34 @@
+[data-module="CR06"] .state-tool { display: grid; gap: 1.1rem; min-width: 0; }
+[data-module="CR06"] .state-tool section { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; min-width: 0; }
+[data-module="CR06"] .state-tool h3 { margin-top: 0; }
+[data-module="CR06"] .state-tool p { line-height: 1.6; }
+[data-module="CR06"] .state-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0; }
+[data-module="CR06"] .state-controls, [data-module="CR06"] .state-matrices { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); gap: .8rem; }
+[data-module="CR06"] .state-tool label { display: grid; gap: .4rem; min-width: 0; }
+[data-module="CR06"] .state-tool input, [data-module="CR06"] .state-tool select { width: 100%; min-width: 0; box-sizing: border-box; padding: .6rem; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+[data-module="CR06"] .state-tool input:focus-visible, [data-module="CR06"] .state-tool select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[data-module="CR06"] .state-small { color: var(--muted); font-size: .9rem; }
+[data-module="CR06"] .state-notice { padding: .6rem; border-left: 3px solid var(--accent); background: var(--tint); }
+[data-module="CR06"] .state-scroll { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 6px; margin: .8rem 0; }
+[data-module="CR06"] .state-scroll svg { display: block; min-width: 600px; width: 100%; }
+[data-module="CR06"] .equation-display { max-width: 100%; overflow-x: auto; padding: .45rem 0; }
+[data-module="CR06"] .state-svg-text { font: 14px system-ui; fill: var(--text); }
+[data-module="CR06"] .state-svg-small { font: 12px system-ui; fill: var(--muted); }
+[data-module="CR06"] .state-wire { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+[data-module="CR06"] .state-block, [data-module="CR06"] .state-gain, [data-module="CR06"] .state-summer { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+[data-module="CR06"] .state-selected .state-block { stroke: var(--accent); fill: var(--tint); stroke-width: 3; }
+[data-module="CR06"] .state-selected > .state-wire { stroke: var(--accent); stroke-width: 2.5; }
+[data-module="CR06"] .state-integrator { cursor: pointer; }
+[data-module="CR06"] .state-integrator:focus-visible .state-block { stroke: var(--text); stroke-width: 4; }
+[data-module="CR06"] .state-grid { stroke: var(--line); stroke-width: 1; }
+[data-module="CR06"] .state-curve { fill: none; stroke-width: 2; }
+[data-module="CR06"] .state-total-a { stroke: var(--accent); }
+[data-module="CR06"] .state-total-b { stroke: var(--text); stroke-dasharray: 9 4; }
+[data-module="CR06"] .state-free { stroke: var(--accent); stroke-dasharray: 2 4; }
+[data-module="CR06"] .state-forced { stroke: var(--muted); stroke-dasharray: 8 3 2 3; }
+[data-module="CR06"] .state-inspect { stroke: var(--muted); stroke-dasharray: 3 5; }
+[data-module="CR06"] .state-point { fill: var(--accent); }
+[data-module="CR06"] .state-tool table { border-collapse: collapse; min-width: 760px; width: 100%; font-size: .9rem; }
+[data-module="CR06"] .state-tool th, [data-module="CR06"] .state-tool td { padding: .5rem; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+[data-module="CR06"] .state-tool details > summary { cursor: pointer; padding: .5rem 0; }
+[data-module="CR06"] .state-tool [hidden] { display: none !important; }

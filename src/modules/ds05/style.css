@@ -1,0 +1,36 @@
+[data-module="DS05"] { min-width: 0; font-size: 14px; line-height: 1.6; }
+[data-module="DS05"] .dn-card { min-width: 0; margin: 18px 0; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+[data-module="DS05"] h3 { margin: 0 0 12px; font-size: 18px; font-weight: 550; line-height: 1.4; }
+[data-module="DS05"] p { margin: 10px 0; overflow-wrap: anywhere; }
+[data-module="DS05"] .dn-note { color: var(--muted); font-size: 12px; }
+[data-module="DS05"] .dn-equations, [data-module="DS05"] .dn-planes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 16px 0; }
+[data-module="DS05"] .dn-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 14px; margin: 14px 0; }
+[data-module="DS05"] label { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 13px; }
+[data-module="DS05"] input, [data-module="DS05"] select { min-width: 0; width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; color: var(--text); background: var(--background); font: inherit; }
+[data-module="DS05"] input[type="range"] { padding: 0; accent-color: var(--accent); }
+[data-module="DS05"] .dn-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+[data-module="DS05"] .dn-actions button { min-height: 42px; padding: 9px 16px; border: 1px solid var(--line); border-radius: 22px; color: var(--text); background: var(--surface); font: inherit; }
+[data-module="DS05"] .dn-actions button[type="submit"] { color: var(--accent-strong); border-color: var(--accent); background: var(--tint); }
+[data-module="DS05"] .dn-feedback { padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--tint); border-radius: 6px; }
+[data-module="DS05"] .dn-plot-scroll, [data-module="DS05"] .dn-table-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; margin: 14px 0; }
+[data-module="DS05"] .dn-plot-scroll > svg { display: block; width: 100%; min-width: 420px; height: auto; }
+[data-module="DS05"] svg text { fill: var(--muted); font: 12px Inter, sans-serif; }
+[data-module="DS05"] .dn-gridline { stroke: var(--line); stroke-width: 1; }
+[data-module="DS05"] .dn-axis { stroke: var(--muted); stroke-width: 1; }
+[data-module="DS05"] .dn-contour, [data-module="DS05"] .dn-image-curve, [data-module="DS05"] .dn-direction { stroke: var(--accent); stroke-width: 2; }
+[data-module="DS05"] .dn-open-root { stroke: var(--muted); stroke-width: 2; }
+[data-module="DS05"] .dn-closed-root { stroke: var(--accent); stroke-width: 2; }
+[data-module="DS05"] .dn-critical { stroke: var(--text); stroke-width: 2; }
+[data-module="DS05"] .dn-ray { stroke: var(--muted); stroke-dasharray: 4 4; stroke-width: 1; }
+[data-module="DS05"] .dn-marker { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+[data-module="DS05"] table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+[data-module="DS05"] caption { text-align: left; padding: 10px 12px; font-weight: 550; color: var(--muted); }
+[data-module="DS05"] th, [data-module="DS05"] td { text-align: left; padding: 9px 12px; border-top: 1px solid var(--line); }
+[data-module="DS05"] td .equation-display { margin: 0; padding: 0; font-size: 15px; }
+[data-module="DS05"] details { padding: 14px; border: 1px solid var(--line); border-radius: 8px; margin: 18px 0; }
+[data-module="DS05"] summary { cursor: pointer; font-weight: 550; }
+@media (max-width: 1000px) { [data-module="DS05"] .dn-planes { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 700px) {
+  [data-module="DS05"] .dn-card { padding: 14px; }
+  [data-module="DS05"] .dn-equations { grid-template-columns: minmax(0, 1fr); }
+}
