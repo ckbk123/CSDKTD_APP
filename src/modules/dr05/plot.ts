@@ -23,8 +23,8 @@ export function trajectoryPlot(result: Result, panel: 'output' | 'input', select
   rows.forEach(r => add('line', { x1: x(r.t), x2: x(r.t), y1: 28, y2: 226, class: 'zoh-clock' }));
   if (panel === 'output') {
     result.segments.forEach(segment => add('path', { d: segment.map((p, i) => `${i ? 'L' : 'M'}${x(p.t)},${y(p.y)}`).join(' '), class: 'zoh-line' }));
-    rows.forEach(r => add('circle', { cx: x(r.t), cy: y(r.y), r: r.k === selected ? 5 : 3, class: 'zoh-exact' }));
     result.comparison?.forEach(r => add('rect', { x: x(r.t) - 3.5, y: y(r.y) - 3.5, width: 7, height: 7, class: 'zoh-approx' }));
+    rows.forEach(r => add('circle', { cx: x(r.t), cy: y(r.y), r: r.k === selected ? 5 : 2.5, class: 'zoh-exact' }));
   } else {
     const d = rows.map((r, i) => `${i ? 'H' : 'M'}${x(r.t)}${i ? 'V' : ','}${y(r.held)}`).join(' ');
     add('path', { d, class: 'zoh-line' });
