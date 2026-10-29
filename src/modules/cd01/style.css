@@ -1,0 +1,43 @@
+[data-module="CD01"] .pid-tool { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; min-width:0; font-size:14px; line-height:1.65; }
+[data-module="CD01"] .pid-tool > div, [data-module="CD01"] .pid-tool section { min-width:0; }
+[data-module="CD01"] .pid-tool section { border-bottom:1px solid var(--line); padding:10px 0 20px; }
+[data-module="CD01"] .pid-tool h3 { margin:0 0 12px; font-size:18px; font-weight:550; }
+[data-module="CD01"] .pid-tool p { margin:10px 0; overflow-wrap:anywhere; }
+[data-module="CD01"] .pid-inputs, [data-module="CD01"] .pid-plots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+[data-module="CD01"] .pid-controls, [data-module="CD01"] .pid-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin:14px 0; }
+[data-module="CD01"] .pid-tool label { display:flex; flex-direction:column; gap:4px; font-size:12px; }
+[data-module="CD01"] .pid-tool input { box-sizing:border-box; width:160px; max-width:100%; min-width:0; padding:9px; color:var(--text); background:var(--background); border:1px solid var(--line); border-radius:6px; }
+[data-module="CD01"] .pid-tool input[type="checkbox"] { width:22px; height:22px; }
+[data-module="CD01"] .pid-tool button { padding:9px 13px; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:8px; font:inherit; font-size:13px; margin-right:6px; }
+[data-module="CD01"] .pid-tool button:hover { border-color:var(--accent); background:var(--tint); }
+[data-module="CD01"] .pid-tool details { color:var(--muted); font-size:12px; }
+[data-module="CD01"] .pid-tool summary { cursor:pointer; }
+[data-module="CD01"] .pid-tool .equation-display { max-width:100%; overflow-x:auto; }
+[data-module="CD01"] .pid-tool figure { margin:0; min-width:0; border:1px solid var(--line); border-radius:8px; padding:10px; }
+[data-module="CD01"] .pid-tool figcaption { font-weight:550; }
+[data-module="CD01"] .pid-plot-scroll { max-width:100%; overflow-x:auto; }
+[data-module="CD01"] .pid-tool svg { display:block; width:100%; min-width:500px; height:auto; }
+[data-module="CD01"] .pid-tool svg text { fill:var(--text); font:14px system-ui; }
+[data-module="CD01"] .pid-axis { stroke:var(--muted); stroke-width:1; }
+[data-module="CD01"] .pid-raw { fill:none; stroke:var(--muted); stroke-width:2; stroke-dasharray:6 4; }
+[data-module="CD01"] .pid-corrected { fill:none; stroke:var(--accent); stroke-width:2; }
+[data-module="CD01"] .pid-reference { stroke:var(--muted); stroke-width:1; stroke-dasharray:2 4; }
+[data-module="CD01"] .pid-marker { fill:var(--surface); stroke:var(--accent); stroke-width:2; }
+[data-module="CD01"] .pid-sample-table { max-width:100%; overflow-x:auto; }
+[data-module="CD01"] .pid-tool table { table-layout:fixed; border-collapse:collapse; width:100%; min-width:430px; font-size:12px; margin-top:12px; }
+[data-module="CD01"] .pid-tool caption { text-align:left; color:var(--muted); }
+[data-module="CD01"] .pid-tool td, [data-module="CD01"] .pid-tool th { border:1px solid var(--line); padding:8px; text-align:left; }
+[data-module="CD01"] .pid-tool td { white-space:nowrap; }
+@media(max-width:700px) { [data-module="CD01"] .pid-inputs, [data-module="CD01"] .pid-plots { grid-template-columns:minmax(0,1fr); } [data-module="CD01"] .pid-tool td, [data-module="CD01"] .pid-tool th { padding:5px; font-size:11px; } }
+
+[data-module="CD01"] .pid-tool fieldset { border:1px solid var(--line); border-radius:8px; min-width:0; margin:14px 0; padding:12px; }
+[data-module="CD01"] .pid-tool legend { color:var(--muted); }
+[data-module="CD01"] .pid-tool select { max-width:100%; min-width:0; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:9px; }
+[data-module="CD01"] .pid-table-scroll { max-width:100%; overflow-x:auto; }
+[data-module="CD01"] .pid-table-scroll table { min-width:380px; }
+[data-module="CD01"] .pid-table-scroll table.pid-metrics { min-width:780px; }
+[data-module="CD01"] .pid-metrics td:first-child, [data-module="CD01"] .pid-metrics th:first-child { width:250px; white-space:normal; }
+[data-module="CD01"] .pid-current { fill:none;stroke:var(--accent);stroke-width:2; }
+[data-module="CD01"] .pid-dashed { fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:6 4; }
+[data-module="CD01"] .pid-dotted { fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:1 4; }
+[data-module="CD01"] .pid-longdash { fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:12 4; }

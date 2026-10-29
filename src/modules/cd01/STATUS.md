@@ -1,6 +1,6 @@
 # CD01 implementation status
 
-- **Stage:** in-progress — bounded pure models/matching/response calculations implemented;22 independent mathematical tests and type check pass. Parser/UI/project/browser work remains.
+- **Stage:** in-progress — bounded models/parser and guided UI implemented;65 local tests/type pass. Combined project/build and real-browser verification remain.
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -18,13 +18,13 @@ Earlier contributions remain separate: CD08 PR20 resubmitted at203b985 after tar
 
 | Accepted requirement | Current assessment / action |
 |---|---|
-| Requirement → controller structure | Missing. Declare error/transient/effort requirements, choose P/PI/filtered PD/PID, predict the action needed and assess the actual model. |
-| Gain/filter controls and individual terms | Missing. Editable bounded second-order plant, gains/filter, parallel/standard conversion and proportional/integral/filtered derivative effort contributions. |
-| Analytic coefficient matching | Missing. Derive chosen structure's characteristic coefficients, expose fixed-order constraints, solve gains from an appropriate desired polynomial and verify every actual mode. |
-| Actual output/effort and course comparison | Missing. Compute full active plant/controller realization, compare course P4/PI4+2/s/filtered PID4+2/s+s/(.05s+1), changes and complete poles. Preserve filter and full plant modes. |
-| Reason before each change | Missing. Draft edits apply only after a reason is chosen/recorded; keep bounded temporary per-visit trial notes and a before/after comparison. No persistence. |
-| Meaningful checks and limits | Missing. Independent baseline coefficients, analytic responses and changed/failure fixtures; bounded parsers/numerics and clear nonconvergence/horizon feedback. |
-| UI/lifecycle/project/browser | Missing. Shared equations/native numeric reader, scoped readable local-scroll plots, owned child-signal loading/recovery and actual reset/navigation/editor/phone checks. |
+| Requirement → controller structure | Error/overshoot/observed-window/effort requirements, P/PI/filtered PD/PID choice, DC/initial-effort prediction, structure cues and full-model requirement assessment. |
+| Gain/filter controls and individual terms | Shared visual second-order plant and monic target inputs, native gains/filter/initial data; parallel/standard conversion and separate P/I/D effort. Inactive derivatives never show0/0. |
+| Analytic coefficient matching | Typeset coefficient identities/solved gain formulas, fixed-coefficient compatibility check, optional Tf draft from target, actual desired/coefficient comparison and every mode. |
+| Actual output/effort and course comparison | Full active state model plus independent P/PI/PID comparisons, four computed plots, numeric time inspector and metric/sample tables. Filter and plant modes retained; unavailable comparisons get separate feedback without discarding selected model. |
+| Reason before each change | Draft edits apply only after a student selects a reason; eight bounded temporary trial reasons/results per visit. Course baseline is explicitly app-authored initial state. Reset/reopen clears notes; no persistence. |
+| Meaningful checks and limits | Analytic and independent SciPy fixtures, parser semantics, changed data, inactive modes, fixed-order failures and native underflow tested. Actual fonts/keyboard/horizon feedback still need browser checks. |
+| UI/lifecycle/project/browser | Shared equations/native numeric reader, scoped locally scrolling plots/tables, owned child-signal wrapper and partial-failure cleanup tests.65 local tests/type pass; project/build/browser QA pending. |
 
 ## Mathematical design and independent fixtures to verify
 
@@ -53,3 +53,9 @@ Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/cd01/math.test
 Independent bundled NumPy2.3.5/SciPy1.18.1 check used manually specified output TFs P4/[1,3,6],PI[4,2]/[1,3,6,2],PID[1.2,4.1,2]/[.05,1.15,4.3,6.1,2]. Effort numerators multiply each output numerator by[1,3,2], retaining direct feedthrough. `scipy.signal.tf2ss` plus `scipy.linalg.expm` at t0,1,5,20 gives PID output[0,.7232639601893959,.971128782713998,.9999700109233961] and effort[24,1.8964989138990447,1.9759366374534828,1.9999749340840935]; independent P/PI values are recorded in tests. This is numerical reference evidence, not an added application dependency.
 
 Current implemented bounds: plant |b| from10⁻⁶ to100,|a0/a1|≤100; gains magnitude≤100; active Tf.001–10s; closed state/input entries≤10⁶; monic polynomial coefficients≤10¹²; degree1–4 roots require relative normalized residual10⁻⁹ and complete Vieta check10⁻⁸. Actual matrix/formula coefficient discrepancy≤10⁻⁹. Stability uses real-part tolerance10⁻⁸ times max(1,mode magnitude). Initial states/reference magnitude≤100,horizon.1–100s,2–1001samples (default801),response≤10⁸. Exponential order≤5,30 scaling steps,24 Taylor terms,reduced norm≤.5,term threshold10⁻¹⁶. Coarse mode sampling is flagged. These bounds still need UI disclosure, parser tests and real-browser checks before delivery.
+
+## Guided UI/parser checkpoint
+
+Owned parser and UI now disclose these bounds and support degree≤4 real polynomial arithmetic and one constant-over-quadratic plant, signed/nested/compact numeric fractions and normalized nonmonic plant denominators. Explicit TeX spacing arguments are checked before normalization; mixed adjacency, hidden grouping, e/E, unsupported powers/0⁰, plant zeros/delays and wrong degree reject. Targets/plant are shared visual fields; all native numbers use the shared reader. Inactive controller states are omitted explicitly while every plant mode remains. Stable DC error, command overshoot/tracking band and final-value overshoot/window are distinct.
+
+`node node_modules/vitest/vitest.mjs run src/modules/cd01` now passes65 tests (22 mathematical,31 parser,8 mocked UI,4 loader); type check passes. Tests include reason gating/notes/reset isolation, coefficient derivation, actual target/effort checks, Kp0 standard-form feedback, changed controller memories and native underflow. Mathematical/SciPy evidence above remains. Workspace uses an owned synchronous loading host and child abort signal; partial-failure listeners are aborted before recovery. Actual MathLive fonts/entry/keyboard, narrow layout, reset/navigation, combined tests/build and final PR/delivery remain pending; no implementation completion is claimed yet.
