@@ -74,7 +74,16 @@ export function parseLinearExact(latex: string): ExactLinear {
     let value = unary();
     while (position < source.length) {
       if (source[position] === '*') { position++; value = multiply(value, unary()); }
-      else if (/[\d.s(\\{]/.test(source[position])) value = multiply(value, unary());
+      else if (/[\d.s(\\{]/.test(source[position])) {
+        const start = position, next = unary();
+        // MathLive can typeset number/fraction adjacency as a mixed number
+        // (invisible plus). Require an explicit operator for this narrower
+        // grammar, including wrapped/grouped/nested fraction forms.
+        if (!value[1].n && /\\(?:dfrac|tfrac|frac)(?![A-Za-z])/.test(source.slice(start, position))) {
+          throw new Error('A constant next to a fraction can be a mixed number. Insert + for addition or × for multiplication, including before a fraction-containing group.');
+        }
+        value = multiply(value, next);
+      }
       else break;
     }
     return value;

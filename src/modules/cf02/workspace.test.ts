@@ -59,6 +59,9 @@ describe('CF02 workspace state and lifecycle (mock editor; real browser separate
     const { container } = await open(); submit(container);
     edit(container, 'Numerator N(s)', ''); submit(container); expect(result(container)).toContain('Complete the numerator'); expect(container.querySelector('svg')).toBeNull();
     edit(container, 'Numerator N(s)', '4e-2'); submit(container); expect(result(container)).toContain('Other symbols');
+    edit(container, 'Numerator N(s)', String.raw`2\frac12`); submit(container); expect(result(container)).toContain('Insert +'); expect(container.querySelector('svg')).toBeNull();
+    edit(container, 'Numerator N(s)', String.raw`2+\frac12`); submit(container); expect(result(container)).toContain('Finite limit: 4/5');
+    edit(container, 'Numerator N(s)', String.raw`2\times\frac12`); submit(container); expect(result(container)).toContain('Finite limit: 2');
     edit(container, 'Numerator N(s)', '4'); edit(container, 'Amplitude A (normalized units)', '1e-999'); submit(container); expect(result(container)).toContain('too small');
     edit(container, 'Amplitude A (normalized units)', '0e-999'); submit(container); expect(result(container)).toContain('Finite limit: 0');
     edit(container, 'Trace horizon (s)', ''); submit(container); expect(result(container)).toContain('finite number');

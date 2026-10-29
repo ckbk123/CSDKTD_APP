@@ -145,6 +145,28 @@ describe('CF02 numerical trace checked against independent responses', () => {
     expect(end.comparator).toBeCloseTo(.25, 9);
     expect(end.physical).toBeCloseTo(15.125, 9);
   });
+  it('matches a factorable cubic parabolic response throughout the trace', () => {
+    // Q=(s+1)(s+2)(s+3), E=(s+6)/[s(s+1)(s+2)(s+3)].
+    // Independent residues at 0,-1,-2,-3 are 1,-5/2,2,-1/2.
+    const m = model('11s+6', 's+6', 2);
+    expect(finite(limit(m, 'reference', 'physical', 2))).toBe('1');
+    for (const p of trace(m, 'reference', 2, ONE, 8).points) {
+      const expected = 1 - 2.5 * Math.exp(-p.t) + 2 * Math.exp(-2 * p.t) - .5 * Math.exp(-3 * p.t);
+      expect(p.physical).toBeCloseTo(expected, 10);
+    }
+  });
+  it('preserves a stable cancelled finite pole in the realized response', () => {
+    // P=(s+2)/[s(s+2)]=1/s; reference ramp error is 1-exp(-t).
+    for (const p of trace(model('s+2'), 'reference', 1, ONE, 6).points) expect(p.comparator).toBeCloseTo(1 - Math.exp(-p.t), 11);
+  });
+  it('matches a biproper nonunity-sensor response without a cancelled pole', () => {
+    // P=(2s+1)/(s+2), H=3: Ec/R=(s+2)/(7s+5).
+    for (const p of trace(model('2s+1', 's+2', 0, '3'), 'reference', 0, ONE, 6).points) {
+      const ec = 2 / 5 - 9 / 35 * Math.exp(-5 * p.t / 7);
+      expect(p.comparator).toBeCloseTo(ec, 11);
+      expect(p.physical).toBeCloseTo((2 + ec) / 3, 11);
+    }
+  });
   it('preserves zero and negative excitations', () => {
     const m = model();
     expect(trace(m, 'reference', 2, decimal('0'), 10).points.every(p => p.output === 0 && p.physical === 0)).toBe(true);

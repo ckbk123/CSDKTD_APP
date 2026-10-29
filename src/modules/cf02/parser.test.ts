@@ -33,4 +33,20 @@ describe('CF02 bounded visual polynomial entry', () => {
     expect(() => parseLinear('1000000000001')).toThrow(/magnitude/);
     expect(() => parseLinear('10000000*10000000')).toThrow(/magnitude/);
   });
+  it.each([
+    String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`-(2\frac12)`,
+    String.raw`(2)\frac12`, String.raw`2\left(\frac12\right)`,
+    String.raw`\frac{2\frac12}{3}`, String.raw`2\frac{\frac12}{3}`,
+    String.raw`\mathrm{2}\frac{\mathrm{1}}{2}`, String.raw`2\mathrm{\frac12}`,
+    String.raw`2(s+\frac12)`, String.raw`\frac12\frac12`,
+  ])('rejects mixed-number/fraction adjacency with explicit-operator guidance: %s', text => {
+    expect(() => parseLinear(text)).toThrow(/Insert \+.*×/);
+  });
+  it.each([
+    [String.raw`2+\frac12`, [2.5, 0]], [String.raw`2\times\frac12`, [1, 0]],
+    [String.raw`-2-\frac12`, [-2.5, 0]], [String.raw`2\cdot(s+\frac12)`, [1, 2]],
+    [String.raw`\frac12s`, [0, .5]], [String.raw`\frac{2+\frac12}{3}`, [2.5 / 3, 0]],
+  ] as const)('retains ordinary fractions and explicit operators: %s', (text, expected) => {
+    parseLinear(text).forEach((value, i) => expect(value).toBeCloseTo(expected[i], 13));
+  });
 });
