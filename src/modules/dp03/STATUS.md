@@ -7,7 +7,7 @@
 - **Branch:** `codex/dp03-frequency-7e78`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dp03-frequency-7e78\CSDKTD APP`
 - **Ownership:** `src/modules/dp03/**`; [accepted contract](TASK.md)
-- **PR:** not created yet; implementation has not started.
+- **PR:** not created yet; local mathematical core is in progress.
 
 ## Requirement audit at claim
 
@@ -27,6 +27,15 @@ TASK, STATUS, index.ts and workspace.ts were inspected. The workspace is a blank
 
 Use real causal rational polynomials of order at most four in q=z^-1, with a bounded arithmetic grammar including actual MathLive compact fractions. Evaluate complex frequency response directly; construct W-plane polynomial coefficients by a declared bilinear substitution. Use bounded samples for illustrations; singular endpoints are gaps with explanation, not fabricated finite values. In particular, the rounded source baseline has a denominator zero at z=1, so DC requires explicit singular feedback. Derive independent z=-1 and z=j fixtures and a changed first-order fixture; preserve source rounding as input provenance rather than claiming a new source reconstruction.
 
-## Current checkpoint and next action
+## Mathematical core checkpoint
 
-Setup and requirement audit only. All implementation/tests/browser checks remain open. Work is suspended here to prioritize the coordinator's new DR01 visual-scientific-notation correction in its preserved original worktree and PR #1. DP03's claim/worktree remain reserved and intact; resume this module after that correction is rechecked and resubmitted. No shared dependency changes requested and no module implementation has been copied from another branch.
+- Added a module-owned bounded expression grammar (`expression.ts`), adapted from DR01's private parser with independent DP03 tests and no sibling imports. Real causal rational order is limited to four in q=z^-1. Compact/mixed fractions, outer minus/grouping and explicit powers of ten are supported; ambiguous visual e/E exponent strings are rejected.
+- `frequency.ts` evaluates complex rational response on the unit circle, normalizes aliased frequency, constructs bilinear W-polynomial coefficients and evaluates warped versus unwarped responses. It retains construction scales so a roundoff-sized transformed coefficient cannot turn the source's DC pole into a fabricated finite gain.
+- Independent source-fixture oracles at z=j and z=-1 were derived by hand substitution with 40-digit Python Decimal division: G(j)≈-.03469124597099828866+.02315621326450973190j; G(-1)≈-.001464675473865594486. A first-order T=2 fixture gives H_w=(1+w)/(.5+1.5w) and G(j)=.8-.4j. Invariance tests cover fourth-order changed data, real-coefficient conjugacy, periodicity and correct warped-frequency equivalence.
+- `npm run check` passed and `node node_modules/vitest/vitest.mjs run src/modules/dp03` passed 19/19 tests under Node 24.22.1. No DP03 UI, prediction/reveal, plots, full-project build or real-browser functionality is yet claimed. All remaining interface/verification rows above remain open.
+
+## Current work and review priority
+
+DR01's latest e/E notation correction is fully checked locally (57 module tests, 99 full tests and a fresh real-browser check) but still awaits the coordinator-owned reopening of its already submitted claim at 11be2b2. The corrected working tree and recovery patch are preserved in its original worktree/PR #1. While no action can move that frozen head, independent DP03 work is resumed here; checkpoint and return immediately when reopening becomes available. Only DP03 is actively implemented now. The current claim/worktree remain isolated from that prior PR and contain no cross-module commits.
+
+Next: build the required linked unit-circle/Bode/Nyquist/W-plane teaching interface and prediction/reveal, then finish all checks and browser evidence. No shared dependency changes requested. This is a partial, recoverable checkpoint, not a completed tool.
