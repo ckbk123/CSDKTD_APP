@@ -32,6 +32,12 @@ The implementation will support proper real rational polynomials in z through de
 
 For forward L=N/D and dimensionless sensor h in negative feedback, C=D+hN, Y/R=N/C, E_c/R=D/C and E_t/R=(D+(h−1)N)/C. Zero history is assumed. References are 1, k or kT, and k²/2 or (kT)²/2. For unity feedback, physical Kv=lim(z−1)L/T, giving baseline Kv=1 s⁻¹ and physical-ramp error 1; the sequence ramp has error 10. These results follow independently from e[k]=1−0.9^k and are not frozen from metadata alone.
 
+## Mathematical checkpoint before CP03 review return
+
+The private exact-fraction, polynomial, visual-rational parser and error-analysis helpers now exist. They derive both sensor error channels, exact low-order Schur conditions, z=1 factor limits, physical/sequence constants, finite versus growing error, and bounded zero-history stems. Tests independently cover the baseline geometric sequence, type-zero/static and type-two loops, physical/sequence scaling, nonunit sensors, direct feedthrough, unstable closed loops, exact external cancellation and near-boundary classification. The student interface and browser evidence remain unfinished.
+
+The coordinator reopened the earlier CP03 contribution for invisible-brace displayed-meaning corrections. DF02 is checkpointed and suspended while that higher-priority repair is handled. Its current parser must also receive those corrections before DF02 can be delivered. No implementation completion is claimed.
+
 ## Implemented and inspected
 
 - `index.ts` defines the module metadata, default example and lazy workspace loader.
