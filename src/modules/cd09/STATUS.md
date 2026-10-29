@@ -6,7 +6,7 @@
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
 - **Branch:** `codex/cd09-observer-01a18700`.
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cd09-observer-01a18700\CSDKTD APP`.
-- **PR:** creation pending; the final delivery record will name the one contribution PR before claim submission.
+- **PR:** [#30 — CD09 observer design and estimated-state feedback](https://github.com/ckbk123/CSDKTD_APP/pull/30).
 
 ## Current source assessment
 
@@ -75,4 +75,4 @@ Actual screenshot evidence outside Git (not generated build artifacts):
 
 ## Remaining delivery/review work
 
-No accepted exercise requirement or shared dependency remains deferred. Create/reuse the contribution PR, record its actual URL, commit/push the delivery record, run final exact-HEAD checks and submit that clean revision. Independent coordinator review and integration remain separate; this record does not claim `verified` status or a release. Preserve the branch/worktree for requested corrections.
+No accepted exercise requirement or shared dependency remains deferred. This delivery record belongs to PR #30; the claim/PR record the exact tested final commit including this URL. Independent coordinator review and integration remain separate; this record does not claim `verified` status or a release. Preserve the branch/worktree for requested corrections. The contribution preview and temporary browser tab are closed after verification; primary8787 is preserved.
