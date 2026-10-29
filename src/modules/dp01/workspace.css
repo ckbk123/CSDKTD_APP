@@ -1,0 +1,28 @@
+[data-module="DP01"] .dp01 { display: flex; flex-direction: column; gap: 22px; font-size: 14px; line-height: 1.6; min-width: 0; }
+[data-module="DP01"] .dp-section { border-bottom: 1px solid var(--line); padding-bottom: 22px; min-width: 0; }
+[data-module="DP01"] h3 { font-size: 17px; margin: 0 0 12px; }
+[data-module="DP01"] h4 { font-size: 14px; margin: 12px 0 8px; }
+[data-module="DP01"] p { overflow-wrap: anywhere; }
+[data-module="DP01"] .dp-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+[data-module="DP01"] .dp-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 18px 0; }
+[data-module="DP01"] label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; min-width: 0; }
+[data-module="DP01"] input, [data-module="DP01"] select { width: 100%; min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 14px; }
+[data-module="DP01"] input:disabled { opacity: 0.6; }
+[data-module="DP01"] .dp-small { font-size: 12px; color: var(--muted); }
+[data-module="DP01"] .dp-notice { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--tint); }
+[data-module="DP01"] .dp-plot { min-width: 0; overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; margin: 12px 0; }
+[data-module="DP01"] svg { width: 100%; min-width: 560px; height: auto; display: block; }
+[data-module="DP01"] svg text { fill: var(--muted); font-size: 12px; }
+[data-module="DP01"] .dp-grid { stroke: var(--line); stroke-width: 0.8; }
+[data-module="DP01"] .dp-axis { stroke: var(--muted); stroke-width: 1; }
+[data-module="DP01"] .dp-primary { stroke: var(--accent); fill: var(--accent); stroke-width: 1.5; }
+[data-module="DP01"] .dp-secondary { stroke: var(--muted); fill: var(--surface); stroke-width: 1.3; }
+[data-module="DP01"] .dp-held { fill: none; stroke-dasharray: 5 4; opacity: 0.7; }
+[data-module="DP01"] .dp-table { overflow: auto; max-height: 340px; margin-top: 12px; }
+[data-module="DP01"] table { border-collapse: collapse; width: 100%; font-size: 12px; font-variant-numeric: tabular-nums; }
+[data-module="DP01"] th, [data-module="DP01"] td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+[data-module="DP01"] .equation-display { max-width: 100%; overflow-x: auto; padding: 10px 2px; }
+@media (max-width: 500px) {
+  [data-module="DP01"] .dp-controls { grid-template-columns: minmax(0, 1fr); }
+  [data-module="DP01"] .dp-actions .button { flex: 1 1 110px; }
+}

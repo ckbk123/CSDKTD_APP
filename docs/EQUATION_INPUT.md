@@ -74,6 +74,12 @@ export const mount: ModuleMount = ({ container, signal }) => {
 
 The editor does not define a universal mathematical grammar for all 56 tools. A differential equation, transfer function, matrix and design constraint need different validated models even though they share one input interface.
 
+### Preserve the meaning of the displayed equation
+
+Parse what the student sees, rather than borrowing a programming-language number grammar. For example, MathLive renders `1e-2` as the mathematical expression **1·e − 2**; interpreting that string as the JavaScript scientific literal 0.01 silently solves a different problem. Reject unsupported e/E symbols in a bounded rational-expression parser, or explicitly support textbook powers such as `10^{-2}` with the displayed meaning. A native HTML numeric control has a separate grammar and can legitimately accept exponent notation. Scientific **result formatting** should still use a typeset multiplication/power of ten.
+
+Check actual editor serialization. MathLive may emit `\frac12`, `\frac{1}2` or `\frac1{2}` for the same visible fraction. Accept these forms where fractions are supported, preserving TeX's one-token argument rule. Test outer grouping and unary signs too: a supported negative ratio must preserve its meaning whether its minus is outside the fraction or in its numerator. Nested numeric fractions need equivalent tests when included in the declared grammar. A malformed draft, an unsupported complete expression and a valid supported expression require distinct feedback. Include a real fraction-button exercise in browser evidence rather than testing only developer-authored braced strings.
+
 ## Local assets and lifecycle
 
 The wrapper imports `mathlive/fonts.css` and `mathlive/static.css`. Vite emits all 20 referenced WOFF2 fonts as local hashed assets. The build disables asset inlining so even the smallest font remains a same-origin file, compatible with `font-src 'self'`. `MathfieldElement.fontsDirectory = null` disables MathLive's separate automatic font lookup; the imported CSS supplies the fonts. No runtime CDN is required. Keep the CSS import, build setting and font lookup setting together.
