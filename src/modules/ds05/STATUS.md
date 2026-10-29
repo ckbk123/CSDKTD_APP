@@ -1,6 +1,7 @@
 # DS05 implementation status
 
 - **Stage:** in-progress
+- **Current checkpoint:** full bounded guided workspace implemented; actual-browser QA, final delivery record and PR submission remain.
 - **Last assessed:** 2026-10-29
 - **Assessed code baseline:** fresh primary-main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9)
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
@@ -92,3 +93,15 @@ One initial winding assertion distinguished IEEE−0 from+0 at a mathematically 
 Checks under bundled Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/ds05` **118 pass**; `npm run check` passes; preliminary `npm test` **778 tests / 29 files pass**; preliminary `npm run build` passes with the existing MathLive chunk advisory; `git diff --check` passes. Since the workspace is still blank, build compatibility is not browser/UI acceptance.
 
 The guided workspace, paired source/mapped plots with real direction arrows, prediction/reveal flow, full inside/outside accounting, numerical cursor, visible boundary/conditioning feedback and real-browser checks remain required. No preview/browser/QA resource held. Continue implementation against the full audit; do not submit this core-only checkpoint as a finished teaching module.
+
+## Guided workspace checkpoint
+
+`view.ts`, scoped `style.css` and `plots.ts` now supply the complete bounded student flow: thirteen baseline/changed/boundary/cancellation/static experiments; visual N/D, scalar K/T inputs; optional open-pole, winding and closed-root predictions; full contour convention and inside/outside derivation; independent Q root comparison; and a linked direct-evaluation frequency cursor with numeric/keyboard/cardinal controls. Fixed discrete coefficients stay unchanged when T relabels physical frequency. Boundary/unresolved cases do not acquire a fabricated ordinary winding integer. The instructor-review extension provenance is visible.
+
+Source and mapped complex planes use equal x/y scales, actual increasing-angle direction arrows, open/closed root symbols, a linked cursor and return-difference ray. The fixed source view explicitly counts root markers outside its box; a selectable critical view clips true coordinates instead of clamping false markers. Missing finite points remain gaps; the source cursor remains available at a mapped pole. Complete roots/counts stay in their tables regardless of plot clipping.
+
+The synchronous workspace wrapper appends an owned loading node and gives its deferred view a child abort signal. Parent abort, disposal and partial initialization failure release child-owned resources. Per-result listeners abort on changed inputs/reveal. Input errors clear stale checked results; invalid cursor drafts retain the previous valid cursor. No state crosses visits.
+
+Current local tests: **150 / 6 files pass** (118 math/parser, 3 meaningful gap/clipping plot cases, 25 workspace-flow and 4 deferred lifecycle). Workspace-flow mocks the equation component only to inspect caller drafts/state; it is not actual editor evidence. `npm run check` passes. Real-browser editing/fonts/buttons, geometry/direction/axis inspection, reset/reopen/rapid navigation, keyboard and narrow viewport still require actual evidence before marking implemented or submitting.
+
+Workspace project checks also pass: `npm test` **810 tests / 32 files**, and `npm run build` including type check, with the existing MathLive chunk advisory. `git diff --check` passes. This checkpoint is being preserved before private production-browser QA; generated output is not committed.
