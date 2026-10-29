@@ -42,6 +42,9 @@ describe('CF02 workspace state and lifecycle (mock editor; real browser separate
     const constantHeading = [...container.querySelectorAll('h3')].find(h => h.textContent!.startsWith('5. Interpret'))!;
     expect(derived.compareDocumentPosition(constantHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(container.querySelector('svg[role="img"]')).not.toBeNull();
+    edit(container, 'Trace horizon (s)', '.1'); submit(container);
+    expect(result(container)).toContain('Finite limit: 1/2');
+    expect(result(container)).toContain('The chosen horizon does not yet show close agreement');
   });
   it('invalidates old results, changes source and resets all exercise state', async () => {
     const { container } = await open(); submit(container);

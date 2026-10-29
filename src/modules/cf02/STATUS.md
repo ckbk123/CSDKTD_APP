@@ -1,11 +1,37 @@
 # CF02 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Assessed:** 2026-10-29, fresh primary-main baseline `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (v0.3.3).
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
 - **Branch/worktree:** `codex/cf02-steady-state-7393`; `C:\Users\baokh\.codex\worktrees\cf02-steady-state-7393\CSDKTD APP`.
-- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), draft pending browser verification. Prior DS01 PR #10 is submitted and preserved for coordinator review; corrections take priority.
+- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18). Final browser verification is complete; the exact final tested submission is recorded in the shared claim. Independent coordinator integration/review remains separate. Prior DS01 PR #10 is preserved; corrections take priority.
+
+## Delivered bounded exercise and final verification — 29 October 2026
+
+Students can edit the forward path, sensor, source, input shape/amplitude and trace horizon; predict an error; derive its transfer function before reading the type table; check full-loop Hurwitz conditions; and compare exact limits/polynomial asymptotes with numerical comparator/physical error curves. All accepted TASK requirements are delivered within the declared family below. The initial audit and intermediate checkpoints are retained as historical evidence, not outstanding implementation work.
+
+Final production-candidate checks under bundled Node **v24.22.1**:
+
+- `node node_modules/vitest/vitest.mjs run src/modules/cf02`: **133 tests** (80 parser, 5 rational, 41 mathematical/trace, 7 workspace/lifecycle), also included in the final full run.
+- `npm test`: **336 tests / 19 files pass**, including the QA-driven short-horizon comparison regression.
+- `npm run check`: passes, also rerun by `npm run build`.
+- `npm run build`: passes; only the existing large MathLive chunk warning. No dependencies or global build settings changed.
+- Pushed precursor `98d3a2847099ea5cd2810ab14ff1e0ff3509a284` passed [GitHub CI](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40871907644/job/123440809877). Final-head checks are recorded on this same PR before claim submission.
+
+Real browser: **in-app Chromium, system dark theme**, production build served only on the worker's port **8796**, tested at **1280×720** and **390×844**. Shared QA was reserved with the primary helper. Evidence:
+
+- Baseline unit ramp gives exact 1/2 and a numerical endpoint 0.499986 at 10 s; unit step gives 0. Doubled numerator gives 1/4. All eight presets computed from current controls. Stable type-2 parabola gives 1/2; removing the zero refuses a certified limit. Numerator 4(s+2) with two integrators shows the exact cubic Hurwitz boundary (determinant zero).
+- H=2 distinguishes comparator 1/4 from physical ramp asymptote t/2+1/8. Disturbance step gives −1; sensor-noise comparator gives 0 and physical error +1. A biproper P=2, H=1/2 case shows exact physical zero while comparator error grows; numerical physical residuals are around 10⁻¹³ at 10 s, explicitly approximate.
+- Empty and incomplete fraction boxes receive completion feedback. The real fraction button, numerator/denominator typing and Tab produce N=1/2 and ramp error 4. A pasted numeric style for 8 gives 1/4. Actual editor paste rejects mixed, signed and nested 2½ forms with operator guidance; explicit 2+1/2 gives ramp error 4/5, and 2×1/2 gives 2. Hidden braces/font-wrapped arithmetic reject; visible 2(3+4) works. e/E visual shorthand and the power button's unsupported polynomial power reject without checked output.
+- Native `1e-999` is rejected as nonzero underflow, `0e-999` gives exact zero, `1e-2` gives 1/200, empty amplitude and out-of-range horizon give errors. An unstable high-gain case visibly stops the trace at the 10¹² cap; a stiff 120-s case reports the 40,000-interval budget.
+- A 0.1-s baseline trace reports error 0.0993666 versus exact limit 1/2, and explicitly warns that the chosen horizon has not shown close agreement. The warning's 1% endpoint comparison is labeled a numerical comparison, not a settling-time certificate. The candidate was rebuilt/reloaded and this warning rechecked in the browser after the QA refinement.
+- Restore baseline, shell reset and leave/reopen restore all baseline state. The math keyboard opens, Escape hides it without navigation, j stays in the editor, and Tab reaches the fraction button. Reset with the keyboard open leaves two fresh fields and no old keyboard. Rapid catalogue/tool/catalogue navigation leaves zero old math fields/CF02 roots on the catalogue; reopening returns the baseline.
+- Fractions, signs, powers in results and plots render visibly with readable glyphs. No browser warning/error logs were captured. At 390 px, document width is 375 px (scrollbar excluded), with no page-wide horizontal overflow; the 520-px plot remains in a 281-px focusable scroll region. Three Right presses move it 120 px. Controls, tables and fixed captions remain readable. Local desktop/mobile screenshots are preserved outside Git.
+
+After QA, the viewport override was reset, the worker tab closed, port 8796 stopped and the QA reservation released. Primary preview **8787** was not changed. No worker watcher remains. Light theme, other browser engines and a complete network-request trace were not separately inspected; no broader compatibility/network claim is made.
+
+**Remaining work:** independent coordinator review and integration only. No module implementation requirement or shared-helper request is outstanding. Supported-domain limits are intentional and visible; arbitrary transfer functions, delays, higher-degree entry and RHP zeros are outside this bounded exercise. Course source anchors remain TASK/atlas evidence; the original decks were not newly inspected. Only `src/modules/cf02/**` changed. Package versions, shared APIs, primary main and deployment are coordinator-owned.
 
 ## Audit before implementation
 

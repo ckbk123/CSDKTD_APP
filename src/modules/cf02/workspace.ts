@@ -148,6 +148,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
       if (value.kind !== 'uncertified') {
         const expected = evaluate(value.polynomial, end.t), measured = end[error];
         paragraph(checked, `At t = ${numeric(end.t)} s: selected error ≈ ${numeric(measured)}; asymptotic ${value.kind === 'finite' ? 'value' : 'polynomial'} ≈ ${numeric(expected)}; difference ≈ ${numeric(measured - expected)}.`);
+        if (Math.abs(measured - expected) > .01 * Math.max(1, Math.abs(expected))) {
+          paragraph(checked, 'The chosen horizon does not yet show close agreement with the asymptote. Increase the horizon. This endpoint comparison uses 1% of max(1, |asymptotic value|) in normalized units; it is not a settling-time certificate.');
+        }
       }
     }
     paragraph(checked, 'A short horizon can leave a large transient. Increase it and compare the endpoint with the analytical result; endpoint agreement alone does not certify a limit.', true);
