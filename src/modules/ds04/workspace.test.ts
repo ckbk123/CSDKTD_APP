@@ -56,6 +56,17 @@ describe('DS04 complete teaching workspace', () => {
     expect(root.textContent).toContain('Only powers 0, 1 and 2'); expect(root.querySelectorAll('svg')).toHaveLength(0);
     edit(root.querySelector('textarea')!, '\\placeholder{}'); click(root, 'Check prediction and reveal'); expect(root.textContent).toContain('Complete both visual polynomials');
   });
+  it('uses the exact nonrepresentable singular gain for both the root list and plot', async () => {
+    const { root } = await open();
+    edit(root.querySelector('textarea')!, '-0.3z^2'); edit(root.querySelectorAll('textarea')[1], 'z^2');
+    click(root, 'Check prediction and reveal'); click(root, 'Inspect K = 10/3');
+    expect(root.textContent).toContain('P is identically zero. Its roots are undetermined');
+    // The gain bar may show K, but an undetermined root set has no current-root crosses.
+    expect(root.querySelectorAll('.g-locus .g-selected')).toHaveLength(0);
+    edit(root.querySelector('input')!, '3');
+    expect(root.querySelectorAll('.g-locus .g-selected')).toHaveLength(2);
+    expect(root.textContent).not.toContain('P is identically zero. Its roots are undetermined');
+  });
   it('validates gain and plotting bounds without leaving an old graph visible', async () => {
     const { root } = await open(); click(root, 'Check prediction and reveal');
     edit(root.querySelector('input')!, ''); expect(root.textContent).toContain('finite K'); expect(root.querySelectorAll('svg')).toHaveLength(0);

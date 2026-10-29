@@ -104,7 +104,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
       const scroll = element('div', undefined, 'g-table-scroll'); scroll.append(partitionTable); result.append(scroll);
       result.append(equation(String.raw`(1-w)^2P\left(\frac{1+w}{1-w},K\right)=(a-b+c)w^2+2(a-c)w+(a+b+c)`, 'Transformed Routh cross-check'));
       result.append(element('p', 'Routh cross-check: the first column is [a−b+c, 2(a−c), a+b+c]. Its entries sum to 4a, so all have the same nonzero sign exactly when the three normalized Jury inequalities hold. At a=0, the biproper feedback equation is algebraically singular; a reduced-degree polynomial cannot certify the original feedback interconnection.'));
-      result.append(gainBar(m, gain, minimum, maximum), locusPlot(m, gain, minimum, maximum));
+      result.append(gainBar(m, gain, minimum, maximum), locusPlot(m, exactGain ?? gain, minimum, maximum));
       result.append(element('h3', `All roots at K = ${exactGain ? exactText(exactGain) : fmt(gain)}`));
       const classification = element('p', current.classification, 'g-feedback'); classification.setAttribute('role', 'status'); result.append(classification);
       result.append(equation(`P(z)=(${fmt(current.a)})z^2+(${fmt(current.b)})z+(${fmt(current.c)})`, 'Selected characteristic coefficients'));

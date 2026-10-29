@@ -72,3 +72,10 @@ Local evidence artifacts (not committed):
 ## Delivery / remaining work
 
 No accepted bounded-exercise requirement remains open. Higher-order or non-rational coefficient families remain outside this declared tool. Final independent review/integration belongs to the coordinator. Only this module's folder changed. The branch and exact tested submission will be preserved for review; no version bump, merge or deployment is performed here. Pull request: [DS04 #13](https://github.com/ckbk123/CSDKTD_APP/pull/13), base main, attached to the worker chat. The claim records the final exact tested SHA including this delivery record. The connector lacks PR-write access (403 observed for the prior contribution), so the existing authenticated Git credential created this PR through the GitHub API; no new credential was provisioned. The continuous worker goal proceeds to another eligible module after submission and prioritizes any coordinator rework.
+
+## Coordinator review return: exact singular selection
+
+At the submitted revision the root list used exact K=10/3 for N=-3z²/10,D=z², but the locus recomputed rounded K=3.3333333333333335 and drew two spurious current roots at zero. The plot now accepts the same exact rational selection as the list; only window/sweep sampling stays numeric. A workspace regression checks no current-root crosses at the exact identically-zero characteristic and restores two crosses at K=3. Original source SHA and review evidence remain preserved in PR #13.
+
+Correction checks: npm test -- src/modules/ds04 passes 41/41 (32 math,9 workspace); npm run check passes; npm test passes 83/83 across8files; npm run build passes (existing MathLive chunk warning only); git diff --check passes. The targeted production-browser recheck is pending while DS01 finishes and the coordinator takes its explicitly reserved next slot. Earlier full browser evidence above still applies to the otherwise unchanged module. This is a recoverable review checkpoint, not a resubmission yet.
+

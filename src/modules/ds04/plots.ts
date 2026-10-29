@@ -1,4 +1,4 @@
-import { analyze, boundaryInfo, gainRegions, numberOf, sampleLocus, type Complex, type Model } from './math';
+import { analyze, boundaryInfo, gainRegions, numberOf, sampleLocus, type Complex, type Model, type Rational } from './math';
 
 const ns = 'http://www.w3.org/2000/svg';
 function svg(title: string, viewBox: string): SVGSVGElement {
@@ -9,10 +9,11 @@ function shape(parent: SVGElement, tag: string, attrs: Record<string, number | s
   if (text !== undefined) item.textContent = text; parent.append(item);
 }
 const short = (n: number) => n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 4 });
-export function locusPlot(model: Model, gain: number, minimum: number, maximum: number): HTMLElement {
+export function locusPlot(model: Model, gain: number | Rational, minimum: number, maximum: number): HTMLElement {
   const figure = document.createElement('figure'), caption = document.createElement('figcaption'); caption.textContent = 'Closed-loop roots in the z plane'; figure.append(caption);
   const out = svg('Sampled discrete root locus with unit-circle crossings', '0 0 360 300');
   const branches = sampleLocus(model, minimum, maximum), selected = analyze(model, gain);
+  const numericGain = typeof gain === 'number' ? gain : numberOf(gain);
   const extent = Math.min(10, Math.max(1.5, ...selected.roots.finite.map(p => Math.max(Math.abs(p.re), Math.abs(p.im)) * 1.2)));
   const scale = 105 / extent, x = (v: number) => 180 + scale * v, y = (v: number) => 145 - scale * v;
   shape(out, 'circle', { cx: 180, cy: 145, r: scale, class: 'g-circle' });
@@ -41,7 +42,7 @@ export function locusPlot(model: Model, gain: number, minimum: number, maximum: 
   }
   figure.className = 'g-locus'; figure.append(out);
   const note = document.createElement('p'); note.className = 'g-small';
-  note.textContent = `Dimensionless z; × current roots; ○ unit roots at critical gains inside the sampled window. 401 samples over ${short(minimum)} ≤ K ≤ ${short(maximum)}; solid/dashed paths show both roots and break at a=0. The view follows the selected roots (extent capped at 10); it does not prove the gain set.${gain < minimum || gain > maximum ? ' Selected K is outside the sampled gain window.' : ''}${omitted ? ` ${omitted} sampled/selected points exceed the view; selected roots are listed numerically.` : ''}`;
+  note.textContent = `Dimensionless z; × current roots; ○ unit roots at critical gains inside the sampled window. 401 samples over ${short(minimum)} ≤ K ≤ ${short(maximum)}; solid/dashed paths show both roots and break at a=0. The view follows the selected roots (extent capped at 10); it does not prove the gain set.${numericGain < minimum || numericGain > maximum ? ' Selected K is outside the sampled gain window.' : ''}${omitted ? ` ${omitted} sampled/selected points exceed the view; selected roots are listed numerically.` : ''}`;
   figure.append(note); return figure;
 }
 export function gainBar(model: Model, gain: number, minimum: number, maximum: number): HTMLElement {
