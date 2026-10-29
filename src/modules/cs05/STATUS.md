@@ -1,6 +1,6 @@
 # CS05 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary main v0.3.9)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
@@ -83,3 +83,9 @@ No worker-owned acceptance item or shared dependency remains. The complete gain 
 Frozen source `32f591026bc5216729bd9475a9a562f7f964218d` is merged with preserved history. Independent review checked complete nonnegative-gain Hurwitz inequalities, exact rational/surd endpoints and interval tests, strict boundaries, fixed leading degree and complete numerical root checks. New hand-derived family a2=a1=1+K,a0=5K gives both intervals (0,(3-sqrt(5))/2) and ((3+sqrt(5))/2,infinity). Lower-order fixtures verify K>2 and K>3, the latter's imaginary roots at ±j sqrt(17), plus a stable unchanged zero-numerator loop including K=0.
 
 Shared argument preflight precedes normalization. Fraction boxes are now consumed before presentation declarations/spacing are removed: raw frac+displaystyle 12 no longer silently becomes1/2 (pinned editor places12 in the numerator and leaves the denominator incomplete). Correctly braced display-style/spacing fractions and normal products retain their meaning; separate numeric tokens are not fused across an explicit spacing command. Native input already uses the shared reader. Existing child/partial/reentrant cleanup is retained, with added standalone child-resource/idempotency coverage. 64 module tests, TypeScript and diff checks pass. Stage remains implemented; root owns final combined/browser acceptance, and no new browser run is claimed here.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `32f591026bc5216729bd9475a9a562f7f964218d`, [PR #29](https://github.com/ckbk123/CSDKTD_APP/pull/29), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

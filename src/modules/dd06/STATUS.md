@@ -1,6 +1,6 @@
 # DD06 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Assessment:** 2026-10-29; accepted bounded exercise implemented and checked. Independent integration review remains, with the inherited shared Escape repair/combined-main gate explicitly owned by the coordinator below.
 - **Contract:** [TASK.md](TASK.md); ownership `src/modules/dd06/**`.
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`; owner `worker-dd06-01a186d2-12d1`.
@@ -79,3 +79,9 @@ Checkpoints58fbf3f (audit),30f26f5 (math/parser,67 tests),fe91ad6 (interface),26
 ## Coordinator forward-accuracy qualification (30 October 2026)
 
 Independent review reproduced false free-state growth for the exact sampled closed matrix [[1.125,.9375],[.25,.875]], targets1.5/.5 and initial[-99.15,66.1]: at k49 the unchecked output was−2.6963×10⁻⁶ instead of−1.7613×10⁻¹³. Integration tracks componentwise forward allowances for input conversion, closed-transition formation and local state/control/output arithmetic. Signed transition powers are retained within eight-step blocks before absolute propagation, with power-rounding radii; this avoids the artificial |F| growth of a stable but signed/nonnormal matrix. An allowance above10⁻⁸×max(1,|component|) stops through the existing explicit warning/reliable-prefix path. This is a conservative floating-point qualification, not interval certification or a change to model/target/IC/horizon bounds. The absent-mode fixture stops before contamination, genuine fast/perturbed modes remain present and the ordinary baseline still runs2000 intervals. Added changed nilpotent ZOH/design, notation-scope and late-disposer regressions.93 module tests/type checking pass; coordinator independently reviews this numerical correction before browser/release acceptance.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `43a1dc32af39bbdfaf106f138ee3de0302195ce3`, [PR #37](https://github.com/ckbk123/CSDKTD_APP/pull/37), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

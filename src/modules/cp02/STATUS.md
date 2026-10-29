@@ -1,6 +1,6 @@
 # CP02 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Coordinator preparation:** source `c6d8fd9454c16fb63cf4a13514f72519fdc753f7` passed a bounded independent review of exact cancellation, original/internal versus reduced-channel stability, real/repeated/conjugate/integrator step modes and denominator-preserving zero moves.45 independent ODE/classification/edited-pole checks passed. Shared TeX preflight protects scalar normalization, with Unicode/nested-delimiter and valid-box controls. Native fields already use `readNumericInput`. The deferred view now owns its DOM and handles a cleanup returned after reentrant abort; six focused tests cover partial failure, standalone/pending disposal, parent forwarding and already-aborted visits.55 module tests plus179 shared-preflight tests pass (234 total), with type checking and diff validation. Scope/bounds are unchanged; coordinator browser acceptance remains pending.
 - **Assessment:** 2026-10-29; accepted bounded exercise and mathematical/project/browser checks complete. Independent final review and integration are pending; no verified stage is claimed.
 - **Starting main:** `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (isolated v0.3.3 baseline).
@@ -89,3 +89,9 @@ The later human Firefox instruction was verified in the coordinator chat; local 
 ## Delivery and remaining work
 
 No accepted exercise requirement remains within the declared domain. Independent final review/integration is pending. Own test tab is closed, private viewport restored, preview stopped and obsolete global waiter/reservation released. Primary port 8787 was preserved. No dependencies, shared files, versions, deployment or main merge changed. PR #27 is open and attached; the shared claim records its exact clean submitted HEAD. Preserve this worktree/branch for review returns. This contribution is a milestone of the continuous worker loop, not completion of the overall backlog.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `c6d8fd9454c16fb63cf4a13514f72519fdc753f7`, [PR #27](https://github.com/ckbk123/CSDKTD_APP/pull/27), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

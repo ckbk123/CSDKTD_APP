@@ -1,6 +1,6 @@
 # CP06 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Coordinator preparation:** source `756220aaf8b021741de201aa46895a9218cfd2d4` passed a bounded independent review of full/reduced Q, fixed-Ki normalization, retained common-factor modes, real-axis parity, asymptotes, stationary/axis crossings, outward arrival-ray convention and bounded minimum-distance continuation.169 independent analytic-root/PI/candidate/rule/continuation checks passed. Shared TeX preflight now precedes polynomial normalization, with Unicode/nested-delimiter and valid-box regressions. Native fields already use `readNumericInput`. Deferred cleanup clears release ownership and covers standalone/pending/already-aborted/reentrant cases in addition to partial failure.121 module tests plus179 shared-preflight tests pass (300 total), with type checking and diff validation. No mathematical scope/bounds or complete-stability-region claim is added; coordinator browser acceptance remains pending.
 - **Assessed:** 2026-10-29; primary baseline `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cp06/**` only.
@@ -71,3 +71,9 @@ Saved screenshots outside Git in `C:/Users/baokh/.codex/visualizations/2026/10/2
 ## Remaining delivery / limits
 
 The accepted bounded exercise is complete. PR #44 is attached to the responsible worker chat; this delivery record is included in the final source revision. The shared claim records the exact clean tested HEAD submitted for integration after final CI. Independent review/integration remains coordinator-owned. The original Ch4 PI topology is still untranscribed; the PI fixture is proposed. No complete stable-parameter-region proof, general CAS, degree>3 numerical solver or arbitrary feedback-sign exercise is claimed. No shared dependency request is open.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `756220aaf8b021741de201aa46895a9218cfd2d4`, [PR #44](https://github.com/ckbk123/CSDKTD_APP/pull/44), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

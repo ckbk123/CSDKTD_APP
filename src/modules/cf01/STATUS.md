@@ -1,6 +1,6 @@
 # CF01 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Coordinator preparation:** frozen source `9ba4b376f5a0f3427976933e2689e3ab7f2349da` passed a bounded independent review of the zero-state normalized step, retained pole/zero factors, repeated-pole residues, derivative/crossing definitions, numerical future envelope and guideline qualifications.46 independent ODE/closed-form/crossing/target checks passed. Shared TeX preflight now precedes normalization, with explicit/Unicode argument blanks, malformed nested delimiters and valid-box/fence regressions. Native fields already use `readNumericInput`. Deferred cleanup now releases a disposer returned after reentrant abort, with pending-disposal coverage.50 module tests plus179 shared-preflight tests pass (229 total), with type checking and diff validation. Mathematical scope/bounds are preserved; coordinator browser acceptance of this integration remains pending.
 - **Assessed:** 2026-10-29; fresh primary main9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86 (v0.3.9)
 - **Owned scope:** src/modules/cf01/**; [accepted contract](TASK.md)
@@ -123,3 +123,9 @@ Source provenance remains the atlas/continuous P2 audit and independently derive
 ### Pull request delivery
 
 [PR #36 — Implement CF01 transient requirements and full-response comparison](https://github.com/ckbk123/CSDKTD_APP/pull/36) is open and attached to worker chat `01a18701-3f40-7572-9a49-7dc0103c9161`. Branch `codex/cf01-transients-01a18701`, isolated worktree `C:/Users/baokh/.codex/worktrees/cf01-transients/CSDKTD APP`. The final claim names the clean tested HEAD including this URL record; the PR remains available for independent review and any corrections on this same branch. Submission does not claim integration or mathematical certification by the coordinator.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `9ba4b376f5a0f3427976933e2689e3ab7f2349da`, [PR #36](https://github.com/ckbk123/CSDKTD_APP/pull/36), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

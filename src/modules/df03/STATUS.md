@@ -1,6 +1,6 @@
 # DF03 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Review:** independent coordinator integration review pending; shared Escape correction remains a reported coordinator-owned integration note
 - **Assessed:** 2026-10-29; isolated base primary main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86`
 - **Owned scope:** `src/modules/df03/**`; [accepted contract](TASK.md)
@@ -72,3 +72,8 @@ Proof files outside Git in the worker's2026/10/29 visualization folder: `df03-ba
 Supported Node24.22.1: `npm test -- src/modules/df03`88 tests in5 files (21 math,41 parser,8 formatting,12 mocked interface,6 lifecycle), `npm run check`, `npm test`748 tests in31 files, `npm run build` and `git diff --check` pass. Existing MathLive221.50kB gzip warning/20 local fonts remain; DF03 view≈14.48kB gzip. Generated output is not committed.
 
 No owned mathematical/UI requirement or new shared API dependency remains. PR31 is reused/attached and prepared for independent review with the shared-component note above. Final submission records the exact clean pushed tested HEAD through the current primary claim helper. Earlier review returns retain priority; submission is a contribution milestone in the continuous goal. No main merge, version change, deployment, dependency change or new agents.
+## Final coordinator disposition — 0.3.14
+
+Frozen source `fe241a46330f0c11e41f424d27795d1a52c60ce2`, [PR #31](https://github.com/ckbk123/CSDKTD_APP/pull/31), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

@@ -1,6 +1,6 @@
 # CF04 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Coordinator preparation:** source `06c3f904430fdbc03be54e922b89dd883940df05` passed a bounded independent review of G/L/T conventions, cubic Routh determinant, exact positive-frequency isolation, margin equations, resonance derivative and first downward bandwidth crossing.115 direct-complex/closed-form/changed-boundary checks passed. Shared TeX preflight now protects scalar normalization without expanding its intentionally narrow numeric grammar. Native controls already use `readNumericInput`. The deferred view owns its DOM as well as its child signal, with new pending-disposal and reentrant-return regressions.65 module tests plus179 shared-preflight tests pass (244 total), with type checking and diff validation. Mathematical limits and numerical-illustration qualifications remain; coordinator browser acceptance is pending.
 - **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355` (local)
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cf04-frequency-specs-01a18701\CSDKTD APP`
@@ -72,3 +72,9 @@ Proof images outside Git:
 TASK, atlas, continuous/discrete exercise audits and recorded S09/Ch5 anchors were inspected; original decks outside Git were not. C1's explicit coefficients are recorded in the atlas CD05 check and agree independently with CF04's stated margin. Lag/threshold/root-count fixtures are proposed mathematical checks. No unseen course diagram or external solver is claimed inspected.
 
 Tested application-source revision: `09d1125c78cfde2c0f67a982a2fcce3b01e9083a`. Later delivery changes are STATUS only. Pull request: [PR43](https://github.com/ckbk123/CSDKTD_APP/pull/43), attached to this worker chat. The shared claim records the exact clean full submitted commit, equal to this worktree's HEAD including this delivery record. Full accepted exercise is implemented within the declared domain; independent review/integration remains. No shared helper/package request is required for this contribution. Preserve this branch/worktree and reuse PR43 for any corrections; primary main/version/deployment are coordinator-owned.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `06c3f904430fdbc03be54e922b89dd883940df05`, [PR #43](https://github.com/ckbk123/CSDKTD_APP/pull/43), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

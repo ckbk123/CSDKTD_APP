@@ -1,6 +1,6 @@
 # CD01 implementation status
 
-- **Stage:** implemented — accepted bounded exercise, independent mathematical fixtures, project checks and actual production-browser checks pass. Independent integration review remains pending.
+- **Stage:** verified
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -90,3 +90,9 @@ The human stop-after-current amendment was relayed by the coordinator and verifi
 Frozen source `1aba56b19152fe59cb40dbfd2453113c639a8967` is merged with preserved history. Independent review checked the P/PI/filtered-PD/PID state equations, characteristic coefficients, fixed-coefficient matching constraints, active-state reduction, standard/parallel conversion and sampled performance semantics. New expected fixtures verify target (s+1)(s+2)(s+4)(s+16), solved gains (9.28,6.4,2.736), all four poles, and the elementary underdamped P step response/effort at nine times. Existing unsupported-target, instability, work and response limits remain unchanged.
 
 Shared TeX argument preflight precedes private cleanup, with Unicode/nested malformed arguments and supported fraction/target controls. The view already uses shared native input. The existing child wrapper retains its partial-failure and standalone-resource tests, gains a reentrant-late-disposer regression and guarantees host removal around disposal. 76 module tests, TypeScript and diff checks pass. Worker browser evidence is recorded above; root owns final combined/browser acceptance. Stage remains implemented.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `1aba56b19152fe59cb40dbfd2453113c639a8967`, [PR #42](https://github.com/ckbk123/CSDKTD_APP/pull/42), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

@@ -1,6 +1,6 @@
 # DS05 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Last assessed:** 2026-10-29
 - **Base:** fresh primary-main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
@@ -111,3 +111,9 @@ The full accepted bounded exercise is implemented and verified as recorded above
 Frozen source `ac4e707d39fe1d1d14e9bfb195e35537a8b3711a` is merged with preserved history. Independent review checked the full CCW source contour, positive CCW winding convention W=Z_inside-P_inside and Z_out=P_out-W, retained common/zero-gain modes, direct-feedback well-posedness, exact quadratic location/multiplicity and guarded adaptive arc bounds. New independently chosen D/Q factors verify windings -2,-1,0,+1,+2, including a cancelled outside mode that remains unstable. Independent complex mapping values verify normalization/signs. Exact contour boundaries and insufficient arc depth withhold an ordinary count, and singular leading feedback is rejected. Sampled drawings remain separate from the guarded numerical check.
 
 Shared TeX argument preflight now precedes lexical erasure with malformed command/Unicode/nested-delimiter and supported boxed controls. Native controls already use the shared reader. The owned wrapper now releases late disposers without retaining them, guarantees root removal if disposal throws, and has explicit standalone-resource/reentrant/idempotency tests alongside existing partial-load recovery. 167 module tests, TypeScript and diff checks pass. Stage remains implemented; worker browser evidence is retained and root owns final combined/browser acceptance. No source, version, deployment or global API changes outside this module were made.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `ac4e707d39fe1d1d14e9bfb195e35537a8b3711a`, [PR #33](https://github.com/ckbk123/CSDKTD_APP/pull/33), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

@@ -1,3 +1,5 @@
+import { allowanceStepper } from './roundoff';
+
 export type Vector = readonly [number, number];
 export type Matrix = readonly [number, number, number, number];
 export type Complex = readonly [number, number];
@@ -176,15 +178,31 @@ export function simulate(observer: Observer, B: Vector, options: Options, feedba
   const wave0 = options.noiseAmplitude * Math.sin(options.noisePhase), wave1 = options.noiseAmplitude * Math.cos(options.noisePhase);
   let state = [...options.initial, ...options.estimate, ...(filtered ? [dot(C, [options.initial[0] - options.estimate[0], options.initial[1] - options.estimate[1]]) + wave0] : []), wave0, wave1,
     feedback ? referenceGain * options.reference : options.heldInput];
+  const round = 64 * Number.EPSILON, half = exponential(g.map(v => v * step / 2), n), doubled = multiply(half, half, n);
+  const transitionRadius = transition.map((v, index) => {
+    const row = Math.floor(index / n), col = index % n;
+    const products = Array.from({ length: n }, (_, k) => Math.abs(half[row * n + k] * half[k * n + col])).reduce((a, b) => a + b, 0);
+    return Math.abs(v - doubled[index]) + round * (Math.abs(v) + products);
+  });
+  let allowance = state.map(v => round * Math.abs(v));
+  const advanceAllowance = allowanceStepper(transition, allowance, n);
   const samples: Sample[] = [], squaredError: [number, number] = [0, 0]; let peakEffort = 0;
   for (let k = 0; k < count; k++) {
     const x: Vector = [state[0], state[1]], estimate: Vector = [state[2], state[3]], error: Vector = [x[0] - estimate[0], x[1] - estimate[1]];
     const cleanOutput = dot(C, x), measuredOutput = cleanOutput + state[noise], estimatedOutput = dot(C, estimate), innovation = measuredOutput - estimatedOutput;
     const effort = state[held] - dot(K, estimate), injection = filtered ? state[f] : innovation;
     if ([...state, ...error, cleanOutput, measuredOutput, estimatedOutput, innovation, effort, injection].some(v => !Number.isFinite(v) || Math.abs(v) > 1e8)) throw new Error('Response leaves the finite magnitude limit 10⁸. Shorten the horizon or reduce the input/model scale.');
+    const unresolved = (bound: number, value: number) => !Number.isFinite(bound) || bound > 1e-7 * Math.max(1, Math.abs(value));
+    // A difference of two approximate states is qualified at their state scale,
+    // not by claiming relative accuracy in an arbitrarily tiny estimation error.
+    if (state.some((v, i) => unresolved(allowance[i], v)) || error.some((v, i) => unresolved(allowance[i] + allowance[i + 2] + round * (Math.abs(x[i]) + Math.abs(estimate[i])), Math.max(Math.abs(v), Math.abs(x[i]), Math.abs(estimate[i]))))) throw new Error(`Roundoff amplification makes the state/estimate at sample ${k} numerically unresolved (10⁻⁷ relative/absolute state-scale allowance). Shorten the horizon or rescale the model/initial states; no observer trajectory is reported.`);
     samples.push({ t: k * step, x, estimate, error, cleanOutput, measuredOutput, estimatedOutput, noise: state[noise], innovation, injection, effort });
     squaredError[0] += error[0] ** 2; squaredError[1] += error[1] ** 2; peakEffort = Math.max(peakEffort, Math.abs(effort));
-    if (k < count - 1) state = Array.from({ length: n }, (_, i) => state.reduce((sum, v, j) => sum + transition[i * n + j] * v, 0));
+    if (k < count - 1) {
+      const local = Array.from({ length: n }, (_, i) => state.reduce((sum, v, j) => sum + transitionRadius[i * n + j] * (Math.abs(v) + allowance[j]) + round * Math.abs(transition[i * n + j] * v), 0));
+      allowance = advanceAllowance(local);
+      state = Array.from({ length: n }, (_, i) => state.reduce((sum, v, j) => sum + transition[i * n + j] * v, 0));
+    }
   }
   const allPoles = [...plantPoles, ...errorPoles], fastest = Math.max(options.noiseFrequency, ...allPoles.map(p => Math.hypot(...p)));
   return { samples, errorMatrix, errorPolynomial, errorPoles, plantPoles, allPoles, errorStability, referenceGain, step, coarse: step * fastest > .25, rmsError: [Math.sqrt(squaredError[0] / count), Math.sqrt(squaredError[1] / count)], peakEffort };

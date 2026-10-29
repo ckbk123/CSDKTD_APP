@@ -1,6 +1,6 @@
 # CR05 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Last assessed:** 2026-10-29
 - **Original scaffold assessment:** `e0b7ddb`; this contribution starts at primary-main `9d923d2`
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
@@ -107,3 +107,9 @@ Source provenance: repository atlas/audits, not newly inspected original slides.
 Frozen source `269b17b3873d419df8fe14e6142a9dc71bebba24` is merged with preserved history. Independent review checked simple-path and canonical elementary-loop enumeration, all non-touching loop sets and alternating determinant signs, path-specific cofactors, imposed-source handling and singular/internal-signal feedback. Hand-solved changed graphs verify disjoint-loop delta=9/8, transfer152/3, changed cross-route transfer568/9 and the cofactor3/4. A dynamic original-equation fixture gives Y/R=1/(s+3), agrees at complex s=2+3j and explicitly refuses the original branch pole s=-1. Exact rational arithmetic and bounded symbolic/numerical checks remain distinct.
 
 Shared argument preflight now guards Unicode/nested delimiter scope before private whitespace handling. Supported compact fractions/products and trailing boxed spacing remain correct. Native fields already use the shared reader. The owned child wrapper now releases a late disposer after reentrant abort; existing partial-failure, standalone, pending and idempotency checks remain. 67 module tests, TypeScript and diff checks pass. Stage remains implemented pending coordinator combined/browser acceptance; prior worker browser evidence is retained without claiming a new browser run.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `269b17b3873d419df8fe14e6142a9dc71bebba24`, [PR #41](https://github.com/ckbk123/CSDKTD_APP/pull/41), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

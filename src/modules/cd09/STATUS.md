@@ -1,6 +1,6 @@
 # CD09 implementation status
 
-- **Stage:** implemented — accepted bounded exercise, independent mathematical fixtures, production-browser checks and project checks pass. Independent integration review remains pending.
+- **Stage:** verified
 - **Assessed:** 29 October 2026, primary main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd09/**`, [TASK.md](TASK.md), atlas CD09 and continuous exercise audit D1.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -82,3 +82,19 @@ No accepted exercise requirement or shared dependency remains deferred. This del
 Frozen source `2a490bad144b9392cc0aff244fe74fcc3614e16d` is merged with preserved history. Independent review checked observer coefficient matching, observability and dual feedback placement, estimated-state rather than truth feedback, deterministic noise forcing, filter initial conditions, actual added filter modes and N=1 fallback disclosure. New hand-derived fixtures use diagonal A with L=(6,-2) and single-mode error (-3,2)exp(-3t); changed B=(0,2) gives K=(4,2), N=5, exact step/effort curves, and tau=.2 gives actual filter polynomial s^3+8s^2+67s+210. Rank-loss and declared limits remain honest.
 
 The coordinator-authorized repair for the draft PR's known spacing defect installs shared argument preflight before lexical erasure. Scalar, matrix and target regressions reject malformed command/Unicode/nested-delimiter arguments while preserving boxed fractions and real matrix row separators. The UI already uses shared native input. The child wrapper retains partial-failure/standalone-resource tests and now checks reentrant late release with guaranteed host cleanup. 68 module tests, TypeScript and diff checks pass. Stage remains implemented; root owns final browser/combined acceptance and PR disposition. No new worker browser evidence is claimed.
+
+## Coordinator true-state propagation correction — 30 October 2026
+
+Before publication the coordinator supplied A=[[0,1],[-1,8.125]],C=[1,0],observer target s^2+5s+6,B=0,x0=xhat0=[1.1,.1375],H=5,count201. Previous truth and estimate both ended near[-.4570564,-19.8401318], with apparent estimation error about10^-12; exact truth is exp(5/8)*x0≈[2.0550705532,.2568838191]. Agreement between two corrupted trajectories is not observer verification.
+
+The visit-local screen now tracks initial/local floating error, the full-step versus two-half-step transition defect and propagated state uncertainty. It convolves local errors with signed transition powers before taking absolute bounds. Cached binary products carry power-rounding radii; iterating |F| alone would falsely invent unstable growth for an ordinary stable rotation. No shared API or cross-module import is used. States qualify against10^-7*max(1,|coordinate|); differences qualify at the scale of their two states, not by claiming relative accuracy in an arbitrarily tiny error. This is a conservative floating-point screen, not a formal interval proof or a guarantee of relative accuracy for canceling scalar output/effort. A failed allowance throws before any observer trajectory is returned or rendered. The visible scope discloses the convention; no mode/input is clipped or removed.
+
+New regressions reject the supplied failure and verify the independently known slow eigenmode over H=1, genuine exp(8t) fast-mode growth, stable signed-rotation allowance and80rad/s deterministic noise with/without filtering. A mocked UI test confirms useful feedback, no stale plots and baseline recovery. Existing ordinary/noisy/filtered/feedback tests pass. The authored unstable-filter+feedback illustration now defaults to H=2 instead of3: the longer requested trace exceeds this conservative allowance, while the shorter visit retains all five homogeneous modes and the same unstable-filter lesson. Manual horizon/model bounds remain unchanged; students can request the longer horizon and receive numerical-conditioning feedback. Root must inspect this affected preset during its actual-browser gate; prior H=3 screenshots are historical evidence only.
+
+75 CD09 tests pass,100 CR06 tests pass, combined175/type/diff pass. Root owns independent review and combined/browser acceptance; stage remains implemented. No new worker or browser run is claimed.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `2a490bad144b9392cc0aff244fe74fcc3614e16d`, [PR #30](https://github.com/ckbk123/CSDKTD_APP/pull/30), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

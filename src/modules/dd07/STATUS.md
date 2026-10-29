@@ -1,6 +1,6 @@
 # DD07 implementation status
 
-- **Stage:** implemented — accepted bounded exercise, independent mathematical fixtures, project checks and actual production-browser checks pass. Independent integration review remains pending.
+- **Stage:** verified
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership / contract:** `src/modules/dd07/**`, [TASK.md](TASK.md), atlas DD07 and discrete audit DD6.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -68,3 +68,9 @@ No accepted exercise requirement or shared dependency remains deferred. Independ
 ## Coordinator forward-accuracy qualification (30 October 2026)
 
 Independent review reproduced a false true-state tail with direct A=[[1.125,.9375],[.25,.875]], B=0,C=[1,0], observer targets.2/.3, initial[-99.15,66.1],prior0,T1,N49: exact truth stays on the .5 eigenvector, but unchecked propagation gave−3.6058×10⁻⁶ rather than−1.7613×10⁻¹³ and reported zero observer error. Integration now propagates conservative joint truth/prior-error allowances in eight-step signed-transition blocks, retaining power rounding, coefficient-formation and actual predictor/current update rounding. The actual current prior transition A(I−MC) is used. If a state, estimate, error, output or effort allowance exceeds10⁻⁸×max(1,|value|), the existing error path withholds the trajectory; no fabricated truth comparison is rendered. Models, targets, timing, initial-state and horizon bounds are unchanged. The guard is a conservative floating-point support estimate, not interval certification; it may withhold a growing truth trajectory when its tiny observer error cannot be resolved. Genuine fast/perturbed modes remain in supported shorter traces and the ordinary baseline still runs1000 steps. Added independently derived changed plant/error exponentials, estimated-feedback samples, strong cancellation, real-fast controls, shared TeX-entry and late-disposer tests. Coordinator independently reviews the guard before browser/release acceptance.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `899723d6e80110a7f7d653aa56260ec3528e0476`, [PR #35](https://github.com/ckbk123/CSDKTD_APP/pull/35), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

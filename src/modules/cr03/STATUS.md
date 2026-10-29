@@ -1,6 +1,6 @@
 # CR03 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Coordinator preparation:** frozen source `8319494d68d6dcf81bf44ba0ec090846564a2119` is prepared with the explicitly authorized trajectory-conditioning screen, shared TeX argument preflight, and owned deferred-view cleanup.111 module tests plus179 shared-preflight and25 native-reader tests pass (315 total), with type checking and diff validation. Stage remains implemented; coordinator browser acceptance of the integrated correction is pending.
 - **Assessed:** 2026-10-29
 - **Claim baseline:** `ecf398eb8dc32376e994a458e3bff3b666ce118a`, fresh committed primary main (v0.3.4)
@@ -168,3 +168,9 @@ The existing Taylor/scaling/squaring evaluator is retained. Its projection scree
 Regressions require the reported slow-mode t5 reproduction and a genuinely nonzero but unresolved small-fast perturbation to reject. A resolved short slow mode, a real small-fast perturbation at1.5s, a pure growing eigenmode, and an unexcited separate fast block remain accurate. An output-cancellation case is screened too; the true zero trajectory remains zero. Existing baseline/coordinate/forcing/underflow checks, fourth-order horizons through20s and the original fast-oscillation fixtures all remain passing. The mocked workspace withholds the contaminated result and recovers at a shorter resolved horizon; this is caller-flow evidence, not a real-browser check.
 
 Shared rejectSpacingArguments runs before transfer/ODE notation erasure. Unicode fraction/power atoms and malformed nested sizing commands reject; proper braced values and visible fences retain their meaning. Native controls were already using readNumericInput. The lazy wrapper now owns its DOM and child signal, forwards parent abort to once-only view release, handles partial mount failure and late/reentrant disposer returns, and ignores pending work after standalone disposal. Tests cover those paths and preserve the submitted worker's earlier browser evidence as historical evidence only. Root owns the final combined/browser/build/release gates; no publication or verified-stage claim is made here.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `8319494d68d6dcf81bf44ba0ec090846564a2119`, [PR #21](https://github.com/ckbk123/CSDKTD_APP/pull/21), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

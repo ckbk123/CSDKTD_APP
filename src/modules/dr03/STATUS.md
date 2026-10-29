@@ -1,6 +1,6 @@
 # DR03 — discrete state models and scalar delay storage
 
-- **Stage:** implemented (bounded exercise complete; independent integration review pending).
+- **Stage:** verified
 - **Assessed:** 29 October 2026. Fresh claim base 9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86, primary main v0.3.9.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
 - **Branch/worktree:** codex/dr03-delay-states-f802; C:\Users\baokh\.codex\worktrees\dr03-delay-states-f802\CSDKTD APP.
@@ -82,3 +82,9 @@ Browser findings corrected locally: SVG image grouping initially hid its interac
 ## Coordinator numerical qualification (30 October 2026)
 
 Independent review reproduced a false history tail for (z−1.5)(z−.6), zero future input and past outputs [.66,1.1]: exact y80=1.1×.6^82, whereas unchecked rounded propagation gave .00605644. The integration adds a conservative order-0–2 scalar kernel allowance for coefficient/input conversion and local rounding, with inflated root radius. Above 10⁻⁸×max(1,|output|), no trajectory is presented as checked; students receive conditioning/shorter-horizon feedback. Model/history/order/horizon bounds and exact algebra are unchanged. State-route comparisons retain their independent indexing/maps and are qualified against this scalar reference, without a separate generic arbitrary-state accuracy claim. Genuine fast excitation is retained rather than clipped; the stable mechanical baseline remains supported at all120 samples. Added independent convolution/delay, resolvent, absent/real-fast-mode, baseline and TeX-scope regressions;151 module tests and type checking pass. Browser/release acceptance remains coordinator-owned.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `290f7eb75336e99f070fe64e119445d5893eca2a`, [PR #34](https://github.com/ckbk123/CSDKTD_APP/pull/34), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

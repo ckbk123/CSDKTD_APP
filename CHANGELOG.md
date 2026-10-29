@@ -2,6 +2,13 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.14 — 30 October 2026
+
+- Integrate the final 25 worker PRs: 24 working tools and CR04's explicitly partial exact diagram core. The complete catalogue now contains 48 verified tools, one in-progress core and seven scaffolds; [the handoff](docs/FINAL_HANDOFF.md) provides the remaining tasks and portable contributor prompt.
+- Complete lead/lag and sampled-controller design, observer/feedback tools, representation conversions, Routh/Nyquist/gain reasoning and time/frequency comparisons. Preserve each [submitted source and PR](docs/releases/v0.3.14.json) with independent review and common input/lifecycle integration.
+- Correct CF05's RHP-conjugate phase continuation and qualify ill-conditioned propagation in CR03, CR06, CD09, DD06, DD07 and DR03 before numerical artifacts are shown as checked trajectories. Model domains and genuinely excited modes remain; unresolved traces receive feedback or a qualified prefix. CR04's interactive editor remains unfinished.
+- All 4,692 application tests, 32 coordination tests, type checking, production build and final desktop/phone integration checks pass. All ten workers stopped and the monitor was removed. No deployment occurred.
+
 ## 0.3.13 — 30 October 2026
 
 - Integrate fifteen reviewed tools: DR01/DR02/DR05 discrete representations, DP03/DP04 frequency/root-locus plots, DS04 exact gain regions, DF01 sampled performance, CR02 physical ODEs, CP01/CP03/CP04 time/sinusoidal/Bode analysis, CF03 error/effort comparison, CD08 state feedback, CS03 Routh gain design and DF04 sample-period comparisons.

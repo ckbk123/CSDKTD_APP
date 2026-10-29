@@ -1,6 +1,6 @@
 # DF02 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Assessment:** 2026-10-29; accepted bounded exercise implemented and checked. Independent integration review remains, with the shared Escape repair explicitly assigned to the coordinator below.
 - **Contract:** [TASK.md](TASK.md); ownership `src/modules/df02/**`.
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`; owner `worker-df02-01a186d2-12d1`.
@@ -79,3 +79,9 @@ The coordinator's explicit disposition permits final module delivery while the a
 The TASK/atlas and recorded `docs/research/DISCRETE_EXERCISE_AUDIT.md` DF2 cite CH8:45–62 and CH9:21–22/E12. This worker did not newly inspect the original slide decks. The source target Kv*=100 retains its unresolved source normalization; all numeric verification examples above were independently derived or proposed for implementation checks.
 
 20f60f4 recorded the initial audit; b5147b3 preserved the math prototype when CP03 was reopened. CP03's returned notation correction was completed and resubmitted separately at3a8f79e in PR#7 before DF02 resumed. 68d1576 checkpointed the complete DF02 exercise before browser verification. This parser independently carries the same displayed-meaning protections without importing a sibling module. All source changes remain inside DF02. The shared Escape dependency is explicitly coordinated above. No additional agent, main merge, version bump or deployment was performed.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `8bbef3a856e6cf39e7296987667ec94b51a08b7c`, [PR #28](https://github.com/ckbk123/CSDKTD_APP/pull/28), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

@@ -1,6 +1,6 @@
 # CP05 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Coordinator preparation:** source `898b77c1352d637b70569aa50b486b2eff105c3c` passed a bounded independent review of clockwise RHP contour orientation, right-side indents, exact original axis-pole multiplicities, removable extensions, proper-transfer outer limits and phase/zero gaps.68 independent factored-complex/mapping/indent/zero/outer-arc checks passed; no formal stability count is inferred. Shared TeX preflight now protects original argument tokens, with Unicode/nested-delimiter and valid-box controls. Native fields already use `readNumericInput`. Existing partial/reentrant cleanup guards are preserved; explicit standalone/pending/already-aborted tests and cleared cleanup ownership complete the integration checks.48 module tests plus179 shared-preflight tests pass (227 total), with type checking and diff validation. Scope/bounds are unchanged; coordinator browser acceptance remains pending.
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary main v0.3.9)
@@ -94,3 +94,9 @@ Proper real rational SISO loops only: denominator degree1–3, numerator no high
 - Pull request: [#40 — CP05 Nyquist contour construction](https://github.com/ckbk123/CSDKTD_APP/pull/40), same branch/worktree/worker recorded above; attached to the worker chat.
 - Implementation checked at7bb33151c210c8e2b7dac085bc9da5f65e28a9b5; later commits only record browser evidence and this PR. Final exact-HEAD checks and clean submission use the commit containing this record. The claim/PR hold that exact revision; no self-referential commit ID is written here.
 - This is a submitted implementation awaiting independent integration review. No merge, version increment, deployment or primary-preview change is included.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `898b77c1352d637b70569aa50b486b2eff105c3c`, [PR #40](https://github.com/ckbk123/CSDKTD_APP/pull/40), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

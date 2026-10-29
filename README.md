@@ -2,17 +2,19 @@
 
 Control Studio is a browser application for learning **SISO LTI control theory**, organized into Continuous and Discrete systems and five subject groups in each: System Representation, Plots, Stability, Performance and Controller Design. The repository remains `CSDKTD_APP`; package and Cloudflare identifiers remain `csdktd-app`.
 
-**Starting agents? Copy the same [generic `/goal`](docs/WORKER_GOAL.txt) into each local chat.** It contains the exact Git checkout path; agents choose and reserve their own unfinished modules, work in separate checkouts and submit individual branches. Follow [AUTONOMOUS_WORKERS.md](docs/AUTONOMOUS_WORKERS.md) for the claim queue, budgets, checkpoints and integration. No module ID needs editing.
+**Contributing from your own computer? Copy [CONTRIBUTOR_PROMPT.txt](docs/CONTRIBUTOR_PROMPT.txt) into your coding-agent workspace.** It finds or clones the repository, chooses one available task, verifies it, submits one PR and stops. Read [EXTERNAL_CONTRIBUTORS.md](docs/EXTERNAL_CONTRIBUTORS.md) for forks, public reservations and portable setup. The original ten-worker continuous batch has ended; its old local `/goal` is historical, not the default handoff prompt.
 
 [START_HERE.md](docs/START_HERE.md) explains the product goal, current-work assessment and completion criteria. [Project status](docs/PROJECT_STATUS.md) separates working foundations from module progress; each module owns a `STATUS.md` with its evidence and remaining work.
 
 ## Current milestone
 
+**v0.3.14: 48 working tools, one partial diagram core and seven remaining scaffolds.** The ten-worker batch has stopped, with all 49 contribution PRs preserved in the merged history. Read [FINAL_HANDOFF.md](docs/FINAL_HANDOFF.md) for the remaining tasks and the finite contributor prompt. The final combined checks pass 4,692 application tests, 32 coordination tests, type checking and production build; browser/review scope and numerical limits are recorded per module and in the [batch evidence](docs/INTEGRATION_BATCHES.md).
+
 At the **v0.3.0 assessment on 29 October 2026**, the application provided a responsive catalogue and **56 independent module scaffolds**. A module opened inside the same browser page, with its title, typeset baseline equations and an empty workspace ready for implementation. **Edit equations** provides visual fraction/power entry and a math keyboard; these preview edits do not update the workspace. This milestone did not deliver 56 mathematical solvers. Check the [module progress records](docs/AGENT_TASKS.md) for work completed after the assessment.
 
 Each module owns its temporary state. Opening or resetting a module starts from its default example; leaving releases its resources. There are no accounts, saved projects, persistence or student export workflows. The first browser release has no service worker or guaranteed offline mode.
 
-The primary interface uses **TypeScript, HTML and CSS with Vite**, without a UI framework. Calculations will run in the student's browser. No application API server, database or API keys are needed. C/WebAssembly remains an optional future mathematical backend, subject to validation.
+The primary interface uses **TypeScript, HTML and CSS with Vite**, without a UI framework. Calculations run in the student's browser. No application API server, database or API keys are needed. C/WebAssembly remains an optional future mathematical backend, subject to validation.
 
 ![Browser entry interface](docs/images/web-home.jpg)
 

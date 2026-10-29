@@ -58,6 +58,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     element('p', 'Matrix entries ≤1000; target coefficients ≤10,000; gain ≤10⁶; closed two-state entries ≤10⁴. Rank and matching use separately normalized rows, determinant threshold10⁻⁹; actual two-state coefficients require relative error≤10⁻⁹. Initial state/estimate and input/reference/noise controls have magnitude≤100, with nonnegative amplitude/frequency. τ is0 or0.001–10s; horizon0.1–50s; 401 numerical samples, finite response magnitude≤10⁸.'),
     element('p', 'Equations ≤600 characters; target ≤120 tokens, nesting≤12; scalar fraction nesting≤8; literal decimals≤12 fractional places/8 integer digits. Responses use a bounded7/8-state matrix exponential (24 Taylor terms, 30 scaling steps, reduced norm≤0.5, term tolerance10⁻¹⁶). Cubic mode checks use normalized polynomial residual10⁻⁹ and coefficient backward error10⁻⁸; nearly repeated roots can be sensitive. Error stability uses real-part tolerance10⁻⁹ times max(1,mode magnitude). Coarse sampling is warned about; endpoints and sampled RMS are not settling proofs.'));
   intro.append(editorGrid, initialControls, experimentControls, actions, status, limits); root.append(intro, view);
+  limits.append(element('p', 'A propagated floating-point allowance checks the states before a trajectory is shown. If it exceeds 10⁻⁷ times max(1, coordinate magnitude), shorten the horizon or rescale the data. Estimation differences are qualified at the scale of their two states; a tiny displayed error is not a claim of tiny relative error. This conservative numerical screen is not an interval proof.'));
 
   function plot(title: string, lines: { label: string; values: number[]; style: string }[]): HTMLElement {
     const figure = element('figure'); figure.append(element('figcaption', title));
@@ -158,7 +159,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         if (action === 'noise' || action === 'filter') { amplitude.value = '.05'; frequency.value = '20'; phase.value = '0'; tau.value = action === 'filter' ? '.1' : '0'; }
         if (action === 'unstable') {
           editors[0].setValue(String.raw`A=\begin{bmatrix}1&0\\0&2\end{bmatrix}`); editors[1].setValue(String.raw`B=\begin{bmatrix}1\\1\end{bmatrix}`); editors[2].setValue(String.raw`C=\begin{bmatrix}1&1\end{bmatrix}`); editors[3].setValue(INITIAL[3]); editors[4].setValue(INITIAL[4]);
-          for (const [input, value] of [[x1, '.1'], [x2, '0'], [hat1, '0'], [hat2, '0'], [held, '0'], [reference, '1'], [amplitude, '0'], [frequency, '20'], [phase, '0'], [tau, '1'], [horizon, '3']] as const) input.value = value;
+          for (const [input, value] of [[x1, '.1'], [x2, '0'], [hat1, '0'], [hat2, '0'], [held, '0'], [reference, '1'], [amplitude, '0'], [frequency, '20'], [phase, '0'], [tau, '1'], [horizon, '2']] as const) input.value = value;
           connected.checked = true; syncMode();
         }
         invalidate(); apply();

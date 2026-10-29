@@ -1,0 +1,158 @@
+{
+  "version": "0.3.14",
+  "date": "2026-10-30",
+  "applicationTests": 4692,
+  "coordinationTests": 32,
+  "modules": [
+    {
+      "id": "CD01",
+      "source": "1aba56b19152fe59cb40dbfd2453113c639a8967",
+      "pr": 42,
+      "decision": "accepted"
+    },
+    {
+      "id": "CD03",
+      "source": "9cb564cfed0063b56447407a3afd2f013770adb6",
+      "pr": 49,
+      "decision": "accepted"
+    },
+    {
+      "id": "CD05",
+      "source": "289727d48103e87afd585e3f7efe316491b5b39a",
+      "pr": 48,
+      "decision": "accepted"
+    },
+    {
+      "id": "CD09",
+      "source": "2a490bad144b9392cc0aff244fe74fcc3614e16d",
+      "pr": 30,
+      "decision": "accepted"
+    },
+    {
+      "id": "CF01",
+      "source": "9ba4b376f5a0f3427976933e2689e3ab7f2349da",
+      "pr": 36,
+      "decision": "accepted"
+    },
+    {
+      "id": "CF04",
+      "source": "06c3f904430fdbc03be54e922b89dd883940df05",
+      "pr": 43,
+      "decision": "accepted"
+    },
+    {
+      "id": "CF05",
+      "source": "04fb9755b196492a19296e99f016d8cf5d4d6096",
+      "pr": 46,
+      "decision": "accepted"
+    },
+    {
+      "id": "CP02",
+      "source": "c6d8fd9454c16fb63cf4a13514f72519fdc753f7",
+      "pr": 27,
+      "decision": "accepted"
+    },
+    {
+      "id": "CP05",
+      "source": "898b77c1352d637b70569aa50b486b2eff105c3c",
+      "pr": 40,
+      "decision": "accepted"
+    },
+    {
+      "id": "CP06",
+      "source": "756220aaf8b021741de201aa46895a9218cfd2d4",
+      "pr": 44,
+      "decision": "accepted"
+    },
+    {
+      "id": "CR03",
+      "source": "8319494d68d6dcf81bf44ba0ec090846564a2119",
+      "pr": 21,
+      "decision": "accepted"
+    },
+    {
+      "id": "CR04",
+      "source": "ef360b4ad9da8182090eb04484f94edf7d23727e",
+      "pr": 45,
+      "decision": "partial"
+    },
+    {
+      "id": "CR05",
+      "source": "269b17b3873d419df8fe14e6142a9dc71bebba24",
+      "pr": 41,
+      "decision": "accepted"
+    },
+    {
+      "id": "CR06",
+      "source": "f3129826ceea93945470523741dff79cfbd60d54",
+      "pr": 17,
+      "decision": "accepted"
+    },
+    {
+      "id": "CS02",
+      "source": "f60c3f5ba67984a48a9e71bc557571ade862416c",
+      "pr": 39,
+      "decision": "accepted"
+    },
+    {
+      "id": "CS05",
+      "source": "32f591026bc5216729bd9475a9a562f7f964218d",
+      "pr": 29,
+      "decision": "accepted"
+    },
+    {
+      "id": "DD01",
+      "source": "f354b5db30c069dba56bf81fc67f52b60b9ab2dd",
+      "pr": 32,
+      "decision": "accepted"
+    },
+    {
+      "id": "DD03",
+      "source": "58f6e160515c18f5098d32e4d4f73dde086da810",
+      "pr": 47,
+      "decision": "accepted"
+    },
+    {
+      "id": "DD05",
+      "source": "67ff225b9a97e94a5aa36f1763336c154bf25740",
+      "pr": 38,
+      "decision": "accepted"
+    },
+    {
+      "id": "DD06",
+      "source": "43a1dc32af39bbdfaf106f138ee3de0302195ce3",
+      "pr": 37,
+      "decision": "accepted"
+    },
+    {
+      "id": "DD07",
+      "source": "899723d6e80110a7f7d653aa56260ec3528e0476",
+      "pr": 35,
+      "decision": "accepted"
+    },
+    {
+      "id": "DF02",
+      "source": "8bbef3a856e6cf39e7296987667ec94b51a08b7c",
+      "pr": 28,
+      "decision": "accepted"
+    },
+    {
+      "id": "DF03",
+      "source": "fe241a46330f0c11e41f424d27795d1a52c60ce2",
+      "pr": 31,
+      "decision": "accepted"
+    },
+    {
+      "id": "DR03",
+      "source": "290f7eb75336e99f070fe64e119445d5893eca2a",
+      "pr": 34,
+      "decision": "accepted"
+    },
+    {
+      "id": "DS05",
+      "source": "ac4e707d39fe1d1d14e9bfb195e35537a8b3711a",
+      "pr": 33,
+      "decision": "accepted"
+    }
+  ]
+}

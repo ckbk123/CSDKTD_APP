@@ -1,6 +1,6 @@
 # CR06 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Assessed:** 2026-10-29; contribution base 0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d. The submitted claim records the exact clean tested final revision, including this delivery record.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
 - **Branch/worktree:** codex/cr06-states-f802; C:\Users\baokh\.codex\worktrees\cr06-states-f802\CSDKTD APP.
@@ -104,3 +104,17 @@ No accepted bounded exercise requirement is deferred. Independent coordinator re
 Frozen source `f3129826ceea93945470523741dff79cfbd60d54` is merged with preserved history. Independent review checked constant-input state-transition augmentation without inverse A, separate free/forced responses and initial-state difference, direct feedthrough, complete state modes and exact-binary channel cancellation. A new singular double-integrator fixture with B=(0,2), C=(3,4), D=.5 verifies transfer numerator (.5,8,6), both independently integrated quadratic outputs and all 21 state decompositions. A hidden unstable state exp(2t) remains in the state spectrum/trajectory while the visible zero-state channel reduces to1/(s+1).
 
 Shared argument preflight is installed before entry and matrix normalization, with malformed command/Unicode/nested-delimiter and valid braced/row-separator controls. Native controls already use the shared reader. The existing owned child wrapper and its partial-failure, standalone, pending and late-disposer protections are retained. 96 module tests, TypeScript and diff checks pass. Stage remains implemented; previous worker browser evidence is preserved and root owns final combined/browser acceptance.
+
+## Coordinator propagation correction — 30 October 2026
+
+Before publication the coordinator requested the exact unstable-matrix/slow-eigenvector probe A=[[0,1],[-1,8.125]], x0=[1.1,.1375], B=0,U=0,H=5. Exact truth is exp(5/8)*x0≈[2.0550705532,.2568838191]; the previous direct exponential projection returned[0,-12]. A small matrix-exponential residual alone cannot qualify that cancellation-sensitive projection.
+
+Each free-state and initial-difference projection now estimates64*EPSILON times its absolute products plus result magnitude. If this exceeds10^-8*max(1,|result|), the calculation throws explicit conditioning/shorter-horizon feedback before returning a trajectory. No state or mode is clipped, rounded to zero or removed. This is a conservative numerical qualification, not an interval certificate or a new mathematical model-domain restriction. The visible bounds disclose it.
+
+New independent controls verify the same exact slow eigenmode on H=1, genuine exp(8t) fast-mode growth, stable exp(-50t) decay and a nonnormal stable response -49exp(-2t)+50exp(-3t). 100 CR06 tests pass; combined with CD09,175 tests/type/diff pass. Root owns independent review and the actual affected browser gate before acceptance. Stage remains implemented.
+
+## Final coordinator disposition — 0.3.14
+
+Frozen source `f3129826ceea93945470523741dff79cfbd60d54`, [PR #17](https://github.com/ckbk123/CSDKTD_APP/pull/17), is preserved in the integration history. Independent source/mathematical review, the recorded corrections, shared input/lifecycle integration and actual desktop/390×844 browser exercise gates pass within the declared bounds. Phone client/scroll widths are 375/375, with no warning/error logs. The staged prediction/reveal flows were exercised where required; this does not claim exhaustive testing of every input, theme or browser. Worker evidence remains separately attributed.
+
+All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.

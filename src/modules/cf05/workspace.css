@@ -1,0 +1,27 @@
+[data-module="CF05"] .cf05-tool { display:grid; gap:1rem; min-width:0; color:var(--text); }
+[data-module="CF05"] [hidden] { display:none !important; }
+[data-module="CF05"] .cf05-tool p, [data-module="CF05"] .cf05-tool h2, [data-module="CF05"] .cf05-tool h3 { margin:0; }
+[data-module="CF05"] .cf05-tool p { line-height:1.6; }
+[data-module="CF05"] .cf05-card { display:grid; gap:.8rem; min-width:0; padding:1rem; border:1px solid var(--line); border-radius:.7rem; background:var(--surface); }
+[data-module="CF05"] details.cf05-card { display:block; }
+[data-module="CF05"] details.cf05-card > :not(summary) { margin-top:.8rem; }
+[data-module="CF05"] summary { cursor:pointer; font-weight:600; }
+[data-module="CF05"] .cf05-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; min-width:0; }
+[data-module="CF05"] .cf05-actions { display:flex; flex-wrap:wrap; gap:.6rem; }
+[data-module="CF05"] .cf05-field { display:grid; gap:.3rem; min-width:0; }
+[data-module="CF05"] .cf05-checkbox { display:flex; align-items:center; gap:.6rem; }
+[data-module="CF05"] .cf05-tool input, [data-module="CF05"] .cf05-tool button, [data-module="CF05"] .cf05-tool select { font:inherit; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:.4rem; padding:.55rem .7rem; max-width:100%; min-width:0; }
+[data-module="CF05"] .cf05-tool button { cursor:pointer; white-space:normal; }
+[data-module="CF05"] .cf05-tool button:hover { background:var(--tint); }
+[data-module="CF05"] .cf05-message { padding:.5rem 0; }
+[data-module="CF05"] .cf05-scroll { overflow-x:auto; min-width:0; }
+[data-module="CF05"] svg { display:block; width:100%; min-width:600px; max-height:380px; overflow:hidden; }
+[data-module="CF05"] svg text { fill:var(--muted); font:11px system-ui; }
+[data-module="CF05"] .cf05-axis { fill:none; stroke:var(--line); }
+[data-module="CF05"] .cf05-line { fill:none; stroke:var(--accent); stroke-width:1.8; }
+[data-module="CF05"] .cf05-estimate { stroke-dasharray:7 4; }
+[data-module="CF05"] .cf05-previous { stroke-dasharray:2 3; stroke:var(--text); }
+[data-module="CF05"] .cf05-band { stroke:var(--muted); stroke-width:.7; stroke-dasharray:2 4; }
+[data-module="CF05"] .cf05-point { fill:var(--text); }
+[data-module="CF05"] :focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+@media(max-width:700px) { [data-module="CF05"] .cf05-grid { grid-template-columns:minmax(0,1fr); } [data-module="CF05"] .cf05-card { padding:.7rem; } }

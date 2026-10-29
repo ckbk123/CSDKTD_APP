@@ -1,8 +1,12 @@
 # Project status and completion evidence
 
+## Current delivery — v0.3.14 / 30 October 2026
+
+The stopped ten-worker batch delivered **48 verified tools, one in-progress core (CR04) and seven scaffolds**. All 49 contribution PRs are retained in the integration history. [FINAL_HANDOFF.md](FINAL_HANDOFF.md) names the remaining tasks and portable one-task prompt; [DELIVERY_STATUS.json](DELIVERY_STATUS.json) records current stages. Final combined validation passes 4,692 application tests, 32 coordination tests, type checking and build. Per-module/batch records distinguish independent mathematical review, actual browser checks and numerical qualifications. The dated v0.3.0 scaffold baseline below remains historical evidence, not the current delivered count.
+
 Use [START_HERE.md](START_HERE.md) to begin an assignment. This page separates available application foundations from individual teaching-tool implementation. Module progress belongs in each module's `STATUS.md`, linked from the [56-module index](AGENT_TASKS.md).
 
-Unassigned local agents can use the same [generic goal](WORKER_GOAL.txt) and [worker protocol](AUTONOMOUS_WORKERS.md). Their claim queue is separate from these implementation stages: an active/submitted/handoff reservation records ownership and delivery state, not mathematical completion. Run `npm run agents:list` for that local queue; inspect the module's STATUS and actual code for implementation evidence.
+New contributors use the finite [portable contribution prompt](CONTRIBUTOR_PROMPT.txt) and [external-contributor guide](EXTERNAL_CONTRIBUTORS.md). The historical continuous local worker batch has ended. Local claims record ownership/delivery rather than mathematical completion, and do not coordinate other machines. Inspect current upstream PRs, each module's STATUS and actual code; use `npm run agents:list` only for this clone's queue.
 
 ## Assessed baseline
 
