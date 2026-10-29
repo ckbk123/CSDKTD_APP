@@ -16,7 +16,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   container.append(pending);
   void import('./ui').then(({ mountUI }) => {
     if (disposed || signal.aborted) return;
-    pending.remove(); cleanup = mountUI({ container, signal });
+    cleanup = mountUI({ container, signal }); pending.remove();
   }).catch(() => {
     if (!disposed && !signal.aborted) pending.textContent = 'The exercise could not load. Reset the tool to try again.';
   });

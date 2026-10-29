@@ -79,4 +79,13 @@ describe('DS03 exercise and visit state', () => {
   it('ignores a local UI import that completes after immediate abort', async () => {
     const { container } = await open(true); expect(container.childElementCount).toBe(0);
   });
+  it('preserves focus while stepping with the keyboard and announces the check', async () => {
+    const { container } = await open(); click(container, 'Check and reveal');
+    const next = () => Array.from(container.querySelectorAll('button')).find(b => b.textContent === 'Next derivation step')!;
+    next().focus(); next().click();
+    expect(document.activeElement).toBe(next());
+    next().click(); next().click(); next().click();
+    expect(document.activeElement?.textContent).toBe('Step 5 of 5');
+    expect(container.querySelector('[aria-label="Checked derivation"] [role="status"]')?.textContent).toContain('strictly stable');
+  });
 });

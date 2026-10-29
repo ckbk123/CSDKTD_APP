@@ -40,7 +40,11 @@ function plane(title: string, isW: boolean, points: readonly (Complex | null)[],
   shape('line', { x1: 180, x2: 180, y1: 20, y2: 272, class: 'ds-axis' });
   shape('text', { x: 285, y: 139 }, isW ? 'Re w' : 'Re z'); shape('text', { x: 187, y: 25 }, isW ? 'Im w' : 'Im z');
   shape('text', { x: 45, y: 289 }, `Ticks: ±${fmt(extent)}; dimensionless`);
-  shape('text', { x: 40, y: 141 }, `−${fmt(extent)}`); shape('text', { x: 290, y: 162 }, fmt(extent));
+  for (const tick of [-extent, extent]) {
+    shape('line', { x1: x(tick), x2: x(tick), y1: 142, y2: 150, class: 'ds-axis' });
+    shape('text', { x: x(tick), y: 164, 'text-anchor': 'middle' }, fmt(tick));
+    shape('line', { x1: 176, x2: 184, y1: y(tick), y2: y(tick), class: 'ds-axis' });
+  }
   if (!isW) { shape('text', { x: x(-1) - 15, y: 177 }, '−1'); shape('text', { x: x(1), y: 177 }, '+1'); }
   let hidden = 0;
   points.forEach(p => {
@@ -76,7 +80,16 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   predictionLabel.append(prediction); controls.append(predictionLabel); root.append(controls);
   const actions = node('div', undefined, 'ds-actions');
   function button(label: string, action: () => void, parent: HTMLElement = actions): HTMLButtonElement {
-    const b = node('button', label); b.type = 'button'; b.addEventListener('click', action, { signal }); parent.append(b); return b;
+    const b = node('button', label); b.type = 'button';
+    b.addEventListener('click', () => {
+      const hadFocus = document.activeElement === b;
+      action();
+      if (hadFocus && !b.isConnected) {
+        const replacement = Array.from(result.querySelectorAll('button')).find(next => next.textContent === label);
+        const target = replacement ?? result.querySelector('h3');
+        if (target) { if (!replacement) target.tabIndex = -1; target.focus(); }
+      }
+    }, { signal }); parent.append(b); return b;
   }
   button('Check and reveal', () => {
     if (signal.aborted) return;
@@ -128,7 +141,8 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
     const r = analyze(family, gain), q = transform(family), set = stableInterval(family);
     result.replaceChildren();
     const chosen = prediction.value; const correct = chosen === r.classification || chosen === 'boundary' && r.classification.startsWith('boundary');
-    result.append(node('p', `${chosen === 'Choose a prediction' ? 'Computed check' : correct ? 'Your prediction agrees' : 'Compare your prediction'}: at K = ${fmt(gain)}, the original quadratic is ${r.classification}.`, 'ds-feedback'));
+    const feedback = node('p', `${chosen === 'Choose a prediction' ? 'Computed check' : correct ? 'Your prediction agrees' : 'Compare your prediction'}: at K = ${fmt(gain)}, the original quadratic is ${r.classification}.`, 'ds-feedback');
+    feedback.setAttribute('role', 'status'); result.append(feedback);
     result.append(node('h3', `Step ${step} of 5`));
     result.append(equation(String.raw`Q(w)=(1-w)^2P\!\left(\frac{1+w}{1-w}\right)`, 'Clear a degree-two denominator'));
     result.append(equation(`Q(w)=(1+w)^2+(${affine(family.b)})(1+w)(1-w)+(${affine(family.c)})(1-w)^2`, 'Substitution before collecting powers'));

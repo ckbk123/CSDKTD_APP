@@ -2,48 +2,50 @@
 
 - **Stage:** in-progress
 - **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Owned paths:** `src/modules/ds03/**`
+- **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md)
+- **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
+- **Worker branch:** `codex/ds03-bilinear-2175`
 
-## Implemented and inspected
+## Requirement audit
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+| Accepted requirement | Implementation and evidence | Remaining |
+|---|---|---|
+| Editable characteristic family and selected gain | Shared visual equation input in `ui.ts`; independently tested bounded parser in `math.ts`; invalid input clears prior results | Real-browser equation editing |
+| Map disk boundary to half-plane | Linked z/w planes, numeric complex point controls, angle number/range controls; Re(w) identity; explicit z=-1 at infinity | Browser inspection |
+| Substitute and clear degree-two denominator | Five-stage derivation displays `(1-w)^2`, uncollected terms, A/B/C and transformed degree; Q(1)=4 check | Browser inspection |
+| Apply Routh and derive complete strict gain set | Inspectable quadratic Routh rows, arithmetic, sign changes, affine inequality intersection and equivalent Jury conditions | Browser inspection |
+| Preserve exceptional boundary cases | Degree loss retains z=-1 root(s); zero row uses auxiliary polynomial; C=0 retains z=+1; original root/radius table | Browser endpoint checks |
+| Student attempt, reveal and changed-data experiment | Prediction selection, staged/all reveal, .1K variation, inspectable finite interval endpoints | Browser interaction |
+| Independent mathematical checks | 27 parser/math tests: expanded baseline, .1K variation, roots/transform residuals, disk-map identity, singular/repeated roots, empty/all-real intervals, unsupported input limits | None known |
+| Visit isolation, accessibility and scoped UI | Synchronous `workspace.ts` mount, guarded local UI import, abort-driven listeners/input disposal, fresh mount state; 8 caller-state/lifecycle tests; scoped CSS; retained step-button focus | Real-browser reset/reopen/rapid navigation, keyboard, narrow viewport |
+| Integration and delivery | Type check and production build pass; private branch/checkpoints exist and earlier implementation checkpoint was pushed | Final full suite, browser evidence, final push and submitted claim |
 
-## Remaining acceptance work
+## Supported domain and conventions
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+- Monic real quadratic families `P(z)=z^2+(aK+b)z+cK+d`; optional `P(z)=` prefix. Only z and K are variables. Products, sums, parentheses, powers 0/1/2 and fractions of numeric literals are supported. Higher polynomial degree, K squared, K-dependent leading coefficient and rational transfer functions are rejected.
+- At most 300 input characters, 160 tokens, 12 nested groups. Final nonzero coefficient magnitudes are between 1e-8 and 100. Multiplication intermediates are bounded by 1e6. Selected K must be finite in [-100,100]. The affine-inequality derivation describes all real K, rather than a sampled sweep limited to the gain control.
+- Dimensionless `w=(z-1)/(z+1)`, inverse `z=(1+w)/(1-w)`; no 2/T scaling or sample period. Inputs are characteristic polynomials; no feedback topology, cancellation or time-response initial history is inferred.
+- Strict discrete stability means every original root is inside the unit disk. Repeated or simple boundary roots are excluded. Quadratic roots use a cancellation-resistant formula. Root radii within 1e-8 of 1 receive boundary/within-tolerance feedback; transformed coefficients within 1e-9 times max(1, coefficient magnitudes) trigger exceptional-row feedback.
+- Identities/inequality reasoning are algebraic; decimals, endpoint divisions and plot coordinates use floating point, displayed to seven significant digits. Views show points up to an extent of 10 and explicitly report omitted/off-view/infinite points; numeric values remain available. Complex exploration coordinates are bounded by 5; nonexact points within 1e-8 of the mapping pole are rejected. Angle entry selects a unit-circle point; real/imaginary entry also explores interior/exterior points.
+- No iterative numerical solver or convergence assumption is needed. No shared helper/dependency/package changes are required. The degree-two Routh stepper is local; no shared Routh API exists at the starting revision and sibling imports are prohibited.
 
-## Evidence and next action
+## Independent fixtures and provenance
 
-### Worker assessment (2026-10-29)
+The discrete audit explicitly labels the baseline an **independent bridge fixture**. Original course slides were not inspected in this run; no new transcription claim is made.
 
-Starting revision: `c5d1135ba8b595215dfc7007824d5bd206908152`; isolated branch `codex/ds03-bilinear-2175`. Current inspection confirms a blank mount and no local tests. All checklist items above remain open.
+Expanding `(1+w)^2+(K-1)(1-w^2)+.2K(1-2w+w^2)` gives `(2-.8K)w^2+(2-.4K)w+1.2K`. Positive A/B/C give K<2.5, K<5 and K>0, hence **0<K<2.5**. At K=0 the original roots are 1 and 0. At K=2.5 they are -1 and -.5; the first maps to infinity and the second to -3. The .1K variation gives upper endpoint **20/9**. Residual/invariant tests cover changed coefficients and numerical conditioning independently of the UI.
 
-Requirement audit: editable visual polynomial/gain inputs; linked disk/half-plane boundary including z=-1; substitution and clearing degree; quadratic Routh stepper; complete strict interval and exceptional rows; independently derived baseline, changed .1K coefficient and endpoint fixtures; prediction/reveal; browser keyboard/reset/reopen/rapid navigation/narrow layout; project checks and submission. None yet implemented.
+## Validation log
 
-Chosen domain: monic real quadratic families P(z)=z^2+(aK+b)z+cK+d. Bounded parser for sums/products/parentheses, square and numeric fractions; finite coefficients bounded by 100; selected K bounded by 100. Dimensionless mapping w=(z-1)/(z+1), without 2/T scaling. Affine inequalities establish the complete gain set, rather than a sweep. Higher degree and nonlinear gain dependence are explicitly unsupported.
+- `npm test -- src/modules/ds03`: **35/35 passed** (27 math/parser, 8 caller-state/lifecycle tests), after resume.
+- `npm run check`: **passed** after resume.
+- `npm test`: **76/76 passed across 8 files** before pause; rerun pending after the additional keyboard-focus test.
+- `npm run build`: **passed** after resume (bundled Node 24.22.1 and installed npm CLI). Existing large MathLive chunk warning remains; no new package/config change.
+- `git diff --check`: passed before pause; final rerun pending.
+- First full-suite attempt exposed MathLive's Node/browser export distinction when catalogue tests imported the workspace. A guarded local UI import corrected this without changing shared files; subsequent suite passed.
+- Browser QA has not yet run. DR02 owns the shared reservation at the latest resume check; this worker has not controlled any browser/viewport or reused another tab. Production output is built in this private worktree. Port 8787 is untouched.
 
-The discrete source audit labels this baseline an independently checked bridge fixture. Original slides have not been inspected in this run; no new transcription claim is made. Local pure helpers need no shared API or package changes. Next: parser, transform, inequality/root/mapping tests, then the complete interface and browser verification.
+## Recovery / remaining work
 
-### Implementation checkpoint
-
-`math.ts` now contains the bounded parser, symbolic affine transform, strict inequality intersection, stable quadratic formula and disk map. `ui.ts` implements editable shared equation input, prediction/reveal, five derivation steps, inspectable Routh rows, Jury comparison, endpoint checks, changed .1K fixture and linked planes with numeric/keyboard controls. `workspace.ts` guards the local browser UI import against abort/disposal; its synchronous mount remains importable by the catalogue's Node test. All mutable visit state is local; CSS is scoped.
-
-27 independent parser/math tests pass, covering polynomial expansion, baseline/changed interval, root and transform residuals, mapping identity, exceptional endpoints, repeated roots, zero Routh rows, empty/all-real intervals and failure bounds. The first full-suite run exposed MathLive's Node/browser export boundary; the guarded local UI import fixed it (69/69 tests passed). Type check and production build passed. The large MathLive chunk warning is unchanged. Caller-state/lifecycle tests have been added and are being checked. Browser QA is still pending: its reservation was held by DP02 at the first attempt. No implementation-complete claim yet.
-
-### Paused at the user's request (2026-10-29)
-
-Latest completed checks before the pause: `npm test -- src/modules/ds03` passed 34/34; `npm run check` passed; `npm test` passed 76/76 across 8 files; `npm run build` passed with the existing MathLive chunk warning; `git diff --check` passed. Commands used bundled Node 24.22.1 and the installed npm CLI. Additional review corrected the double-zero auxiliary-polynomial explanation and added near-mapping-pole input feedback.
-
-Browser QA was acquired immediately before the pause request, but no browser was opened or controlled. The reservation is being released. No worker preview/helper process was started. Real-browser editing, fonts/keyboard, reset/reopen, rapid navigation and narrow-viewport checks remain outstanding. Stage remains **in-progress**, and this contribution is not submitted. Implementation checkpoint `7df99f6` was already pushed; the pause checkpoint preserves subsequent review changes locally. Resume in the existing worktree/branch and reserve QA again before browser work.
-
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
-
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Initial audit checkpoint `78c869a`; implementation checkpoint `7df99f6` pushed; user-requested pause checkpoint `568a9e1` preserved locally. Work resumed on the same branch and claim. No preview/helper was started during the paused run. Remaining: reserve browser QA, inspect the production module at desktop/narrow widths including equation fonts and Systems keyboard, edit/failure/reset/reopen/rapid navigation/cleanup checks, record evidence, run final checks, commit/push and submit this claim. This record makes no independent-review or completed-delivery claim yet.
