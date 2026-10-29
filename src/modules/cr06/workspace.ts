@@ -14,7 +14,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
   else void import('./view').then(view => {
     if (disposed || child.signal.aborted) return;
     loading.remove();
-    cleanup = view.mount({ container: host, signal: child.signal }) || undefined;
+    const mountedCleanup = view.mount({ container: host, signal: child.signal }) || undefined;
+    if (disposed || child.signal.aborted) mountedCleanup?.();
+    else cleanup = mountedCleanup;
   }).catch(() => {
     if (disposed || signal.aborted) return;
     // Partial mounts can allocate signal-owned resources before throwing.

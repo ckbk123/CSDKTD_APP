@@ -58,8 +58,9 @@ export function responsePlot(r: Result, state: number | 'output', inspect: numbe
   const svg = node('svg', { viewBox: '0 0 710 285', role: 'img', 'aria-label': label + ': total for initial A and B, free for A, and shared forced response; time in seconds, values in normalized units.' });
   for (let k = 0; k <= 4; k++) {
     const t = rows.at(-1)!.t * k / 4, y = min + (max - min) * k / 4, x = X(t), py = Y(y);
+    const tick = Math.abs(y) <= 1e-12 * Math.max(Math.abs(min), Math.abs(max)) ? 0 : y;
     svg.append(node('line', { x1: 80, y1: py, x2: 670, y2: py, class: 'state-grid' }), node('line', { x1: x, y1: 45, x2: x, y2: 230, class: 'state-grid' }));
-    svg.append(node('text', { x: 72, y: py + 4, 'text-anchor': 'end', class: 'state-svg-small' }, fmt(y)), node('text', { x, y: 250, 'text-anchor': 'middle', class: 'state-svg-small' }, fmt(t)));
+    svg.append(node('text', { x: 72, y: py + 4, 'text-anchor': 'end', class: 'state-svg-small' }, fmt(tick)), node('text', { x, y: 250, 'text-anchor': 'middle', class: 'state-svg-small' }, fmt(t)));
   }
   svg.append(node('text', { x: 80, y: 24, class: 'state-svg-text' }, label + ' (normalized units)'), node('text', { x: 375, y: 276, 'text-anchor': 'middle', class: 'state-svg-small' }, 'Time t (s)'));
   ['state-total-a', 'state-total-b', 'state-free', 'state-forced'].forEach((cls, j) => {

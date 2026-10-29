@@ -50,4 +50,18 @@ describe('CR06 synchronous lazy lifecycle', () => {
     expect(stub.cleanup).toHaveBeenCalledOnce(); expect(container.children).toHaveLength(0);
     controller.abort(); expect(stub.cleanup).toHaveBeenCalledOnce();
   });
+  it('runs a disposer returned after parent abort occurs inside view mounting', async () => {
+    const container = document.createElement('div'), controller = new AbortController(), target = new EventTarget(), listener = vi.fn();
+    stub.cleanup.mockImplementation(() => target.removeEventListener('probe', listener));
+    stub.mount.mockImplementationOnce(() => {
+      target.addEventListener('probe', listener);
+      controller.abort();
+      return stub.cleanup;
+    });
+    const cleanup = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(stub.mount).toHaveBeenCalledOnce());
+    target.dispatchEvent(new Event('probe')); expect(listener).not.toHaveBeenCalled();
+    expect(stub.cleanup).toHaveBeenCalledOnce(); expect(container.children).toHaveLength(0);
+    if (typeof cleanup === 'function') cleanup(); expect(stub.cleanup).toHaveBeenCalledOnce();
+  });
 });
