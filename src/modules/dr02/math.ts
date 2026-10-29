@@ -18,7 +18,11 @@ function add(a: Polynomial, b: Polynomial, sign = 1): Polynomial {
 }
 function multiply(a: Polynomial, b: Polynomial): Polynomial {
   const p: Polynomial = new Map();
-  for (const [i, x] of a) for (const [j, y] of b) p.set(i + j, (p.get(i + j) ?? 0) + x * y);
+  for (const [i, x] of a) for (const [j, y] of b) {
+    const product = x * y;
+    if (x !== 0 && y !== 0 && product === 0) fail('A nonzero coefficient is too small for double-precision arithmetic. Rescale the expression.');
+    p.set(i + j, (p.get(i + j) ?? 0) + product);
+  }
   return tidy(p);
 }
 function polynomial(text: string): Polynomial {
@@ -35,6 +39,7 @@ function polynomial(text: string): Polynomial {
       if (!n || !/^\d|^\.\d/.test(n)) fail('Enter a number, z or a parenthesized polynomial.');
       const value = Number(n);
       if (!Number.isFinite(value) || Math.abs(value) > 1e6) fail('Each entered coefficient must be finite with magnitude at most 1,000,000.');
+      if (value === 0 && /[1-9]/.test(n.split(/[eE]/)[0])) fail('A nonzero coefficient is too small for double-precision arithmetic. Rescale the expression.');
       p = tidy(new Map([[0, value]]));
     }
     if (peek() === '^') {
@@ -122,7 +127,11 @@ export function parseTransfer(latex: string): Model {
   const scale = denominator.get(leading)!;
   if (Math.abs(scale) < 1e-12 * Math.max(...[...denominator.values()].map(Math.abs))) fail('The leading denominator coefficient is too small relative to the others (limit 10⁻¹²).');
   const coefficients = (p: Polynomial) => {
-    const result = Array.from({ length: p.size ? leading - Math.min(...p.keys()) + 1 : 1 }, (_, i) => (p.get(leading - i) ?? 0) / scale);
+    const result = Array.from({ length: p.size ? leading - Math.min(...p.keys()) + 1 : 1 }, (_, i) => {
+      const coefficient = p.get(leading - i) ?? 0, value = coefficient / scale;
+      if (coefficient !== 0 && value === 0) fail('Normalization makes a nonzero coefficient too small for double-precision arithmetic. Rescale the expression.');
+      return value;
+    });
     if (result.some(v => !Number.isFinite(v) || Math.abs(v) > 1e6)) fail('Normalized coefficients must have magnitude at most 1,000,000.');
     return result;
   };
@@ -164,14 +173,18 @@ export function sample(kind: InputKind, amplitude: number, k: number, period: nu
   return kind === 'held' ? amplitude : kind === 'impulse' ? (k === 0 ? amplitude : 0) : amplitude * k * period;
 }
 export function numberText(value: number): string { return Number(value.toPrecision(9)).toString(); }
+/** Math markup needs a multiplication/power, never JavaScript's ambiguous e notation. */
+export function latexNumber(value: number): string {
+  return numberText(value).replace(/e([+-]?\d+)$/, (_, exponent: string) => `\\times10^{${Number(exponent)}}`);
+}
 function sumText(terms: { coefficient: number; symbol: string }[]): string {
   const kept = terms.filter(t => t.coefficient !== 0);
   if (!kept.length) return '0';
-  return kept.map((t, i) => `${t.coefficient < 0 ? '-' : i ? '+' : ''}${numberText(Math.abs(t.coefficient))}${t.symbol}`).join('');
+  return kept.map((t, i) => `${t.coefficient < 0 ? '-' : i ? '+' : ''}${Math.abs(t.coefficient) === 1 && t.symbol ? '' : latexNumber(Math.abs(t.coefficient))}${t.symbol}`).join('');
 }
 export function forms(model: Model): { z: string; delay: string; recurrence: string; order: number } {
   const order = Math.max(model.a.length, model.b.length) - 1;
-  const poly = (coefficients: readonly number[], inverse: boolean) => sumText(coefficients.map((coefficient, i) => ({ coefficient, symbol: inverse ? (i ? `z^{-${i}}` : '') : (order - i ? `z^{${order - i}}` : '') })));
+  const poly = (coefficients: readonly number[], inverse: boolean) => sumText(coefficients.map((coefficient, i) => ({ coefficient, symbol: inverse ? (i ? `z^{-${i}}` : '') : (order - i === 1 ? 'z' : order - i ? `z^{${order - i}}` : '') })));
   const indexed = (channel: string, delay: number) => `${channel}[k${delay ? `-${delay}` : ''}]`;
   return {
     order,

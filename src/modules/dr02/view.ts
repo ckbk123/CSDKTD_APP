@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { BASELINE, commit, forms, numberText as fmt, parseTransfer, preview, sample, type Calculation, type InputKind, type Memory, type Model } from './math';
+import { BASELINE, commit, forms, latexNumber, numberText as fmt, parseTransfer, preview, sample, type Calculation, type InputKind, type Memory, type Model } from './math';
 import './workspace.css';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', className = ''): HTMLElementTagNameMap[K] {
@@ -143,13 +143,14 @@ export const mount: ModuleMount = ({ container, signal }) => {
     model.b.forEach((c, i) => slot('u', i, i ? memory.u[i - 1] : current, c));
     model.a.slice(1).forEach((c, i) => slot('y', i + 1, memory.y[i], -c));
     if (!calculation) return;
-    arithmetic.append(createEquationDisplay(`y[${memory.k}]=${calculation.terms.map(term => `(${fmt(term.coefficient)})(${fmt(term.value)})`).join('+')}=${fmt(calculation.output)}`, 'Computed from unchanged old samples'));
+    arithmetic.append(createEquationDisplay(`y[${memory.k}]=${calculation.terms.map(term => `(${latexNumber(term.coefficient)})(${latexNumber(term.value)})`).join('+')}=${latexNumber(calculation.output)}`, 'Computed from unchanged old samples'));
     const scroll = el('div', '', 'scroll'), table = el('table'), head = el('thead'), hrow = el('tr');
     for (const title of ['Select source', 'Coefficient', 'Old value', 'Contribution']) hrow.append(el('th', title)); head.append(hrow); table.append(head);
     const body = el('tbody');
     for (const term of calculation.terms) {
       const key = `${term.channel}:${term.delay}`, row = el('tr', '', selected === key ? 'selected' : '');
-      const td = el('td'); td.append(button(`${term.channel}[k${term.delay ? `−${term.delay}` : ''}]`, () => { selected = key; renderStep(); })); row.append(td);
+      const td = el('td'), select = button(`${term.channel}[k${term.delay ? `−${term.delay}` : ''}]`, () => { selected = key; renderStep(); });
+      select.setAttribute('aria-pressed', String(selected === key)); td.append(select); row.append(td);
       for (const v of [term.coefficient, term.value, term.contribution]) row.append(el('td', fmt(v)));
       body.append(row);
     }
@@ -180,7 +181,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     function text(value: string, px: number, py: number): void { const t = document.createElementNS(ns, 'text'); t.textContent = value; t.setAttribute('x', String(px)); t.setAttribute('y', String(py)); svg.append(t); }
     line(65, y(0), 580, y(0)); line(65, 30, 65, 180);
     for (const r of rows) { line(x(r.k), y(0), x(r.k), y(r.y)); const c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', String(x(r.k))); c.setAttribute('cy', String(y(r.y))); c.setAttribute('r', '3'); c.setAttribute('fill', 'currentColor'); svg.append(c); if (r.k) line(x(r.k - 1), y(rows[r.k - 1].zero), x(r.k), y(r.zero), true); }
-    text('Output y (arbitrary units)', 65, 18); text(fmt(high), 0, 40); text(fmt(low), 0, 178); text('0', 65, 200); text(`${rows.length - 1}`, 560, 200); text('Sample index k', 240, 216);
+    text('Output y (arbitrary units)', 65, 18); text(Number(high.toPrecision(3)).toString(), 0, 40); text(Number(low.toPrecision(3)).toString(), 0, 178); text('0', 65, 200); text(`${rows.length - 1}`, 560, 200); text('Sample index k', 240, 216);
     plot.append(svg, el('p', 'Solid stems: supplied history. Dashed connection: zero-state sample comparison only.', 'muted'));
   }
   renderForms(); buildHistory(); restart();

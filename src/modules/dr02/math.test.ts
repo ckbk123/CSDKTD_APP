@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BASELINE, commit, forms, parseTransfer, preview, sample, type Memory, type Model } from './math';
+import { BASELINE, commit, forms, latexNumber, parseTransfer, preview, sample, type Memory, type Model } from './math';
 
 function sequence(model: Model, count: number, y?: number[], u?: number[], kind: 'held' | 'impulse' | 'ramp' = 'held') {
   let memory: Memory = { k: 0, y: y ?? Array(model.a.length - 1).fill(0), u: u ?? Array(model.b.length - 1).fill(0) };
@@ -66,6 +66,12 @@ describe('DR02 independently checked recurrence', () => {
     expect(sample('impulse', 2, 3, .2)).toBe(0);
     expect(sample('held', -2, 3, .2)).toBe(-2);
   });
+  it('formats small results as an unambiguous product with a power of ten', () => {
+    const model = parseTransfer('0.0000001/(z-0.5)');
+    expect(preview(model, { k: 0, y: [0], u: [1] }, 1).output).toBe(1e-7);
+    expect(latexNumber(1e-7)).toBe('1\\times10^{-7}');
+    expect(forms(model).delay).toContain('1\\times10^{-7}z^{-1}');
+  });
 });
 describe('DR02 useful failures and resource bounds', () => {
   it.each(['', 'NaN', 'Infinity', 's+1', 'sin(z)', '1/(0)', 'z^7', 'z^0.5', '(z+1)^-1', '1/(z^-6+z^6)', '1/(1e-14z+1)', '1/0.00000001', 'z+', '1//2', '1.2.3', '\\frac{}{z}', '\\frac{1}{z', 'z'.repeat(1001)])('rejects malformed/unsupported model %s', text => {
@@ -74,6 +80,9 @@ describe('DR02 useful failures and resource bounds', () => {
   it('explains future-input causality for improper forms in either notation', () => {
     expect(() => parseTransfer('(z^2+1)/(z+1)')).toThrow(/future input/);
     expect(() => parseTransfer('1/z^-1')).toThrow(/future input/);
+  });
+  it('reports coefficient underflow instead of silently replacing a nonzero plant by zero', () => {
+    for (const text of ['1e-9999/(z-0.5)', '(1e-200*1e-200)/(z-0.5)', '5e-324/1000000']) expect(() => parseTransfer(text)).toThrow(/too small/);
   });
   it('rejects invalid timing/input/history, excessive work and overflow before update', () => {
     const m = parseTransfer('1/(z-1000000)');
