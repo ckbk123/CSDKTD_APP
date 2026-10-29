@@ -5,7 +5,7 @@
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
 - **Branch/worktree:** `codex/cf02-steady-state-7393`; `C:\Users\baokh\.codex\worktrees\cf02-steady-state-7393\CSDKTD APP`.
-- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), same preserved branch for corrections. The original `4f763e9` submission was returned for a lexical mixed-number bypass. The correction and focused browser checks are complete; the shared claim records the final exact resubmission. Original delivery evidence is retained below, supplemented by this correction. DS01 PR #10 was accepted as v0.3.6; CP01 is checkpointed while this review return takes priority.
+- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), same preserved branch for corrections. The original `4f763e9` submission was returned for a lexical mixed-number bypass. The correction and focused browser checks are complete; exact final revisions are recorded by the shared submission claim. Original delivery evidence is retained below, supplemented by this correction. DS01 PR #10 was accepted as v0.3.6; CP01 is checkpointed while this review return takes priority.
 
 ## Priority review return — lexical mixed-number boundary
 
@@ -30,7 +30,7 @@ After the coordinator released its temporary order, the supported helper acquire
 
 Raw viewport and full-page correction screenshots are preserved locally outside Git (`cf02-lexical-feedback.png`, `cf02-lexical-mixed-full.png`). This focused pass supplements the earlier full lifecycle/narrow-screen evidence; it does not claim a new light-theme/other-engine/network-trace pass. No viewport override was created; the default 1280×720 dimensions were left unchanged. The owned tab was closed, private preview stopped, QA released and no watcher remains.
 
-All requested correction work is implemented and checked. The final delivery record is committed/pushed and resubmitted at the exact clean tested HEAD; independent coordinator acceptance remains pending. CP01 is preserved at checkpoint `422b05324f2cef7c0d801ab7f16f9037178f2236` and resumes after this resubmission. No concurrent implementation occurred.
+All requested parser and browser correction work is implemented and checked. Resubmission uses the same PR and exact clean tested HEAD through the current primary helper; its claim is the authoritative final-revision record. Independent coordinator acceptance remains pending. CP01 is preserved at checkpoint `422b05324f2cef7c0d801ab7f16f9037178f2236` and resumes after resubmission. No concurrent implementation occurred.
 
 ## Delivered bounded exercise and final verification — 29 October 2026
 
