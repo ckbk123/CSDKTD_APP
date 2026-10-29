@@ -6,7 +6,7 @@
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Branch:** `codex/df04-sample-period-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\df04-sample-period-01a186d1\CSDKTD APP`
-- **PR:** not opened yet
+- **PR:** [DF04 #23](https://github.com/ckbk123/CSDKTD_APP/pull/23), draft and attached; actual browser gate pending
 
 ## Initial inspection and bounded exercise
 
@@ -73,3 +73,5 @@ The synchronous workspace immediately displays a loading status, guards deferred
 Initial combined checks passed68 module cases (10 math,41 parser,12 mocked interface,5 lifecycle),508 project tests/type/build. A subsequent numerical inspection added a meaningful long-hold fixture: the incremental flow formula lost relative precision in a small zero-control tail at duration/tau=30. It reproduced a1.66e-4 relative error. The flow now uses incremental arithmetic for short holds and affine exponential arithmetic for long holds, retaining the analytic positive tail; its ratio bound matches the supported case domain with a64-epsilon rounding allowance for interval subtraction. Repeated long holds are tested too. Extremely small decaying trajectory tails may eventually round to zero; full sampled poles remain displayed. Corrected checks pass69 module cases (11 math,41 parser,12 mocked interface,5 lifecycle),509 full-project tests, type checking and production build; final view about10.78kB gzip, with the existing MathLive221.50kB gzip warning/20 local fonts.
 
 Actual browser behavior is still unverified; no mocked-editor result is counted as fonts/keyboard evidence. The coordinator's fair order is current DD04 integration, then CP03 notation, DR01 exponent and DP03 exponent gates; this worker defers ordinary acquisition until those releases. No browser slot/tab/preview/viewport override is held. Next: final code/checkpoint and one draft PR, then reserved production-browser model/policy/partial-horizon/errors, actual fractions/powers/keyboard, reset/reopen/navigation and phone checks. Prior DD04/DP04 submitted worktrees remain frozen for review returns.
+
+One draft PR23 now targets main and is attached to this worker chat. It records the69 module/509 full-project/type/build checkpoint and missing actual browser gate; the claim remains active. Connected GitHub writes remain unavailable (403); the existing authenticated Git connection/REST path creates or reuses this exact branch PR without storing/printing credentials. No duplicate PR, merge, deployment or release number was created.
