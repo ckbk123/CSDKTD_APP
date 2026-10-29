@@ -9,7 +9,7 @@
 ## Implemented and inspected
 
 - `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
+- The original assessed `workspace.ts` was a blank synchronous mount; the current work below implements it.
 - The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
 
 ## Remaining acceptance work
@@ -43,3 +43,11 @@ Primary-main baseline `9d923d2`; worker chat `01a18701-3f40-7572-9a49-7dc0103c91
 Inspected sources: TASK/atlas, FUNCTIONAL_SPECIFICATION and repository continuous exercise/slide review audits. Original external slide assets have not been inspected. Authored baseline topology is explicit: e=r−H1·y, x=G1·e−H2·y, y=G2·x. This reproduces the audit's inner/overall relations without inferring connectivity from line crossings.
 
 No shared helper/package request is currently needed. Graph and rational algebra will be stateless module-local code. Full bounded exercise, independent verification, browser checks and PR/submission remain unfinished.
+
+## Implementation checkpoint
+
+`algebra.ts` implements exact bounded Q(s) arithmetic, polynomial cancellation and typesetting. `input.ts` reads a private proper-degree≤2 visual gain grammar with TeX argument boundaries, compact fractions and explicit rejection of hidden grouping, ambiguous adjacent numbers/mixed fractions and malformed powers. `mason.ts` validates/traces graphs, enumerates simple paths/canonical cycles and all pairwise-disjoint loop sets, builds determinant/cofactors and compares Mason exactly with Gaussian elimination of the original signed branch equations. Its numeric point audit separately uses the branch gains before network cancellation, with scaled pivot/residual/disagreement gates.
+
+`view.ts`/`diagram.ts` now provide editable structured signed block nets and linked graph highlighting, pre-reveal trace/count attempts, touching-pair feedback, staged determinant/cofactor construction and final equation/point checking. Proposed disjoint-loop fixture has two paths, three self-loops, three pairs and one triple; Δ=1/4, cofactors 1 and1/4, transfer6, independently derived from a=2,b=3,c=4,y=c+2. Course baseline derives 1/(s²+5s+5); changing H2 to3 derives 1/(s²+6s+6). Lazy loading owns a loading host and child abort signal, including partial-mount-failure cleanup.
+
+Initial local verification passed48 tests and TypeScript. Additional adjacent-number/zero-power rejection was then added; its rerun and full project/build/browser checks remain pending at this checkpoint. Mocked view/lifecycle tests are not evidence of real editor functionality. Stage stays in-progress until those checks and remaining evidence/delivery are complete.
