@@ -1,27 +1,118 @@
 # DF04 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+## Prepared coordinator integration and terminal-tick correction — 29 October 2026
 
-## Implemented and inspected
+Frozen source `3b70ee553c4061cec46a046daa93f0ffc69ae93a` is merged with its history into the isolated integration branch. Independent review found that g=tau=R=1, y(0)=K=0, T=0.3 and H=0.9 counted a fourth, rounding-sized hold (raw sum 4 instead of 3). T=0.001022 and H=2.044 similarly invented interval 2001 and rejected a valid 2000-period request. Two new independent constant-error regressions reproduced both failures on the frozen solver before correction; four genuine-partial/limit controls already passed.
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The coordinator-authorized correction treats a tick within `4*Number.EPSILON*max(abs(tick),H)` of H as the terminal observation and snaps its displayed endpoint to H. This is only a floating-point neighbourhood, not a sampling-period tolerance. Larger genuine partial holds still contribute, including H=0.900000000001; H=2.044000000001 still correctly exceeds 2000 intervals. Full physical hold durations retain the existing cap T, avoiding subtraction roundoff beyond the supported T/tau bound. The declared terminal convention is visible in the exercise. Controller policy, physical response and quadrature definitions are unchanged.
 
-## Remaining acceptance work
+The view already uses the shared native reader, with zero/underflow/exponent and optional-field regressions retained. Shared TeX argument preflight now runs before spacing/delimiter removal and has malformed command/Unicode/nested-delimiter plus valid boxed controls. The deferred child-signal wrapper owns its host, immediately aborts partial allocations, clears recovery/pending content on disposal and releases a reentrant late disposer exactly once. Integration checks: 89 module tests, TypeScript and diff checks pass. Prior independent policy/trajectory review and worker browser evidence remain applicable; affected coordinator browser and final combined acceptance are pending. Stage remains implemented.
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+- **Stage:** implemented
+- **Review:** independent coordinator integration review pending
+- **Assessed:** 2026-10-29, starting primary main `c45512eb7cd4f52f5f4d5f1ed5e96f546c447a6e`
+- **Owned scope:** `src/modules/df04/**`; [accepted contract](TASK.md)
+- **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
+- **Branch:** `codex/df04-sample-period-01a186d1`
+- **Worktree:** `C:\Users\baokh\.codex\worktrees\df04-sample-period-01a186d1\CSDKTD APP`
+- **PR:** [DF04 #23](https://github.com/ckbk123/CSDKTD_APP/pull/23), attached; complete checked contribution prepared for integration
 
-## Evidence and next action
+## Initial inspection and bounded exercise
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+The owned folder has metadata and a blank synchronous mount, with no module calculations, controls or tests. Primary was clean in DF04 when atomically claimed. This fresh worktree starts from current committed main at the claim, excluding preceding unmerged worker contributions. Metadata, shell, identity and unrelated modules will be preserved. Locked npm ci with supported Node24.22.1 completed with zero vulnerabilities. No shared helper/API or dependency change is required: use the existing stateless native-number reader and shared visual equation components directly.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Implement the complete comparison exercise for a declared physical SISO first-order family G(s)=g/(tau*s+1), g>0,tau>0, proportional negative unity feedback and zero-order-held control u[k]=K*(R-y[k]). The same plant, output initial value, reference step and seconds horizon apply to every compared case. Several T values have visibly distinct fixed-K and redesigned-K policies. Redesign maps a chosen physical decay rate lambda to q_target=exp(-lambda*T), then derives K_T=(a-q_target)/b from a=exp(-T/tau), b=g*(1-a). This changes K and generally the steady tracking bias; it must not claim identical final value or generic optimal design. Lambda must permit nonnegative K. The sample-to-sample model is discrete LTI; the whole clocked sampled/held system is not called ordinary continuous-time LTI.
+
+| Accepted requirement | Starting evidence | Current delivered evidence / remaining check |
+|---|---|---|
+| Edit physical model/task | Metadata only | Shared visual first-order input/native controls;41 parser cases; actual toolbar, nested fractions, changed plant/reference/initial output checked |
+| Compare several T values | None | Three periods and fixed/redesigned/both actions; six labeled temporary cases; interface tests pass |
+| Student attempt/reveal | None | Unit-disk and weighted-sum predictions before checked reveal; correct/wrong feedback tested |
+| Fixed versus redesign reasoning | None | Derived a,b,q,target,K and actual gain/bias; separate policies and unused-control independence tested |
+| Common seconds horizon | None | Physical hold updates plus partial terminal hold; independent ln2/2.5T fixtures and interface inspector checked |
+| Weighted error/effort | None | Compensated left-rectangle ISE/IAE/ITAE and raw sum; ZOH energy; independent values/no terminal double count checked |
+| Visual reasoning | None | Computed plots/sample/reconstruction/legend/interval controls; actual six-case diagrams and numeric contributions inspected; phone overflow fixed and rechecked |
+| Changed data/failures | None | Changed plant/K/T/reference/initial/rate, impossible/conditioned redesign, boundary/growth/work/underflow fixtures pass |
+| Lifecycle/accessibility | Shell only | Local state/loading/child-signal failure cleanup; six lifecycle tests and actual keyboard/reset/reopen/rapid navigation/fonts/phone checks pass |
+| Delivery | None |71 module/511 project tests,type/build and private actual browser gate pass; one attached PR; exact final clean tested SHA recorded by claim |
+
+## Conventions and supported limits
+
+Time is seconds; R,y,e use normalized output units, u normalized input units. g maps input to output, tau is seconds and K maps output error to input. A step is applied at t=0 with common y(0). Each tick reads y[k], computes e[k]=R-y[k] and holds u[k]=K e[k] until the next tick. The physical update over delta seconds is y_next=exp(-delta/tau)*y+g*(1-exp(-delta/tau))*u. There is no extra input/state delay, saturation, integral controller, hidden memory or cross-module handoff.
+
+Intervals cover [0,H) exactly with delta=min(T,H-t_k). Left-rectangle ISE=sum(delta*e_k^2), IAE=sum(delta*abs(e_k)), ITAE=sum(delta*t_k*abs(e_k)). If H is a multiple of T, ISE=T*sum(e_k^2). Show the differently scaled raw sum for diagnosis. Control energy sum(delta*u_k^2) is exact for the declared held control up to floating arithmetic. Error indices approximate the physical error integral and are not called exact. H is a terminal observation, not an extra weighted control interval. Samples alone do not establish intersample motion; any optional reconstruction must explicitly use the continuous plant/hold.
+
+Enforced bounds: g .05–20,tau .01–10s,K0–100,R .1–10,abs(y0)<=10,lambda .01–100s^-1,T .001–10s,H .01–60s,at most2000 intervals/case and six cases. Require T/tau<=30 and lambda*T<=30 for a redesigned case to retain a resolvable positive exponential, allowing64 machine epsilons for ratio rounding. Reject nonnegative-gain redesign when lambda<1/tau. A truncated case cannot masquerade as a common-horizon result. This is local numerical computation, not arbitrary-order tuning or a general CAS.
+
+## Independent fixtures and provenance
+
+Read current primary coordination guides, contribution/development/design/equation guidance, atlas DF04 and discrete audit quality/sample-period cautions. Original slides were not reinspected. DF04's interface is explicitly a proposed synthesis based on S12–15 sample-period tasks and Ch8 quality. These fixtures are independently derived, not claimed source-slide answers:
+
+- Baseline g=tau=R=1,K=2,y0=0:a=exp(-T),b=1-a,q=3exp(-T)-2 and stable y_infinity=2/3. AtT=.1 q≈.7145122541;T=.5 is negative/inside;T=1.2 is outside. Strict fixed-gain stability is0<T<ln(3).
+- T=ln(2):a=b=.5,q=-.5; y at0,T,2T,3T is0,1,.5,.75 and held controls2,0,1. AtH=3T raw squared error1.25,ISE1.25T,IAE1.5T,ITAE T^2,control energy5T. Terminal y=.75 has zero quadrature weight.
+- Same T,H=2.5T:final interval weight.5T,terminal y=1-.5/sqrt(2),ISE1.125T,control energy4.5T,with a genuinely common endpoint.
+- Redesign lambda=2,T=ln(2):q_target=.25,K=.5 and y0=0 gives0,.25,.3125,.328125. Steady output1/3 differs from fixed-gain2/3. Over3T,ISE2.03515625T and control energy.5087890625T.
+- K=0,y0=0,R=1,H=1:output/control remain0;ISE=IAE=1 forT=.1,.2,.3 (last includes partial interval),while raw squared-error sums are10,5,4.
+- g=2,tau=.5,K=1,T=.5ln(2) preserves q=-.5 and baseline y samples but halves controls and quarters squared effort. Reference/initial changes must match independent closed form y_n=y_infinity+(y0-y_infinity)*q^n when finite.
+
+## Next work and verification state
+
+Initial audit/setup only. Implement pure mathematics and bounded visual parsing, check independent fixtures/failures, then finish prediction/comparison UI and actual browser gate. No module tests, type check, full tests, build or browser behavior is claimed yet. Earlier submitted DD04/DP04 branches/worktrees remain frozen; coordinator corrections take priority. DP02 has been independently accepted as0.3.7 with its source history preserved. No browser slot/tab/preview/viewport override is held.
+
+## Mathematical checkpoint
+
+`math.ts` now validates the first-order physical model/task, derives exact ZOH coefficients and the complete scalar closed-loop pole, matches a physical-rate target with a cancellation-resistant exponential difference, and simulates each held interval through a common terminal H. Raw/ISE/IAE/ITAE/effort sums use compensated accumulation; terminal observations receive no extra weight. Physical reconstruction evaluates the declared plant/hold analytically instead of interpolating samples. Boundary/unstable cases do not claim a steady limit.
+
+The proposed scalar/model/time/work limits above are enforced. Output/error/control magnitude is bounded by10^12, accumulated metrics by10^28 and redesigned target-pole relative matching residual by10^-7. A failed/growing case throws without reporting partial common-horizon metrics. Unit-disk classification uses a declared10^-9 boundary band. The UI must expose these limits and handle failures per case.
+
+`npm test -- src/modules/df04` passes10 independently derived fixture/failure groups; `npm run check` passes. This includes every audit fixture, common-horizon partial holds, changed units/reference/initial output, physical intersample values, impossible/redesign conditioning, unstable growth and excessive work. Parser/UI/lifecycle, full-project/build and real-browser checks remain unimplemented/unperformed. The prior paragraph describes the initial audit stage, not the current mathematical checkpoint.
+
+## Visual parser checkpoint
+
+`input.ts` now parses a constant numerator over a linear real polynomial in s, normalizing only its constant denominator scale to obtain g,tau. It supports decimals, compact/signed/nested fractions, visible parentheses, polynomial arithmetic and literal powers0–2 before enforcing the first-order physical family. It does not cancel factors or accept rational sums, e/E symbols, hidden grouping, mixed-fraction adjacency or ambiguous one-atom TeX exponent tails. Semantic checks run independently of editor syntax feedback. The private parser carries forward tested bounded normalization techniques from this worker's earlier work, with no runtime sibling import or shared-file change.
+
+Input limits:512 source characters,128 expanded tokens,eight logical visible grouping/fraction levels, normalized nesting32, intermediate degree4 and coefficient magnitude10^12. Nonzero literal/product/quotient/normalization underflow is rejected; positive g/tau bounds then validate the physical model. `npm test -- src/modules/df04` passes51 cases in2 files (10 math,41 parser); `npm run check` passes. The interface/lifecycle, full-project/build and actual MathLive/browser gates remain unfinished. No browser slot or preview is held.
+
+## Interface checkpoint and remaining browser gate
+
+The full bounded interface now provides separate fixed/redesigned/both comparison actions, case-stability and weighted-sum predictions, checked reveal, complete scalar pole/terminal/steady-limit and weighted-metric tables, shared-time output/control plots, independent plot visibility and an interval contribution inspector. A partial final hold reaches the common H. Sample markers have no inferred connecting curve; optional reconstruction evaluates the declared physical plant and hold. Unsupported/overflowing cases retain explicit errors with unavailable metrics, while valid cases remain inspectable. Native controls use the shared reader; changing task/model data invalidates prior results.
+
+The synchronous workspace immediately displays a loading status, guards deferred view import/abort/disposal and shows recoverable initialization errors. All mutable cases/drafts are mount-local, static listeners use the signal, rebuilt tables/plots attach no listeners, and cleanup destroys the editor/removes the root. Chart SVG styles are scoped separately from MathLive equation SVGs. Narrow tables/plots use keyboard-focusable local scrolling.
+
+Initial combined checks passed68 module cases (10 math,41 parser,12 mocked interface,5 lifecycle),508 project tests/type/build. A subsequent numerical inspection added a meaningful long-hold fixture: the incremental flow formula lost relative precision in a small zero-control tail at duration/tau=30. It reproduced a1.66e-4 relative error. The flow now uses incremental arithmetic for short holds and affine exponential arithmetic for long holds, retaining the analytic positive tail; its ratio bound matches the supported case domain with a64-epsilon rounding allowance for interval subtraction. Repeated long holds are tested too. Extremely small decaying trajectory tails may eventually round to zero; full sampled poles remain displayed. Corrected checks pass69 module cases (11 math,41 parser,12 mocked interface,5 lifecycle),509 full-project tests, type checking and production build; final view about10.78kB gzip, with the existing MathLive221.50kB gzip warning/20 local fonts.
+
+Actual browser behavior is still unverified; no mocked-editor result is counted as fonts/keyboard evidence. The coordinator's fair order is current DD04 integration, then CP03 notation, DR01 exponent and DP03 exponent gates; this worker defers ordinary acquisition until those releases. No browser slot/tab/preview/viewport override is held. Next: final code/checkpoint and one draft PR, then reserved production-browser model/policy/partial-horizon/errors, actual fractions/powers/keyboard, reset/reopen/navigation and phone checks. Prior DD04/DP04 submitted worktrees remain frozen for review returns.
+
+One draft PR23 now targets main and is attached to this worker chat. It records the69 module/509 full-project/type/build checkpoint and missing actual browser gate; the claim remains active. Connected GitHub writes remain unavailable (403); the existing authenticated Git connection/REST path creates or reuses this exact branch PR without storing/printing credentials. No duplicate PR, merge, deployment or release number was created.
+
+While the named QA order is pending, a long-horizon boundary check found that subtracting two large tick times could make a nominal full T appear slightly greater than T and falsely trip the ratio30 limit. The independent zero-control fixture at T=.3,tau=.01,H=60 reproduced this. Hold duration now follows the declared min(T,H-t_k) directly, and reconstructed local time is clipped to that actual hold duration; terminal times remain common. The corrected69 module/509 full tests and type/build pass; current view about10.79kB gzip. QA remains deferred; no competing waiter was started.
+
+The coordinator's ongoing DD04 review also highlighted partial-view initialization cleanup. A local DF04 regression reproduced a resource remaining live after view.mount throws. The owned synchronous wrapper now passes a child abort scope to the view, forwards parent abort/disposal and aborts partial initialization before replacing it with recoverable Reset feedback. Parent visit state remains active on failure; resources are released once. This is an owned lifecycle correction, with prior frozen branches untouched. Current `npm test -- src/modules/df04` passes70 cases (11 math,41 parser,12 mocked interface,6 lifecycle); all510 project tests/type/build pass. Actual browser verification remains pending the named QA order.
+
+## Browser scheduling and authorized fallback attempt
+
+The named DD04/CP03/DR01/DP03 in-app order has finished; CD08 currently holds the shared reservation. This worker has resumed ordinary supported acquisition and preserves that holder. Its own production preview is on8796, leaving primary8787 untouched.
+
+The human authorized independent Firefox testing during the queue delay. Read the Windows Computer Use skill/guidance/API and inspected installed apps/version only. Firefox159.0 is present, but three existing windows were unowned and remained untouched. No window was selected/activated/launched, no page was inspected and no Firefox module evidence is claimed. The coordinator subsequently confirmed that native Firefox page inspection lacks supported URL-policy enforcement and that the separate-profile launch route was policy-blocked; it directed all workers to stop that route rather than work around the guard. This worker complied and is awaiting supported in-app QA. This is a concrete tool limitation, not a missing human permission. Browser gate and final submission remain incomplete.
+
+Before the browser gate, plot minimum width is set to its680px viewBox width so13px axis text stays at least13px rather than shrinking on a narrow screen. Scrolling stays local and numeric interval inspection remains available. Actual phone usability still requires the reserved browser check; source geometry alone is not that evidence.
+
+A final interface failure-path check reproduced an entirely unsupported redesign being given vacuous correct-stability feedback. The interface now states that no supported case was checked, disables its unavailable interval cursor and reports how many trajectories actually reach the common H. Valid case recovery reenables the cursor. The new71 module/511 full checks/type/build are pending rerun; no browser evidence is implied.
+
+## Completed private production-browser gate
+
+The preceding checkpoints are historical. After a controlled cross-chat isolation check, the human/coordinator replaced the overbroad global IAB lock for verified private contexts. This worker's browser inventory explicitly reported codexSessionId `01a186d1-a367-78f1-98f5-e1cf147ef306`, matching this chat, with no existing tabs. The obsolete global waiter had ended without acquiring. QA used only private browser2/tab7 and this worktree's production preview127.0.0.1:8796. No other reservation/tab/viewport or primary8787 was touched. Actual browser: ChatGPT in-app browser, system dark theme; its precise engine version is not exposed by the supported interface. No Firefox module testing is claimed.
+
+- Cold loading mounted the controls without a persistent scaffold/pending label. Baseline both-policy comparison prepared six cases; checking all six inside-disk predictions plus the interval-weighted sum graded correctly. Fixed poles were .71451225,.45619226,−.18040802. Redesigned gains1.7235682,1.4890508,.9744101 matched exp(−3T) poles .74081822,.54881164,.22313016. Stable modeled limits differed from fixed2/3 as declared. The computed output and held-control diagrams, legend, optional physical reconstruction and detailed coefficient/matching equations were visually inspected.
+- At selected redesigned T=.1,k=2, the interval showed y≈.28552761,e≈.71447239,u≈1.2314419,y_next≈.37554325 and weighted contributions. Hiding every plotted case left the metrics intact and showed explicit plot guidance. The reconstruction toggle distinguished sampled markers from the physical plant/hold curve.
+- Actual raw-sum preset/fixed action gave interval/raw counts10,5,4 atT=.1,.2,.3,H=1 while ISE=IAE=1 and held effort0 in every case. Enter activated comparison/reveal. Different left-rectangle ITAE values remained labeled approximations.
+- Alternating preset atT=ln2,H=3T gave q=−.5,y(H)=.75,raw1.25,ISE≈.86643398=1.25T,effort≈3.4657359=5T. TheT=1.2 case retained its outside pole−1.0964174 and no steady-limit claim. Changing H to2.5T invalidated prior results, then showed terminal .64644661,last weight .34657359,ISE .77979058=1.125T and effort3.1191623=4.5T. k=2 contributions matched; a fractional cursor removed interval tables and requested an integer rather than showing stale numbers. Redesign lambda2 atT=ln2,H=3T gaveK=.5,q=.25,y(H)=.328125,ISE1.4106628 and effort.3526657, matching the independent fixture.
+- Lambda=.5 with redesign-only showed no supported stability check, disabled the unavailable interval cursor and reported no complete trajectory. Both-policy mode retained three valid fixed cases and three explicit redesign errors. K=100,H=60 reported magnitude overflow in each case with unavailable metrics, never partial sums. H=0 hid stale results with range feedback. T=.001,H=3 hit the2000-interval limit only for that case while the other two remained complete.
+- Native K=1e−999 reported nonzero underflow and hid stale results. Genuine0e−999 was accepted with zero effort;1e−2 retainedK=.01 and the independently expected pole.495 atT=ln2. No programming-exponent meaning was borrowed for the visual field.
+- The real power/fraction toolbar constructed `\frac{1^1}{s+1}` and computed the baseline. Actual copied changed plant `\frac{2}{0.5s+1}` gave first pole .093653765 and stable limit.8. Changing R=2,y0=.5 gave initial e1.5,u3,y_next1.4969809. Actual nested-half numerator gave gain.5,first pole.80967484 and limit.5; explicit2+1/2 gave first pole.42902451 and limit5/6. A settled grouped power `\frac{1}{s^{+1}+1}` retained the baseline. Exact copied drafts were checked before interpreting results; transient empty/duplicate paste drafts were cleared and not counted as successful fixtures.
+- Actual copied mixed `\frac{2\frac{1}{2}}{s+1}` received explicit +/× guidance/no attempt. The ambiguous `s^1.0` tail received power-box guidance, and copied e-symbol input received the separate e/E-symbol error. The Systems keyboard opened, a real key changed the draft, Escape closed it without navigation, and Reset while open removed it and restored K2,H5. Leaving after K7 removed all .sp-tool/editor roots; reopening restored K2,T1=.1 and an unchecked baseline. Rapid library/module/library navigation left zero old roots/keyboard controls before a fresh visit.
+- The first390×844 check exposed page width949px: the .sp-results grid item retained an automatic min-content width. Owned .sp-tool/.sp-results now use a zero-minimum grid track, with min-width0 and local scrolling. After rebuilding/reloading, page width375px stayed within viewport390. Tables used273px viewports with789/881px content; plots retained680px content and readable13px axis text. Keyboard ArrowRight moved both plot and metric table40px locally. The phone keyboard opened without increasing page width; font status was loaded and KaTeX_Main available. Corrected phone and desktop screenshots were inspected. Light theme was not separately emulated.
+
+Browser warning/error logs were empty. Temporary viewport was reset, own tab closed and private preview stopped. Proof files outside Git in this worker's2026/10/29 visualization folder: `df04-baseline-comparison.png`, `df04-phone-plot-fixed.png` and `df04-phone-indices.png`; the pre-fix screenshot is diagnostic only. These are actual browser checks, not a claimed automated end-to-end command.
+
+Final commands with supported Node24.22.1: `npm test -- src/modules/df04`71 tests in4 files (11 math,41 parser,13 mocked interface,6 lifecycle); `npm run check`; `npm test`511 tests in23 files; `npm run build`. All pass. The view is about10.90kB gzip, with the existing MathLive221.50kB gzip warning/20 local fonts. No required bounded-exercise work or shared dependency remains. PR23 is reused/attached and prepared for review; the current primary claim helper records the exact clean pushed tested HEAD. No merge, version change, deployment or generated output is included.
