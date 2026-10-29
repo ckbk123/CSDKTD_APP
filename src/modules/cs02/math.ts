@@ -1,4 +1,4 @@
-import { EPS, U, Z, axisMultiplicity, constantOf, constantRF, degree, divQ, divRF, divideP, equalQ, gcdP, limitRF, monicP, mulQ, mulRF, negQ, q, signQ, subQ, subRF, symmetricClassification, symmetricClassificationRF, trim, zeroRF, type Poly, type Q, type RF } from './algebra';
+import { EPS, U, Z, axisMultiplicity, constantOf, constantRF, degree, divQ, divRF, divideP, equalQ, gcdP, latexQ, limitRF, monicP, mulQ, mulRF, negQ, q, signQ, subQ, subRF, symmetricClassification, symmetricClassificationRF, trim, zeroRF, type Poly, type Q, type RF } from './algebra';
 
 export interface Row {
   readonly power: number;
@@ -92,5 +92,20 @@ export function analyzeCoefficients(coefficients: Poly) {
 }
 export function samePolynomial(a: Poly, b: Poly) {
   const one = trim(a), two = trim(b); return one.length === two.length && one.every((value, i) => equalQ(value, two[i]));
+}
+/** Exact quadratic auxiliary modes, reducing rational perfect squares only. */
+export function quadraticAuxiliaryRoots(source: Poly): string | null {
+  const p = trim(source); if (p.length !== 3 || p[1].n || !p[2].n) return null;
+  const square = divQ(negQ(p[0]), p[2]);
+  if (!square.n) return String.raw`s=0\quad\text{(multiplicity 2)}`;
+  const magnitude = square.n < 0n ? negQ(square) : square;
+  function integerRoot(value: bigint) {
+    if (value < 2n) return value;
+    let x = 1n << BigInt(Math.ceil(value.toString(2).length / 2));
+    for (let pass = 0; pass < 4096; pass++) { const next = (x + value / x) / 2n; if (next >= x) return x; x = next; }
+    throw new Error('Exact square-root reduction exceeded its precision bound.');
+  }
+  const n = integerRoot(magnitude.n), d = integerRoot(magnitude.d), root = n * n === magnitude.n && d * d === magnitude.d ? latexQ(q(n, d)) : `\\sqrt{${latexQ(magnitude)}}`;
+  return `s=\\pm ${root}${square.n < 0n ? '\\mathrm{j}' : ''}`;
 }
 export type Analysis = ReturnType<typeof analyzeCoefficients>;

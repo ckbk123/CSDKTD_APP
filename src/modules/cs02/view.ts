@@ -3,7 +3,7 @@ import { createEquationDisplay, createEquationInput, type EquationDraft } from '
 import { readNumericInput } from '../../shared/numeric-input';
 import { Z, constantOf, constantRF, formatP, latexQ, latexRF, limitRF, mulRF, q, signQ, textQ, type RF } from './algebra';
 import { gradeCount, gradeEntry, type EntryPrediction, type Treatment } from './grade';
-import { analyzeCoefficients, determinantWork, type Analysis } from './math';
+import { analyzeCoefficients, determinantWork, quadraticAuxiliaryRoots, type Analysis } from './math';
 import { parseAnswer, parseCharacteristic } from './parser';
 import './workspace.css';
 
@@ -142,7 +142,10 @@ export const mountView: ModuleMount = ({ container, signal }) => {
           const aux = m.auxiliaries.find(a => a.row === i)!, derivative = aux.symbolic.slice(1).map((coefficient, power) => mulRF(constantRF(q(power + 1)), coefficient));
           card.append(display(`A(s)=${rfPolynomial(aux.symbolic)},\\quad A'(s)=${rfPolynomial(derivative)}`, 'Auxiliary polynomial and its derivative'));
           card.append(el('p', `${aux.epsilonFamily ? 'For sufficiently small positive ε, before its limit: ' : ''}${categoryText(aux.classification)} The roots are symmetric about the origin; symmetry can include real pairs or complex quartets.`));
-          if (aux.polynomial && aux.polynomial.length === 3 && aux.polynomial[2].n) card.append(display(`s^2=-\\frac{${latexQ(aux.polynomial[0])}}{${latexQ(aux.polynomial[2])}}`, 'Squared auxiliary roots; sign distinguishes real and imaginary pairs'));
+          if (aux.polynomial && aux.polynomial.length === 3 && aux.polynomial[2].n) {
+            card.append(display(`s^2=-\\frac{${latexQ(aux.polynomial[0])}}{${latexQ(aux.polynomial[2])}}`, 'Squared auxiliary roots; sign distinguishes real and imaginary pairs'));
+            const roots = quadraticAuxiliaryRoots(aux.polynomial); if (roots) card.append(display(roots, 'Exact auxiliary roots in inverse seconds'));
+          }
         }
         result.append(card);
       });

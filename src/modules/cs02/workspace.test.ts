@@ -56,6 +56,7 @@ describe('CS02 complete student workspace', () => {
     const { root } = await open(); click(root, 'All-zero row fixture'); click(root, 'Reveal derivation');
     expect(root.querySelector('.r-count')!.textContent).toContain('0 RHP root(s), 2 on the imaginary axis, 3 LHP');
     expect(root.querySelector('[aria-label="Auxiliary polynomial and its derivative"]')!.textContent).toContain("A(s)=s^{2}+4,\\quad A'(s)=2s");
+    expect(root.querySelector('[aria-label="Exact auxiliary roots in inverse seconds"]')!.textContent).toBe(String.raw`s=\pm 2\mathrm{j}`);
     choose(root, 'Routh row', '4'); edit(answer(root), '2'); click(root, 'Check selected entry'); expect(root.textContent).toContain('Your exact entry agrees.');
     click(root, 'Symmetric real roots'); click(root, 'Reveal derivation'); expect(root.querySelector('.r-count')!.textContent).toContain('1 RHP root(s), 0 on the imaginary axis, 1 LHP');
     expect(root.textContent).toContain('1 symmetric real pair(s); 0 imaginary pair(s)');

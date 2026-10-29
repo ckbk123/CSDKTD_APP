@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { U, Z, constantOf, latexRF, mulP, q, scaleP, textQ, type Poly } from './algebra';
-import { analyzeCoefficients, determinant } from './math';
+import { analyzeCoefficients, determinant, quadraticAuxiliaryRoots } from './math';
 const p = (...a: number[]): Poly => a.map(n => q(n));
 const column = (source: Poly) => analyzeCoefficients(source).rows.map(row => { const value = constantOf(row.values[0]); return value ? textQ(value) : latexRF(row.values[0]); });
 
@@ -50,6 +50,14 @@ describe('CS02 exact Routh and Hurwitz calculation', () => {
     expect([real.right, real.axis, real.left]).toEqual([1, 0, 1]); expect(real.auxiliaries[0].classification?.realPairs).toBe(1);
     const quartet = analyzeCoefficients(p(1, 0, 0, 0, 1));
     expect([quartet.right, quartet.axis, quartet.left]).toEqual([2, 0, 2]); expect(quartet.auxiliaries[0].classification?.complexQuartets).toBe(1);
+  });
+  it('lists exact quadratic auxiliary modes without a floating square-root assumption', () => {
+    expect(quadraticAuxiliaryRoots(p(4, 0, 1))).toBe(String.raw`s=\pm 2\mathrm{j}`);
+    expect(quadraticAuxiliaryRoots(p(-4, 0, 1))).toBe(String.raw`s=\pm 2`);
+    expect(quadraticAuxiliaryRoots([q(9, 4), q(0), q(1)])).toBe(String.raw`s=\pm \frac{3}{2}\mathrm{j}`);
+    expect(quadraticAuxiliaryRoots([q(1, 2), q(0), q(1)])).toBe(String.raw`s=\pm \sqrt{\frac{1}{2}}\mathrm{j}`);
+    expect(quadraticAuxiliaryRoots(p(0, 0, -2))).toContain('multiplicity 2');
+    expect(quadraticAuxiliaryRoots(p(1, 1, 1))).toBeNull();
   });
   it('separates exact axis factors when an epsilon perturbation would migrate them', () => {
     // (s²+1)(s⁴-s³-1). The quartic's independent column +,-,+,-,- has3changes.
