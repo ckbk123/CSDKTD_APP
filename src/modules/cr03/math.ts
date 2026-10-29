@@ -75,7 +75,9 @@ export function inverse(matrix: Matrix): { matrix: number[][]; condition: number
       const factor = augmented[row][col]; for (let j = 0; j < 2 * n; j++) augmented[row][j] -= factor * augmented[col][j];
     }
   }
-  const result = augmented.map(row => row.slice(n)), condition = magnitude * norm(result);
+  const result = augmented.map(row => row.slice(n));
+  if (result.flat().some(value => !Number.isFinite(value))) fail('The coordinate inverse exceeds the floating-point range. Rescale T.');
+  const condition = magnitude * norm(result);
   if (!Number.isFinite(condition) || condition > 1e8) fail('The coordinate matrix is too ill-conditioned (infinity-norm condition exceeds 10⁸).');
   return { matrix: result, condition };
 }
@@ -93,7 +95,8 @@ export function transferOf(model: StateModel): Transfer {
   validateModel(model); const n = model.A.length, denominator = [1], moments: number[] = []; let F = identity(n);
   for (let k = 1; k <= n; k++) {
     moments.push(dot(model.C, vector(F, model.B)));
-    const AF = multiply(model.A, F, true), coefficient = -AF.reduce((sum, row, i) => sum + row[i], 0) / k;
+    const AF = multiply(model.A, F, true), trace = AF.reduce((sum, row, i) => sum + row[i], 0), coefficient = -trace / k;
+    if (trace !== 0 && coefficient === 0) fail('A characteristic coefficient underflows. Rescale the model.');
     denominator.push(coefficient); F = add(AF, scale(identity(n), coefficient));
   }
   const numerator = denominator.map((value, i) => model.D * value + (i ? moments[i - 1] : 0));
@@ -112,17 +115,18 @@ export function coordinates(model: StateModel, T: Matrix, initial: readonly numb
 }
 export function observability(model: StateModel): number[][] {
   validateModel(model); const rows: number[][] = []; let row = [...model.C];
-  for (let k = 0; k < model.A.length; k++) { rows.push(row); row = multiply([row], model.A, true)[0]; }
+  for (let k = 0; k < model.A.length; k++) { rows.push(row); if (k + 1 < model.A.length) row = multiply([row], model.A, true)[0]; }
   return rows;
 }
 export function controllability(model: StateModel): number[][] {
   validateModel(model); const columns: number[][] = []; let column = [...model.B];
-  for (let k = 0; k < model.A.length; k++) { columns.push(column); column = vector(model.A, column); }
+  for (let k = 0; k < model.A.length; k++) { columns.push(column); if (k + 1 < model.A.length) column = vector(model.A, column); }
   return model.A.map((_, i) => columns.map(column => column[i]));
 }
 export function rank(matrix: Matrix): number {
   if (!matrix.length) return 0;
   const a = matrix.map(row => [...row]), columns = a[0].length, tolerance = 1e-12 * norm(a); let result = 0;
+  if (norm(a) !== 0 && tolerance === 0) fail('The rank scale is below the floating-point threshold. Rescale the model.');
   for (let j = 0; j < columns && result < a.length; j++) {
     let pivot = result; for (let i = result + 1; i < a.length; i++) if (Math.abs(a[i][j]) > Math.abs(a[pivot][j])) pivot = i;
     if (Math.abs(a[pivot][j]) <= tolerance) continue;
@@ -160,8 +164,8 @@ export function at(model: StateModel, initial: readonly number[], command: numbe
   if (initial.length !== n) fail('Enter one initial value per state.');
   bounded(initial, 'Initial state', 1e10); bounded([command], 'Constant command', 100);
   if (!Number.isFinite(time) || time < 0 || time > 20) fail('Inspect a time from 0 to 20 seconds.');
-  const augmented = model.A.map((row, i) => [...row, model.B[i] * command]); augmented.push(Array(n + 1).fill(0) as number[]);
-  const e = exponential(scale(augmented, time)), state = vector(e, [...initial, 1]).slice(0, n), output = dot(model.C, state) + model.D * command;
+  const augmented = model.A.map((row, i) => [...row, dot([model.B[i]], [command])]); augmented.push(Array(n + 1).fill(0) as number[]);
+  const e = exponential(scale(augmented, time)), state = vector(e, [...initial, 1]).slice(0, n), output = dot(model.C, state) + dot([model.D], [command]);
   bounded([...state, output], 'Trajectory', 1e10); return { t: time, state, output };
 }
 export function samples(model: StateModel, initial: readonly number[], command: number, horizon: number, count = 201): Sample[] {

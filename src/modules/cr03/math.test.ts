@@ -109,9 +109,11 @@ describe('CR03 bounded failures and numerical qualification', () => {
     expect(() => coordinates(BASELINE, [[1]], [0, 0])).toThrow(/dimensions/);
     matrixClose(inverse([[0, 2], [3, 0]]).matrix, [[0, 1 / 3], [1 / 2, 0]]);
     expect(inverse([[1, 0], [0, 1e-8]]).condition).toBe(1e8);
+    expect(() => inverse([[1e-320]])).toThrow(/floating-point range/);
   });
   it('does not mistake small data for a zero rank, and detects changed transfer data', () => {
     expect(rank([[1e-15, 0], [0, 2e-15]])).toBe(2);
+    expect(() => rank([[1e-320]])).toThrow(/Rescale/);
     expect(equivalence({ numerator: [1], denominator: [1, 3, 2] }, { numerator: [2], denominator: [1, 3, 2] }).matches).toBe(false);
     expect(equivalence({ numerator: [1], denominator: [1, 3, 2] }, { numerator: [2], denominator: [2, 6, 4] }).matches).toBe(true);
     expect(equivalence({ numerator: [1e-200], denominator: [1, 1] }, { numerator: [0], denominator: [1] }).matches).toBe(false);
@@ -122,6 +124,9 @@ describe('CR03 bounded failures and numerical qualification', () => {
     expect(() => transferOf(tiny)).toThrow(/underflows/);
     expect(() => at(tiny, [0], 1, 1)).toThrow(/underflows/);
     expect(() => coordinates({ ...tiny, B: [1], C: [1e-320] }, [[1e6]], [0])).toThrow(/underflows/);
+    expect(() => at({ A: [], B: [], C: [], D: 1e-200 }, [], 1e-200, 0)).toThrow(/underflows/);
+    expect(() => at({ ...tiny, C: [1] }, [0], 1e-200, 1)).toThrow(/underflows/);
+    expect(controllability({ ...tiny, A: [[-1e-100]], B: [1e-250] })).toEqual([[1e-250]]);
   });
   it('supports coordinate-scaled initial states while bounding trajectory work', () => {
     const changed = coordinates(BASELINE, [[1000, 0], [0, 1000]], [1, 0]);
