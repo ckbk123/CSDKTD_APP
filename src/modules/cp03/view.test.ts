@@ -78,6 +78,18 @@ describe('CP03 exercise flow and ownership', () => {
     expect(next.container.querySelector('.cp03-checked')?.textContent).toBe('');
     v.button('Course baseline')?.click(); expect(next.field('Input amplitude A').value).toBe('1');
   });
+  it('rejects nonzero HTML numbers rounded to zero while retaining exact numeric zero', () => {
+    const v = open(); v.change(v.field('Window start'), '1e-999'); v.apply();
+    expect(v.container.textContent).toContain('nonzero but too small to represent');
+    expect(v.container.querySelector('figure')).toBeNull();
+    v.change(v.field('Window start'), '0'); v.apply();
+    v.change(v.field('Output amplitude marker'), '1e-999');
+    expect(v.container.querySelector('.cp03-message[role="status"]')?.textContent).toContain('nonzero but too small');
+    expect(v.container.querySelector('figure')).toBeNull();
+    v.change(v.field('Output amplitude marker'), '0e-999');
+    expect(v.container.querySelector('figure')).not.toBeNull();
+    expect(v.container.querySelector('.cp03-message[role="status"]')?.textContent).toBe('');
+  });
   it('updates all three linked frequency plots without hiding a revealed comparison', () => {
     const v = open(); v.button('Reveal calculation and linked plots').click();
     const cursor = v.container.querySelector('input[type="range"]') as HTMLInputElement;

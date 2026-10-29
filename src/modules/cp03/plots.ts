@@ -20,6 +20,9 @@ export function plot(options: {
   onTime?: (x: number) => void; signal?: AbortSignal;
 }): HTMLElement {
   const figure = document.createElement('figure'); figure.className = 'cp03-plot';
+  figure.tabIndex = 0;
+  figure.setAttribute('aria-label', options.title);
+  figure.setAttribute('aria-description', 'On narrow screens, focus this plot and use the arrow keys to scroll horizontally.');
   const caption = document.createElement('figcaption'); caption.textContent = options.title;
   const svg = svgElement('svg', { viewBox: '0 0 700 280', role: 'img', 'aria-label': `${options.title}. ${options.xLabel}; ${options.yLabel}.` });
   const points = options.series.flatMap(s => s.points.filter((p): p is Point => p !== null));

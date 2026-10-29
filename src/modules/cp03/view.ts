@@ -13,8 +13,11 @@ function numeric(label: string, value: number, min: number, max: number, step = 
   wrapper.append(node('span', label), input); return { wrapper, input };
 }
 function read(input: HTMLInputElement, label: string): number {
+  const raw = input.value.trim();
+  if (raw.length > 80) throw new Error(`Keep ${label} within 80 characters.`);
   const value = input.valueAsNumber;
-  if (!input.value.trim() || !Number.isFinite(value) || !input.checkValidity()) throw new Error(`Enter ${label} between ${input.min} and ${input.max}.`);
+  if (!raw || !Number.isFinite(value) || !input.checkValidity()) throw new Error(`Enter ${label} between ${input.min} and ${input.max}.`);
+  if (value === 0 && /[1-9]/.test(raw.split(/[eE]/, 1)[0])) throw new Error(`The ${label} is nonzero but too small to represent. Use a larger magnitude.`);
   return value;
 }
 const mf = (x: number) => fmt(x).replace(/e([+-]?\d+)/, String.raw`\times 10^{$1}`);
@@ -157,7 +160,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
             marks: [{ x: inputTime, label: `tᵤ=${fmt(inputTime)} s` }, { x: outputTime, label: `tᵧ=${fmt(outputTime)} s` }, { y: b, label: `B=${fmt(b)}` }],
             signal: plotController.signal, onTime: time => { (target.value === 'input' ? tu.input : ty.input).value = String(time); updateMarkers(); },
           }));
-        } catch (cause) { markerStatus.textContent = cause instanceof Error ? cause.message : 'Check marker values.'; }
+        } catch (cause) {
+          plotController?.abort(); plotHost.replaceChildren();
+          markerStatus.textContent = cause instanceof Error ? cause.message : 'Check marker values.';
+        }
       }
       [tu.input, ty.input, B.input].forEach(input => input.addEventListener('input', updateMarkers, { signal: localSignal }));
       showTransient.addEventListener('change', updateMarkers, { signal: localSignal });
