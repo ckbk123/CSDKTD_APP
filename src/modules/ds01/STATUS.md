@@ -1,27 +1,27 @@
 # DS01 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29; starting revision `c5d1135`
+- **Ownership:** `src/modules/ds01/**`; [accepted contract](TASK.md)
 
-## Implemented and inspected
+## Requirement audit before implementation
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The starting `workspace.ts` is an empty synchronous mount; `index.ts` provides the correct lazy metadata. There are no module tests. The shell equation preview is not a solver.
 
-## Remaining acceptance work
+| Accepted requirement | Starting evidence | Delivery work |
+|---|---|---|
+| Editable/selectable poles and computed modes | Absent | Visual complex-pole fields, sample period, finite sample horizon, selected mode |
+| Strict disk test; .8, -.8, 1, -1 | Absent | Radius calculation and independently checked modal sequences |
+| Repeated boundary modes | Absent | Distinguish two independent copies from Jordan chains of length 2/3; show boundedness versus asymptotic decay |
+| Eigenvalues versus reduced TF | Absent | Explicit block realization with selectable output visibility; retain hidden modes in internal verdict |
+| Prediction, reasoning, reveal, changed data | Absent | Predict classification before reveal, linked pole/sequence plots, boundary and hidden-mode experiments |
+| Validation and bounded support | Absent | Tested complex-literal parser, numeric bounds, explicit near-boundary uncertainty |
+| Lifecycle, browser and integration checks | Scaffold only | Abort-owned fields/listeners, reset/reopen/fast navigation, keyboard/fonts, narrow viewport; project checks |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Chosen bounded model
 
-## Evidence and next action
+Up to four distinct real poles or conjugate pairs, each simple, repeated independently twice, or in a Jordan chain of length 2/3. This avoids guessing Jordan structure from algebraic multiplicity. Construct a real SISO block realization; output-hidden blocks remain part of A. No general polynomial root finder or arbitrary matrix eigensolver is promised. Private math will need no shared API or dependency changes.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+## Verification and remaining work
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Implementation, independent fixtures and actual browser verification are pending. Original decks were not re-inspected; TASK/atlas source anchors Ch8:4–13 and S13:4 remain course provenance, while new fixtures will be explicitly independent examples.
