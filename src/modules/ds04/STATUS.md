@@ -25,3 +25,25 @@ The inspected folder has immutable metadata, an empty synchronous mount and no l
 Support plan: proper or biproper real N(z)/D(z), degree N<=2, monic degree-2 D, with bounded decimal/numeric-fraction polynomial grammar. Gain K is real, negative unity feedback, z dimensionless. P=a(K)z^2+b(K)z+c(K). Complete Jury conditions are (a+b+c)/a>0, (a-b+c)/a>0, (a-c)/a>0. Each affine sign is constant between its exact rational zeros; partition those gains algebraically rather than infer a region from the locus samples. Leading a=0 is an algebraic-loop/degree-loss exclusion. Nonminimal factors are retained and disclosed.
 
 Original course slides have not been inspected in this run. Course/audit anchors retain their recorded evidence status. The disconnected biproper fixture is an independently derived proposed variation, not a claimed slide transcription. All accepted functionality and verification remain open at this initial checkpoint.
+
+## Implementation checkpoint (2026-10-29)
+
+The initial-audit table above records the starting scaffold. Its computation and interface rows are now implemented in `math.ts`, `plots.ts`, `ui.ts`, scoped `workspace.css`, and the guarded synchronous `workspace.ts` loader. Both visual polynomial fields use the shared equation components and caller-owned drafts/signals. No sibling imports or shared/package/configuration edits were made.
+
+- Exact reduced rational coefficients preserve input decimals and numeric fractions, including actual MathLive shorthand such as `\frac12`. Numeric literals: at most 6 decimal places and 9 digits. Final reduced coefficient numerators/denominators: at most 40 bits; magnitude of nonzero coefficients: 1e-8 to 100. Input/token/nesting bounds are stated in the UI. Exact arithmetic intermediates are capped at 2048 bits.
+- The real gain line is partitioned at every exact zero of a, P(+1), P(-1), a-c. Signs of these affine functions are constant in each open cell; one exact rational test point establishes its complete Jury classification. All candidate gains are excluded, and identically-zero constraints are separately explained. The sign test allows negative leading coefficients, so disconnected sets are retained.
+- Numerical quadratic roots use a cancellation-resistant formula, and all finite roots plus missing roots at infinity/identically-zero feedback are listed. Unit-circle radius tolerance is 1e-8; near-zero leading coefficient warning is relative at 1e-10. Selected gain and locus-window bounds are [-100,100]. The exact interval result covers all real gains, including beyond the displayed window.
+- The locus is explicitly a sampled illustration (401 samples), follows both roots by nearest-pair continuation, and breaks at/algebraically across a=0. The view follows selected roots, capped at extent 10, and reports omitted points. A gain bar shows stable components within the plot window; exact global intervals remain visible independently.
+- The baseline yields 0<K<5/2; changing N to z+.5 yields a complex unit-circle pair at K=2 with theta=±120 degrees and strict set 0<K<2. The proposed biproper variation N=-z²+.5z, D=z² gives K<2/3 or K>2, with singular feedback at K=1. No source-transcription claim is made for that synthetic variation.
+
+Verification completed in this private worktree (Node 24.22.1, installed npm CLI):
+
+- `npm test -- src/modules/ds04`: **37/37 passed** (29 math/parser and 8 caller-state/lifecycle tests).
+- `npm run check`: **passed**.
+- `npm test`: **79/79 passed across 8 files** (this worktree's baseline is independent of pending DS03).
+- `npm run build`: **passed**; existing MathLive chunk warning only.
+- `git diff --check`: **passed**.
+
+Independent tests include exact baseline/changed/disconnected sets, +1/-1/complex crossings, no-crossing affine equality, fixed boundary modes, nonminimal factors, all-real/empty sets, arbitrarily close rational critical gains, stable root residuals, degree-loss/identically-zero cases, numerical-locus segmentation and invalid inputs/work bounds. A raw floating root-radius assertion initially rounded a fixed z=1 root slightly inward; the invariant test now uses a justified 1e-10 disk margin, while the exact partition retains its zero constraint. Root ordering is compared as a set where appropriate.
+
+Remaining acceptance work: actual browser QA of visual fields/fonts/Systems keyboard, input/edit/reset/reopen/rapid navigation, plots/crossings and narrow layout; repair any findings, record browser evidence and final checks, then create/attach one module PR and submit the tested SHA. Stage remains **in-progress**. Per coordinator scheduling, do not acquire a new QA slot until its DS03 integration-slot release notice. No DS04 preview or browser session has been started yet.
