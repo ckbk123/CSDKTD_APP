@@ -89,7 +89,7 @@ export function parsePolynomial(latex: string): Polynomial {
   }
   const p = sum();
   if (at !== tokens.length) throw new Error('Check operators and parentheses.');
-  if (p.some(q => abs(q.n).toString(2).length > 40 || q.d.toString(2).length > 40)) throw new Error('Simplify coefficients to at most 40 bits in their reduced numerator/denominator.');
+  if (p.some(q => abs(q.n) > 1_000_000_000_000n || q.d > 1_000_000_000_000n)) throw new Error('Simplify coefficient fractions: reduced numerators and denominators must be at most 1000000000000.');
   if (p.some(q => Math.abs(numberOf(q)) > 100 || (q.n !== 0n && Math.abs(numberOf(q)) < 1e-8))) throw new Error('Final nonzero coefficient magnitudes must be from 0.00000001 through 100.');
   return p;
 }

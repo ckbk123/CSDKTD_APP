@@ -35,7 +35,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const nInput = createEquationInput({ label: 'Numerator N(z)', value: 'N(z)=z+0.2', signal, onChange: d => { nDraft = d; invalidate(); } });
   const dInput = createEquationInput({ label: 'Denominator D(z)', value: 'D(z)=z(z-1)', signal, onChange: d => { dDraft = d; invalidate(); } });
   root.append(nInput.element, dInput.element); nDraft = nInput.getValue(); dDraft = dInput.getValue();
-  root.append(element('p', 'Grammar: sums/products, parentheses, powers 0/1/2, decimals (up to 6 places, 9 digits per literal) and numeric fractions. At most 300 characters, 160 tokens and 12 nested groups per polynomial. Final nonzero coefficients: magnitude 10⁻⁸ to 100, reduced numerator/denominator at most 40 bits. K belongs in its own control.', 'g-small'));
+  root.append(element('p', 'Grammar: sums/products, parentheses, powers 0/1/2, decimals (up to 6 places, 9 digits per number) and numeric fractions. At most 300 characters, 160 terms/symbols and 12 nested groups per polynomial. Final nonzero coefficients: magnitude 10⁻⁸ to 100; reduced fraction numerators/denominators at most 10¹². K belongs in its own control.', 'g-small'));
   const controls = element('div', undefined, 'g-controls'); root.append(controls);
   function numeric(label: string, value: number, change: (n: number) => void): HTMLInputElement {
     const wrap = element('label', label), field = element('input'); field.type = 'number'; field.min = '-100'; field.max = '100'; field.step = 'any'; field.value = String(value);

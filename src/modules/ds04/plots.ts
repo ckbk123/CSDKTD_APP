@@ -41,7 +41,7 @@ export function locusPlot(model: Model, gain: number, minimum: number, maximum: 
   }
   figure.className = 'g-locus'; figure.append(out);
   const note = document.createElement('p'); note.className = 'g-small';
-  note.textContent = `Dimensionless z; × current roots; ○ unit roots at critical gains inside the sampled window. 401 samples over ${minimum} ≤ K ≤ ${maximum}; solid/dashed paths track both roots by nearest continuation and break at a=0. The view follows the selected roots (extent capped at 10); it does not prove the gain set.${gain < minimum || gain > maximum ? ' Selected K is outside the sampled gain window.' : ''}${omitted ? ` ${omitted} sampled/selected points exceed the view; selected roots are listed numerically.` : ''}`;
+  note.textContent = `Dimensionless z; × current roots; ○ unit roots at critical gains inside the sampled window. 401 samples over ${minimum} ≤ K ≤ ${maximum}; solid/dashed paths show both roots and break at a=0. The view follows the selected roots (extent capped at 10); it does not prove the gain set.${gain < minimum || gain > maximum ? ' Selected K is outside the sampled gain window.' : ''}${omitted ? ` ${omitted} sampled/selected points exceed the view; selected roots are listed numerically.` : ''}`;
   figure.append(note); return figure;
 }
 export function gainBar(model: Model, gain: number, minimum: number, maximum: number): HTMLElement {

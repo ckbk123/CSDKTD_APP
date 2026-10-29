@@ -16,6 +16,7 @@ describe('DS04 bounded exact polynomial entry', () => {
     expect(() => parseModel('1', '2z^2+1')).toThrow('monic quadratic');
     expect(() => parseModel('z^3', 'z^2')).toThrow();
     expect(parseModel('0', 'z^2').numerator.every(q => q.n === 0n)).toBe(true);
+    expect(() => parsePolynomial('(999983/999979)(999961/999959)(999953/999931)')).toThrow('fraction');
   });
 });
 describe('DS04 complete exact gain partition', () => {
