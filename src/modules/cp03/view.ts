@@ -135,7 +135,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         try {
           const inputTime = read(tu.input, 'input peak time'), outputTime = read(ty.input, 'output peak time'), b = read(B.input, 'output amplitude');
           const m = measure(inputTime, outputTime, b, w, A);
-          measurement.append(createEquationDisplay(String.raw`\widehat{|G|}=\frac{B}{A}=${mf(m.gain)},\quad\widehat{\varphi}=-\omega(t_y-t_u)\equiv ${mf(degrees(m.phase))}^{\circ}=${mf(m.phase)}\ \mathrm{rad}`, 'Your marker measurement'));
+          measurement.append(createEquationDisplay(String.raw`\widehat{|G|}=\frac{B}{A}\approx ${mf(m.gain)},\quad\widehat{\varphi}\equiv-\omega(t_y-t_u)\approx ${mf(degrees(m.phase))}^{\circ}\approx ${mf(m.phase)}\ \mathrm{rad}`, 'Your marker measurement'));
           if (revealed && f.phase !== null) {
             const phaseError = Math.atan2(Math.sin(m.phase - f.phase), Math.cos(m.phase - f.phase));
             const gainDifference = m.gain - f.magnitude, phaseDifference = degrees(phaseError);
@@ -165,7 +165,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         if (revealed) return;
         revealed = true; lastRevealed = true; reveal.disabled = true; reveal.textContent = 'Calculation revealed';
         checked.append(node('h3', '3. Compare and explain'));
-        checked.append(createEquationDisplay(String.raw`G(s)=\frac{${polynomial(plant.numerator)}}{${polynomial(plant.denominator)}},\quad u(t)=${mf(A)}\sin(${mf(w)}t)`, 'Normalized plant and input'));
+        checked.append(createEquationDisplay(String.raw`G(s)\approx\frac{${polynomial(plant.numerator)}}{${polynomial(plant.denominator)}},\quad u(t)\approx ${mf(A)}\sin(${mf(w)}t)`, 'Normalized plant and input, rounded coefficients'));
         const numerator = evaluatePolynomial(plant.numerator, w), denominator = evaluatePolynomial(plant.denominator, w);
         checked.append(createEquationDisplay(String.raw`s=j\omega,\quad j^2=-1,\quad G(j${mf(w)})\approx\frac{${complexLatex(numerator)}}{${complexLatex(denominator)}}\approx ${complexLatex(f)}`, 'Substitute frequency and divide complex numbers'));
         checked.append(createEquationDisplay(String.raw`|G|=\sqrt{(\Re G)^2+(\Im G)^2}\approx ${mf(f.magnitude)},\quad B=A|G|\approx ${mf(responseAmplitude)}`, 'Calculated gain and output amplitude'));

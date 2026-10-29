@@ -23,7 +23,7 @@
 
 ## Supported mathematical domain and limits
 
-- Proper real SISO rational transfer functions in s, denominator/numerator degree 0–2, expanded or factored; real numbers, fractions, sums, products, integer powers −2…2, optional `G(s)=`. No delays or other variables/functions. Parser length ≤300 characters, ≤160 tokens, nesting ≤24, intermediate degree ≤8. No symbolic pole-zero cancellation.
+- Proper real SISO rational transfer functions in s, denominator/numerator degree 0–2, expanded or factored; real numbers, fractions, sums, products, integer powers −2…2, optional `G(s)=`. MathLive one-token fraction shorthand is supported, including `\frac12`, with explicit TeX argument boundaries. No delays or other variables/functions. Parser length ≤300 characters, ≤160 tokens, nesting ≤24, intermediate degree ≤8. No symbolic pole-zero cancellation.
 - Internal polynomial arrays use ascending powers `[constant, s, s²]`; the denominator is normalized to monic. Expanded coefficient magnitudes ≤10000; normalized ≤10⁶; leading denominator coefficient magnitude ≥10⁻⁸; denominator pole magnitudes ≤100 rad/s. Improper plants are rejected with their input-derivative meaning.
 - Open-loop continuous-time plant; no feedback or sample period. Input is A sin(ωt), with zero canonical states at t=0. A uses arbitrary input units; y uses the corresponding output units. ω=0.01–100 rad/s, A=0.01–100, window start=0–1000 s, three periods per window, total t≤3000 s.
 - Denominator modes are retained. “Stable” requires every denominator pole's real part <0; pure gain has no dynamic modes. This is conservative for canceled denominators and makes no claim about an unspecified physical hidden realization. Unstable/marginal models receive an explicit analytic-only qualification.
@@ -50,9 +50,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **52/52 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **53/53 passed**, 3 files.
 - `npm run check`: passed.
-- `npm test`: **89/89 passed** at the pre-review checkpoint (final rerun pending after review repairs), 9 files.
+- `npm test`: **95/95 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -62,7 +62,7 @@ The initial global catalogue test exposed MathLive's Node-only export at import 
 
 Pending. CP03 has not used another worker's tab/viewport. Reservation attempts reported DR02 busy, then DR01 busy. Its own production preview is running on port **59622**; the primary 8787 preview was untouched. Ports 8793 and 8813 were unavailable and were not taken over.
 
-Required next checks under a successful QA reservation: baseline and changed result; actual visual equation typing and fraction/power insertion; math keyboard/fonts; empty/incomplete/unsupported data; marker numeric/pointer placement; transient and cursor linkage; reset, leave/reopen and rapid navigation; narrow width and light/dark usability; no late updates or old keyboard. Then release QA, record evidence, mark implemented, commit/push the exact tested branch and submit its claim. Independent review remains the integration owner's later stage.
+Required next checks under a successful QA reservation: baseline and changed result; actual visual equation typing and fraction/power insertion; math keyboard/fonts; empty/incomplete/unsupported data; marker numeric/pointer placement; transient and cursor linkage; reset, leave/reopen and rapid navigation; narrow width and light/dark usability; no late updates or old keyboard. Then release QA, record evidence, mark implemented, commit/push the exact tested branch, create or reuse one PR, attach it and record its URL, and submit the claim. The latest human-authorized continuous protocol then requires a new eligible module on a new worktree/branch, preserving this PR for review. Independent review remains the integration owner's later stage.
 
 ## Provenance and checkpoints
 

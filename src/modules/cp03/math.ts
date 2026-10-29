@@ -30,13 +30,48 @@ function combine(a: Rational, b: Rational, op: string): Rational {
   return { n: mul(a.n, b.n), d: mul(a.d, b.d) };
 }
 
+/** MathLive may omit braces around one-token fraction arguments (\frac12).
+ * Expand those TeX arguments before tokenizing decimal numbers. */
+function expandFractions(source: string): string {
+  let i = 0;
+  function argument(depth: number): string {
+    if (depth > 24) fail('The expression is nested too deeply.');
+    if (source[i] === '{') {
+      i++; const body = scan(true, depth + 1);
+      if (source[i++] !== '}') fail('Close each fraction box.');
+      return body;
+    }
+    if (source.startsWith('\\frac', i)) return fraction(depth + 1);
+    if (source[i] && /[0-9s]/.test(source[i])) return source[i++];
+    return fail('Complete each fraction numerator and denominator.');
+  }
+  function fraction(depth: number): string {
+    i += 5; const numerator = argument(depth), denominator = argument(depth);
+    return `\\frac{${numerator}}{${denominator}}`;
+  }
+  function scan(untilBrace: boolean, depth: number): string {
+    if (depth > 24) fail('The expression is nested too deeply.');
+    let output = '';
+    while (i < source.length && !(untilBrace && source[i] === '}')) {
+      if (source.startsWith('\\frac', i)) output += fraction(depth + 1);
+      else if (source[i] === '{') {
+        i++; output += `{${scan(true, depth + 1)}}`;
+        if (source[i++] !== '}') fail('Close each expression box.');
+      } else output += source[i++];
+    }
+    return output;
+  }
+  return scan(false, 0);
+}
+
 /** Bounded recursive parser; never executes input. No symbolic cancellation. */
 export function parsePlant(latex: string): Plant {
   if (!latex.trim()) fail('Enter a plant transfer function.');
   if (latex.length > 300) fail('Keep the plant expression within 300 characters.');
-  const source = latex.replace(/\\(?:left|right)\b/g, '')
+  const cleaned = latex.replace(/\\(?:left|right)\b/g, '')
     .replace(/\\(?:dfrac|tfrac)\b/g, '\\frac').replace(/\\(?:cdot|times)\b/g, '*')
     .replace(/\\[,;! ]/g, '').replace(/\s/g, '').replace(/−/g, '-').replace(/^G\(s\)=/, '');
+  const source = expandFractions(cleaned);
   const tokens = source.match(/\\frac|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|[s()+\-*/^{}]/g) ?? [];
   if (!tokens.length || tokens.join('') !== source) fail('Use real numbers, s, sums, products, fractions and integer powers only.');
   if (tokens.length > 160) fail('The plant expression contains too many terms.');

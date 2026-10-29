@@ -13,6 +13,14 @@ describe('CP03 bounded equation parser', () => {
     expect(parsePlant('-s^2/(s^2+1)').numerator).toEqual([0, 0, -1]);
     expect(parsePlant('0.5')).toEqual({ numerator: [0.5], denominator: [1] });
   });
+  it('accepts one-token MathLive fraction shorthand with TeX argument boundaries', () => {
+    expect(parsePlant(String.raw`\frac12`)).toEqual({ numerator: [0.5], denominator: [1] });
+    expect(parsePlant(String.raw`\frac1{s+1}`)).toEqual({ numerator: [1], denominator: [1, 1] });
+    expect(parsePlant(String.raw`\frac{2}s`)).toEqual({ numerator: [2], denominator: [0, 1] });
+    expect(parsePlant(String.raw`\frac1{\frac12s+1}`)).toEqual({ numerator: [2], denominator: [2, 1] });
+    expect(parsePlant(String.raw`\frac123`)).toEqual({ numerator: [1.5], denominator: [1] });
+    expect(() => parsePlant(String.raw`\frac1`)).toThrow(/fraction/);
+  });
   it.each(['', 'NaN', 'Infinity', 'exp(s)', '1/(s+)', '1/0', '\\frac{}{s}', 's^3', 's^{1.5}', '1/(s+1)^2/(s+2)', 's^2/(s+1)', '1/(s+101)', '1e999', '1/(0.000000001s+1)', '(s+1', '\\placeholder{}', '1.2.3/(s+1)', '1/(s+1..2)'])('rejects malformed or unsupported input %s', source => {
     expect(() => parsePlant(source)).toThrow();
   });
