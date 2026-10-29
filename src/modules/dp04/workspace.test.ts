@@ -13,12 +13,13 @@ function visit(aborted = false) {
 }
 describe('DP04 synchronous lazy workspace lifecycle', () => {
   it('returns immediately and releases the browser view exactly once', async () => {
-    const release = vi.fn(); viewMount.mockReturnValue(release); const { cleanup } = visit();
+    const release = vi.fn(); viewMount.mockReturnValue(release); const { cleanup, container } = visit();
     expect(typeof cleanup).toBe('function'); expect(viewMount).not.toHaveBeenCalled();
-    await vi.dynamicImportSettled(); expect(viewMount).toHaveBeenCalledTimes(1);
+    expect(container.textContent).toContain('Loading root-locus controls');
+    await vi.dynamicImportSettled(); expect(viewMount).toHaveBeenCalledTimes(1); expect(container.textContent).not.toContain('Loading');
     if (typeof cleanup === 'function') { cleanup(); cleanup(); } expect(release).toHaveBeenCalledTimes(1);
   });
-  it('ignores an import result after abort', async () => { const { controller } = visit(); controller.abort(); await vi.dynamicImportSettled(); expect(viewMount).not.toHaveBeenCalled(); });
+  it('ignores an import result after abort', async () => { const { controller, container } = visit(); controller.abort(); expect(container.childElementCount).toBe(0); await vi.dynamicImportSettled(); expect(viewMount).not.toHaveBeenCalled(); });
   it('ignores an import result after explicit disposal', async () => { const { cleanup } = visit(); if (typeof cleanup === 'function') cleanup(); await vi.dynamicImportSettled(); expect(viewMount).not.toHaveBeenCalled(); });
   it('does not initialize an already-aborted visit', async () => { const { cleanup } = visit(true); expect(cleanup).toBeUndefined(); await vi.dynamicImportSettled(); expect(viewMount).not.toHaveBeenCalled(); });
   it('shows recoverable initialization feedback instead of a rejected promise', async () => {

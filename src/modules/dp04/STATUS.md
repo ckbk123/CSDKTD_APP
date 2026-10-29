@@ -1,12 +1,12 @@
 # DP04 implementation status
 
-- **Stage:** in-progress (bounded exercise implemented; final browser verification pending)
+- **Stage:** implemented (full bounded quadratic construction exercise; independent integration review pending)
 - **Assessed:** 2026-10-29; starting primary main `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d`
 - **Owned scope:** `src/modules/dp04/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Branch:** `codex/dp04-root-locus-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dp04-root-locus-01a186d1\CSDKTD APP`
-- **PR:** [DP04 #19](https://github.com/ckbk123/CSDKTD_APP/pull/19), draft and attached
+- **PR:** [DP04 #19](https://github.com/ckbk123/CSDKTD_APP/pull/19), attached; final checked revision submitted for integration
 
 ## Starting evidence and full bounded exercise
 
@@ -14,19 +14,19 @@ The metadata and blank synchronous mount match the scaffold record. There are no
 
 The complete construction lesson will support real quadratic negative-feedback families D(z)+K B(z)=0, D=z²+a1 z+a0, B=b1 z+b0, with a nonzero linear or constant numerator and K>=0. This includes real or conjugate open-loop poles, repeated roots, either sign of the fixed numerator, and exact/near pole-zero overlaps without cancellation. Degree-three/higher and improper loops will be rejected explicitly. Within this class, every accepted construction step, candidate check, branch tracking and the full selected characteristic root set is required, not just a fixed baseline plot.
 
-| Accepted requirement | Starting evidence | Implementation/check plan |
+| Accepted requirement | Starting evidence | Delivered evidence |
 |---|---|---|
-| Editable model/gain/sample period | Metadata only | Shared visual rational-polynomial input; native K/window/T/candidate controls; bounded parser |
-| Student construction before locus | None | Build pole/zero view; predict real-axis intervals; check attempt and reveal analytic rules and sampled branches |
-| Real-axis segments | None | Count real poles/zeros to the right with multiplicities and fixed numerator sign; exclude singular endpoints |
-| Asymptotes/break points | None | Centroid/angles and candidates from D′B−DB′=0; admissibility, singular/common-root exclusions and gain-window limits |
-| Continuous branch tracking | None | Quadratic square-root continuation through collisions, without independent root sorting; finite trace labeled sampled |
-| Unit circle and entire root set | None | Scoped locally scrolling SVG with declared clipping; both roots/multiplicities, radii, residuals and qualified selected-gain disk classification |
-| Angle/magnitude vectors | None | Every pole/zero vector and coefficient phase; direct complex −D/B reference; distinguish off-locus, K=0, singular and common-root cases |
-| Discrete time interpretation | None | Unit-amplitude real modal samples and T; principal inverse where finite; repeated-root qualification; no forced-response claim |
-| Changed data/failures | None | Changed zero, constant/negative numerator and unreduced common-factor fixtures; finite/underflow/grammar/resource validation |
-| Reset/isolation/accessibility | Shell foundation only | Mount-local state/draft, guarded deferred view and abort cleanup; real browser keyboard/font/narrow/navigation checks |
-| Delivery | None | Independent module tests, check/all tests/build, exclusive QA, one attached PR and exact final submitted SHA |
+| Editable model/gain/sample period | Metadata only | Shared visual rational-polynomial input and native controls;53 parser fixtures; actual fraction-button B=1, explicit fraction sum B=2.5, changed T/gain and underflow browser checks |
+| Student construction before locus | None | Build pole/zero view; interval prediction; browser-correct baseline attempt followed by computed rules and branches |
+| Real-axis segments | None | Multiplicity/sign counts and excluded endpoints; positive/negative/constant/common-factor mathematical fixtures and actual baseline grading |
+| Asymptotes/break points | None | Centroid/angles and D′B−DB′ candidates with admissibility; analytic baseline/constant/negative/common-factor tests and displayed browser values |
+| Continuous branch tracking | None | Stable quadratic square-root pair and collision-inclusive finite trace, without per-sample sorting; tested continuity and collision gains |
+| Unit circle and entire root set | None | Equal-scale SVG with visible circle; complete roots/multiplicities/residuals and qualified disk result; actual K=100 clipping retains both table rows |
+| Angle/magnitude vectors | None | Per-source vectors and coefficient phase, direct complex −D/B; tested singular/common/endpoints; actual valid/off-locus/use-gain/invalid-retains-point checks |
+| Discrete time interpretation | None | Computed unit real modes and principal inverse; analytic samples and changed-T browser values; repeated-root and forced-output limits explicit |
+| Changed data/failures | None | Analytic changed-zero/constant/negative/common-factor fixtures and all actual presets; grammar, finite, scale, underflow and resource tests |
+| Reset/isolation/accessibility | Shell foundation only | Mount-local state, guarded deferred view and cleanup; five lifecycle tests plus actual keyboard/reset/reopen/rapid navigation/fonts/390px checks |
+| Delivery | None |89 module/292 project tests, type check and production build; exclusive browser gate; one attached PR; exact final clean HEAD recorded by claim submission |
 
 ## Planned conventions and numerical bounds
 
@@ -93,3 +93,23 @@ While QA is deferred, a source-level plot check found that an asymptote centroid
 The gain cursor now has an adjacent current-K readout, and the initial pole/zero sketch hides after checking the prediction because the full diagram already contains those markers. Chart width is capped on wide screens while keeping the readable460px minimum/local scrolling on narrow screens. Module checks still pass89/89; build/type check pass with view about13.17kB gzip.
 
 Fair QA order approved by the coordinator: current DP03 finishes normally, DP04 takes the next slot, then coordinator DP02 integration follows. Other workers defer new acquisitions for those slots. This worker will acquire through the helper after release, preserve the active holder, then reset/close/release promptly and notify the coordinator; no budget or goal status changed.
+
+## Final implementation and production-browser evidence
+
+The checkpoints above are historical. The accepted bounded exercise is now complete; independent review/integration is pending. Final frozen limits are quadratic monic D and nonzero linear/constant B, coefficient magnitude≤100 and nonzero coefficient magnitude≥10^-100, numerator scale≥.0001, open-pole/zero radius≤20, K=0 or10^-100≤K≤Kmax, Kmax .01–100, T .001–10s, view half-range1.25–20, integer N4–30, candidate components0 or10^-100≤abs(component)≤50. Visual grammar limits remain512 source characters/128 expanded tokens/eight logical grouping levels, normalized internal depth32, intermediate degree≤4 and coefficient magnitude≤10^12. Exact zeros are supported; no approximate trimming/cancellation is performed. The UI declares these limits and numerical tolerances. Degree≥3, improper loops, rational sums and unsupported powers/symbols are explicit exclusions; finite traces do not prove a complete gain interval.
+
+Exclusive browser QA was acquired after DP03 and released at2026-10-29T13:12:50Z for the scheduled coordinator DP02 gate. Tested the production build at private127.0.0.1:8795 in Chromium/IAB, using the actual bundled MathLive editor/fonts, then reset the viewport, closed the worker tab and stopped the private preview. Primary8787 was untouched.
+
+- Cold loading initially left the shell's empty-container pending label visible. The owned synchronous wrapper now appends a real loading status immediately, removes it on successful mount/abort/disposal/error and guards late imports. The five lifecycle tests include synchronous loading/abort removal. After rebuilding/reloading, the workspace mounted with no persistent pending label.
+- Baseline actual interval check selected(−∞,−.2) and(0,1), reported a correct prediction and showed counts3/2/1/0. Centroid1.2/180°, both analytic break values and discriminant collision gains appeared correctly. The visible equal-scale plot included the unit circle, computed branches, selected roots and construction overlays.
+- K=1 displayed both±.4472136j roots, radii.4472136, scaled residual2.78e−17, σ−8.0471896s^-1 and ω±15.707963rad/s. K=2.5 displayed−.5,−1 with boundary qualification; K=3 displayed−.36754447,−1.6324555 outside. K=100 retained−.20243414,−98.797566 in both table rows and explicitly counted one selected root outside view. The numeric alternative and keyboard ArrowRight on the gain cursor updated displayed K to1.04 and the entire table.
+- Candidate0+j√.2 showed each vector and fixed phase, joint angle/magnitude agreement and K≈1. Candidate−1 gaveK=2.5; Use matching gain updated both selected roots. Off-locus .5+.5j showed directK≈.47297297−.33783784j, magnitude-only.58123819 and disabled Use. Candidate underflow and the zero−.2 kept the previous plotted point and explanatory caption while showing errors. The common-root point2 reported undefined0/0/no unique gain.
+- All changed presets were exercised: zero−.5 atK=2 gave−.5±.8660254j on the circle; constant numerator atK=.25 retained two.5 roots and centroid.5/90°/270°; negative numerator atK=1 gave golden-ratio roots1.61803399,−.61803399 and reversed directions; common-factor preset atK=.25 retained the fixed unstable2 and moving−.75. No reduction hid the fixed root.
+- T=.2 halved baseline inverse rates to σ−4.0235948 and ω±7.8539816 without moving z roots; T=0 produced bounded feedback. Native K=1e−2 and genuine0e−999 worked. Native1e−999 reported nonzero underflow and hid stale results;1e−101 reported the declared scale bound, and valid1 recovered.
+- The real fraction toolbar constructed1/[z(z−1)], which built B=1 and produced .5±.8660254j atK=1. Actual nested explicit addition serialized as `\\frac{2+\\frac{1}{2}}{z(z-1)}`, normalized B=2.5 and gave independently expected .5±1.5j. Adjacent mixed-fraction paste was rejected by actual editor validation without producing a model; parser tests separately verify the explicit +/× guidance across compact/signed/grouped/styled/nested forms. An incomplete fraction remained a highlighted-input error. No mocked-editor result is being counted as browser notation evidence.
+- Opened the actual Systems keyboard, inserted a key, received invalid-expression feedback, closed with Escape, then reset while the keyboard was open. Reset removed the keyboard and restored baseline K=1. Enter activated Build and Reveal. Leaving after changing gain removed all DP04 controls; reopening restored baseline. Rapid library/module/library navigation left zero DP04 roots on the library page, followed by a clean fresh visit.
+- At390×844, document width375px stayed within the viewport, bundled fonts were loaded and KaTeX_Main was available. The z-plane and mode plots retained460px content inside281px focusable local scroll areas; the full root table retained646px content locally. Keyboard ArrowRight moved the focused plot horizontally; the root table accepted keyboard focus and showed its local scrollbar. The phone screenshot visibly preserves both root rows and local scrollbars. No browser warning/error log entries were recorded.
+
+Proof was saved outside Git as `dp04-phone-root-locus.png` in this worker's2026/10/29 visualization folder. These are actual UI checks, not a claimed automated end-to-end suite. There is no shared API/dependency request or remaining accepted bounded-exercise implementation work. DS04 matching data remains manual.
+
+Final commands, using supported Node24.22.1 in this worktree: `npm test -- src/modules/dp04` (89 tests in4 files), `npm run check`, `npm test` (292 tests in19 files) and `npm run build`; all pass. Build retains the existing MathLive chunk-size warning (about221.49kB gzip and20 local fonts); DP04 view is about13.17kB gzip. Only the owned DP04 folder is committed. PR19 is reused/attached and made ready; the private claim records the exact tested final HEAD after a clean-tree/remote check. No merge, release/version change, deployment or generated output is included.
