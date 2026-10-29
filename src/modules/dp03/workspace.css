@@ -28,5 +28,6 @@
 @media (max-width: 600px) {
   [data-module="DP03"] .dp03-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-module="DP03"] .dp03-card { padding: 10px; }
-  [data-module="DP03"] .dp03-tool svg { min-width: 600px; }
+  [data-module="DP03"] .dp03-tool svg { min-width: 320px; }
+  [data-module="DP03"] .dp03-tool svg.dp03-wide-plot { min-width: 600px; }
 }

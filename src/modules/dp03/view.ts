@@ -137,6 +137,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     if (selected.kind === 'value' && Math.abs(selected.value.re) <= halfSpan && Math.abs(selected.value.im) <= halfSpan) shape(nyquist, 'circle', { cx: nx(selected.value.re), cy: ny(selected.value.im), r: 5, class: 'dp03-marker' });
     const bode = (phase: boolean) => {
       const picture = svg(phase ? 'Principal phase Bode plot in degrees; solid exact, dashed unwarped approximation, positive normalized log-frequency axis.' : 'Magnitude Bode plot in decibels; solid exact, dashed unwarped approximation, positive normalized log-frequency axis.');
+      picture.classList.add('dp03-wide-plot');
       const values = current!.points.flatMap(point => [point.exact, point.unwarped]).flatMap(result => result.kind === 'pole' || (phase ? result.phase === null : result.db === null) ? [] : [phase ? result.phase! * 180 / Math.PI : result.db!]);
       const low = phase ? -180 : Math.floor(Math.min(0, ...values) / 20) * 20, high = phase ? 180 : Math.max(20, Math.ceil(Math.max(0, ...values) / 20) * 20);
       const bx = (x: number) => 70 + 510 * Math.max(0, Math.min(1, (Math.log10(Math.max(x, Math.PI * .0001) / Math.PI) + 4) / 4));
