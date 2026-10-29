@@ -58,6 +58,7 @@ export function parseOde(latex: string): Model {
     if(next===text)break;
     text=next;
   }
+  if (/[0-9.]\\(?:dfrac|tfrac|frac)(?=[{0-9])/.test(text)) fail('A number directly beside a fraction can be a mixed number. Use explicit + or ×: for example 2u + (1/2)u, or 2 × (1/2)u.');
   text = text.replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\ddot\{?y\}?/g, "y''").replace(/\\dot\{?y\}?/g, "y'").replace(/\\dot\{?u\}?/g, "u'")
     .replace(/\\doubleprime/g, "''").replace(/\\prime/g, "'");
@@ -73,7 +74,10 @@ export function parseOde(latex: string): Model {
   const unsigned = scalar.replace('[+-]?', '');
   const numericGroup = new RegExp(`\\(([+-]*)(${unsigned})\\)`, 'g');
   while (true) {
-    const next = text.replace(numericGroup, (_, signs: string, value: string) => `${[...signs].filter(s=>s==='-').length%2?'-':''}${value}`);
+    const next = text.replace(numericGroup, (whole: string, signs: string, value: string, offset: number) => {
+      const before = text[offset-1] ?? '', after = text[offset+whole.length] ?? '';
+      return `${/[0-9.]/.test(before)?'*':''}${[...signs].filter(s=>s==='-').length%2?'-':''}${value}${/[0-9.(]/.test(after)?'*':''}`;
+    });
     if(next===text)break;
     text=next;
   }
@@ -81,14 +85,22 @@ export function parseOde(latex: string): Model {
   if (sides.length !== 2 || sides.some(s => !s)) fail('Use one equality: m y″ + c y′ + k y = b u + d u′.');
   function collect(side: string, channel: 'Y' | 'U'): number[] {
     if (side === '0') return [0, 0, 0];
-    const term = new RegExp(`([+-]*)((${unsigned})\\*?)?(${channel}[012])`, 'gy');
+    const term = new RegExp(`([+-]*)(${unsigned}(?:\\*[+-]*${unsigned})*\\*?)?(${channel}[012])`, 'gy');
     const values = [0, 0, 0]; let position = 0, count = 0;
     while (position < side.length) {
       term.lastIndex = position; const match = term.exec(side);
       if (!match || (position > 0 && !match[1]) || ++count > 16) fail('Use sums of numeric multiples of y″, y′, y on the left and u, u′ on the right.');
-      const order = Number(match[4].slice(1));
+      const order = Number(match[3].slice(1));
       if (channel === 'U' && order > 1) fail('Only the first derivative of the same scalar input is supported.');
-      const coefficient = ([...match[1]].filter(s=>s==='-').length%2 ? -1 : 1) * (match[3] ? literal(match[3]) : 1);
+      const factors = match[2] ? match[2].replace(/\*$/, '').split('*') : [];
+      if (factors.length > 8) fail('Use at most eight numeric factors in one coefficient.');
+      let coefficient = [...match[1]].filter(s=>s==='-').length%2 ? -1 : 1;
+      for(const factor of factors){
+        const signs = /^[+-]*/.exec(factor)![0], value = ([...signs].filter(s=>s==='-').length%2 ? -1 : 1) * literal(factor.slice(signs.length));
+        const next = coefficient * value;
+        if(!Number.isFinite(next)||(coefficient!==0&&value!==0&&next===0)) fail('A coefficient product is outside the supported numerical range.');
+        coefficient=next;
+      }
       values[order] += coefficient; position = term.lastIndex;
     }
     return values;

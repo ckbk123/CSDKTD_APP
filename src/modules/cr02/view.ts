@@ -32,7 +32,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       <p>A rigid mass moves to the right. A linear spring and a viscous damper oppose displacement and velocity. One command u creates the applied force; an optional derivative term still comes from that same command.</p>
       <div class="scroll" tabindex="0" aria-label="Scrollable mass, spring and damper schematic" data-ui="schematic"></div><div data-ui="balance"></div><div data-ui="equation"></div>
       <div class="actions" data-ui="model-actions"></div>
-      <p class="muted">Enter sums of numeric multiples of y″, y′, y on the left and u, u′ on the right. Primes or dots and simple numeric fractions are supported. Use decimal coefficients; e/E are displayed as symbols and are rejected. There are no unknown parameters or nonlinear terms.</p>
+      <p class="muted">Enter sums of numeric multiples of y″, y′, y on the left and u, u′ on the right: at most 16 terms per side. Primes, dots, simple numeric fractions and products of up to 8 numeric factors are supported. Separate coefficient values with explicit + or ×; mixed-number adjacency is rejected. Use decimal coefficients; e/E and coefficient powers are unsupported. There are no unknown parameters or nonlinear terms.</p>
       <p class="muted">The coefficient cells describe the applied model. Cell edits write a new equation draft; Apply synchronizes the physical and equation views.</p>
       <div class="scroll" data-ui="coefficients"></div>
       <p class="muted">Limits: 0.01 ≤ m ≤ 1,000 kg; c and k ≥ 0. Other coefficients are zero or have magnitude 10⁻⁹…1,000. Negative b or d reverses that force contribution. No feedback connection is imposed.</p>

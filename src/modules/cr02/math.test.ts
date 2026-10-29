@@ -41,6 +41,21 @@ describe('CR02 bounded visual ODE entry', () => {
     expect(parseOde("y''+3y'+2y=\\mathrm1u")).toEqual(BASELINE);
     for(const text of ["y''+3y'+2y=\\mathrm{e}u","y''+3y'+2y=\\text{u}"]) expect(()=>parseOde(text)).toThrow();
   });
+  it('rejects number/fraction adjacency before it can change mixed-number meaning', () => {
+    for(const coefficient of [String.raw`2\frac12`,String.raw`-2\frac{1}2`,String.raw`(2\frac1{2})`,String.raw`\left(-2\frac{1}{2}\right)`,String.raw`\frac{2\frac12}{3}`,String.raw`2\frac{\mathrm{1}}{2}`]) expect(()=>parseOde(`y''+3y'+2y=${coefficient}u`)).toThrow(/explicit \+ or ×/);
+  });
+  it('preserves explicit sums/products and grouped scalar multiplication', () => {
+    for(const coefficient of [String.raw`2\times\frac12`,String.raw`2(\frac12)`,String.raw`(2)(\frac12)`,String.raw`(\frac12)2`]) expect(parseOde(`y''+3y'+2y=${coefficient}u`)).toEqual(BASELINE);
+    expect(parseOde(String.raw`y''+3y'+2y=2u+\frac12u`)).toEqual({...BASELINE,b:2.5});
+    expect(parseOde(String.raw`y''+3y'+2y=-2\times(\frac12)u`)).toEqual({...BASELINE,b:-1});
+    expect(parseOde(String.raw`y''+3y'+2y=(\frac12)\times(\frac12)u`)).toEqual({...BASELINE,b:.25});
+  });
+  it('bounds scalar products and rejects nonzero product underflow', () => {
+    expect(()=>parseOde(`y''+3y'+2y=${Array(9).fill('1').join('*')}u`)).toThrow(/eight/);
+    const large=`1${'0'.repeat(200)}`,small=String.raw`\frac1{${large}}`;
+    expect(()=>parseOde(`y''+3y'+2y=${small}*${small}u`)).toThrow(/product/);
+    expect(()=>parseOde(`y''+3y'+2y=${large}*${large}u`)).toThrow(/product/);
+  });
   it.each(['', '0=u', "y''+3y'+2y=", "y''+3y'+2y=s", "y''+3y'+2y=u''", "y''+3y'+y*y=u", "-y''+3y'+2y=u", "y''-3y'+2y=u", "y''+3y'-2y=u", "y''+3y'+2y=sin(u)", "y''+3y'+2y=NaN*u", "\\frac10y''+3y'+2y=u", "1e-9999y''+3y'+2y=u", "y''+3y'+2y=0.0000000001u", 'y'.repeat(601)])('rejects unsupported/invalid ODE %s', text => {
     expect(() => parseOde(text)).toThrow();
   });
