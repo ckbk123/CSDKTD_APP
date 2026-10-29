@@ -5,7 +5,7 @@
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
 - **Branch/worktree:** codex/cd05-frequency-lead-f802; C:\Users\baokh\.codex\worktrees\cd05-frequency-lead-f802\CSDKTD APP.
 - **Contract/ownership:** [TASK.md](TASK.md); only src/modules/cd05/** changed. Metadata remains unchanged and lazy.
-- **Pull request:** creation pending; this record will include its one URL before final submission.
+- **Pull request:** [PR #48](https://github.com/ckbk123/CSDKTD_APP/pull/48), open for independent integration review and attached to this chat.
 - **Resources:** private preview port 8895 stopped; own tab 9 closed and viewport reset. No global QA reservation/waiter owned.
 - **Stop amendment:** the latest human instruction, delivered by the coordinator, is to finish current CD05 and stop. No further module or agent will be started. Earlier submissions, review returns, branches/worktrees and evidence remain preserved for coordinator disposition.
 
