@@ -1,27 +1,26 @@
 # DR04 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** scaffold; reserved for implementation.
+- **Last assessed:** 2026-10-30.
+- **Base:** `a43989def918052cc969cbee8691ce79d8824ec9`.
+- **Contract:** [TASK.md](TASK.md), unchanged.
+- **Owner:** external contributor `ckbk456`, branch `codex/dr04-sampled-mason-20261030`.
 
-## Implemented and inspected
+## Reservation audit
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Upstream DR04 has a blank workspace and no private solver/tests. All open PR bodies and issues were checked before claiming it; only this contributor's separate CD07/CD02/CD06/CD04/CS04/DD02 submissions are open, with no review corrections or competing DR04 reservation. This checkpoint reserves only `src/modules/dr04/**`; implementation and all validation remain pending.
 
-## Remaining acceptance work
+The source inputs remain G(s)=5 exp(-.2s)/s^2, T=.2 s, H=.1 and u[k]=10e[k]-2e[k-1]. Original Ch7/S12 diagrams are unavailable and uninspected. The interactive topology and sample/hold boundaries will therefore be declared as authored interpretations before freezing any controller/feedback transfer result.
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Required before delivery
 
-## Evidence and next action
+- [ ] Editable blocks, summers, delays and explicit continuous/discrete sample/hold boundaries.
+- [ ] Preserve original continuous cascades when deriving exact pulse models; distinguish intervening sampling from a continuous cascade.
+- [ ] Bounded stateless discrete Mason graph solve with paths, loops, non-touching products and cofactors.
+- [ ] Student prediction/reduction, intermediate reasoning, input-dependent reveal and changed-data experiments.
+- [ ] Supported algebra, units, feedback sign, delay/timing and numerical/exact assumptions.
+- [ ] Independently derived baseline, changed-data, equivalence and boundary/failure tests.
+- [ ] Module/full tests, type check and production build.
+- [ ] Actual desktop/phone equation editing, keyboard, reset/reopen, rapid-loading and cleanup checks.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
-
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+No sibling runtime imports, shared/global edits, dependencies, version/release work or deployment are reserved. Private existing exact graph/algebra helpers will be assessed for compatible reuse, with provenance and any shared API request recorded. Independent maintainer review and exact-head upstream CI remain pending.
