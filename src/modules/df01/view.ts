@@ -151,11 +151,11 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const summary = get('.df-summary'); summary.replaceChildren();
     const p = (text: string) => { const el = document.createElement('p'); el.textContent = text; summary.append(el); };
     p(`Final value G(1) = ${f(r.finalValue)}; band [${f(r.finalValue - r.bandWidth)}, ${f(r.finalValue + r.bandWidth)}]. Largest plotted sample: k = ${r.peak}, t = ${f(r.peak * r.T)} s, y = ${f(r.samples[r.peak])}. Observed overshoot in the final-value direction = ${f(r.overshoot)}%.`);
-    p(r.peakEstablished ? 'The tail bound also establishes this directional sampled peak globally (earliest occurrence shown).'
+    p(r.peakEstablished ? 'Under the stated numerical allowance, the tail envelope also supports this directional sampled peak globally (earliest occurrence shown). This is numerical evidence, not interval-arithmetic certification.'
       : 'This is the largest plotted sample (ties within 10⁻¹² of the final-value scale use the earliest index). A finite global peak is not established; a monotone response can approach its final value without attaining it.');
     p(r.settling === null ? `Settling: not established by N = ${r.N}. Extend the horizon. If a sample lies within the numerical margin of the band boundary, the first index remains uncertain; the final plotted sample is not a settling-time answer.`
       : `First settling sample kₛ = ${r.settling}; tₛ = kₛT = ${r.settling} × ${f(r.T)} = ${f(r.settling * r.T)} s. The band includes its boundary; a small roundoff margin is reserved.`);
-    p(`All unplotted errors are bounded ${r.tailBound === null ? 'by no established contraction within the work limit' : `by ${f(r.tailBound)}`}; band half-width = ${f(r.bandWidth)}. Maximum denominator-pole radius = ${f(r.radius)}. State/recurrence maximum difference = ${f(r.residual)}.`);
+    p(`Numerical envelope for all unplotted errors: ${r.tailBound === null ? 'not established within the contraction work limit' : f(r.tailBound)} (includes roundoff allowance ${f(r.roundoffAllowance)}). This floating-point estimate is not an exact zero-tail or interval-arithmetic proof. Band half-width = ${f(r.bandWidth)}. Maximum denominator-pole radius = ${f(r.radius)}. State/recurrence maximum difference = ${f(r.residual)}.`);
     const reasoning = get('.df-reasoning'); reasoning.replaceChildren();
     const equation = (latex: string, label: string) => reasoning.append(createEquationDisplay(latex, label));
     equation(`G(z)=\\frac{${polynomialLatex(r.b, 'z')}}{${polynomialLatex(r.a, 'z')}}`, 'Normalized transfer function, descending powers');

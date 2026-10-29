@@ -93,7 +93,12 @@ export function parseTransfer(latex: string): Transfer {
   if (s.startsWith('\\frac') || s.startsWith('\\dfrac')) {
     s = s.replace(/^\\d?frac/, '');
     function group(): string {
-      if (!s.startsWith('{')) fail('Complete both boxes of the fraction.');
+      // MathLive may serialize a one-token argument without braces (\frac1z).
+      // TeX consumes exactly one token here, never a whole unbraced polynomial.
+      if (!s.startsWith('{')) {
+        if (!/^[0-9z]/.test(s)) fail('Complete both boxes of the fraction.');
+        const out = s[0]; s = s.slice(1); return out;
+      }
       let depth = 0;
       for (let i = 0; i < s.length; i++) {
         if (s[i] === '{') depth++;
@@ -132,7 +137,7 @@ export function parseTransfer(latex: string): Transfer {
 export interface Result {
   a: number[]; b: number[]; A: number[][]; B: number[]; C: number[]; D: number;
   samples: number[]; stateSamples: number[]; residual: number;
-  finalValue: number; radius: number; bandWidth: number; tailBound: number | null;
+  finalValue: number; radius: number; bandWidth: number; tailBound: number | null; roundoffAllowance: number;
   settling: number | null; peak: number; overshoot: number; peakEstablished: boolean;
   T: number; N: number; band: number;
 }
@@ -189,12 +194,15 @@ export function analyze(tf: Transfer, T: number, N: number, band: number): Resul
   const residual = Math.max(...samples.map((y, k) => Math.abs(y - stateSamples[k])));
   const scale = Math.max(1, ...samples.map(Math.abs));
   if (residual > 1e-8 * scale) fail('State and recurrence results disagree beyond the numerical tolerance; rescale the model.');
-  const bound = tailBound(a, [samples[N] - finalValue, samples[N - 1] - finalValue]);
+  const computedBound = tailBound(a, [samples[N] - finalValue, samples[N - 1] - finalValue]);
   const bandWidth = band * Math.abs(finalValue);
   // Roundoff consumes some of the band instead of accepting uncertain boundaries.
   const slack = 1e-10 * Math.max(1, scale, Math.abs(finalValue));
+  // Include the numerical allowance in the reported envelope too. A rounded
+  // zero residual must never be displayed as a zero bound on the exact tail.
+  const bound = computedBound === null ? null : computedBound + slack;
   let settling: number | null = null;
-  if (bound !== null && bound + slack <= bandWidth) {
+  if (bound !== null && bound <= bandWidth) {
     let lastOutside = -1;
     samples.forEach((y, k) => { if (Math.abs(y - finalValue) > bandWidth + slack) lastOutside = k; });
     // A numerically ambiguous boundary cannot justify skipping a potentially
@@ -205,9 +213,9 @@ export function analyze(tf: Transfer, T: number, N: number, band: number): Resul
   let peak = 0;
   samples.forEach((y, k) => { if (y / finalValue > samples[peak] / finalValue + 1e-12) peak = k; });
   const overshoot = Math.max(0, samples[peak] / finalValue - 1) * 100;
-  const peakEstablished = overshoot > 0 && bound !== null && bound + slack < Math.abs(samples[peak] - finalValue);
+  const peakEstablished = overshoot > 0 && bound !== null && bound < Math.abs(samples[peak] - finalValue);
   return { a, b, A, B, C, D, samples, stateSamples, residual, finalValue, radius, bandWidth,
-    tailBound: bound, settling, peak, overshoot, peakEstablished, T, N, band };
+    tailBound: bound, roundoffAllowance: slack, settling, peak, overshoot, peakEstablished, T, N, band };
 }
 export const format = (v: number): string => Number(v.toPrecision(7)).toString();
 export const latexNumber = (v: number): string => format(v).replace(/e([+-]?\d+)$/, (_, power: string) => `\\times 10^{${Number(power)}}`);

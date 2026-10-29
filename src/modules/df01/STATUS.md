@@ -57,3 +57,9 @@ Toolchain: **Node 24.22.1**, npm 10.8.2, locked dependencies inside this worktre
 ## Remaining work and delivery
 
 Real-browser editing/fonts/keyboard, error/reset/reopen/rapid-navigation/narrow-layout checks, final project checks, evidence update and final submission remain. No shared dependency requests; no independent reviewer has been claimed. Stage stays in-progress until those checks finish. The unique branch is `codex/df01-sampled-quality-01a18701`; checkpoints pushed for recovery, claim active. No merge, deployment, version/dependency changes or added agents.
+
+## Preliminary review correction (2026-10-29)
+
+Coordinator review identified that a floating residual could round to zero even though the exact tail remains nonzero. Corrected the returned/displayed tail envelope to **include** the scale-aware roundoff allowance already used for settling, and explicitly labeled it floating-point evidence rather than an interval-arithmetic proof. Global-peak wording uses the same allowance. Regression `(z²+.5z+.75)/(z²+.25)` has exact e[2]=1/5 and e[62]=(1/5)4^-30>0, while its computed residual can round to zero; the displayed envelope now remains positive and encloses this error. No independent final-review stage is claimed.
+
+Also accepted MathLive's single-token fraction arguments (for example fraction numerator 1 need not serialize with braces); decimal-only coefficient grammar remains explicit. Current checks after these changes: local suite **3 files / 34 tests**, full `npm test` **9 files / 76 tests**, `npm run check`, `npm run build` and `git diff --check` all passed under Node24. Build warning unchanged. Browser QA still pending (resource now held by DP01).

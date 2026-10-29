@@ -6,6 +6,8 @@ describe('DF01 bounded visual transfer reader', () => {
     expect(parseTransfer(String.raw`G\left(z\right)=\frac{0.4}{2z-1.6}`)).toEqual({ a: [1, -0.8], b: [0, 0.2] });
     expect(parseTransfer(String.raw`\frac{0.25}{(z-0.5)^{2}}`)).toEqual({ a: [1, -1, 0.25], b: [0, 0, 0.25] });
     expect(parseTransfer('(z+1)/(z^2+0.25)')).toEqual({ a: [1, 0, 0.25], b: [0, 1, 1] });
+    expect(parseTransfer(String.raw`\frac1{z-0.5}`)).toEqual({ a: [1, -.5], b: [0, 1] });
+    expect(parseTransfer(String.raw`\frac1z`)).toEqual({ a: [1, 0], b: [0, 1] });
   });
   it.each(['', 'NaN/(z-.8)', '1/(z-)', '1/(s+1)', '1/(z^3)', '1/(z^(1/2))', '1/0', '1/(z-z)', '1/(z-.5)/(z-.2)', String.raw`\frac{1}{\placeholder{}}`, String.raw`\frac{1}{z-.8}+1`, '1/(z-.8))', '1e309/(z-.8)', '1/('.repeat(180)])('rejects malformed/unsupported input %s', s => {
     expect(() => parseTransfer(s)).toThrow();
@@ -101,6 +103,15 @@ describe('DF01 sample convention, independent fixtures and certificates', () => 
     // Floating arithmetic cannot certify the earliest index here.
     const pole = Math.sqrt(.05);
     expect(run(`${1 - pole}/(z-${pole})`, 40, .1, .05).settling).toBeNull();
+  });
+  it('includes numerical allowance when the computed tail residual rounds to zero', () => {
+    const r = run('(z^2+.5z+.75)/(z^2+.25)', 60);
+    // Exact e[2]=1/5 and e[k]=-(1/4)e[k-2], hence nonzero e[62].
+    const exactFutureError = .2 * 4 ** -30;
+    expect(exactFutureError).toBeGreaterThan(0);
+    expect(r.tailBound).toBeGreaterThanOrEqual(r.roundoffAllowance);
+    expect(r.tailBound!).toBeGreaterThan(exactFutureError);
+    expect(r.peakEstablished).toBe(true);
   });
   it('hidden unstable poles are retained, and boundary/zero-final models are rejected', () => {
     expect(() => run('(z-2)/((z-2)(z-.5))')).toThrow(/Every denominator pole/);
