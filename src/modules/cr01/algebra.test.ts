@@ -50,6 +50,11 @@ describe('CR01 exact algebra and independent root fixtures', () => {
     expect(r.reduce((v, z) => v + z.multiplicity, 0)).toBe(4);
     expect(() => parse('0')).toThrow(/zero polynomial/); expect(() => parse('s^5')).toThrow(/degree/);
   });
+  it('handles opposite-sign quadratic constants and rejects incomplete root lists', () => {
+    const p = parse('s^4-s^2-2'), f = factorPolynomial(p); expect(f.factors.map(x => x.polynomial.length)).toEqual([3, 3]);
+    const r = roots(p, f); expect(r.some(z => Math.abs(z.re - Math.sqrt(2)) < 1e-12 && z.im === 0)).toBe(true); expect(r.some(z => z.re === 0 && z.im === 1)).toBe(true);
+    expect(() => roots(parse('s^2-1'), { scale: one, factors: [{ polynomial: parse('s-1'), multiplicity: 1 }] })).toThrow(/complete-coefficient/);
+  });
   it('constructs the editable real/conjugate pole fixture exactly', () => {
     const p = fromPoles([{ re: rat(-1), im: zero, multiplicity: 1 }, { re: rat(-2), im: zero, multiplicity: 1 }, { re: rat(-2), im: rat(3), multiplicity: 1 }]);
     expect(p.map(textR)).toEqual(['26', '47', '27', '7', '1']);

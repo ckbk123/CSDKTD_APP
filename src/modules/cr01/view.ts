@@ -3,14 +3,14 @@ import type { MathfieldElement } from 'mathlive';
 import { createEquationInput, createEquationDisplay, type EquationInput, type EquationDraft } from '../../shared/equations/input';
 import { readNumericInput } from '../../shared/numeric-input';
 import { coefficientContributions, compareRational, discriminant, expandedFactors, factorPolynomial, fromPoles, roots, type Root } from './algebra';
-import { decimal, equal, latexR, multiply, numeric, polynomialLatex, same, textR, validatePolynomial, zero, type Poly, type Rational } from './exact';
+import { decimal, equal, latexR, multiply, polynomialLatex, same, textR, validatePolynomial, zero, type Poly, type Rational } from './exact';
 import { parsePolynomial } from './expression';
 import './workspace.css';
 
 const baseline = 's^{4}+7s^{3}+27s^{2}+47s+26';
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', className = ''): HTMLElementTagNameMap[K] { const n = document.createElement(tag); n.textContent = text; if (className) n.className = className; return n; }
 const format = (n: number) => Number(Math.abs(n) < 1e-14 ? 0 : n.toPrecision(8)).toString();
-const rootText = (z: Root) => `${format(z.re)}${z.im < 0 ? ' − ' : ' + '}${format(Math.abs(z.im))}j`;
+const rootText = (z: Root) => `${format(z.re)}${Number(format(z.im)) < 0 ? ' − ' : ' + '}${format(Math.abs(z.im))}j`;
 
 export const mountView: ModuleMount = ({ container, signal }) => {
   const root = el('div', '', 'cr01-tool'), editors: EquationInput[] = [];
@@ -37,7 +37,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   function section(title: string) { const details = el('details', '', 'cr01-card'); details.append(el('summary', title)); return details; }
   root.append(el('h2', 'From products to coefficients and roots'), el('p', 'Edit an expanded polynomial or a product of factors. Exact rational algebra and approximate root coordinates are shown separately. The default quartic is a proposed teaching fixture.'));
   const model = editor('Polynomial P(s)', baseline); root.append(model.element);
-  const conventions = section('Conventions and supported inputs'); conventions.append(el('p', 'Polynomials in s with real rational coefficients, degree 0–4. Enter decimals, visual fractions, sums, products, visible parentheses and integer powers. Division inside a polynomial field is by numbers only. Use + for a mixed number and × for numeric multiplication; use the power button for signed or multi-digit exponents.'), el('p', 'Factoring is exact over Q[s], the rational numbers. Decimals are exact as entered. After clearing denominators and common scale, integer coefficient magnitudes must be ≤10,000; coefficient magnitudes ≤1,000,000. Limits: 600 characters, 240 symbols, 24 nested groups, 15 digits per decimal, 30-digit exact arithmetic and intermediate degree16. Factoring allows 100,000 candidate checks and intermediate integer height1,000,000. Unsupported work gets feedback.'), el('p', 'Numerical roots use analytic formulas through degree2 or at most three starts of600 iterations for degrees3–4, with normalized residual≤10⁻¹⁰. Multiplicity comes from exact rational factors, never rounded-root clustering. Root coordinates use the units assigned to s; coefficient units must be consistent. This algebra exercise has no sample period, feedback sign or initial-condition model. No stability or rounded cancellation is inferred.')); root.append(conventions);
+  const conventions = section('Conventions and supported inputs'); conventions.append(el('p', 'Polynomials in s with real rational coefficients, degree 0–4. Enter decimals, visual fractions, sums, products, visible parentheses and integer powers. Division inside a polynomial field is by numbers only. Use + for a mixed number and × for numeric multiplication; use the power button for signed or multi-digit exponents.'), el('p', 'Factoring is exact over Q[s], the rational numbers. Decimals are exact as entered. After clearing denominators and common scale, integer coefficient magnitudes must be ≤10,000; coefficient magnitudes ≤1,000,000. Limits: 600 characters, 240 symbols, 24 nested groups, 15 digits per decimal, 30-digit exact arithmetic and intermediate degree 16. Factoring allows 100,000 candidate checks and intermediate integer height 1,000,000. Unsupported work gets feedback.'), el('p', 'Numerical roots use analytic formulas through degree2 or at most three starts of 600 iterations for degrees3–4, with normalized residual≤10⁻¹⁰ and a complete monic-coefficient reconstruction check at relative/absolute tolerance10⁻⁸. Multiplicity comes from exact rational factors, never rounded-root clustering. Root coordinates use the units assigned to s; coefficient units must be consistent. This algebra exercise has no sample period, feedback sign or initial-condition model. No stability or rounded cancellation is inferred.')); root.append(conventions);
   const prediction = el('fieldset', '', 'cr01-card'); prediction.append(el('legend', 'Predict a coefficient (optional)'));
   const power = select('Coefficient power k in sᵏ', 5, 2), guess = editor('Your coefficient prediction', ''); prediction.append(power.wrap, guess.element); root.append(prediction);
   power.input.addEventListener('change', () => { if (current) renderContributions(); }, { signal });
@@ -52,7 +52,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     button('Apply coefficient drafts', () => { try { const p = validatePolynomial(cells.map((input, i) => scalar(input, `coefficient a${i}`))); model.setValue(polynomialLatex(p)); invalidate(); } catch (e) { fail(e); } })); root.append(coefficients);
 
   const poles = section('Build from real roots and conjugate pairs'), poleGrid = el('div', '', 'cr01-poles'), poleNote = el('p');
-  poles.append(el('p', 'Each included row supplies one real root (imaginary part0) or a conjugate pair (positive imaginary part). Multiplicity applies to each root. Applying defines a polynomial exactly for the entered decimals; rounded numerical roots do not certify the previous polynomial.'), poleGrid);
+  poles.append(el('p', 'Each included row supplies one real root (imaginary part 0) or a conjugate pair (positive imaginary part). Multiplicity applies to each root. Applying defines a polynomial exactly for the entered decimals; rounded numerical roots do not certify the previous polynomial.'), poleGrid);
   const poleRows = [[-1, 0], [-2, 0], [-2, 3], [0, 0]].map(([re, im], i) => {
     const row = el('fieldset'); row.append(el('legend', `Root row ${i + 1}`));
     const enabled = el('input'); enabled.type = 'checkbox'; enabled.checked = i < 3; const include = el('label', 'Include row'); enabled.setAttribute('aria-label', `Include root row ${i + 1}`); include.prepend(enabled);
@@ -60,7 +60,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     row.append(include, real.wrap, imaginary.wrap, multiplicity.wrap); poleGrid.append(row); return { enabled, real: real.input, im: imaginary.input, multiplicity: multiplicity.input };
   });
   const scale = numericControl('Leading scale for root construction', '1'); poles.append(scale.wrap);
-  function nativeR(input: HTMLInputElement, label: string): Rational { const value = readNumericInput(input, label); if (Math.abs(value) > 100) throw new Error(`${label} must have magnitude at most100.`); return decimal(input.value, true); }
+  function nativeR(input: HTMLInputElement, label: string): Rational { const value = readNumericInput(input, label); if (Math.abs(value) > 100) throw new Error(`${label} must have magnitude at most 100.`); return decimal(input.value, true); }
   poles.append(button('Apply root drafts', () => {
     try {
       const entered = poleRows.filter(r => r.enabled.checked).map(r => ({ re: nativeR(r.real, 'root real part'), im: nativeR(r.im, 'root imaginary magnitude'), multiplicity: Number(r.multiplicity.value) }));
@@ -98,7 +98,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       if (!list.length) { rootCard.append(el('p', 'A nonzero constant polynomial has no roots.')); return; }
       const table = el('table'), head = el('thead'), header = el('tr'); for (const title of ['Approximate root', 'Multiplicity', 'Normalized residual']) header.append(el('th', title)); head.append(header); const body = el('tbody');
       for (const z of list) { const row = el('tr'); row.append(el('td', rootText(z)), el('td', String(z.multiplicity)), el('td', z.residual.toExponential(2))); body.append(row); } table.append(head, body); rootCard.append(table, rootPlot(list));
-      rootCard.append(el('p', 'Approximate coordinates are rounded to8 significant digits. Multiplicity is exact over Q[s]; a small residual alone does not prove a root error bound. Plot symbols are ×; labels report multiplicity.'));
+      rootCard.append(el('p', 'Approximate coordinates are rounded to 8 significant digits. Multiplicity is exact over Q[s]; a small residual alone does not prove a root error bound. Plot symbols are ×; labels report multiplicity.'));
     } catch (e) { rootCard.append(el('p', (e as Error).message)); }
   }
   root.append(button('Expand, factor and reveal', () => {

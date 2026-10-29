@@ -105,7 +105,7 @@ export function roots(input: Poly, factored = factorPolynomial(input), iteration
         }
         if (solved) break;
       }
-      if (!solved) throw new Error('Numerical roots did not converge within three starts of 600 iterations. Exact algebra remains valid; use better-scaled coefficients.');
+      if (!solved) throw new Error(`Numerical roots did not converge within three starts of ${iterations} iterations. Exact algebra remains valid; use better-scaled coefficients.`);
       values = solved;
     }
     for (const z of values) {
@@ -113,6 +113,15 @@ export function roots(input: Poly, factored = factorPolynomial(input), iteration
       result.push({ ...z, multiplicity: f.multiplicity, residual: error });
     }
   }
+  // Residuals alone do not establish that the list includes every root.
+  let reconstructed: Complex[] = [{ re: 1, im: 0 }];
+  for (const z of result) for (let m = 0; m < z.multiplicity; m++) {
+    const next = Array.from({ length: reconstructed.length + 1 }, () => ({ re: 0, im: 0 }));
+    reconstructed.forEach((c, i) => { next[i] = cadd(next[i], cmul(c, { re: -z.re, im: -z.im })); next[i + 1] = cadd(next[i + 1], c); }); reconstructed = next;
+  }
+  if (reconstructed.length !== input.length || reconstructed.some((c, i) => {
+    const expected = numeric(over(input[i], input.at(-1)!)); return norm(csub(c, { re: expected, im: 0 })) > 1e-8 * Math.max(1, Math.abs(expected));
+  })) throw new Error('Numerical root reconstruction failed the complete-coefficient check at tolerance10⁻⁸. Exact factorization is retained.');
   return result.sort((a, b) => a.re - b.re || a.im - b.im);
 }
 export function expandedFactors(f: Factorization): Poly[] {
