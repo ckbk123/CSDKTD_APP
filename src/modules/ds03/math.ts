@@ -27,10 +27,34 @@ export function parseFamily(latex: string): Family {
   if (latex.length > 300) throw new Error('Keep the polynomial within 300 characters.');
   let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(/^P\(z\)=/, '');
+  const numericFraction = /\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g;
+  // A number followed by a fraction can display as a mixed number, not a
+  // product. Inspect that adjacency before replacing fractions by arithmetic.
+  // Mask whole fractions and exponents so their argument digits are not
+  // mistaken for an adjacent standalone number; numeric braces are transparent.
+  const masked = source.replace(numericFraction, '@').replace(/\^(?:\{[012]\}|[012])/g, '^');
+  let adjacency = masked;
+  for (let groups = 0; groups < 12; groups++) {
+    const unwrapped = adjacency.replace(/\{([+-]?(?:\d+(?:\.\d*)?|\.\d+)|@)\}/g, '$1');
+    if (unwrapped === adjacency) break;
+    adjacency = unwrapped;
+  }
+  if (/\d\.?@/.test(adjacency)) throw new Error('Separate a number and the following fraction with + for addition or × for multiplication.');
+  // Plain TeX braces are invisible. Treating {z+2} as (z+2) would change the
+  // visible expression {z+2}z from z+2z into a different polynomial. Only
+  // unsigned numeric/fraction wrappers are safely transparent here; fraction
+  // arguments and powers have already been protected in the masked text.
+  let transparent = masked;
+  for (let groups = 0; groups < 12; groups++) {
+    const unwrapped = transparent.replace(/\{((?:\d+(?:\.\d*)?|\.\d+)|@)\}/g, '$1');
+    if (unwrapped === transparent) break;
+    transparent = unwrapped;
+  }
+  if (/[{}]/.test(transparent)) throw new Error('Use visible parentheses ( … ) to group arithmetic; plain braces do not display grouping.');
   // MathLive omits braces around single-token arguments: \frac12 is 1/2.
-  source = source.replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g,
+  source = source.replace(numericFraction,
     (_match, numeratorGroup, numeratorDigit, denominatorGroup, denominatorDigit) => `((${numeratorGroup ?? numeratorDigit})/(${denominatorGroup ?? denominatorDigit}))`)
-    .replace(/\^\{([012])\}/g, '^$1').replace(/\{/g, '(').replace(/\}/g, ')');
+    .replace(/\^\{([012])\}/g, '^$1').replace(/[{}]/g, '');
   const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|[zK()+\-*/^]/g) ?? [];
   if (tokens.join('') !== source || !tokens.length) throw new Error('Use only z, K, decimal numbers, +, −, products, numeric fractions and squares.');
   if (tokens.length > 160) throw new Error('Too many terms; simplify the polynomial first.');

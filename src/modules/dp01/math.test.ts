@@ -21,6 +21,54 @@ describe('DP01 bounded visual notation', () => {
     expect(() => parseModel('('.repeat(21) + '1/(z+1)' + ')'.repeat(21))).toThrow(/nested/);
     expect(() => parseModel('z'.repeat(513))).toThrow(/512/);
   });
+  it.each([
+    String.raw`2\frac12`, String.raw`-2\frac{1}{2}`, String.raw`0\frac12`, String.raw`0.5\frac12`,
+    String.raw`-{2}\frac12`, String.raw`{{-2}}\tfrac12`, String.raw`-\left(2\frac12\right)`,
+    String.raw`2\,\dfrac12`, String.raw`\frac{2\frac12}{2}`, String.raw`\frac1{2\frac12}`,
+    String.raw`2{\frac12}`, String.raw`-{2}{\frac12}`, String.raw`2{{\frac12}}`,
+    String.raw`2{-\frac12}`, String.raw`\frac{2{\frac12}}{2}`,
+  ])('rejects mixed-number adjacency before normalization changes its meaning: %s', expression => {
+    // A displayed 2½ means 2 + 1/2, whereas implicit multiplication gives 1.
+    // Require an explicit operator rather than selecting either interpretation.
+    expect(() => parseModel(String.raw`G(z)=\frac{${expression}}{z-.8}`)).toThrow(/explicit \+ or ×/);
+  });
+  it.each([
+    [String.raw`2+\frac12`, 2.5], [String.raw`-(2+\frac12)`, -2.5],
+    [String.raw`2\times\frac12`, 1], [String.raw`-{2}\times\frac12`, -1],
+    [String.raw`\frac{2+\frac12}{2}`, 1.25], [String.raw`\frac{2\times\frac12}{2}`, .5],
+    [String.raw`\frac12`, .5], [String.raw`\frac1\frac23`, 1.5],
+    [String.raw`\frac12\frac34`, .375], [String.raw`(2)\frac12`, 1],
+    [String.raw`2+{\frac12}`, 2.5], [String.raw`2\times{\frac12}`, 1], [String.raw`2(3+\frac12)`, 7],
+  ] as const)('preserves explicit arithmetic and unambiguous fractions: %s', (expression, gain) => {
+    const model = parseModel(String.raw`G(z)=\frac{${expression}}{z-.8}`);
+    expect(model).toEqual({ a: [1, -.8], b: [0, gain] });
+    // The independent first impulse sample after this one-sample delay is gain.
+    expect(simulate(model, { ...experiment, input: 'impulse', count: 4 })[1].y).toBe(gain);
+  });
+  it('preserves fraction multiplication after a visible variable power', () => {
+    for (const power of ['z^2', 'z^{2}']) {
+      for (const factor of [String.raw`\frac12`, String.raw`{\frac12}`]) {
+        expect(parseModel(String.raw`\frac{${power}${factor}}{z^2+.25}`)).toEqual({ a: [1, 0, .25], b: [.5, 0, 0] });
+      }
+    }
+  });
+  it.each([
+    String.raw`1{+2}`, String.raw`2{+\frac12}`, String.raw`-{2+3}`,
+    String.raw`{z+2}z`, String.raw`z{-2}`, String.raw`{-2}^2`,
+  ])('rejects hidden brace grouping that would change the visible expression: %s', expression => {
+    expect(() => parseModel(String.raw`\frac{${expression}}{z^2+.25}`)).toThrow(/visible parentheses/);
+  });
+  it('does not turn a displayed first-order denominator into a quadratic using hidden braces', () => {
+    expect(() => parseModel(String.raw`\frac1{{z+2}z}`)).toThrow(/visible parentheses/);
+  });
+  it.each([
+    [String.raw`1(+2)`, 2], [String.raw`(1+2)`, 3], [String.raw`2+(\frac12)`, 2.5],
+    [String.raw`-(2+3)`, -5], [String.raw`{2}`, 2], [String.raw`{{-2}}`, -2],
+    [String.raw`{\frac12}`, .5], [String.raw`{-\frac12}`, -.5],
+    [String.raw`{(2+3)}`, 5], [String.raw`{2}^2`, 4],
+  ] as const)('retains visible grouping and atomic numeric/fraction wrappers: %s', (expression, gain) => {
+    expect(parseModel(String.raw`\frac{${expression}}{z-.8}`)).toEqual({ a: [1, -.8], b: [0, gain] });
+  });
   it('rejects nonzero literal, coefficient-product and normalization underflow', () => {
     const literal = '0.' + '0'.repeat(400) + '1';
     const factor = '0.' + '0'.repeat(199) + '1';

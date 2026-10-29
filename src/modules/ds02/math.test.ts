@@ -75,6 +75,93 @@ describe('quadratic Jury interval: independent analytic fixtures', () => {
 });
 
 describe('bounded visual polynomial parser and rational arithmetic', () => {
+  it.each([
+    String.raw`z^2+(2\frac12)Kz+.2`,
+    String.raw`z^2-(2\frac12)Kz+.2`,
+    String.raw`z^2-{2}\frac12Kz+.2`,
+    String.raw`z^2+\frac{2\frac12}{2}Kz+.2`,
+    String.raw`z^2+2\,\frac{1}{2}Kz+.2`,
+    String.raw`z^2+{{2}}\dfrac12Kz+.2`,
+    String.raw`z^2+K{2}\frac12z+.2`,
+    String.raw`z^2+(2{\frac12})Kz+.2`,
+    String.raw`z^2+(2{{\frac12}})Kz+.2`,
+    String.raw`z^2-(2{\frac12})Kz+.2`,
+    String.raw`z^2+\frac{2{\frac12}}{2}Kz+.2`,
+  ])('rejects ambiguous mixed-number adjacency rather than multiplying it: %s', source => {
+    expect(() => parseFamily(source)).toThrow(/mixed-number notation.*Insert \+.*×/);
+  });
+  it.each([
+    String.raw`z^2+(1{+2})Kz+.2`,
+    String.raw`z^2+(2{+\frac12})Kz+.2`,
+    String.raw`{z+2}z`,
+    String.raw`z^2+{K+1}z+.2`,
+    String.raw`z^2+K{-2}z+.2`,
+  ])('rejects hidden brace groups instead of inventing visible parentheses: %s', source => {
+    expect(() => parseFamily(source)).toThrow(/Hidden braces.*visible parentheses/);
+  });
+  it.each([
+    String.raw`z^2+(1{2})Kz+.2`,
+    String.raw`z^2+(-{2}{3})Kz+.2`,
+    String.raw`z^2+({1}{2})Kz+.2`,
+    String.raw`z^2+(1{{2}})Kz+.2`,
+    String.raw`z^2+({{1}}2)Kz+.2`,
+    String.raw`z^2+\frac{1{2}}{3}Kz+.2`,
+    String.raw`z^2+\frac{{1}{2}}{3}Kz+.2`,
+  ])('rejects separate numeric atoms that visually concatenate: %s', source => {
+    expect(() => parseFamily(source)).toThrow(/numeric parts.*explicit operator/);
+  });
+  it('preserves multi-digit numbers, fraction argument digits, wrappers and explicit numeric multiplication', () => {
+    for (const coefficient of ['12', '{12}', '{{12}}', String.raw`\frac{24}{2}`]) {
+      expect(exact(parseFamily(`z^2+${coefficient}Kz+.2`).b.slope)).toBe('12');
+    }
+    for (const coefficient of [String.raw`\frac12`, String.raw`\frac{1}{2}`, String.raw`\frac{{1}}{{2}}`]) {
+      expect(exact(parseFamily(`z^2+${coefficient}Kz+.2`).b.slope)).toBe('1/2');
+    }
+    const multiplied = parseFamily(String.raw`z^2+(-{2}\times{3})Kz+.2`);
+    expect(exact(multiplied.b.slope)).toBe('-6');
+    expect(intervalText(intersect(conditions(multiplied)))).toBe('-1/5 < K < 1/5');
+    expect(exact(parseFamily(String.raw`z^2+\frac{1\cdot{2}}{3}Kz+.2`).b.slope)).toBe('2/3');
+  });
+  it('distinguishes explicit mixed-number addition from multiplication using independent Jury bounds', () => {
+    const sum = parseFamily(String.raw`z^2+(2+\frac12)Kz+.2`);
+    const product = parseFamily(String.raw`z^2+(2\times\frac12)Kz+.2`);
+    // For z²+bz+1/5, Jury gives |b|<6/5. b=(5/2)K versus b=K.
+    expect(exact(sum.b.slope)).toBe('5/2');
+    expect(intervalText(intersect(conditions(sum)))).toBe('-12/25 < K < 12/25');
+    expect(exact(product.b.slope)).toBe('1');
+    expect(intervalText(intersect(conditions(product)))).toBe('-6/5 < K < 6/5');
+    const negative = parseFamily(String.raw`z^2-(2+\frac12)Kz+.2`);
+    expect(exact(negative.b.slope)).toBe('-5/2');
+    expect(intervalText(intersect(conditions(negative)))).toBe('-12/25 < K < 12/25');
+    const nested = parseFamily(String.raw`z^2+\frac{2+\frac12}{2}Kz+.2`);
+    expect(exact(nested.b.slope)).toBe('5/4');
+    expect(intervalText(intersect(conditions(nested)))).toBe('-24/25 < K < 24/25');
+  });
+  it('preserves compact fractions and does not mistake fraction arguments or powers for adjacent whole numbers', () => {
+    for (const fraction of [String.raw`\frac12`, String.raw`\frac1{2}`, String.raw`\frac{1}2`, String.raw`\frac{1}{2}`]) {
+      const family = parseFamily(`z^2+${fraction}Kz+.2`);
+      expect(exact(family.b.slope)).toBe('1/2');
+      expect(intervalText(intersect(conditions(family)))).toBe('-12/5 < K < 12/5');
+    }
+    expect(exact(parseFamily(String.raw`z^2+(\frac12\frac{3}{4})Kz+.2`).b.slope)).toBe('3/8');
+    expect(exact(parseFamily(String.raw`z^2-{2}\cdot\frac12Kz+.2`).b.slope)).toBe('-1');
+    expect(exact(parseFamily(String.raw`z^2\frac12+z^{2}\frac12+Kz+.2`).b.slope)).toBe('1');
+  });
+  it('retains safe numeric wrappers, actual fraction arguments and visible parentheses', () => {
+    for (const coefficient of ['{2}', '{{2}}', String.raw`\frac{{2}}{1}`]) {
+      const family = parseFamily(`z^2+${coefficient}Kz+.2`);
+      expect(exact(family.b.slope)).toBe('2');
+      expect(intervalText(intersect(conditions(family)))).toBe('-3/5 < K < 3/5');
+    }
+    for (const coefficient of ['-{2}', '{-2}']) expect(exact(parseFamily(`z^2+${coefficient}Kz+.2`).b.slope)).toBe('-2');
+    const sum = parseFamily('z^2+(1+2)Kz+.2');
+    expect(exact(sum.b.slope)).toBe('3');
+    expect(intervalText(intersect(conditions(sum)))).toBe('-2/5 < K < 2/5');
+    expect(exact(parseFamily(String.raw`z^2+{\frac12}Kz+.2`).b.slope)).toBe('1/2');
+    expect(exact(parseFamily(String.raw`z^2+\frac{\frac12}{2}Kz+.2`).b.slope)).toBe('1/4');
+    expect(parseFamily('{(z+2)}z')).toEqual(parseFamily('(z+2)z'));
+    expect(parseFamily(String.raw`2z^{2}{\frac12}+Kz+.2`)).toEqual(parseFamily('z^2+Kz+.2'));
+  });
   it('accepts textbook grouping, multiplication, decimals and constant fractions', () => {
     const f = parseFamily(String.raw`P(z)=z^{2}+\left(\frac{K}{2}-1\right)\cdot z+\frac{1}{5}K`);
     expect(exact(f.b.slope)).toBe('1/2');

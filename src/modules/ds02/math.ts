@@ -62,11 +62,67 @@ function times(a: Poly, b: Poly): Poly {
   return result;
 }
 
+/** MathLive reads a bare number followed by a fraction as a mixed number.
+ * Check TeX atom boundaries before arithmetic treats adjacency as a product. */
+function rejectMixedNumberAdjacency(text: string): void {
+  let cursor = 0;
+  type Atom = 'number' | 'fraction' | 'other';
+  const fractionCommand = () => /^\\(?:d?frac)/.exec(text.slice(cursor))?.[0];
+  function argument(): void {
+    if (text[cursor] === '{') { cursor++; scan('}'); if (text[cursor] === '}') cursor++; }
+    else if (fractionCommand()) fraction();
+    else if (cursor < text.length) cursor++; // One unbraced TeX argument token.
+  }
+  function fraction(): void { cursor += fractionCommand()!.length; argument(); argument(); }
+  function scan(close?: string): { kind: Atom; simple: boolean; signed: boolean } {
+    let previous: Atom | null = null, first: Atom = 'other', atoms = 0, compound = false, signed = false;
+    function append(kind: Atom): void {
+      if (previous === 'number' && kind === 'fraction') throw new Error('A number directly beside a fraction is ambiguous mixed-number notation. Insert + for addition or × for multiplication.');
+      if (previous === 'number' && kind === 'number') throw new Error('Separate numeric parts need an explicit operator. Type one complete number, or insert × for multiplication.');
+      if (atoms === 0) first = kind;
+      else compound = true;
+      previous = kind; atoms++;
+    }
+    while (cursor < text.length && text[cursor] !== close) {
+      const character = text[cursor];
+      if (fractionCommand()) {
+        append('fraction'); fraction();
+      } else if (character === '{') {
+        cursor++; const group = scan('}'); if (text[cursor] === '}') cursor++;
+        // Outside actual fraction/power arguments, braces are invisible in the
+        // editor. Only a single atom is safe; signed atoms cannot follow one.
+        if (!group.simple || (group.signed && previous !== null)) throw new Error('Hidden braces do not display parentheses. Use visible parentheses for grouping, or write + or × explicitly outside the braces.');
+        if (atoms === 0 && group.signed) signed = true;
+        append(group.kind);
+      } else if (character === '(') {
+        cursor++; scan(')'); if (text[cursor] === ')') cursor++;
+        append('other');
+      } else if (character === '^') {
+        cursor++; argument(); previous = 'other'; if (atoms === 1) first = 'other';
+      } else {
+        const number = /^(?:\d+(?:\.\d*)?|\.\d+)/.exec(text.slice(cursor))?.[0];
+        if (number) {
+          cursor += number.length; append('number');
+        } else if (character === 'z' || character === 'K') {
+          cursor++; append('other');
+        } else {
+          cursor++; previous = null;
+          if ((character === '+' || character === '-') && atoms === 0) signed = true;
+          else compound = true;
+        }
+      }
+    }
+    return { kind: first, simple: !compound && atoms === 1, signed };
+  }
+  scan();
+}
+
 /** Recursive descent; no evaluation of code, functions or arbitrary macros. */
 export function parseFamily(source: string): Family {
   if (!source.trim() || source.length > 400) throw new Error('Enter a polynomial of at most 400 characters.');
   let text = source.replace(/\\(?:left|right)/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!;: ]/g, '').replace(/\s/g, '');
   text = text.replace(/^P\(z\)=/, '');
+  rejectMixedNumberAdjacency(text);
   const tokens = text.match(/\\(?:d?frac)|(?:\d+(?:\.\d*)?|\.\d+)|[zK+\-*/^(){}]/g) ?? [];
   if (tokens.join('') !== text || tokens.length > 160) throw new Error('Use z, K, numbers, fractions, parentheses, +, −, × and powers up to two.');
   let pos = 0, depth = 0;

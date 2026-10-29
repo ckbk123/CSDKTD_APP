@@ -10,6 +10,46 @@ describe('DS03 bounded polynomial grammar', () => {
   it.each([String.raw`\frac12`, String.raw`\frac1{2}`, String.raw`\frac{1}2`, String.raw`\dfrac{1}{2}`])('reads MathLive numeric-fraction serialization %s', fraction => {
     expect(parseFamily(`z^2+(K-1)z+${fraction}K`)).toEqual(parseFamily('z^2+(K-1)z+0.5K'));
   });
+  it.each([
+    String.raw`2\frac12`, String.raw`-2\frac{1}{2}`, String.raw`-(2\frac12)`,
+    String.raw`-{2}\frac12`, String.raw`(-{2}\frac12)`, String.raw`((2\dfrac1{2}))`,
+    String.raw`{{2}}\frac{1}2`, String.raw`2{{\frac12}}`,
+    String.raw`\frac{1+2\frac12}{3}`, String.raw`\frac{2}{3\frac12}`,
+  ])('rejects ambiguous mixed-number adjacency before conversion: %s', coefficient => {
+    expect(() => parseFamily(`z^2+(${coefficient})Kz+.2`)).toThrow(/\+.*×/);
+  });
+  it.each([
+    String.raw`z^2+(2{+\frac12})Kz+.2`, String.raw`z^2+(1{+2})Kz+.2`,
+    String.raw`z^2+(-{2+3})Kz+.2`, String.raw`z^2+({{1+2}})Kz+.2`,
+    String.raw`{z+2}z`, String.raw`z^2+{\frac12+2}z`,
+  ])('rejects hidden brace arithmetic rather than inventing parentheses: %s', expression => {
+    expect(() => parseFamily(expression)).toThrow(/visible parentheses/);
+  });
+  it('distinguishes explicit addition and multiplication by independently checked gain bounds', () => {
+    for (const [coefficient, slope, bound] of [
+      [String.raw`2+\frac12`, 2.5, .48], [String.raw`-2-\frac12`, -2.5, .48],
+      [String.raw`2\times\frac12`, 1, 1.2], [String.raw`-{2}\cdot\frac12`, -1, 1.2],
+      [String.raw`(2)(\frac12)`, 1, 1.2], [String.raw`\frac12\frac12`, .25, 4.8],
+      [String.raw`2^{2}\frac12`, 2, .6], [String.raw`\frac{1}{2}\frac{1}{3}`, 1 / 6, 7.2],
+      [String.raw`{2}+\frac12`, 2.5, .48], [String.raw`({2}+\frac12)`, 2.5, .48],
+      [String.raw`{\frac12}+{\frac12}`, 1, 1.2], [String.raw`{{2}}\times\frac12`, 1, 1.2],
+      [String.raw`1{2}`, 12, .1],
+    ] as const) {
+      const family = parseFamily(`z^2+(${coefficient})Kz+.2`);
+      expect(family.b.slope).toBe(slope);
+      const interval = stableInterval(family);
+      expect(interval.empty).toBe(false);
+      expect(interval.lower).toBeCloseTo(-bound, 14);
+      expect(interval.upper).toBeCloseTo(bound, 14);
+    }
+    // A fraction after a power multiplies that monomial; its exponent is not
+    // a standalone whole-number part of a mixed number.
+    expect(parseFamily(String.raw`2z^{2}\frac12+Kz+.2`)).toEqual(parseFamily('z^2+Kz+.2'));
+    expect(parseFamily(String.raw`z^2+2K\frac12z+.2`)).toEqual(parseFamily('z^2+Kz+.2'));
+    expect(parseFamily('z^2+(1+2)Kz+.2')).toEqual(parseFamily('z^2+3Kz+.2'));
+    expect(parseFamily('z^2-(2+3)Kz+.2')).toEqual(parseFamily('z^2-5Kz+.2'));
+    expect(parseFamily('(z+2)z')).toEqual(parseFamily('z^2+2z'));
+  });
   it.each(['', 'z^3+K', 'z^2+K^2', 'z^2+1/z', '2z^2+K', 'z^2+sin(K)', 'z^2+1/0', 'z^2+NaN', 'z^2+1000K', 'z^2+0.000000001K', 'z^2+(K', 'z^2+\\placeholder{}', 'z^2+' + '('.repeat(13) + '1' + ')'.repeat(13), 'z^2+' + '1'.repeat(301)])('rejects unsupported/incomplete input %s', text => expect(() => parseFamily(text)).toThrow());
 });
 describe('DS03 substitution and complete gain set', () => {

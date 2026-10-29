@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.5 — 29 October 2026
+
+- Correct visual notation in DP01, DS02 and DS03. Ambiguous mixed numbers and hidden brace arithmetic receive guidance to use explicit operations or visible parentheses. Supported ordinary fractions, powers and explicit arithmetic retain their meaning.
+- Independent controls distinguish 2+1/2 from 2×1/2: the Jury family z²+bKz+.2 has bounds ±12/25 for b=5/2 and ±6/5 for b=1. Actual equation-editor checks confirm the distinction; desktop/narrow layout and cleanup checks pass.
+- All 344 application tests, type checking and production build pass, with 69 additional independent parser probes. The unchanged coordination helper's 32 tests passed in 0.3.4. [Review evidence and pending worker returns](docs/COORDINATOR_REVIEW_LOG.md#visual-notation-correction--035) remain separate from accepted releases.
+
 ## 0.3.4 — 29 October 2026
 
 - CS01: edit a two-state continuous realization, predict internal and scalar BIBO stability, inspect exact transfer cancellation and eigenmodes, and compare hidden unstable states, imaginary-axis pairs and Jordan boundaries.

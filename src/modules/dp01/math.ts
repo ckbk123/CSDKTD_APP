@@ -40,36 +40,71 @@ function plain(latex: string): string {
     .replace(/\\[,;! ]/g, '').replace(/−/g, '-').replace(/\s/g, '');
   s = s.replace(/^G\(z\)=/, '');
   let pos = 0, depth = 0;
+  interface Part { text: string; shape: string; endsWithNumber: boolean; containsFraction: boolean }
+  function visibleGroup(shape: string): boolean {
+    if (!shape.startsWith('(') || !shape.endsWith(')')) return false;
+    let level = 0;
+    for (let i = 0; i < shape.length; i++) {
+      if (shape[i] === '(') level++;
+      else if (shape[i] === ')') level--;
+      if (level < 0 || level === 0 && i < shape.length - 1) return false;
+    }
+    return level === 0;
+  }
   const fractionCommand = (): string | undefined => /^(?:\\dfrac|\\tfrac|\\frac)/.exec(s.slice(pos))?.[0];
   function fraction(): string {
     pos += fractionCommand()!.length;
     const n = group(), d = group();
-    return `((${n})/(${d}))`;
+    return `((${n.text})/(${d.text}))`;
   }
-  function group(): string {
+  function group(): Part {
     if (++depth > 20) fail('Use at most 20 nested groups.');
-    let value: string;
+    let value: Part;
     if (s[pos] === '{') {
       pos++; value = sequence(true);
       if (s[pos++] !== '}') fail('Complete each fraction and brace group.');
-    } else if (fractionCommand()) value = fraction();
+    } else if (fractionCommand()) value = { text: fraction(), shape: 'F', endsWithNumber: false, containsFraction: true };
     else {
       if (pos >= s.length || s[pos] === '}') fail('Complete the numerator and denominator of each fraction.');
-      value = s[pos++]; // TeX permits a single unbraced token, as in \frac12.
+      const token = s[pos++]; // TeX permits a single unbraced token, as in \frac12.
+      value = { text: token, shape: token, endsWithNumber: /[0-9.]/.test(token), containsFraction: false };
     }
     depth--; return value;
   }
-  function sequence(stopAtBrace: boolean): string {
-    let value = '';
+  function sequence(stopAtBrace: boolean): Part {
+    let text = '', shape = '', endsWithNumber = false, containsFraction = false;
     while (pos < s.length && !(stopAtBrace && s[pos] === '}')) {
-      if (fractionCommand()) value += fraction();
-      else if (s[pos] === '{') value += `(${group()})`;
+      if (fractionCommand()) {
+        // Preserve the distinction between a mixed number and a product before
+        // fractions and hidden brace groups lose their original boundaries.
+        if (endsWithNumber) fail('Write an explicit + or × between a number and a fraction; mixed-number adjacency is not supported.');
+        text += fraction(); shape += 'F'; endsWithNumber = false; containsFraction = true;
+      } else if (s[pos] === '{') {
+        const part = group();
+        // TeX braces are invisible. Only retain an atomic wrapper or a group
+        // already enclosed by visible parentheses, never invent precedence.
+        const unsigned = part.shape.replace(/^[+-]/, '');
+        if (!/^(?:\d+(?:\.\d*)?|\.\d+|z|F)(?:\^(?:[012]|\([012]\)))?$/.test(unsigned) && !visibleGroup(unsigned)) {
+          fail('Use visible parentheses to group an expression; TeX braces do not display parentheses.');
+        }
+        if (/^[+-]/.test(part.shape) && (/[0-9.zF)]$/.test(shape) || s[pos] === '^')) {
+          fail('Use visible parentheses around a signed group, or write an explicit + or × before it.');
+        }
+        if (endsWithNumber && /^[0-9.]/.test(part.shape)) fail('Write an explicit + or × between separate numbers instead of hidden TeX braces.');
+        if (endsWithNumber && part.containsFraction) fail('Write an explicit + or × before a fraction-containing group; hidden braces do not show multiplication.');
+        text += `(${part.text})`; shape += part.shape; endsWithNumber = part.endsWithNumber; containsFraction ||= part.containsFraction;
+      } else if (s[pos] === '^') {
+        // A numeric exponent is not a mixed-number whole part: a fraction
+        // following z² remains an ordinary implicit product.
+        text += s[pos++]; const braced = s[pos] === '{', power = group();
+        text += braced ? `(${power.text})` : power.text; shape += `^${power.shape}`; endsWithNumber = false; containsFraction ||= power.containsFraction;
+      }
       else if (s[pos] === '}') fail('Remove the unmatched closing brace.');
-      else value += s[pos++];
+      else { const token = s[pos++]; text += token; shape += token; endsWithNumber = /[0-9.]/.test(token); }
     }
-    return value;
+    return { text, shape, endsWithNumber, containsFraction };
   }
-  return sequence(false);
+  return sequence(false).text;
 }
 
 /** Bounded recursive-descent rational polynomial parser. +,-,*,/, implicit
