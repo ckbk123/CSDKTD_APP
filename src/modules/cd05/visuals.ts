@@ -16,16 +16,18 @@ export function plot(first: Series, second: Series, label: string, xLabel: strin
     let value = lo - pad + (hi - lo + 2 * pad) * i / 4;
     if (Math.abs(value) <= (hi - lo + 2 * pad) * 1e-12) value = 0;
     const y = py(value);
-    out.append(svgNode('line', { x1: left, x2: width - right, y1: y, y2: y, class: 'cd05-grid' }), svgNode('text', { x: left - 7, y: y + 4, 'text-anchor': 'end', class: 'cd05-label' }, fmt(value)));
+    out.append(svgNode('line', { x1: left, x2: width - right, y1: y, y2: y, class: 'cd05-grid' }));
+    if (Math.abs(y - py(guide)) >= 11) out.append(svgNode('text', { x: left - 7, y: y + 4, 'text-anchor': 'end', class: 'cd05-label' }, fmt(value)));
   }
   out.append(svgNode('line', { x1: left, x2: width - right, y1: py(guide), y2: py(guide), class: 'cd05-guide' }));
+  out.append(svgNode('text', { x: left - 7, y: py(guide) + 4, 'text-anchor': 'end', class: 'cd05-label cd05-guide-label' }, fmt(guide)));
   [first, second].forEach((series, i) => {
     if (!series.x.length) return;
     const d = series.x.map((x, j) => (j ? 'L' : 'M') + px(x) + ',' + py(series.y[j])).join(' ');
     out.append(svgNode('path', { d, class: i === 0 ? 'cd05-baseline' : 'cd05-proposed' }));
   });
   if (marker !== undefined && marker >= loX && marker <= hiX) out.append(svgNode('line', { x1: px(marker), x2: px(marker), y1: top, y2: height - bottom, class: 'cd05-marker' }));
-  for (const value of [loX, log ? Math.sqrt(loX * hiX) : (loX + hiX) / 2, hiX]) out.append(svgNode('text', { x: px(value), y: height - 25, 'text-anchor': 'middle', class: 'cd05-label' }, fmt(value)));
+  [loX, log ? Math.sqrt(loX * hiX) : (loX + hiX) / 2, hiX].forEach((value, i) => out.append(svgNode('text', { x: px(value), y: height - 25, 'text-anchor': i === 0 ? 'start' : i === 2 ? 'end' : 'middle', class: 'cd05-label' }, fmt(value))));
   out.append(svgNode('text', { x: width / 2, y: height - 5, 'text-anchor': 'middle', class: 'cd05-label' }, xLabel), svgNode('text', { x: 7, y: 15, class: 'cd05-label' }, yLabel)); return out;
 }
 export function geometry(zero: number, peak: number, pole: number, cancelled: boolean): SVGSVGElement {
