@@ -5,7 +5,7 @@
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cp06/**` only.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`.
 - **Branch / worktree:** `codex/cp06-root-locus-7393`, `C:/Users/baokh/.codex/worktrees/cp06-root-locus-7393/CSDKTD APP`.
-- **PR:** creation/delivery record pending; the accepted bounded exercise and checks below are complete.
+- **PR:** [#44 — CP06 root-locus construction and parameter checks](https://github.com/ckbk123/CSDKTD_APP/pull/44); accepted bounded exercise and checks below complete, exact final submission recorded in the shared claim.
 
 ## Current code and requirement audit
 
@@ -69,4 +69,4 @@ Saved screenshots outside Git in `C:/Users/baokh/.codex/visualizations/2026/10/2
 
 ## Remaining delivery / limits
 
-The accepted bounded exercise is complete. Create/reuse its one PR, record its URL here, push this final delivery record, verify final CI/clean HEAD and submit that exact revision. Independent review/integration remains coordinator-owned. The original Ch4 PI topology is still untranscribed; the PI fixture is proposed. No complete stable-parameter-region proof, general CAS, degree>3 numerical solver or arbitrary feedback-sign exercise is claimed. No shared dependency request is open.
+The accepted bounded exercise is complete. PR #44 is attached to the responsible worker chat; this delivery record is included in the final source revision. The shared claim records the exact clean tested HEAD submitted for integration after final CI. Independent review/integration remains coordinator-owned. The original Ch4 PI topology is still untranscribed; the PI fixture is proposed. No complete stable-parameter-region proof, general CAS, degree>3 numerical solver or arbitrary feedback-sign exercise is claimed. No shared dependency request is open.
