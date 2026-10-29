@@ -78,6 +78,8 @@ describe('DS04 complete teaching workspace', () => {
     const { root } = await open(); click(root, 'Check prediction and reveal');
     edit(root.querySelector('input')!, ''); expect(root.textContent).toContain('finite K'); expect(root.querySelectorAll('svg')).toHaveLength(0);
     edit(root.querySelector('input')!, '1e-999'); expect(root.textContent).toContain('finite K'); expect(root.querySelectorAll('svg')).toHaveLength(0);
+    edit(root.querySelector('input')!, '0e-999'); expect(root.querySelectorAll('svg')).toHaveLength(2); expect(root.textContent).toContain('All roots at K = 0');
+    edit(root.querySelector('input')!, '1e-2'); expect(root.querySelectorAll('svg')).toHaveLength(2); expect(root.textContent).toContain('All roots at K = 0.01');
     edit(root.querySelector('input')!, '1'); expect(root.querySelectorAll('svg')).toHaveLength(2);
     edit(root.querySelectorAll('input')[1], '7'); expect(root.textContent).toContain('minimum < maximum'); expect(root.querySelectorAll('svg')).toHaveLength(0);
   });
