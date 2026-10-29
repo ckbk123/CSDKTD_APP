@@ -73,6 +73,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const prediction = numeric(attempt, 'Prediction for selected derivative at t=0 (optional)', '', -1e10, 1e10);
   attempt.append(el('p', 'Prediction tolerance: absolute error ≤10⁻⁵ × max(1, |computed derivative|).', 'state-small'));
   const notice = el('p', 'Build the diagram, predict, then reveal the state response.', 'state-notice'); notice.setAttribute('role', 'status');
+  on(prediction, 'input', () => { notice.textContent = 'Prediction changed. Reveal again to check it against the selected state.'; });
   const attemptActions = el('div', '', 'state-actions'); attemptActions.append(button('Build integrator diagram', build), button('Reveal state response', reveal)); attempt.append(attemptActions, notice);
   const diagramSection = section('3. States are integrator outputs'); diagramSection.hidden = true;
   const diagramHost = el('div', '', 'state-scroll'); diagramHost.tabIndex = 0;
