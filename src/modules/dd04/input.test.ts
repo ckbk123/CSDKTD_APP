@@ -10,6 +10,9 @@ describe('DD04 bounded visual sample input', () => {
     [String.raw`2+\frac12`, 2.5], [String.raw`2\times\frac12`, 1],
   ])('parses %s', (source, value) => expect(parseScalar(source)).toBe(value));
   it.each(['1e-2', '1E-2', '0e-999', String.raw`\frac{1e-2}{2}`])('rejects visual e/E notation %s', source => expect(() => parseScalar(source)).toThrow(/visual field/));
+  it('explains scientific pastes normalized by the editor to textbook powers', () => {
+    expect(() => parseErrors(String.raw`[1\times10^{-2}]`)).toThrow(/Powers are not supported/);
+  });
   it.each([String.raw`2\frac12`, String.raw`-2\frac{1}{2}`, String.raw`{2}\frac12`])('rejects ambiguous fraction adjacency %s', source => expect(() => parseScalar(source)).toThrow(/explicit|visible/));
   it('reads the baseline list and a changed fractional list', () => {
     expect(parseErrors('[1,1,1,1,0,0]')).toEqual([1, 1, 1, 1, 0, 0]);

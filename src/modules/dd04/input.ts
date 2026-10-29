@@ -18,6 +18,7 @@ export function parseScalar(raw: string): number {
   let source = raw.replace(/\\(?:left|right)/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
     .replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/').replace(/\s/g, '');
   if (/[eE]/.test(source)) fail('The visual field treats e and E as symbols. Write decimal samples here; numeric controller fields also accept scientific notation.');
+  if (source.includes('^')) fail('Powers are not supported for error samples. Write decimal values, for example 0.01.');
   let cursor = 0;
   const fraction = (depth: number): string => { cursor += 5; return `((${argument(depth + 1)})/(${argument(depth + 1)}))`; };
   const argument = (depth: number): string => {

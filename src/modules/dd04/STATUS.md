@@ -6,7 +6,7 @@
 - **Worker chat:** 01a186d1-a367-78f1-98f5-e1cf147ef306
 - **Branch:** codex/dd04-digital-pid-01a186d1
 - **Worktree:** C:\Users\baokh\.codex\worktrees\dd04-digital-pid-01a186d1\CSDKTD APP
-- **PR:** not created yet
+- **PR:** [DD04 #9](https://github.com/ckbk123/CSDKTD_APP/pull/9), draft and attached
 
 ## Starting audit and accepted scope
 
@@ -69,3 +69,9 @@ The visual error-list parser now rejects e/E symbols with a specific explanation
 Added semantic fixtures for compact, signed and nested fractions; visual e/E rejection; native exponent/underflow grammar; and mocked interface checks proving the two input surfaces reach the right validators. npm test -- src/modules/dd04 passes **93 tests in 4 files**; npm run check passes; npm test passes **135 tests in 10 files**; npm run build passes (DD04 view about8.16kB gzip, existing MathLive warning unchanged). This is a recoverable implementation checkpoint, not browser certification or contribution submission. Remaining browser checks and PR9 draft status are unchanged.
 
 A source-level readability check also found that the 400-unit charts could shrink their 10-unit text on phones. Plot labels now use12 units and each SVG retains at least400px inside its own horizontal scroll region. The plot and sample-table regions are keyboard-focusable with visible focus and accessible labels; page-wide expansion is avoided through the existing minmax layout. Tick margins were widened for the declared numeric range. These layout changes still require real narrow-viewport confirmation. All135 tests and the build/type check passed after the change; DD04 view is about8.25kB gzip.
+
+## Current shared-helper dependency
+
+Primary v0.3.3 introduced readNumericInput(input,label) in src/shared/numeric-input.ts and now directs workers to use it for native number controls. DD04's recorded base ae7daf3 predates that file. Its current local numeric validator already rejects nonzero raw underflow and accepts ordinary exponents/intentional zero, independently tested above; visual samples remain separately parsed. The integration owner has been asked how to carry the published helper into this preserved branch while respecting module-only commits and the no-rebase/no-main-merge rules. That adoption/disposition is pending; no shared file was copied or changed by this worker.
+
+DP02 was resubmitted at f6c7b74 with its focused visual/native production evidence and its browser reservation released. DD04 has resumed. The same observed MathLive scientific-paste normalization now gets a clear unsupported-powers message in this error-list parser; its new regression brings module checks to94/94. The last full suite/build remains the135-test b6367fa checkpoint; final checks will be rerun after dependency disposition and browser changes. Actual remaining browser work is still pending the shared QA resource. No contribution submission is claimed.
