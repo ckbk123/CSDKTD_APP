@@ -49,3 +49,11 @@ Read current primary coordination guides, contribution/development/design/equati
 ## Next work and verification state
 
 Initial audit/setup only. Implement pure mathematics and bounded visual parsing, check independent fixtures/failures, then finish prediction/comparison UI and actual browser gate. No module tests, type check, full tests, build or browser behavior is claimed yet. Earlier submitted DD04/DP04 branches/worktrees remain frozen; coordinator corrections take priority. DP02 has been independently accepted as0.3.7 with its source history preserved. No browser slot/tab/preview/viewport override is held.
+
+## Mathematical checkpoint
+
+`math.ts` now validates the first-order physical model/task, derives exact ZOH coefficients and the complete scalar closed-loop pole, matches a physical-rate target with a cancellation-resistant exponential difference, and simulates each held interval through a common terminal H. Raw/ISE/IAE/ITAE/effort sums use compensated accumulation; terminal observations receive no extra weight. Physical reconstruction evaluates the declared plant/hold analytically instead of interpolating samples. Boundary/unstable cases do not claim a steady limit.
+
+The proposed scalar/model/time/work limits above are enforced. Output/error/control magnitude is bounded by10^12, accumulated metrics by10^28 and redesigned target-pole relative matching residual by10^-7. A failed/growing case throws without reporting partial common-horizon metrics. Unit-disk classification uses a declared10^-9 boundary band. The UI must expose these limits and handle failures per case.
+
+`npm test -- src/modules/df04` passes10 independently derived fixture/failure groups; `npm run check` passes. This includes every audit fixture, common-horizon partial holds, changed units/reference/initial output, physical intersample values, impossible/redesign conditioning, unstable growth and excessive work. Parser/UI/lifecycle, full-project/build and real-browser checks remain unimplemented/unperformed. The prior paragraph describes the initial audit stage, not the current mathematical checkpoint.
