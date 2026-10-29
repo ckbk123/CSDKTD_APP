@@ -8,6 +8,7 @@
 - **Branch:** `codex/cr04-block-diagrams-2175`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr04-block-diagrams-2175/CSDKTD APP`
 - **Starting main:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9)
+- **Checked implementation checkpoint:** `cc23c19f5a92ba0f55f8583891369e6baf06f93f`; subsequent commits only add this delivery/PR record. The exact final tested HEAD is retained in the claim and private worker ledger to avoid a self-referential commit hash in this file.
 
 ## Starting requirement audit
 
