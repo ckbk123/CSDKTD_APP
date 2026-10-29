@@ -2,7 +2,7 @@
 
 - **Stage:** implemented
 - **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
+- **Original scaffold assessment:** `e0b7ddb`; this contribution starts at primary-main `9d923d2`
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
 - **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
 
@@ -97,3 +97,7 @@ Latest production browser check after the final UI build confirmed toolbar Enter
 Own tabs7 and8 were closed; viewport override reset; final private tab inventory empty. Screenshots outside Git: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/cr05-graph.jpg`, `cr05-result.jpg` and `cr05-narrow.jpg`. Own preview8976 is stopped before delivery. No Firefox/native windows, another chat's tabs/QA lock or primary8787 were used.
 
 Source provenance: repository atlas/audits, not newly inspected original slides. Baseline equations and expected results were independently derived; broader fixtures remain explicitly proposed. No accepted requirement or shared dependency remains unfinished within these bounds. Only `src/modules/cr05/**` changed; metadata/TASK/shared APIs, dependencies, versions and deployment are unchanged. One PR will be created/reused, attached and recorded below before exact clean-HEAD submission. Earlier submissions remain preserved, including the separately flagged CF01 notation self-audit awaiting coordinator reopening.
+
+### Pull request delivery
+
+[PR #41 — Implement CR05 signal-flow paths, loops and Mason reasoning](https://github.com/ckbk123/CSDKTD_APP/pull/41) is open and attached to worker chat `01a18701-3f40-7572-9a49-7dc0103c9161`. Branch `codex/cr05-mason-01a18701-3f40`; worktree `C:/Users/baokh/.codex/worktrees/cr05-mason-3f40/CSDKTD APP`. The submitted claim records the clean checked HEAD including this URL record. Reuse this PR/branch for any review corrections; independent verification/integration remains a later coordinator disposition.
