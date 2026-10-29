@@ -89,3 +89,7 @@ A review of extreme inputs found that nonzero literals/products/quotients could 
 ### Compact visual fractions
 
 Another worker's browser evidence showed MathLive can serialize a completed fraction as the valid shorthand \\frac12. DP02 now reads bounded single-token and grouped fraction arguments, including nested forms, with seven new analytic/malformed fixtures. Module tests pass 57/57; full suite passes 99/99; type check and build pass. This closes an editor/parser compatibility gap before final browser QA; a completed fraction-button entry will be checked directly.
+
+## Pull request
+
+[DP02 PR #3](https://github.com/ckbk123/CSDKTD_APP/pull/3) is the single draft PR for this module, targeting main from codex/dp02-pole-mapping-01a186d1. It is attached to this chat. The draft explicitly records final browser QA as pending; no claim submission or completion is asserted yet. GitHub connector creation returned 403; the PR was created through GitHub REST using Git's existing authenticated connection without storing or exposing credentials. Latest human steering requires preserving this PR/branch for review and then selecting the next module in a separate worktree after DP02 submission.
