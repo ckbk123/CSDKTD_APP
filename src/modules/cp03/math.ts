@@ -134,6 +134,7 @@ export function frequency(plant: Plant, w: number): FrequencyValue {
 
 export interface Experiment {
   value: FrequencyValue; stable: boolean; classification: string; period: number;
+  particular(t: number): { input: number; particular: number };
   sample(t: number): { input: number; particular: number; transient: number; output: number };
   tailBound(t: number): number;
 }
@@ -148,7 +149,7 @@ export function experiment(plant: Plant, w: number, amplitude: number): Experime
   if (d.length === 2) {
     const a = d[0], remainder = (n[0] ?? 0) - (n[1] ?? 0) * a;
     const c = amplitude * w / (a * a + w * w) * remainder;
-    transient = t => c * Math.exp(-a * t);
+    transient = t => c === 0 ? 0 : c * Math.exp(-a * t);
     bound = t => Math.abs(c) * Math.exp(-a * t);
   } else if (d.length === 3) {
     const a0 = d[0], a1 = d[1], direct = n[2] ?? 0;
@@ -161,29 +162,34 @@ export function experiment(plant: Plant, w: number, amplitude: number): Experime
       const [first, second] = roots.map(p => p.re);
       const k1 = (v - second * c) / (first - second), k2 = c - k1;
       const C = (r0 + r1 * first) * k1, E = (r0 + r1 * second) * k2;
-      transient = t => C * Math.exp(first * t) + E * Math.exp(second * t);
+      transient = t => (C === 0 ? 0 : C * Math.exp(first * t)) + (E === 0 ? 0 : E * Math.exp(second * t));
       bound = t => Math.abs(C) * Math.exp(first * t) + Math.abs(E) * Math.exp(second * t);
     } else if (delta < 0) {
       const beta = Math.sqrt(-delta), k = (v - alpha * c) / beta;
       const C = r0 * c + r1 * v, E = r0 * k + r1 * (alpha * k - beta * c);
-      transient = t => Math.exp(alpha * t) * (C * Math.cos(beta * t) + E * Math.sin(beta * t));
+      transient = t => C === 0 && E === 0 ? 0 : Math.exp(alpha * t) * (C * Math.cos(beta * t) + E * Math.sin(beta * t));
       bound = t => Math.exp(alpha * t) * Math.hypot(C, E);
     } else {
       const k = v - alpha * c;
       const C = r0 * c + r1 * v, E = (r0 + r1 * alpha) * k;
-      transient = t => (C + E * t) * Math.exp(alpha * t);
+      transient = t => C === 0 && E === 0 ? 0 : (C + E * t) * Math.exp(alpha * t);
       bound = t => {
         const peak = alpha < 0 && E !== 0 ? Math.max(t, -1 / alpha - Math.abs(C / E)) : t;
         return (Math.abs(C) + Math.abs(E) * peak) * Math.exp(alpha * peak);
       };
     }
   }
-  return {
-    value, stable, classification, period: 2 * Math.PI / w,
-    sample(t) {
+  const particularSample = (t: number) => {
       if (!Number.isFinite(t) || t < 0 || t > 3000) fail('Time must be between 0 and 3000 s.');
       const input = amplitude * Math.sin(w * t);
       const particular = amplitude * (value.re * Math.sin(w * t) + value.im * Math.cos(w * t));
+      if (![input, particular].every(x => Number.isFinite(x) && Math.abs(x) <= 1e8)) fail('The particular sinusoid exceeds the display bound (10⁸). Reduce the amplitude or plant gain.');
+      return { input, particular };
+  };
+  return {
+    value, stable, classification, period: 2 * Math.PI / w, particular: particularSample,
+    sample(t) {
+      const { input, particular } = particularSample(t);
       const tr = transient(t), output = particular + tr;
       if (![input, particular, tr, output].every(x => Number.isFinite(x) && Math.abs(x) <= 1e8)) fail('The response exceeds the display bound (10⁸). Shorten the start time or use a stable model.');
       return { input, particular, transient: tr, output };

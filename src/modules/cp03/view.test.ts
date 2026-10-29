@@ -68,4 +68,20 @@ describe('CP03 exercise flow and ownership', () => {
     expect(next.container.querySelector('.cp03-checked')?.textContent).toBe('');
     v.button('Course baseline')?.click(); expect(next.field('Input amplitude A').value).toBe('1');
   });
+  it('updates all three linked frequency plots without hiding a revealed comparison', () => {
+    const v = open(); v.button('Reveal calculation and linked plots').click();
+    const cursor = v.container.querySelector('input[type="range"]') as HTMLInputElement;
+    v.change(cursor, '1');
+    expect(v.field('Frequency ω').value).toBe('10');
+    expect(v.container.querySelectorAll('figure')).toHaveLength(4);
+    expect(v.container.querySelector('.cp03-frequency-plots')?.textContent).toContain('cursor ω=10 rad/s');
+  });
+  it('keeps analytic frequency results available when an unstable time trace is too large', () => {
+    const v = open(); v.change(v.container.querySelector('textarea')!, '1/(s-2)'); v.apply();
+    expect(v.container.textContent).toContain('Unstable model: analytic frequency evaluation only');
+    expect((v.container.querySelector('input[type="checkbox"]') as HTMLInputElement).disabled).toBe(true);
+    expect(v.container.textContent).toContain('exceeds the display bound');
+    v.button('Reveal calculation and linked plots').click();
+    expect(v.container.querySelectorAll('figure')).toHaveLength(4);
+  });
 });

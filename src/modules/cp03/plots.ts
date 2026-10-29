@@ -9,7 +9,7 @@ function svgElement<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record
   return element;
 }
 export function numberLabel(x: number): string {
-  if (Math.abs(x) < 1e-12) return '0';
+  if (x === 0) return '0';
   return Math.abs(x) >= 10000 || Math.abs(x) < 0.001 ? x.toExponential(2) : Number(x.toPrecision(5)).toString();
 }
 

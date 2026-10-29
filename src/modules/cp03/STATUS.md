@@ -39,3 +39,10 @@ Work paused at the user's explicit request to pack up. Stage remains **in-progre
 - Browser QA was requested once and was busy with DP02. CP03 acquired no browser reservation, opened no browser tab and started no preview/helper process. **All required real-browser checks remain unperformed**, including actual MathLive/fonts/keyboard, editing/results/reset/reopen/rapid navigation, narrow viewport and theme inspection.
 - Remaining: real-browser QA and any resulting repairs; final full test/build checks; final requirement evidence and implemented-stage assessment; commit/push and claim submission. The branch has not been pushed. No independent review or mathematical completion is claimed.
 - Resume only on user instruction; use the existing worktree/claim and preserve this checkpoint.
+
+## Resumed verification — 2026-10-29
+
+- Resumed the preserved claim/worktree at user request. Linked cursor motion now keeps already revealed Bode/Nyquist comparisons visible. Large unstable zero-state growth disables that trace with an explicit bound message while retaining the valid formal sinusoid and analytic frequency evaluation.
+- Small nonzero values retain scientific notation; equation output uses typeset powers of ten while plain labels use numeric notation. Zero transient terms avoid multiplying zero by overflowing exponentials.
+- `npm test -- src/modules/cp03`: **42/42 passed** (3 files). Added independent near-repeated pole checks, unstable overflow versus formal evaluation, canceled-mode zero transient, cursor linkage and bounded-trace UI checks.
+- `npm run build`: **passed**, including type check, with the existing MathLive large-chunk warning. Browser QA remains pending; the first resumed reservation attempt reported DR02 busy, and no other worker's browser has been used.

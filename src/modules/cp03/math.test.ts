@@ -104,6 +104,20 @@ describe('CP03 independent frequency and time fixtures', () => {
     expect(() => experiment(baseline, 1, 1).sample(3001)).toThrow(/Time/);
     expect(() => experiment(parsePlant('1/(s-1)'), 1, 1).sample(1000)).toThrow(/bound/);
   });
+  it('retains the formal sinusoid when actual unstable growth overflows', () => {
+    const e = experiment(parsePlant('1/(s-2)'), 1, 1);
+    expect(() => e.sample(1000)).toThrow(/bound/);
+    expect(e.particular(1000).particular).toBeCloseTo(-0.4 * Math.sin(1000) - 0.2 * Math.cos(1000), 12);
+    expect(() => e.particular(-1)).toThrow(/Time/);
+    expect(experiment(parsePlant('(s-1)/(s-1)'), 1, 1).sample(1000).output).toBeCloseTo(Math.sin(1000), 12);
+  });
+  it('agrees with the repeated-pole limit for nearby real and complex poles', () => {
+    const repeated = experiment(parsePlant('1/(s+1)^2'), 1, 1);
+    for (const a1 of [1.999999999, 2.000000001]) {
+      const nearby = experiment(parsePlant(`1/(s^2+${a1}s+1)`), 1, 1);
+      for (const t of [0, 0.2, 1, 5]) expect(nearby.sample(t).output).toBeCloseTo(repeated.sample(t).output, 8);
+    }
+  });
   it('does not certify a slow transient merely because a few cycles are visible', () => {
     const e = experiment(parsePlant('1/(s+0.001)'), 1, 1);
     expect(e.tailBound(20)).toBeGreaterThan(0.9);
