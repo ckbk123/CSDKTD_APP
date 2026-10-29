@@ -7,7 +7,7 @@
 - **Branch:** `codex/dp03-frequency-7e78`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dp03-frequency-7e78\CSDKTD APP`
 - **Ownership:** `src/modules/dp03/**`; [accepted contract](TASK.md)
-- **PR:** not created yet; local mathematical core is in progress.
+- **PR:** https://github.com/ckbk123/CSDKTD_APP/pull/14 (draft; browser verification pending)
 
 ## Requirement audit at claim
 
@@ -53,3 +53,5 @@ Added exercise-wiring and asynchronous-lifecycle tests: first-order prediction f
 While DR01's correction waits for its coordinator-only claim transition and the reserved integration browser slot, independent DP03 verification continued here. Native number controls now reject a nonzero mantissa that underflows to zero, preserving intentional zero exponents and representable scientific entry. Fraction parsing uses braces for TeX arguments; parentheses remain supported inside braced arguments. Optional textbook G(z)= / H(z)= labels are normalized after visual grouping. These guards and independent sign/fraction fixtures pass; no shared helper/API or dependency was changed. Figure scroll regions are keyboard-focusable.
 
 Current module tests pass 36/36. Before the final optional-label regression, full `npm test` passed 118/118 and `npm run build` passed under Node 24.22.1; the existing shared MathLive chunk-size warning remains. The workspace is implemented as an initial local slice but still needs actual browser verification and refinement, final full checks, PR creation/attachment and exact submission. DR01's requested native/TeX correction is preserved separately and takes priority whenever its claim/browser action is enabled.
+
+PR #14 is created and attached to this worker chat. The current implementation passed all 119 application tests and the production build after the final optional-label change. Its claim remains active; browser QA, plot/input refinements and final exact submission remain open. The earlier DR01 PR1 is still a separate preserved review return. No other module is included in this branch.
