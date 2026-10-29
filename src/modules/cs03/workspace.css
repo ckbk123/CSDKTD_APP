@@ -1,6 +1,7 @@
 [data-module="CS03"] .cubic-tool { display: grid; gap: 1rem; min-width: 0; }
 [data-module="CS03"] .cubic-tool p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
-[data-module="CS03"] .cubic-tool h3 { margin: 1.5rem 0 .5rem; }
+[data-module="CS03"] .cubic-tool h3 { margin: 1.5rem 0 .5rem; overflow-wrap: anywhere; }
+[data-module="CS03"] .cubic-tool > section { min-width: 0; }
 [data-module="CS03"] .cubic-tool details { border: 1px solid var(--line); border-radius: .6rem; padding: .75rem; }
 [data-module="CS03"] .cubic-tool summary { cursor: pointer; font-weight: 600; }
 [data-module="CS03"] .cubic-tool details p { margin-top: .6rem; }

@@ -96,3 +96,6 @@ Meaningful new lifecycle tests check the initial nonempty/loading render before 
 
 Phone readability preparation: the five-row inequality diagram keeps a440pxminimum inside its own horizontal scroll area, avoiding roughly8pxlabels when a480-unit SVG shrinks into a phone card. Its note explains scrolling; numeric controls, exact interval text and condition table remain outside that scroll area. Build/type checking passes. Actual phone geometry and usability still require the reserved browser pass; no browser evidence is inferred from CSS.
 
+
+DS04 review correction is resubmitted at a0d3704 in the preserved PR#13; CS03 is the sole active implementation again. Its first browser pass is deferred for the coordinator's next DD04 slot. Long exact gain headings now wrap inside the result section, whose minimum width is explicitly zero; this keeps large rational endpoints within the module on phones. Build/type check passes; real phone evidence remains pending.
+
