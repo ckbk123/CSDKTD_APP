@@ -132,7 +132,7 @@ function mountView({ container, signal }: ModuleContext, { createEquationDisplay
     const explorer = el('section'); explorer.append(el('h3', 'Inspect every eigenvalue and the selected mode'));
     const view = select('View', [['original', 'Original state realization'], ['reduced', 'Reduced scalar transfer']]), mode = select('Selected eigenvalue / pole', []);
     const generalized = el('input'); generalized.type = 'checkbox'; const generalizedLabel = el('label', undefined, 'cs-checkbox'); generalizedLabel.append(generalized, el('span', 'Show generalized mode t·exp(λt)'));
-    const plotArea = el('div'), modeInfo = el('div'), rootList = el('div'); explorer.append(view.element, rootList, mode.element, generalizedLabel, modeInfo, plotArea); results.append(explorer);
+    const plotArea = el('div'), modeInfo = el('div'), rootList = el('div'); explorer.append(view.element, rootList, mode.element, generalizedLabel, modeInfo, el('p', 'On a narrow screen, scroll within each plot to read its axes.'), plotArea); results.append(explorer);
     const showPlots = (): void => {
       if (signal.aborted) return;
       const visibleRoots = view.input.value === 'original' ? analysis.eigenvalues : analysis.poles, selected = Number(mode.input.value) || 0, chosen = visibleRoots[selected];

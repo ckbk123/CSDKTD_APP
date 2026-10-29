@@ -65,3 +65,5 @@ Not yet performed. Shared browser QA was busy (DR01, then DS03), so this worker 
 No shared dependency/API request is needed. No independent review has been claimed; the final worker stage will be implemented rather than verified. Checkpoints fd559dc, e614561, a42cbde and 8e8e4f5 preserve the audit and implementation. Branch checkpoints have been pushed for recovery.
 
 Input review also added MathLive's compact fraction serialization (single-digit unbraced arguments such as fraction 1/2) and mixed braced/unbraced forms. They use the same exact bounded rational validation and pass the local tests. Browser checks remain pending until the shared QA resource is released.
+
+Narrow-screen preparation keeps plot labels at a readable minimum scale with scrolling confined to each figure (rather than shrinking axes with the whole SVG). The production build still passes; actual viewport evidence remains pending.

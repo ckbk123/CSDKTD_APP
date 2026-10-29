@@ -23,11 +23,12 @@
 [data-module="CS01"] .cs-checkbox[hidden] { display: none; }
 [data-module="CS01"] .cs01 table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13px; }
 [data-module="CS01"] .cs01 th, [data-module="CS01"] .cs01 td { text-align: left; border-bottom: 1px solid var(--line); padding: 9px; }
-[data-module="CS01"] .cs-figure { margin: 22px 0; min-width: 0; }
+[data-module="CS01"] .cs-figure { margin: 22px 0; min-width: 0; overflow-x: auto; }
 [data-module="CS01"] .cs-figure figcaption { margin-bottom: 8px; font-weight: 550; }
-[data-module="CS01"] .cs-figure svg { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--background); display: block; }
+[data-module="CS01"] .cs-figure svg { width: 100%; min-width: 560px; height: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--background); display: block; }
 [data-module="CS01"] .cs-plane { max-width: 540px; }
-[data-module="CS01"] .cs-figure svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+[data-module="CS01"] .cs-plane svg { min-width: 360px; }
+[data-module="CS01"] .cs-figure svg text { fill: var(--muted); font-size: 13px; font-family: inherit; }
 [data-module="CS01"] .cs-axis { stroke: var(--muted); stroke-width: 1; }
 [data-module="CS01"] .cs-left-plane { fill: var(--tint); }
 [data-module="CS01"] .cs-pole { stroke: var(--accent); stroke-width: 2.5; fill: none; }
