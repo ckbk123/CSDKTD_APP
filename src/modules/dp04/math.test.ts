@@ -64,7 +64,9 @@ describe('DP04 independent quadratic locus fixtures', () => {
     const roots = rootsAt(negative, 1).roots;
     expect(roots[0].re).toBeCloseTo((1 + Math.sqrt(5)) / 2, 14);
     expect(roots[1].re).toBeCloseTo((1 - Math.sqrt(5)) / 2, 14);
-    expect(testPoint(negative, { re: -1, im: 0 }).gain?.re).toBe(2);
+    const point = testPoint(negative, { re: -1, im: 0 });
+    expect(point.gain?.re).toBe(2); expect(point.onLocus).toBe(true);
+    expect(Math.cos(point.vectorTotal! - point.angle!)).toBeCloseTo(1, 14);
   });
   it('handles conjugate open poles and zero real-axis intervals', () => {
     const model = { a1: 0, a0: 1, b1: 0, b0: 1 };
@@ -93,6 +95,7 @@ describe('DP04 independent quadratic locus fixtures', () => {
     const interior = testPoint(baseline, { re: 0, im: Math.sqrt(0.2) });
     expect(interior.onLocus).toBe(true); expect(interior.gain?.re).toBeCloseTo(1, 14);
     expect(Math.sin(interior.vectorTotal! - interior.angle!)).toBeCloseTo(0, 14);
+    expect(Math.cos(interior.vectorTotal! - interior.angle!)).toBeCloseTo(1, 14);
     const off = testPoint(baseline, { re: 0.5, im: 0.5 });
     expect(off.onLocus).toBe(false); expect(off.gain?.re).toBeCloseTo(0.35 / 0.74, 14); expect(off.gain?.im).toBeCloseTo(-0.25 / 0.74, 14);
     expect(testPoint(baseline, { re: 0, im: 0 }).kind).toBe('pole');
@@ -120,5 +123,14 @@ describe('DP04 independent quadratic locus fixtures', () => {
     expect(() => testPoint(baseline, { re: 51, im: 0 })).toThrow();
     expect(() => modalSamples({ re: 1, im: 0 }, 3)).toThrow(); expect(() => modalSamples({ re: Infinity, im: 0 }, 10)).toThrow();
     expect(() => inverseMode({ re: 1, im: 0 }, 0)).toThrow(); expect(() => inverseMode({ re: NaN, im: 0 }, 0.1)).toThrow();
+  });
+  it('does not turn unsupported tiny coefficients, gains or candidate products into zero roots', () => {
+    expect(() => validateModel({ ...baseline, a0: 1e-101 })).toThrow(/10⁻¹⁰⁰/);
+    expect(() => rootsAt({ a1: -1, a0: 0, b1: 0, b0: 0.0001 }, 1e-320)).toThrow(/nonzero gain/);
+    expect(() => testPoint({ a1: 0, a0: 0, b1: 0, b0: 1 }, { re: 1e-200, im: 0 })).toThrow(/component magnitudes/);
+    const tiny = rootsAt({ a1: 0, a0: 0, b1: 1, b0: 0 }, 1e-100);
+    expect(tiny.roots).toEqual([{ re: 0, im: 0 }, { re: -1e-100, im: 0 }]);
+    expect(tiny.repeated).toBe(false);
+    expect(modalSamples(tiny.roots[1], 4)[1]).toBe(-1e-100);
   });
 });

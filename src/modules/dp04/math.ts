@@ -4,6 +4,7 @@ export interface Complex { readonly re: number; readonly im: number }
 export interface RootSet { readonly roots: readonly [Complex, Complex]; readonly coefficients: readonly [number, number, number]; readonly residuals: readonly [number, number]; readonly repeated: boolean; readonly nearRepeated: boolean }
 export const CIRCLE_TOLERANCE = 1e-9;
 export const ANGLE_TOLERANCE = 1e-7;
+export const MIN_NONZERO = 1e-100;
 const fail = (message: string): never => { throw new Error(message); };
 export const magnitude = (z: Complex): number => Math.hypot(z.re, z.im);
 export const phase = (z: Complex): number => { const angle = Math.atan2(z.im || 0, z.re); return angle === -Math.PI ? Math.PI : angle; };
@@ -14,6 +15,7 @@ const wrap = (angle: number): number => Math.atan2(Math.sin(angle), Math.cos(ang
 
 /** Stable real-root evaluation, retaining the continuous +sqrt / -sqrt branches. */
 function quadratic(a: number, b: number): readonly [Complex, Complex] {
+  if (b === 0) return a >= 0 ? [{ re: 0, im: 0 }, { re: -a || 0, im: 0 }] : [{ re: -a, im: 0 }, { re: 0, im: 0 }];
   const delta = a * a - 4 * b;
   if (![a, b, delta].every(Number.isFinite)) fail('The quadratic is outside the finite numerical range.');
   if (delta < 0) return [{ re: -a / 2 || 0, im: Math.sqrt(-delta) / 2 }, { re: -a / 2 || 0, im: -Math.sqrt(-delta) / 2 }];
@@ -26,6 +28,7 @@ function quadratic(a: number, b: number): readonly [Complex, Complex] {
 export function validateModel(model: Model): Model {
   const { a1, a0, b1, b0 } = model;
   if (![a1, a0, b1, b0].every(Number.isFinite)) fail('All normalized coefficients must be finite.');
+  if ([a1, a0, b1, b0].some(value => value !== 0 && Math.abs(value) < MIN_NONZERO)) fail('A nonzero normalized coefficient is below 10⁻¹⁰⁰. Rescale the model.');
   if ([a1, a0, b1, b0].some(value => Math.abs(value) > 100)) fail('Keep each monic-normalized coefficient within ±100.');
   const scale = Math.max(Math.abs(b1), Math.abs(b0));
   if (scale < 1e-4) fail('Use a nonzero numerator with normalized coefficient magnitude at least 0.0001. Rescale the fixed loop factor if needed.');
@@ -39,13 +42,15 @@ export function numerator(model: Model, z: Complex): Complex { return { re: mode
 export function rootsAt(model: Model, gain: number): RootSet {
   const m = validateModel(model);
   if (!Number.isFinite(gain) || gain < 0 || gain > 100) fail('Select a gain K from 0 to 100.');
-  const a = m.a1 + gain * m.b1, b = m.a0 + gain * m.b0;
+  if (gain !== 0 && gain < MIN_NONZERO) fail('A nonzero gain below 10⁻¹⁰⁰ is outside the numerical scale. Use 0 explicitly or rescale the loop.');
+  const gainProduct = (coefficient: number) => { const value = gain * coefficient; if (gain !== 0 && coefficient !== 0 && value === 0) fail('A nonzero characteristic product is too small to represent. Rescale the loop.'); return value; };
+  const a = m.a1 + gainProduct(m.b1), b = m.a0 + gainProduct(m.b0);
   const roots = quadratic(a, b);
   const residual = (z: Complex) => magnitude(denominator({ ...m, a1: a, a0: b }, z)) / Math.max(1, magnitude(z) ** 2 + Math.abs(a) * magnitude(z) + Math.abs(b));
   const residuals = [residual(roots[0]), residual(roots[1])] as const;
   if (residuals.some(value => !Number.isFinite(value) || value > 1e-10)) fail('The roots did not meet the scaled residual tolerance of 10⁻¹⁰. Rescale this model.');
   const delta = a * a - 4 * b;
-  return { roots, coefficients: [1, a, b], residuals, repeated: delta === 0, nearRepeated: Math.abs(delta) <= 1e-10 * Math.max(1, a * a, Math.abs(4 * b)) };
+  return { roots, coefficients: [1, a, b], residuals, repeated: delta === 0 && (b !== 0 || a === 0), nearRepeated: Math.abs(delta) <= 1e-10 * Math.max(1, a * a, Math.abs(4 * b)) };
 }
 export function diskClass(roots: readonly Complex[]): 'inside' | 'boundary' | 'outside' {
   if (roots.length !== 2 || roots.some(z => ![z.re, z.im].every(Number.isFinite))) fail('Classify both finite characteristic roots, including multiplicity.');
@@ -95,7 +100,7 @@ export function collisionGains(model: Model): readonly number[] {
 export function trace(model: Model, maximum: number): { readonly gains: readonly number[]; readonly branches: readonly [readonly Complex[], readonly Complex[]] } {
   validateModel(model);
   if (!Number.isFinite(maximum) || maximum < 0.01 || maximum > 100) fail('Use a gain window from 0.01 to 100.');
-  const gains = [...new Set([...Array.from({ length: 241 }, (_, index) => maximum * index / 240), ...collisionGains(model).filter(k => k <= maximum)])].sort((a, b) => a - b);
+  const gains = [...new Set([...Array.from({ length: 241 }, (_, index) => maximum * index / 240), ...collisionGains(model).filter(k => k <= maximum && (k === 0 || k >= MIN_NONZERO))])].sort((a, b) => a - b);
   const sets = gains.map(k => rootsAt(model, k));
   return { gains, branches: [sets.map(set => set.roots[0]), sets.map(set => set.roots[1])] };
 }
@@ -104,6 +109,7 @@ export interface PointTest { readonly kind: 'regular' | 'pole' | 'zero' | 'commo
 export function testPoint(model: Model, point: Complex): PointTest {
   const m = validateModel(model);
   if (![point.re, point.im].every(Number.isFinite) || Math.max(Math.abs(point.re), Math.abs(point.im)) > 50) fail('Use finite candidate coordinates within ±50.');
+  if ([point.re, point.im].some(value => value !== 0 && Math.abs(value) < MIN_NONZERO)) fail('Use 0 explicitly or candidate component magnitudes of at least 10⁻¹⁰⁰. Smaller components cannot be resolved reliably.');
   const d = denominator(m, point), b = numerator(m, point), dSize = magnitude(d), bSize = magnitude(b);
   if (dSize === 0 && bSize === 0) return { kind: 'common', point };
   if (dSize === 0) return { kind: 'pole', point };

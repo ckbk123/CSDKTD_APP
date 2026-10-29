@@ -1,6 +1,6 @@
 # DP04 implementation status
 
-- **Stage:** in-progress (audit; solver/interface not implemented yet)
+- **Stage:** in-progress (bounded exercise implemented; final browser verification pending)
 - **Assessed:** 2026-10-29; starting primary main `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d`
 - **Owned scope:** `src/modules/dp04/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
@@ -71,3 +71,13 @@ Resource bounds are512 characters,128 expanded tokens,eight logical visible grou
 The visual e/E programming notation is rejected. Textbook powers are interpreted only in the declared literal0–2 range; negative/fractional/large powers are unsupported. Ambiguous adjacency before a fraction is rejected with explicit +/× guidance, including signed, hidden/visible grouped, styled and nested variants. Valid explicit +/×, ordinary compact arguments and signed nested coefficients retain independently checked values. This addresses the coordinator's mixed-number review notice; syntaxIssues is not used as the semantic validator.
 
 npm test -- src/modules/dp04 now passes69 cases in2 files (16 math,53 input); type checking passed after the parser implementation. No UI or actual browser behavior is claimed yet. Next: staged construction quiz, diagrams/vectors, selected entire-root table/modes, shared numeric controls and lifecycle/production verification. The last QA-order deferral remains in force until the coordinator's release notice.
+
+## Interface and integration checkpoint
+
+The module now has shared visual model entry, native controls through readNumericInput, a staged pole/zero view and real-axis prediction, full construction reasoning, toggled overlays, gain cursor, complete root table and unit root-mode plots. Every selected root remains listed when clipped by the view window. Angle tests show each vector's length/phase, coefficient phase, direct complex−D/B, magnitude-only gain and the joint positive-gain/angle check. Invalid candidates retain the last valid plotted point; invalid gains hide stale results. Constant/negative numerator, changed zero and common-factor presets compute through the same parser/math.
+
+workspace.ts retains a synchronous mount and defers the browser-only view, guarding abort/disposal and initialization failure. Styles are scoped to DP04; chart-only SVG styles avoid altering MathLive equation graphics. Static controls use the mount signal; rebuilt plots/tables/quiz choices attach no new listeners. The shared input is destroyed on cleanup. Plot/table scroll regions are keyboard-focusable, and SVG text keeps a readable minimum chart size.
+
+The interface regressions caught a class-name conflict between an SVG root marker and the result panel that could leave the root table stale after moving K. The marker now has its own class, and repeated gain/candidate updates are checked. Additional numeric conditioning rejects nonzero normalized coefficients, K and candidate components below10^-100, avoiding unrepresentable polynomial products; exact zero remains supported. Tiny supported nonzero roots remain nonzero, and decaying modal tails may still round to zero. Near/repeated-root text distinguishes the unit basis from a full response and qualifies nonzero versus zero repeated-root transients.
+
+Current checks:89 module cases in4 files (17 math,53 input,14 mocked interface,5 lazy lifecycle); npm run check passes; all292 project tests in19 files pass; production build passes. The DP04 view is about12.94kB gzip, with the existing MathLive warning about221.49kB gzip and20 local fonts. Mocked presentation is not evidence of actual MathLive behavior. Browser editing/fraction/fonts/keyboard, construction/gain/candidate checks, reset/reopen/fast navigation and phone layout remain pending. No shared/package/configuration change was needed. The coordinator has released the temporary QA order; normal acquisition can resume when this build is ready.
