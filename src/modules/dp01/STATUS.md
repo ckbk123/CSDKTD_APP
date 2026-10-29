@@ -57,7 +57,7 @@ In this worktree, bundled Node v24.22.1 with npm 10.8.2 and locked dependencies 
 
 ## Remaining work and delivery
 
-No accepted exercise requirement remains open within the declared bounds. No shared dependency/API change, version change, deployment or main merge was made. The branch and worktree are preserved for coordinator integration. Stage is implemented; an independent final integration review is separate and is not claimed here.
+No accepted exercise requirement remains open within the declared bounds. The worker handed off an implemented module without shared dependency/API, version, deployment or main changes. Its branch and worktree remain preserved. The independent reviews below establish verified integration in 0.3.2 and the coordinator-owned native-input correction in 0.3.3.
 
 
 ## Review corrections and real-browser evidence
@@ -88,3 +88,9 @@ The integration at package version 0.3.2 passes all 134 combined application tes
 The coordinator independently inspected the production build on port 8820 in its own Chromium tab under the DP01 QA reservation. The visible version/author matched 0.3.2. Baseline y[3]=0.488 and amplitude 2 gave 0.976. Ordinary minus/key entry plus the fraction button built -1/(z-0.5), producing y[3]=-1.75. Invalid T=0 displayed useful feedback. Reset restored amplitude 1 and hidden results. Navigation to the implemented DS03 left zero DP01 nodes and one correct DS03 equation field; reopening DP01 started fresh. Fonts loaded; the revealed 390x844 layout measured document scrollWidth=clientWidth=375. Browser warning/error logs were empty. The temporary viewport was reset, the tab closed and QA released.
 
 Coordinator screenshots: `C:/Users/baokh/.codex/visualizations/2026/10/28/01a182f7-8bce-7fb3-b79d-2ef1b1cfe8dd/release-0.3.2-desktop.png` and `release-0.3.2-phone.png`. A transient automation selector failed to identify the fresh shadow textbox immediately after reset; fresh DOM inspection and the public math-field host then completed real entry successfully. No application failure or workaround through internal state was used. The worker's broader input-family/keyboard evidence remains separately attributed above. No hosted deployment is implied.
+
+## Coordinator numeric-control correction — 0.3.3
+
+Native controls now use shared `readNumericInput` for experiment settings/history, sample inspection and modal comparison. Nonzero raw text rounded to zero receives useful feedback and failing calculations remain hidden; range/integer/unit checks stay local. Intentional zero, signed zero, normal native exponent values and representable subnormals retain their numeric meaning. Visual equation grammar and recurrence algorithms are unchanged. Independent review checked the shared helper and both consumers, with 129 targeted tests and 17 extra native checks; the full 0.3.3 suite passes 203 tests. DP01 now has 58 module tests.
+
+The coordinator's actual production browser rejected amplitude `1e-999` with explicit nonzero/too-small feedback, then accepted `0e-999` and produced zero output as intended. The session also verified cross-tool cleanup; no warning/error log appeared. The earlier 0.3.2 review remains evidence for its original frozen source, and this section records the later correction.

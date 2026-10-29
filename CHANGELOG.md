@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.3 — 29 October 2026
+
+- DS02: build mirrored Jury rows, check a predicted strict gain interval, inspect the exact inequality intersection and boundary roots, and compare the .2K/.1K worksheet families. The supported domain is explicitly monic quadratics affine in K.
+- Accept [PR #4](https://github.com/ckbk123/CSDKTD_APP/pull/4), source `d394a81d46ae3602284e8f6f4d2a9e4dd2d8c964`, with [independent review evidence](src/modules/ds02/STATUS.md). All 203 combined application tests, type checking and the production build pass; the unchanged coordination helper has 28 passing tests.
+- Add a shared native-number reader and apply it to DP01/DS03. Nonzero entries such as `1e-999` receive feedback instead of becoming zero; intentional zero and representable numeric exponent entry remain valid. Independent review and real-browser regressions cover the change without altering visual-equation parsing or mathematical bounds.
+
 ## 0.3.2 — 29 October 2026
 
 - DP01: edit first- or second-order discrete transfer functions; compare step, impulse, ramp and free responses with initial history, sample stems, arithmetic and modal reasoning. Equal-radius mode comparisons distinguish alternating and oscillatory sequences.

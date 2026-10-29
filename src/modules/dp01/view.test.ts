@@ -44,6 +44,44 @@ describe('DP01 student flow with an equation API stub', () => {
     click(root, 'Reveal computed sequence');
     expect(root.querySelector('tbody tr:nth-child(2) td:last-child')!.textContent).toBe('0.4');
   });
+  it.each([
+    ['Sample period T (s)', 'Sample period T (s)'],
+    ['Amplitude A (ramp: units/s)', 'Amplitude A'],
+    ['Number of samples', 'Number of samples'],
+  ])('rejects nonzero native underflow in %s and hides the previous result', (label, messageLabel) => {
+    const root = open(); click(root, 'Reveal computed sequence');
+    expect(root.querySelector('table')!.closest('[hidden]')).toBeNull();
+    change(control(root, label), '1e-999'); click(root, 'Reveal computed sequence');
+    expect(root.querySelector('[role="status"]')!.textContent).toContain(`${messageLabel} is nonzero but too small`);
+    expect(root.querySelector('table')!.closest('[hidden]')).not.toBeNull();
+  });
+  it.each(['y[−1]', 'y[−2] (order 2 only)'])('rejects nonzero native underflow in custom history %s', label => {
+    const root = open(); change(control(root, 'Initial output history'), 'custom');
+    change(control(root, label), '-1e-999'); click(root, 'Reveal computed sequence');
+    expect(root.querySelector('[role="status"]')!.textContent).toContain('Output history');
+    expect(root.querySelector('[role="status"]')!.textContent).toContain('nonzero but too small');
+    expect(root.querySelector('table')).toBeNull();
+  });
+  it('accepts intentional native zero and representable exponent values within module bounds', () => {
+    const root = open(); change(control(root, 'Amplitude A (ramp: units/s)'), '0e-999');
+    click(root, 'Reveal computed sequence');
+    expect(root.querySelector('tbody tr:nth-child(2) td:last-child')!.textContent).toBe('0');
+    change(control(root, 'Amplitude A (ramp: units/s)'), '1e-2');
+    change(control(root, 'Sample period T (s)'), '1e-2');
+    change(control(root, 'Number of samples'), '4e0');
+    change(control(root, 'Initial output history'), 'custom');
+    change(control(root, 'y[−1]'), '-0'); change(control(root, 'y[−2] (order 2 only)'), '0e-999');
+    click(root, 'Reveal computed sequence');
+    expect(root.querySelector('[role="status"]')!.textContent).toContain('4 samples computed');
+    expect(root.querySelector('tbody tr:nth-child(2) td:nth-child(2)')!.textContent).toBe('0.01');
+    expect(root.querySelector('tbody tr:nth-child(2) td:last-child')!.textContent).toBe('0.002');
+  });
+  it('rejects underflow in a mode comparison rather than drawing a zero-radius mode', () => {
+    const root = open(); change(control(root, 'Comparison radius r'), '1e-999');
+    click(root, 'Compare modes');
+    expect(root.textContent).toContain('Comparison radius r is nonzero but too small');
+    expect([...root.querySelectorAll('.dp-plot')].at(-1)!.querySelector('svg')).toBeNull();
+  });
   it('shows alternating history mode, conjugates and repeated boundary growth', () => {
     const root = open(); click(root, 'Mode −0.8'); click(root, 'Reveal computed sequence');
     expect(root.querySelector('tbody tr:nth-child(2) td:last-child')!.textContent).toBe('-0.8');

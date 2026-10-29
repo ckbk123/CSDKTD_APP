@@ -52,6 +52,8 @@ Implement the assigned exercise contract with explicit, tested limits. Declare c
 
 Use readable labels, units and equations. Provide numeric/keyboard alternatives to dragging, accessible controls and useful input errors. Avoid slogans, decorative filler and claims broader than the implemented mathematics. Keep every tool within the course's SISO LTI scope.
 
+Read native number controls through the stateless `src/shared/numeric-input.ts` helper and handle its errors in the module's feedback path. It rejects nonzero text rounded to zero by the browser while preserving intentional zero and normal numeric exponents; module-specific bounds, integer checks and units remain local. Exact-fraction text fields and visual equations retain their separate bounded parsers. See the native-control and displayed-meaning guidance in `docs/EQUATION_INPUT.md`.
+
 Use `src/shared/equations/input.ts` for visual equation entry (`createEquationInput`) and typeset results (`createEquationDisplay`); students must not need MATLAB syntax or LaTeX knowledge. Keep each `EquationDraft` inside the caller's mount, pass its abort signal and destroy the input on cleanup. The locally bundled MathLive editor checks notation only: add a bounded, independently tested module-specific parser and mathematical validation before solving. The shell's editable baseline banner is a preview; its edits do not update the module workspace. Follow `docs/EQUATION_INPUT.md`, including real-browser font/keyboard checks; a mocked editor in jsdom is not evidence of browser functionality.
 
 ## Validation and delivery

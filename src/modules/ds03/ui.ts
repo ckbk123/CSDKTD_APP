@@ -1,5 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
+import { readNumericInput } from '../../shared/numeric-input';
 import { analyze, BASELINE, mapToW, parseFamily, stableInterval, transform, VARIANT, type Affine, type Complex, type Family } from './math';
 import './workspace.css';
 
@@ -72,9 +73,16 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const controls = node('div', undefined, 'ds-controls');
   function numeric(label: string, value: number, min: number, max: number, change: (v: number) => void): HTMLInputElement {
     const wrap = node('label', label); const field = node('input'); field.type = 'number'; field.value = String(value); field.min = String(min); field.max = String(max); field.step = 'any';
-    field.addEventListener('input', () => change(field.value.trim() ? Number(field.value) : NaN), { signal }); wrap.append(field); controls.append(wrap); return field;
+    field.addEventListener('input', () => {
+      let next: number;
+      try { next = readNumericInput(field, label); }
+      catch (reason) {
+        change(NaN); error.textContent = reason instanceof Error ? reason.message : 'Check the selected gain.'; error.hidden = false; return;
+      }
+      change(next);
+    }, { signal }); wrap.append(field); controls.append(wrap); return field;
   }
-  numeric('Selected gain K (−100 to 100)', gain, -100, 100, v => { gain = v; invalidate(); });
+  const gainField = numeric('Selected gain K (−100 to 100)', gain, -100, 100, v => { gain = v; invalidate(); });
   const predictionLabel = node('label', 'Your prediction at this K'); const prediction = node('select');
   for (const value of ['Choose a prediction', 'strictly stable', 'boundary', 'unstable']) { const option = node('option', value); option.value = value; prediction.append(option); }
   predictionLabel.append(prediction); controls.append(predictionLabel); root.append(controls);
@@ -95,7 +103,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
     if (signal.aborted) return;
     try {
       if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error('Complete the visual polynomial and check its notation first.');
-      family = parseFamily(draft.latex); analyze(family, gain); step = 1; error.hidden = true; render();
+      family = parseFamily(draft.latex); gain = readNumericInput(gainField, 'Selected gain K'); analyze(family, gain); step = 1; error.hidden = true; render();
     } catch (reason) { family = null; result.replaceChildren(); renderMap(); error.textContent = reason instanceof Error ? reason.message : 'Check the inputs.'; error.hidden = false; }
   });
   button('Try 0.1K variation', () => { input.setValue(VARIANT); draft = input.getValue(); invalidate(); input.focus(); });
@@ -109,16 +117,20 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const reLabel = node('label', 'Selected Re z (−5 to 5)'), re = node('input'); re.type = 'number'; re.min = '-5'; re.max = '5'; re.step = '.1'; re.value = '0'; reLabel.append(re); mapControls.append(reLabel);
   const imLabel = node('label', 'Selected Im z (−5 to 5)'), im = node('input'); im.type = 'number'; im.min = '-5'; im.max = '5'; im.step = '.1'; im.value = '1'; imLabel.append(im); mapControls.append(imLabel);
   const mapError = node('p'); mapError.setAttribute('role', 'status'); mapping.append(mapControls, mapError, mapView);
-  function updateAngle(raw: string): void {
-    const degrees = raw.trim() ? Number(raw) : NaN;
+  function updateAngle(field: HTMLInputElement): void {
+    let degrees: number;
+    try { degrees = readNumericInput(field, 'Unit-circle angle θ (degrees)'); }
+    catch (reason) { mapError.textContent = reason instanceof Error ? reason.message : 'Check the angle.'; return; }
     if (!Number.isFinite(degrees) || degrees < 0 || degrees > 360) { mapError.textContent = 'Choose an angle from 0° to 360°.'; return; }
-    angle.value = raw; slider.value = raw;
+    angle.value = field.value; slider.value = field.value;
     point = degrees === 180 ? { re: -1, im: 0 } : { re: Math.cos(degrees * Math.PI / 180), im: Math.sin(degrees * Math.PI / 180) };
     re.value = fmt(point.re); im.value = fmt(point.im); mapError.textContent = ''; renderMap();
   }
-  angle.addEventListener('input', () => updateAngle(angle.value), { signal }); slider.addEventListener('input', () => updateAngle(slider.value), { signal });
+  angle.addEventListener('input', () => updateAngle(angle), { signal }); slider.addEventListener('input', () => updateAngle(slider), { signal });
   const updatePoint = () => {
-    const r = re.value.trim() ? Number(re.value) : NaN, i = im.value.trim() ? Number(im.value) : NaN;
+    let r: number, i: number;
+    try { r = readNumericInput(re, 'Selected Re z'); i = readNumericInput(im, 'Selected Im z'); }
+    catch (reason) { mapError.textContent = reason instanceof Error ? reason.message : 'Check the selected point.'; return; }
     if (![r, i].every(v => Number.isFinite(v) && Math.abs(v) <= 5)) { mapError.textContent = 'Choose finite real and imaginary parts between −5 and 5.'; return; }
     const distance = Math.hypot(r + 1, i);
     if (distance !== 0 && distance < 1e-8) { mapError.textContent = 'This point is too close to the mapping pole. Choose z = −1 exactly, or a point at least 10⁻⁸ away.'; return; }

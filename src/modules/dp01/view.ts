@@ -1,5 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput } from '../../shared/equations/input';
+import { readNumericInput } from '../../shared/numeric-input';
 import { classify, format, freeDecomposition, impulseDecomposition, modalSamples, parseModel, poles, recurrence, simulate, tex, type Excitation, type Model, type Sample } from './math';
 import { stemPlot } from './plot';
 import './workspace.css';
@@ -88,7 +89,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
 
   function updatePlot(): void {
     if (!shown || signal.aborted) return;
-    const k = sample.valueAsNumber;
+    let k: number;
+    try { k = readNumericInput(sample, 'Sample index k'); }
+    catch (reason) { arithmetic.replaceChildren(el('p', reason instanceof Error ? reason.message : 'Check the sample index.')); return; }
     if (!Number.isInteger(k) || k < 0 || k >= rows.length) {
       arithmetic.replaceChildren(el('p', `Choose a sample index from 0 to ${rows.length - 1}.`)); return;
     }
@@ -115,8 +118,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const draft = plant.getValue();
       if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error('Complete the transfer function and check its notation before calculating.');
       model = parseModel(draft.latex);
-      rows = simulate(model, { T: T.valueAsNumber, count: count.valueAsNumber, amplitude: amplitude.valueAsNumber, input: input.value as Excitation,
-        history: history.value === 'zero' ? [0, 0] : [h1.valueAsNumber, h2.valueAsNumber] });
+      const period = readNumericInput(T, 'Sample period T (s)');
+      rows = simulate(model, { T: period, count: readNumericInput(count, 'Number of samples'), amplitude: readNumericInput(amplitude, 'Amplitude A'), input: input.value as Excitation,
+        history: history.value === 'zero' ? [0, 0] : [readNumericInput(h1, 'Output history y[−1]'), readNumericInput(h2, 'Output history y[−2]')] });
       const ps = poles(model);
       const decays = ps.every(p => Math.hypot(p.re, p.im) < 1 - 1e-9);
       const nearBoundary = ps.some(p => Math.abs(Math.hypot(p.re, p.im) - 1) <= 1e-9);
@@ -132,7 +136,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       ps.forEach((p, i) => {
         const r = Math.hypot(p.re, p.im), theta = Math.atan2(p.im, p.re);
         equations.append(createEquationDisplay(`p_{${i + 1}}=${tex(p.re)}${p.im < 0 ? '-' : '+'}${tex(Math.abs(p.im))}j,\\quad |p|=${tex(r)},\\quad\\theta=${tex(theta)}\\;\\mathrm{rad/sample}`, `Pole ${i + 1}`),
-          el('p', `${classify(p)}. ${r === 0 ? 'A zero pole is a finite-memory mode; 0⁰ is taken as 1.' : `Principal angular frequency θ/T = ${format(theta / Number(T.value))} rad/s; alias branches differ by 2π/T.`}`));
+          el('p', `${classify(p)}. ${r === 0 ? 'A zero pole is a finite-memory mode; 0⁰ is taken as 1.' : `Principal angular frequency θ/T = ${format(theta / period)} rad/s; alias branches differ by 2π/T.`}`));
       });
       equations.append(el('p', 'A repeated pole also contributes k pᵏ. Thus a repeated unit-circle pole can grow even when a simple unit-circle mode stays bounded. These statements concern denominator/free modes, not a blanket BIBO or internal-stability certificate. Rounded displayed coefficients/formulas use six significant digits; samples use full precision.', 'dp-small'));
       sample.max = String(rows.length - 1); sample.value = String(Math.min(Number(sample.value) || 0, rows.length - 1));
@@ -157,7 +161,14 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const thetaB = number(labControls, 'Angle B (degrees/sample)', 180, 0, 180);
   const labPlot = el('div', '', 'dp-plot'); labPlot.tabIndex = 0; labPlot.setAttribute('aria-label', 'Mode comparison plot; scroll horizontally on narrow screens'); const labText = el('p');
   const compare = (): void => {
-    const r = radius.valueAsNumber, a = thetaA.valueAsNumber, b = thetaB.valueAsNumber;
+    let r: number, a: number, b: number;
+    try {
+      r = readNumericInput(radius, 'Comparison radius r');
+      a = readNumericInput(thetaA, 'Angle A (degrees/sample)');
+      b = readNumericInput(thetaB, 'Angle B (degrees/sample)');
+    } catch (reason) {
+      labPlot.replaceChildren(); labText.textContent = reason instanceof Error ? reason.message : 'Check the comparison inputs.'; return;
+    }
     if (![r, a, b].every(Number.isFinite) || r < 0 || r > 1.5 || Math.min(a, b) < 0 || Math.max(a, b) > 180) {
       labPlot.replaceChildren(); labText.textContent = 'Use radius 0–1.5 and angles 0–180 degrees per sample.'; return;
     }

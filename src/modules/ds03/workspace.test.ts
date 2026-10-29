@@ -55,15 +55,59 @@ describe('DS03 exercise and visit state', () => {
   });
   it('rejects empty/out-of-range gain and unfinished equation drafts', async () => {
     const { container } = await open(); const k = container.querySelector('input')!;
-    edit(k, ''); click(container, 'Check and reveal'); expect(container.textContent).toContain('finite gain K');
+    edit(k, ''); click(container, 'Check and reveal'); expect(container.textContent).toContain('Selected gain K as a finite number');
     edit(k, '101'); click(container, 'Check and reveal'); expect(container.textContent).toContain('finite gain K');
     edit(k, '0'); edit(container.querySelector('textarea')!, ''); click(container, 'Check and reveal'); expect(container.textContent).toContain('Complete the visual polynomial');
   });
   it('exposes the exceptional mapping point and rejects malformed point input', async () => {
     const { container } = await open(); const angle = container.querySelectorAll('input')[1];
     edit(angle, '180'); expect(container.textContent).toContain('w is at infinity');
-    edit(angle, ''); expect(container.textContent).toContain('Choose an angle');
+    edit(angle, ''); expect(container.textContent).toContain('Unit-circle angle θ (degrees) as a finite number');
     edit(container.querySelectorAll('input')[3], '6'); expect(container.textContent).toContain('finite real and imaginary');
+  });
+  it.each(['1e-999', '-1e-999'])('rejects nonzero native gain underflow %s without revealing zero-gain results', async raw => {
+    const { container } = await open(); click(container, 'Check and reveal');
+    const gain = container.querySelector('input')!;
+    edit(gain, raw);
+    expect(container.textContent).toContain('nonzero but too small');
+    expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
+    click(container, 'Check and reveal');
+    expect(container.textContent).toContain('Selected gain K is nonzero but too small');
+    expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
+  });
+  it('accepts native zero and exponent gains without changing the visual parser grammar', async () => {
+    const { container } = await open(); const gain = container.querySelector('input')!;
+    for (const raw of ['0e-999', '-0']) {
+      edit(gain, raw); click(container, 'Check and reveal');
+      expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toContain('at K = 0,');
+    }
+    edit(gain, '1e-2'); click(container, 'Check and reveal');
+    expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toContain('at K = 0.01,');
+    edit(container.querySelector('textarea')!, 'z^2+1e-2Kz+0.5'); click(container, 'Check and reveal');
+    expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
+  });
+  it('rejects angle underflow instead of silently mapping it to zero degrees', async () => {
+    const { container } = await open(); const angle = container.querySelectorAll('input')[1];
+    const previous = container.querySelector('.ds-planes')!.parentElement!.textContent;
+    edit(angle, '1e-999');
+    expect(container.textContent).toContain('Unit-circle angle θ (degrees) is nonzero but too small');
+    expect(container.querySelector('.ds-planes')!.parentElement!.textContent).toBe(previous);
+    edit(angle, '0e-999');
+    expect(container.textContent).toContain('Selected z = 1; |z| = 1. w = 0.');
+  });
+  it('rejects coordinate underflow without changing the selected point or inventing infinity', async () => {
+    const { container } = await open(); const controls = container.querySelectorAll('input');
+    edit(controls[3], '-1');
+    const previous = container.querySelector('.ds-planes')!.parentElement!.textContent;
+    edit(controls[4], '1e-999');
+    expect(container.textContent).toContain('Selected Im z is nonzero but too small');
+    expect(container.querySelector('.ds-planes')!.parentElement!.textContent).toBe(previous);
+    expect(container.textContent).not.toContain('w is at infinity: z = −1');
+    edit(controls[4], '1'); edit(controls[3], '-1e-999');
+    expect(container.textContent).toContain('Selected Re z is nonzero but too small');
+    edit(controls[3], '1e-2'); edit(controls[4], '0e-999');
+    expect(container.textContent).toContain('Selected z = 0.01;');
+    expect(container.querySelector('.ds-section [role="status"]')!.textContent).toBe('');
   });
   it('shows the reviewed near-pole value without turning it into a boundary point', async () => {
     const { container } = await open();

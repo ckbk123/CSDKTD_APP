@@ -80,6 +80,12 @@ Parse what the student sees, rather than borrowing a programming-language number
 
 Check actual editor serialization. MathLive may emit `\frac12`, `\frac{1}2` or `\frac1{2}` for the same visible fraction. Accept these forms where fractions are supported, preserving TeX's one-token argument rule. Test outer grouping and unary signs too: a supported negative ratio must preserve its meaning whether its minus is outside the fraction or in its numerator. Nested numeric fractions need equivalent tests when included in the declared grammar. A malformed draft, an unsupported complete expression and a valid supported expression require distinct feedback. Include a real fraction-button exercise in browser evidence rather than testing only developer-authored braced strings.
 
+### Native numeric controls
+
+Use `readNumericInput(input, label)` from `src/shared/numeric-input.ts` when reading native number controls. It preserves representable exponent syntax and intentional zero, but rejects empty/nonfinite values and a nonzero raw mantissa that the browser rounds to zero, such as `1e-999`. The helper is stateless and does not change the control. Bounds, integer requirements, units and subsequent numerical conditioning remain the module's responsibility.
+
+Catch its error in the module's normal feedback path; clear or hide stale computed results, and preserve a prior valid map point when a new candidate is invalid. Test genuine zero (`0` and `0e-999`), a normal native exponent (`1e-2`), a nonzero underflow and the module's range/integer boundaries. Text controls accepting exact fractions and visual equation fields have their own parsers and must not be routed through this native-number helper.
+
 ## Local assets and lifecycle
 
 The wrapper imports `mathlive/fonts.css` and `mathlive/static.css`. Vite emits all 20 referenced WOFF2 fonts as local hashed assets. The build disables asset inlining so even the smallest font remains a same-origin file, compatible with `font-src 'self'`. `MathfieldElement.fontsDirectory = null` disables MathLive's separate automatic font lookup; the imported CSS supplies the fonts. No runtime CDN is required. Keep the CSS import, build setting and font lookup setting together.
