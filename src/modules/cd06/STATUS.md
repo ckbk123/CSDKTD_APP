@@ -88,6 +88,10 @@ Task-owned Chromium preview, **1280×900** and **390×844**, dark system theme; 
 - Phone document client/scroll widths **375/375 px**. Long equations scroll locally. Focusable named comparison region supports keyboard horizontal scrolling: client **277**, content **552**, rightmost offset **275**; fixed 132 px labels plus 140 px model columns leave each model readable. Phase ticks use 0/−90/−180/−270 and enlarged separated labels. Final desktop/phone/Bode screenshots are local task outputs outside Git.
 - Captured warning/error logs were empty. Own QA tab closed and viewport override reset; own preview stopped. Light theme, other browsers/OSes and forced slow-network loading were not separately tested.
 
+### Follow-up presentation correction
+
+The later CD04 browser audit exposed the same top-axis-label/maximum-tick crowding in CD06's saved phone Bode view. The same owner's private-clone claim was deliberately reopened for this bounded self-audit correction on PR #52, preserving the submitted commit in reopen history; no independent maintainer review is implied. The y-axis unit label now sits to the right of the tick labels, with enough top space. No model, numerical method, control or requirement changed. After the correction, all 125 module tests, 4,817 application tests and the build passed again. Actual 390×844 Bode and 1280×900 response checks confirmed separate readable labels, unchanged 57°/13.0278% automatic-lead results, 375/375 phone document width and empty warning/error logs. Screenshots were refreshed; prior interaction/lifecycle evidence above remains separately recorded. Own follow-up tab/viewport/preview were cleaned before resubmission.
+
 ## Delivery state
 
 PR #52 reuses the public reservation. The tested final SHA is recorded in that PR and the private submission ledger/claim. Stage is `implemented`, not independently `verified`; fork workflow approval, full upstream Web checks (including coordination tests) and maintainer review remain pending. No merge, release, version/global change or deployment is included.

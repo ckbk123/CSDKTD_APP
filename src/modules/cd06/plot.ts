@@ -33,7 +33,7 @@ export function plot({ title, xLabel, yLabel, series, logX = false, guides = [],
   for (const yv of yTicks) {
     chart.append(svg('line', { x1: left, x2: right, y1: y(yv), y2: y(yv), class: 'cd06-gridline' }), svg('text', { x: left - 9, y: y(yv) + 4, 'text-anchor': 'end' }, label(yv)));
   }
-  chart.append(svg('text', { x: (left + right) / 2, y: 390, 'text-anchor': 'middle' }, xLabel), svg('text', { x: 7, y: 23 }, yLabel));
+  chart.append(svg('text', { x: (left + right) / 2, y: 390, 'text-anchor': 'middle' }, xLabel), svg('text', { x: left + 40, y: 27 }, yLabel));
   for (const guide of guides) {
     if (guide.x !== undefined && x(guide.x) >= left && x(guide.x) <= right) chart.append(svg('line', { x1: x(guide.x), x2: x(guide.x), y1: top, y2: bottom, class: 'cd06-guide' }));
     if (guide.y !== undefined && guide.y >= minY && guide.y <= maxY) chart.append(svg('line', { x1: left, x2: right, y1: y(guide.y), y2: y(guide.y), class: 'cd06-guide' }));
