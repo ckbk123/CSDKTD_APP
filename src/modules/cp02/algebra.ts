@@ -66,13 +66,22 @@ export function polynomialLatex(p: readonly Rational[]): string {
     text += positive ? text ? '+' : '' : '-'; text += k && equal(magnitude, one) ? '' : latexRat(magnitude); text += k === 1 ? 's' : k > 1 ? `s^{${k}}` : ''; }
   return text || '0';
 }
-export interface Root { readonly re: number; readonly im: number; readonly multiplicity: number }
+export interface Root { readonly re: number; readonly im: number; readonly multiplicity: number; readonly exact?: Rational }
+function rationalSquareRoot(value: Rational): Rational | undefined {
+  const integerRoot = (n: bigint): bigint | undefined => {
+    if (n < 2n) return n;
+    let current = 1n << BigInt(Math.ceil(n.toString(2).length / 2));
+    while (true) { const next = (current + n / current) / 2n; if (next >= current) return current * current === n ? current : undefined; current = next; }
+  };
+  const n = integerRoot(value.n), d = integerRoot(value.d); return n === undefined || d === undefined ? undefined : rat(n, d);
+}
 export function roots(p: readonly Rational[]): Root[] {
   if (p.length === 1) return [];
-  if (p.length === 2) return [{ re: num(neg(div(p[0], p[1]))), im: 0, multiplicity: 1 }];
+  if (p.length === 2) { const exact = neg(div(p[0], p[1])); return [{ re: num(exact), im: 0, multiplicity: 1, exact }]; }
   const b = div(p[1], p[2]), c = div(p[0], p[2]), discriminant = sub(mul(b, b), mul(rat(4n), c)), center = -num(b) / 2;
-  if (!discriminant.n) return [{ re: center, im: 0, multiplicity: 2 }];
+  if (!discriminant.n) return [{ re: center, im: 0, multiplicity: 2, exact: div(neg(b), rat(2n)) }];
   if (discriminant.n < 0n) { const frequency = Math.sqrt(-num(discriminant)) / 2; return [{ re: center, im: frequency, multiplicity: 1 }, { re: center, im: -frequency, multiplicity: 1 }]; }
-  const q = -0.5 * (num(b) + (num(b) >= 0 ? 1 : -1) * Math.sqrt(num(discriminant)));
-  return [{ re: q, im: 0, multiplicity: 1 }, { re: num(c) / q, im: 0, multiplicity: 1 }];
+  const square = rationalSquareRoot(discriminant), exact = square ? div(neg(add(b, b.n >= 0n ? square : neg(square))), rat(2n)) : undefined;
+  const q = exact ? num(exact) : -0.5 * (num(b) + (num(b) >= 0 ? 1 : -1) * Math.sqrt(num(discriminant))), other = exact ? div(c, exact) : undefined;
+  return [{ re: q, im: 0, multiplicity: 1, exact }, { re: other ? num(other) : num(c) / q, im: 0, multiplicity: 1, exact: other }];
 }

@@ -17,7 +17,8 @@ export function inspect(model: Model): Analysis {
   if (Math.abs(num(model.a1)) > 20) throw new Error('Use |a₁| ≤20.');
   const denominator = [model.a0, model.a1, one], numerator = model.b1.n ? [model.b0, model.b1] : [model.b0], poles = roots(denominator);
   poles.forEach(p => { componentBound(p.re, 'Pole real part'); componentBound(p.im, 'Pole imaginary part'); if (Math.hypot(p.re, p.im) > 10 + 1e-10) throw new Error('Pole magnitude must be at most 10 s⁻¹.'); });
-  if (poles.length === 2 && Math.hypot(poles[0].re - poles[1].re, poles[0].im - poles[1].im) < 1e-6) throw new Error('Distinct poles are too close for reliable modal weights. Use an exact repeated-root form or separate them.');
+  const discriminant = sub(mul(model.a1, model.a1), mul(rat(4n), model.a0)), gapSquaredNumerator = discriminant.n < 0n ? -discriminant.n : discriminant.n;
+  if (poles.length === 2 && gapSquaredNumerator * 1000000000000n < discriminant.d) throw new Error('Distinct poles are too close for reliable modal weights. Use an exact repeated-root form or separate them.');
   const finiteZero = model.b1.n ? neg(div(model.b0, model.b1)) : undefined;
   if (finiteZero) componentBound(num(finiteZero), 'Finite zero');
   const reduced = reduceFraction(numerator, denominator), reducedPoles = roots(reduced.denominator);
@@ -108,7 +109,7 @@ export function movePole(model: Model, selected: number, real: number, imaginary
   const a = inspect(model), r = coordinate(real, 'Pole real part'), i = coordinate(imaginary, 'Pole imaginary part');
   let a0: Rational, a1: Rational;
   if (i.n || a.kind === 'conjugate') { a0 = add(mul(r, r), mul(i, i)); a1 = neg(mul(rat(2n), r)); }
-  else { const other = a.poles.length === 1 ? a.poles[0].re : a.poles[selected === 0 ? 1 : 0].re, q = coordinate(other, 'Other pole'); a0 = mul(r, q); a1 = neg(add(r, q)); }
+  else { const other = a.poles[a.poles.length === 1 ? 0 : selected === 0 ? 1 : 0], q = other.exact ?? coordinate(other.re, 'Other pole'); a0 = mul(r, q); a1 = neg(add(r, q)); }
   const candidate = { ...model, a0, a1 }; inspect(candidate); return candidate;
 }
 export function moveZero(model: Model, location: number, preserveDc: boolean): Model {

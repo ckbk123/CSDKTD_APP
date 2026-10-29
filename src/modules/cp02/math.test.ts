@@ -96,6 +96,11 @@ describe('linked pole/zero edits and bounded failures', () => {
     const before = model('3', '2', '1', '2'), moved = movePole(before, 0, -3, 0);
     expect(inspect(moved).poles.map(p => p.re).sort()).toEqual([-1, -3]); expect(equal(before.b1, moved.b1)).toBe(true); expect(equal(before.b0, moved.b0)).toBe(true);
   });
+  it('retains an unmoved rational pole exactly, preserving its hidden-mode cancellation', () => {
+    const before = model('\\frac23', '-\\frac13', '1', '-\\frac13'), moved = movePole(before, 0, -2, 0), a = inspect(moved);
+    expect(equal(moved.a1, rat(5n, 3n))).toBe(true); expect(equal(moved.a0, rat(-2n, 3n))).toBe(true);
+    expect(a.common.length).toBe(2); expect(a.internal).toBe('unstable'); expect(a.bibo).toBe(true); expect(stepAt(decompose(moved), 1)).toBeCloseTo(.5 * (1 - Math.exp(-2)), 14);
+  });
   it('preserves valid models on invalid candidates and supports a zero at the origin without DC preservation', () => {
     const m = baseline(), snapshot = { ...m };
     expect(() => movePole(m, 0, NaN, 1)).toThrow(); expect(() => movePole(m, 0, 11, 0)).toThrow(); expect(() => moveZero(m, 0, true)).toThrow(/DC preservation/); expect(m).toEqual(snapshot);
