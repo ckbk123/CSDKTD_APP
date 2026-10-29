@@ -6,6 +6,7 @@
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
 - **Branch:** `codex/cs05-stable-gains-7e78`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cs05-stable-gains-7e78\CSDKTD APP`
+- **PR:** https://github.com/ckbk123/CSDKTD_APP/pull/29
 - **Ownership:** `src/modules/cs05/**`; [accepted contract](TASK.md)
 
 ## Claim audit and bounded implementation plan
