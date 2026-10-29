@@ -24,6 +24,13 @@ function open() {
   return { root, controller, close, action, set, feedback, row };
 }
 describe('observer exercise state and native controls', () => {
+  it('shows conditioning feedback and no old trajectory for an unresolved true-state experiment',()=>{
+    const v=open();v.action('reveal').click();const fields=v.root.querySelectorAll<HTMLTextAreaElement>('textarea');
+    for(const [index,value] of [[0,String.raw`A=\begin{bmatrix}0&1\\-1&8.125\end{bmatrix}`],[1,String.raw`B=\begin{bmatrix}0\\0\end{bmatrix}`],[3,'q(s)=s^2+5s+6']] as const){fields[index].value=value;fields[index].dispatchEvent(new Event('input',{bubbles:true}));}
+    for(const [name,value] of [['initial1','1.1'],['initial2','.1375'],['estimate1','1.1'],['estimate2','.1375'],['horizon','5']] as const)v.set(name,value);
+    v.action('apply').click();expect(v.root.textContent).toContain('Roundoff amplification');expect(v.root.querySelectorAll('svg')).toHaveLength(0);
+    v.action('baseline').click();v.action('reveal').click();expect(v.root.querySelectorAll('svg')).toHaveLength(7);
+  });
   it('constructs observability, checks a real prediction and preserves keyboard focus', () => {
     const v = open(); expect(v.root.textContent).not.toContain('Actual nominal error modes');
     v.action('row').focus(); v.action('row').click(); expect(document.activeElement?.getAttribute('data-action')).toBe('row'); expect(v.root.textContent).toContain('numerical rank is2');
