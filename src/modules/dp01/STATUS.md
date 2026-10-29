@@ -1,8 +1,9 @@
 # DP01 implementation status
 
-- **Stage:** scaffold
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
+- **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
+- **Ownership:** `src/modules/dp01/**`; branch `codex/dp01-sequences-f802`
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
 - **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
 
@@ -11,6 +12,26 @@
 - `index.ts` defines the module metadata, default example and lazy workspace loader.
 - `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
 - The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+
+## Requirement audit before implementation
+
+The current workspace is a blank mount with no local helpers/tests. Metadata and lazy loading already work and will be preserved.
+
+| Accepted requirement | Planned implementation | Missing at checkpoint |
+|---|---|---|
+| Editable model and bounded validation | Shared equation input; local real rational-polynomial parser, proper denominator degree 1–2 | Parser, limits and errors |
+| Step, impulse, physical ramp and free sequences | Normalized recurrence; causal samples with explicit prehistory | All calculations |
+| Stems, sample/time axes, selectable history | Actual samples, optional labeled held guide, numeric sample inspector | All controls/plots |
+| Modal decomposition and pole interpretation | Quadratic roots; homogeneous modal basis, free/forced superposition, equal-radius angle comparison | All modal reasoning |
+| Attempt, reveal and changed-data experiment | Prediction; presets for ±0.8, conjugates and repeated poles | All interactions |
+| Independent math fixtures | Baseline y[k]=1−0.8^k; analytic impulse/ramp/free and second-order fixtures | Tests |
+| Lifecycle and browser checks | Synchronous mount and abort signal exist | Edit/reset/reopen/rapid navigation/keyboard/fonts/narrow checks |
+
+## Planned bounds and provenance
+
+Real proper rational models with denominator degree 1–2 and polynomial expressions in z. Zero pre-input history, editable y[−1]/y[−2], T in seconds. No continuous plant or intersample peak is inferred. Denominator modes are retained even when the selected zero-state channel cancels one. No shared API/dependency change is needed.
+
+TASK/atlas cites Ch8:41–44,46–62 and S13. `docs/research/DISCRETE_EXERCISE_AUDIT.md` DP1 records the negative-pole worksheet and modal reasoning. Original slides have not been newly inspected by this worker. ±0.8 and equal-radius comparisons remain proposed teaching fixtures; expected values will be derived independently.
 
 ## Remaining acceptance work
 
