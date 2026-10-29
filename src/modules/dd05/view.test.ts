@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { validateLatex } from 'mathlive/ssr';
 import type { EquationDraft, EquationInputOptions } from '../../shared/equations/input';
 import { mount } from './view';
 vi.mock('../../shared/equations/input', () => ({
-  createEquationDisplay: (latex: string, label: string) => { const e = document.createElement('div'); e.textContent = latex; e.setAttribute('aria-label', label); return e; },
+  createEquationDisplay: (latex: string, label: string) => { const e = document.createElement('div'); e.textContent = latex; e.dataset.resultLatex = latex; e.setAttribute('aria-label', label); return e; },
   createEquationInput: (options: EquationInputOptions) => {
     const element = document.createElement('div'), field = document.createElement('textarea'); field.value = options.value; element.append(field);
     const getValue = (): EquationDraft => ({ latex: field.value, empty: !field.value.trim(), hasPlaceholders: false, syntaxIssues: [] }); field.addEventListener('input', () => options.onChange?.(getValue()), { signal: options.signal });
@@ -25,21 +26,30 @@ function visit() {
   return { container, controller, cleanup, action, preset, select, numeric, edit, predict, hidden, text };
 }
 describe('DD05 teaching flow (mocked equation presentation, not browser evidence)', () => {
+  it('produces valid result notation for both complete controller structures', () => {
+    for (const preset of ['source', 'pid']) {
+      const v = visit(); v.preset(preset); v.action('prepare'); v.predict(); v.action('solve');
+      for (const node of v.container.querySelectorAll<HTMLElement>('[data-result-latex]')) expect(validateLatex(node.dataset.resultLatex!), node.getAttribute('aria-label') ?? '').toEqual([]);
+    }
+  });
   it('requires predictions, checks the actual candidate then solves every PI coefficient', () => {
     const v = visit(); v.action('prepare'); expect(v.hidden()).toBe(true); v.action('check'); expect(v.text('.ap-message')).toContain('all three'); v.predict();
     expect(v.text('.ap-grade')).toContain('Correct full-pole'); expect(v.text('.ap-candidate-check')).toContain('coefficient residual'); expect(v.text('.ap-solution')).toBe('');
     v.action('solve'); expect(v.text('.ap-solution')).toContain('8.9947334'); expect(v.text('.ap-solution')).toContain('6.1567097'); expect(v.text('.ap-solution')).toContain('Full match');
+    expect(v.text('.ap-derivation')).toContain('no derivative-delay state'); expect(v.text('.ap-derivation')).not.toContain('zero derivative-delay mode');
     expect(v.container.querySelector('[aria-label="Matched solution full closed-loop poles"]')!.querySelectorAll('tbody tr')).toHaveLength(2); expect(v.container.querySelectorAll('svg')).toHaveLength(3);
     expect(v.text('.ap-performance')).toContain('93.12564'); expect(v.text('.ap-performance')).toContain('-19');
   });
   it('solves the exact PI fixture and inspects independently known controller memory', () => {
     const v = visit(); v.preset('pi'); v.action('prepare'); v.predict(); v.action('solve'); v.numeric('sample', '1');
     expect(v.text('.ap-solution')).toContain('1.48'); expect(v.text('.ap-solution')).toContain('4.4'); expect(v.text('.ap-inspection')).toContain('2.2'); expect(v.text('.ap-inspection')).toContain('2.48');
+    expect(v.text('.ap-performance')).toContain('rise is not complete'); expect(v.text('.ap-performance')).toContain('horizon is insufficient');
     v.numeric('sample', '40'); expect(v.text('.ap-inspection')).toContain('no additional controller update'); expect(v.text('.ap-inspection')).toContain('Terminal');
   });
   it('retains the additional full PID mode and actual changed peak', () => {
     const v = visit(); v.preset('pid'); v.action('prepare'); v.predict(); v.action('solve');
     expect(v.text('.ap-solution')).toContain('1.592'); expect(v.text('.ap-solution')).toContain('0.104');
+    expect(v.text('.ap-derivation')).toContain('zero derivative-delay mode');
     const roots = v.container.querySelector('[aria-label="Matched solution full closed-loop poles"]')!; expect(roots.querySelectorAll('tbody tr')).toHaveLength(3); expect(roots.textContent).toContain('-0.2');
     expect(v.text('.ap-performance')).toContain('30');
   });
