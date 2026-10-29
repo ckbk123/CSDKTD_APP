@@ -91,4 +91,17 @@ describe('CP03 exercise flow and ownership', () => {
     expect((v.container.querySelector('input[type="checkbox"]') as HTMLInputElement).disabled).toBe(true);
     v.button('Reveal calculation and linked plots').click(); expect(v.container.querySelectorAll('figure')).toHaveLength(4);
   });
+  it('draws separate Bode and Nyquist curve segments on each side of an off-grid imaginary pole', () => {
+    const v = open(); v.change(v.container.querySelector('textarea')!, '1/(s^2+2)'); v.apply();
+    v.button('Reveal calculation and linked plots').click();
+    for (const figure of v.container.querySelectorAll('.cp03-frequency-plots figure')) expect(figure.querySelectorAll('polyline')).toHaveLength(2);
+  });
+  it('does not join phase through an off-grid notch while Nyquist can pass continuously through zero', () => {
+    const v = open(); v.change(v.container.querySelector('textarea')!, '(s^2+2)/(s^2+2s+3)'); v.apply();
+    v.button('Reveal calculation and linked plots').click();
+    const plots = v.container.querySelectorAll('.cp03-frequency-plots figure');
+    expect(plots[0].querySelectorAll('polyline')).toHaveLength(2);
+    expect(plots[1].querySelectorAll('polyline')).toHaveLength(2);
+    expect(plots[2].querySelectorAll('polyline')).toHaveLength(1);
+  });
 });

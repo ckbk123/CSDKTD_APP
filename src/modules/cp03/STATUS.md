@@ -1,6 +1,7 @@
 # CP03 implementation status
 
-- **Stage:** in-progress — accepted implementation and automated checks complete; real-browser evidence pending
+- **Stage:** in-progress
+- Accepted implementation and automated checks complete; real-browser evidence pending.
 - **Assessment:** 2026-10-29; implementation revision `3375854`
 - **Ownership:** `src/modules/cp03/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/cp03-sinusoidal-01a186d2`
@@ -26,10 +27,10 @@
 - Internal polynomial arrays use ascending powers `[constant, s, s²]`; the denominator is normalized to monic. Expanded coefficient magnitudes ≤10000; normalized ≤10⁶; leading denominator coefficient magnitude ≥10⁻⁸; denominator pole magnitudes ≤100 rad/s. Improper plants are rejected with their input-derivative meaning.
 - Open-loop continuous-time plant; no feedback or sample period. Input is A sin(ωt), with zero canonical states at t=0. A uses arbitrary input units; y uses the corresponding output units. ω=0.01–100 rad/s, A=0.01–100, window start=0–1000 s, three periods per window, total t≤3000 s.
 - Denominator modes are retained. “Stable” requires every denominator pole's real part <0; pure gain has no dynamic modes. This is conservative for canceled denominators and makes no claim about an unspecified physical hidden realization. Unstable/marginal models receive an explicit analytic-only qualification.
-- Frequency singularity test: |D(jω)|≤10⁻¹⁰ Σ|aᵢ|ωⁱ. Zero/near-zero phase test: |N(jω)|≤10⁻¹² Σ|bᵢ|ωⁱ; phase/dB are omitted there. Phase uses atan2 in [−π,π], with degrees and radians distinguished. Marker differences below 10⁻¹² are displayed as zero.
+- Frequency singularity test: |D(jω)|≤10⁻¹⁰ Σ|aᵢ|ωⁱ. Zero/near-zero phase test: |N(jω)|≤10⁻¹² Σ|bᵢ|ωⁱ; phase/dB are omitted there. Numeric underflow in literals, products, normalization, pole components, substitution or a nonzero output amplitude gets explicit feedback rather than a silent zero. Phase uses atan2 in [−π,π], with degrees and radians distinguished. Marker differences below 10⁻¹² are displayed as zero.
 - Analytic transient formulas cover distinct real, repeated real and conjugate poles. The tail bound uses absolute modal coefficients, conjugate amplitude envelopes and the future maximum of a repeated-pole envelope. No iteration or numerical integration is used by the tool.
 - Particular traces use 901 samples. Actual traces use at least ten samples per inverse pole magnitude and at most 12001 samples; a proved small settled tail needs only the 901-point view. Unresolved windows get explicit feedback. Values beyond 10⁸ are not drawn. Valid formal frequency results remain available when an actual trace cannot be shown.
-- Bode/Nyquist use 301 logarithmic frequencies in 0.01–100 rad/s plus the selected cursor. Curves are sampled illustrations; frequency gaps and missed narrow features are not proofs. Nyquist shows positive frequencies only, with labeled independent axis scales; no Nyquist stability claim is made. Displayed numbers are rounded approximations; identities are shown separately.
+- Bode/Nyquist use 301 logarithmic frequencies in 0.01–100 rad/s plus the selected cursor and known imaginary-axis pole/notch frequencies. Known poles break every frequency curve; numerator notches break phase and dB while Nyquist remains continuous through zero. Curves are sampled illustrations; frequency gaps and missed narrow features are not proofs. Nyquist shows positive frequencies only, with labeled independent axis scales; no Nyquist stability claim is made. Displayed numbers are rounded approximations; identities are shown separately.
 
 ## Independent mathematical verification
 
@@ -49,9 +50,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **47/47 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **52/52 passed**, 3 files.
 - `npm run check`: passed.
-- `npm test`: **89/89 passed**, 9 files.
+- `npm test`: **89/89 passed** at the pre-review checkpoint (final rerun pending after review repairs), 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -73,3 +74,9 @@ The atlas CP03 entry and recorded source audit cite S05:4–11,13–14 and Ch3. 
 - `3375854`: transient-resolution, decimal-validation, complex-substitution and recoverable-load refinements; current code/check evidence above.
 
 No outstanding shared dependency request. Stage remains in-progress until browser evidence and final delivery are complete. No merge, deployment, version change or additional agent was performed.
+
+## Preliminary coordinator review repairs
+
+The coordinator identified an off-grid imaginary-axis pole plotting defect for G(s)=1/(s²+2): two regular grid samples on opposite sides of √2 were joined across the unbounded asymptote. `frequencySweep` now inserts known singular frequencies, so all three frequency plots split there. It also inserts numerator notches so phase and dB cannot bridge an undefined value. Independent regressions check 1/(2−ω²) on both sides of √2 and assert **two distinct SVG path segments** in each affected view; a numerator-notch fixture checks separate phase/dB segments and a continuous Nyquist zero crossing. The final canonical stage remains in-progress pending actual browser evidence and delivery; the coordinator will review the submitted SHA separately.
+
+Additional numerical guards reject nonzero coefficients/values that would underflow, retain exact zero poles even beside extremely slow poles, and avoid losing nearly coincident transient modes. The module grid now constrains long equations and plots to local scrolling rather than allowing their intrinsic widths to set page width. Browser proof of the final layout is still required.

@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { evaluatePolynomial, experiment, frequency, measure, parsePlant, poles, type Complex, type Plant } from './math';
+import { evaluatePolynomial, experiment, frequencySweep, measure, parsePlant, poles, type Complex, type Plant } from './math';
 import { numberLabel as fmt, plot, type Series } from './plots';
 import './workspace.css';
 
@@ -176,8 +176,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         const rootText = poles(plant).map(p => `${fmt(p.re)}${p.im < 0 ? '−' : '+'}${fmt(Math.abs(p.im))}j`).join(', ') || 'no dynamic poles';
         checked.append(node('p', `Denominator poles (rad/s): ${rootText}. ${e.stable ? 'All denominator modes decay.' : 'A nondecaying denominator mode prevents a guaranteed steady-state experiment.'} Phase is wrapped; adding a whole period to a marker preserves its frequency interpretation.`));
         checked.append(node('p', 'Exact identities are shown symbolically; displayed numbers are rounded. The zero-state response is the particular sinusoid plus the homogeneous transient from zero canonical states. Toggle the transient, then try Window start = 0 and compare it with a later window.'));
-        const frequencies = Array.from({ length: 301 }, (_, i) => 10 ** (-2 + 4 * i / 300)); frequencies.push(w); frequencies.sort((a, b) => a - b);
-        const sweep = frequencies.map(wx => { try { return { w: wx, ...frequency(plant, wx) }; } catch { return null; } });
+        const sweep = frequencySweep(plant, w);
         const magnitude: Series = { label: 'Magnitude', style: 'output', points: sweep.map(s => s && s.db !== null ? { x: Math.log10(s.w), y: s.db } : null) };
         let previous: number | null = null;
         const phase: Series = { label: 'Principal phase', style: 'output', points: [] };
@@ -192,7 +191,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         const nyquist: Series = { label: 'Positive frequencies 0.01–100 rad/s', style: 'output', points: sweep.map(s => s ? { x: s.re, y: s.im } : null) };
         const range = Math.max(1e-4, ...sweep.flatMap(s => s ? [Math.abs(s.re), Math.abs(s.im)] : [])) * 1.15;
         plots.append(plot({ title: 'Nyquist · same frequency cursor', xLabel: 'Re G(jω)', yLabel: 'Im G(jω)', series: [nyquist], xRange: [-range, range], yRange: [-range, range], marks: [{ x: f.re, y: f.im, label: `ω=${fmt(w)} rad/s` }] }));
-        checked.append(plots, node('p', 'Frequency curves are sampled over 0.01–100 rad/s; gaps mark singular or undefined values. Nyquist shows the positive-frequency branch, with independently drawn horizontal/vertical scales; it is not a stability test. Move the linked frequency cursor above to begin a new measurement.'));
+        checked.append(plots, node('p', 'Frequency curves are sampled over 0.01–100 rad/s; gaps mark known imaginary-axis poles and singular or undefined samples. Narrow finite peaks may be missed by the grid. Nyquist shows the positive-frequency branch, with independently drawn horizontal/vertical scales; it is not a stability test. Move the linked frequency cursor above to begin a new measurement.'));
         updateMarkers();
       }, { signal: localSignal });
       traceCard.append(markerFields, clickLabel, transientLabel, plotHost, measurement, markerStatus, reveal, checked);

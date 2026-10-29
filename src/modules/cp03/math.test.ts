@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { experiment, frequency, measure, parsePlant, poles } from './math';
+import { experiment, frequency, frequencySweep, measure, parsePlant, poles } from './math';
 
 describe('CP03 bounded equation parser', () => {
   it('expands a visual fraction and factored polynomial independently', () => {
@@ -21,6 +21,17 @@ describe('CP03 bounded equation parser', () => {
     expect(() => parsePlant('('.repeat(30) + 's' + ')'.repeat(30))).toThrow(/deep/);
     expect(() => parsePlant('10001/(s+1)')).toThrow(/10000/);
     expect(() => parsePlant('1e4/(1e-8s+1e-8)')).toThrow(/Normalized/);
+  });
+  it('reports numerical underflow instead of silently turning nonzero models into zero', () => {
+    expect(() => parsePlant('1e-999/(s+1)')).toThrow(/too small/);
+    expect(() => parsePlant('1e-300*1e-300/(s+1)')).toThrow(/too small/);
+    expect(() => parsePlant('1e-323/(10000s+10000)')).toThrow(/lose a nonzero/);
+    expect(() => frequency(parsePlant('1e-323s/(s+1)'), 0.01)).toThrow(/lose a nonzero/);
+    expect(() => frequency(parsePlant('1e-323/(s+100)'), 100)).toThrow(/too small/);
+    expect(() => experiment(parsePlant('1e-323'), 1, 0.01)).toThrow(/too small/);
+    expect(() => parsePlant('1/(s^2+5e-324s+1)')).toThrow(/real part is too small/);
+    expect(() => parsePlant('1/(s^2+100s+5e-324)')).toThrow(/pole is too small/);
+    expect(poles(parsePlant('1/(s^2+1e-200s)'))).toEqual([{ re: 0, im: 0 }, { re: -1e-200, im: 0 }]);
   });
 });
 
@@ -128,6 +139,24 @@ describe('CP03 independent frequency and time fixtures', () => {
     const e = experiment(parsePlant('1/(s+0.001)'), 1, 1);
     expect(e.tailBound(20)).toBeGreaterThan(0.9);
     expect(e.tailBound(1000)).toBeGreaterThan(0.01 * e.value.magnitude);
+  });
+  it('breaks a frequency sweep at the off-grid pole √2 rather than crossing its asymptote', () => {
+    // G(jω)=1/(2−ω²). The logarithmic grid's neighbors straddle √2.
+    const sweep = frequencySweep(parsePlant('1/(s^2+2)'), 1), gap = sweep.indexOf(null);
+    expect(gap).toBeGreaterThan(0);
+    const left = sweep[gap - 1]!, right = sweep[gap + 1]!;
+    expect(left.w).toBeCloseTo(1.4017374183467695, 12);
+    expect(right.w).toBeCloseTo(1.4454397707459272, 12);
+    expect(left.re).toBeCloseTo(1 / (2 - left.w ** 2), 12);
+    expect(right.re).toBeCloseTo(1 / (2 - right.w ** 2), 12);
+    expect(left.re).toBeGreaterThan(28); expect(right.re).toBeLessThan(-11);
+    expect(left.w).toBeLessThan(Math.sqrt(2)); expect(right.w).toBeGreaterThan(Math.sqrt(2));
+  });
+  it('inserts the off-grid numerator notch √2 with undefined phase and dB', () => {
+    const sweep = frequencySweep(parsePlant('(s^2+2)/(s^2+2s+3)'), 1);
+    const notch = sweep.find(s => s?.w === Math.sqrt(2));
+    expect(notch).toBeDefined(); expect(notch?.phase).toBeNull(); expect(notch?.db).toBeNull();
+    expect(notch?.magnitude).toBeLessThan(1e-14);
   });
   it('measures lag and lead with signed, principal phase and amplitude ratio', () => {
     expect(measure(0, Math.atan(3), 2 / Math.sqrt(10), 1, 2).phase).toBeCloseTo(-Math.atan(3), 13);

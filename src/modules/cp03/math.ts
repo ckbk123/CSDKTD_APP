@@ -13,7 +13,11 @@ function add(a: number[], b: number[], sign = 1): number[] {
 }
 function mul(a: number[], b: number[]): number[] {
   const p = Array(a.length + b.length - 1).fill(0) as number[];
-  a.forEach((x, i) => b.forEach((y, j) => { p[i + j] += x * y; }));
+  a.forEach((x, i) => b.forEach((y, j) => {
+    const term = x * y;
+    if (x !== 0 && y !== 0 && term === 0) fail('A polynomial product is too small to represent. Rescale the expression.');
+    p[i + j] += term;
+  }));
   return trim(p);
 }
 function combine(a: Rational, b: Rational, op: string): Rational {
@@ -60,7 +64,11 @@ export function parsePlant(latex: string): Plant {
       if (peek() !== '{') fail('Complete the fraction denominator.');
       value = combine(n, group(), '/');
     } else if (t === 's') { i++; value = { n: [0, 1], d: [1] }; }
-    else if (t && /^(?:\d|\.)/.test(t)) { i++; value = { n: [Number(t)], d: [1] }; }
+    else if (t && /^(?:\d|\.)/.test(t)) {
+      i++; const number = Number(t);
+      if (number === 0 && /[1-9]/.test(t.split(/[eE]/)[0])) fail('A nonzero number is too small to represent. Rescale the expression.');
+      value = { n: [number], d: [1] };
+    }
     else return fail('Complete the plant expression; a number or s is missing.');
     if (peek() === '^') {
       i++;
@@ -103,6 +111,7 @@ export function parsePlant(latex: string): Plant {
   const leading = d.at(-1)!;
   if (Math.abs(leading) < 1e-8) fail('The leading denominator coefficient is too small (minimum magnitude 10⁻⁸).');
   const plant = { numerator: n.map(x => x / leading), denominator: d.map(x => x / leading) };
+  if (n.some((x, k) => x !== 0 && plant.numerator[k] === 0) || d.some((x, k) => x !== 0 && plant.denominator[k] === 0)) fail('Normalization would lose a nonzero coefficient. Rescale the model.');
   if ([...plant.numerator, ...plant.denominator].some(x => Math.abs(x) > 1e6 || !Number.isFinite(x))) fail('Normalized coefficients exceed 10⁶; rescale the model.');
   if (poles(plant).some(p => Math.hypot(p.re, p.im) > 100)) fail('Keep pole magnitudes at or below 100 rad/s.');
   return plant;
@@ -112,14 +121,20 @@ export function poles(plant: Plant): Complex[] {
   const d = plant.denominator;
   if (d.length === 1) return [];
   if (d.length === 2) return [{ re: -d[0], im: 0 }];
+  if (d[0] === 0) return [{ re: 0, im: 0 }, { re: -d[1], im: 0 }];
   const a = -d[1] / 2, delta = a * a - d[0];
+  if (d[1] !== 0 && a === 0) fail('The pole real part is too small to represent. Rescale the model.');
   if (delta < 0) return [{ re: a, im: Math.sqrt(-delta) }, { re: a, im: -Math.sqrt(-delta) }];
   // Use the product of the roots to avoid subtracting almost equal values.
   const r = a + (a >= 0 ? 1 : -1) * Math.sqrt(delta);
-  return [{ re: r, im: 0 }, { re: r === 0 ? 0 : d[0] / r, im: 0 }];
+  const second = r === 0 ? 0 : d[0] / r;
+  if (second === 0) fail('A nonzero pole is too small to represent. Rescale the model.');
+  return [{ re: r, im: 0 }, { re: second, im: 0 }];
 }
 export function evaluatePolynomial(p: number[], w: number): Complex {
-  return { re: (p[0] ?? 0) - (p[2] ?? 0) * w * w, im: (p[1] ?? 0) * w };
+  const quadratic = (p[2] ?? 0) * w * w, linear = (p[1] ?? 0) * w;
+  if ((p[2] && quadratic === 0) || (p[1] && linear === 0)) fail('Frequency substitution would lose a nonzero term. Rescale the model.');
+  return { re: (p[0] ?? 0) - quadratic, im: linear };
 }
 export interface FrequencyValue extends Complex { magnitude: number; phase: number | null; db: number | null }
 export function frequency(plant: Plant, w: number): FrequencyValue {
@@ -127,12 +142,29 @@ export function frequency(plant: Plant, w: number): FrequencyValue {
   const n = evaluatePolynomial(plant.numerator, w), d = evaluatePolynomial(plant.denominator, w);
   const scale = plant.denominator.reduce((v, c, i) => v + Math.abs(c) * w ** i, 0);
   if (Math.hypot(d.re, d.im) <= 1e-10 * scale) fail('G(jω) is singular or too close to a denominator zero. Choose another frequency.');
-  const q = d.re * d.re + d.im * d.im;
-  const re = (n.re * d.re + n.im * d.im) / q, im = (n.im * d.re - n.re * d.im) / q;
+  const norm = Math.hypot(d.re, d.im), dr = d.re / norm, di = d.im / norm;
+  const re = (n.re * dr + n.im * di) / norm, im = (n.im * dr - n.re * di) / norm;
   const magnitude = Math.hypot(re, im);
+  if (magnitude === 0 && (n.re !== 0 || n.im !== 0)) fail('The nonzero frequency response is too small to represent. Rescale the numerator.');
   const nscale = plant.numerator.reduce((v, c, i) => v + Math.abs(c) * w ** i, 0);
   const zero = Math.hypot(n.re, n.im) <= 1e-12 * nscale || magnitude === 0;
   return { re, im, magnitude, phase: zero ? null : Math.atan2(im, re), db: zero ? null : 20 * Math.log10(magnitude) };
+}
+
+/** Insert known positive imaginary-axis poles and numerator notches even when
+ * the log grid misses them. Poles break every curve; notches break phase/dB. */
+export function frequencySweep(plant: Plant, selected: number): ({ w: number } & FrequencyValue | null)[] {
+  const frequencies = Array.from({ length: 301 }, (_, i) => 10 ** (-2 + 4 * i / 300));
+  frequencies.push(selected);
+  poles(plant).forEach(p => { if (p.re === 0 && p.im >= 0.01 && p.im <= 100) frequencies.push(p.im); });
+  const n = plant.numerator;
+  if (n.length === 3 && n[1] === 0 && n[0] / n[2] > 0) {
+    const notch = Math.sqrt(n[0] / n[2]);
+    if (notch >= 0.01 && notch <= 100) frequencies.push(notch);
+  }
+  return [...new Set(frequencies)].sort((a, b) => a - b).map(w => {
+    try { return { w, ...frequency(plant, w) }; } catch { return null; }
+  });
 }
 
 export interface Experiment {
@@ -144,6 +176,7 @@ export interface Experiment {
 export function experiment(plant: Plant, w: number, amplitude: number): Experiment {
   if (!Number.isFinite(amplitude) || amplitude < 0.01 || amplitude > 100) fail('Input amplitude must be between 0.01 and 100.');
   const value = frequency(plant, w), roots = poles(plant);
+  if (value.magnitude !== 0 && amplitude * value.magnitude === 0) fail('The output sinusoid amplitude is too small to represent. Increase the input amplitude.');
   const stable = roots.every(p => p.re < 0);
   const classification = stable ? 'Stable steady-state experiment' : roots.some(p => p.re > 0) ? 'Unstable model: analytic frequency evaluation only' : 'Marginal model: no guaranteed steady-state experiment';
   const d = plant.denominator, n = plant.numerator;
