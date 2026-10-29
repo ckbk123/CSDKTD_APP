@@ -104,6 +104,18 @@ describe('all numerical cubic roots', () => {
 });
 
 describe('bounded visual polynomial grammar and scalar controls', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`\frac\!12`, String.raw`\frac1\ 2`, String.raw`\frac{1}\,2`, String.raw`\dfrac1\!2`, String.raw`\frac1\;{2}`])('rejects a spacing token used as an unbraced argument: %s', source => {
+    expect(() => parseDenominator(`s^3+s^2+s+${source}`)).toThrow('box with a number');
+    expect(() => parseEndpoint(source)).toThrow('box with a number');
+  });
+  it.each([String.raw`\frac1{\;2}`, String.raw`\frac{\;1}{\,2}`, String.raw`\frac{1}{\!2}`, String.raw`\frac{\ 1}{2}`, String.raw`\frac 1 2`])('preserves proper numeric argument boxes and compact fractions: %s', source => {
+    expect(parseDenominator(`s^3+s^2+s+${source}`).map(textOf)).toEqual(['1/2', '1', '1', '1']);
+    expect(textOf(parseEndpoint(source))).toBe('1/2');
+  });
+  it('checks power argument scope before deleting spacing', () => {
+    for (const power of [String.raw`2^\;2`, String.raw`2^\,2`, String.raw`2^\!2`, String.raw`2^\ 2`]) expect(() => parseDenominator(`s^3+s^2+s+${power}`)).toThrow('box with a number');
+    expect(parseDenominator(String.raw`s^3+2^{\;2}s^2+s`).map(textOf)).toEqual(['0', '1', '4', '1']);
+  });
   it.each([String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)`, String.raw`1+(2\frac12)`, String.raw`\left(-2\frac{1}2\right)`, String.raw`2\,\frac12`, String.raw`2{\frac12}`, String.raw`{2}\frac12`, String.raw`2{-\frac12}`, String.raw`{2+3}\frac12`])('rejects mixed semantics in polynomial coefficients and endpoints: %s', source => {
     expect(() => parseDenominator(`s^3+s^2+(${source})s+1`)).toThrow('Insert + or ×');
     expect(() => parseEndpoint(source)).toThrow('Insert + or ×');
@@ -162,5 +174,10 @@ describe('student interval answers', () => {
     const m = parseModel('s^3+s^2/100000000+s/100000000', 100);
     expect(checkPrediction(m, { ...answer, lower: 0, upper: 1e-7 }).correct).toBe(false);
     expect(checkPrediction(m, { ...answer, lower: q(0), upper: q(1, 10n ** 18n) }).correct).toBe(true);
+  });
+  it('cannot grade a malformed spacing-argument endpoint as the true upper half', () => {
+    const model = parseModel('s^3+s^2+s', 2);
+    for (const upper of [String.raw`\frac1\;2`, String.raw`\frac\,12`]) expect(() => checkPrediction(model, { ...answer, upper: parseEndpoint(upper) })).toThrow('box with a number');
+    expect(checkPrediction(model, { ...answer, upper: parseEndpoint(String.raw`\frac1{\;2}`) }).correct).toBe(true);
   });
 });

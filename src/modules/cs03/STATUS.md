@@ -1,6 +1,6 @@
 # CS03 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cs03/**` only
@@ -93,3 +93,11 @@ Own viewport override was reset, tab5 closed, and preview process72504 on port88
 ## Remaining integration work
 
 The accepted bounded exercise and required worker checks are complete. PR#26 is open against main and attached to this worker chat. The final delivery record is committed, checked and pushed before the shared claim records its exact clean HEAD. Independent coordinator review and the approved native-reader adaptation remain integration responsibilities. No merge, version change or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
+
+## Returned notation correction — current work
+
+The coordinator reopened submitted5a4771b in the same PR#26: TeX spacing commands were removed before unbraced argument scope was known. Raw fraction forms with a spacing token in a box were misread as1/2, including a malformed student endpoint being graded correct; an unbraced power-spacing form could become4. Stage is in-progress for this correction; earlier delivered mathematics/browser evidence applies only to unchanged behavior. CS02 is cleanly checkpointed at24034b6 in its preserved worktree while this return takes priority.
+
+The preflight now checks original fraction/power argument tokens before removing spacing. Unbraced arguments must themselves be numeric tokens; a spacing command cannot borrow a subsequent digit. Properly braced numeric boxes may still contain harmless spacing. Focused parser/grading/workspace regressions and actual-editor error/recovery checks are being completed before resubmission. Approved native-reader integration remains coordinator-owned; no rebase/shared change is being made.
+
+Focused correction checks now pass78/78 (65math/parser,13workspace), plus type checking. Regressions reject unbraced spacing arguments in both polynomial coefficients and endpoints, preserve properly filled/braced spacing boxes and compact fractions, reject power spacing scope, and prevent the0<K<1/2 malformed-endpoint grading reproduction. Actual editor serialization/error/recovery and final full-project/build/PR evidence remain pending.

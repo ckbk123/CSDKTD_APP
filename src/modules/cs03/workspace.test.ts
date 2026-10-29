@@ -62,6 +62,13 @@ describe('CS03 complete cubic workspace', () => {
     const { root } = await open(); edit(root.querySelector('textarea')!, 's^3+s^2+s+0.1'); edit(scalar(root, 0), '0.3'); click(root, 'Reveal derivation'); click(root, 'Inspect K = -1/3');
     expect(root.textContent).toContain('All roots at K = -1/3'); expect(root.textContent).toContain('s1 = 0 + 0j'); expect(root.textContent).toContain('Exact factor s(s²+as+b)');
   });
+  it('rejects malformed endpoint argument scope before grading and recovers with a filled box', async () => {
+    const { root } = await open(); edit(root.querySelector('textarea')!, 's^3+s^2+s'); edit(scalar(root, 0), '2');
+    edit(answer(root, 0), '0'); edit(answer(root, 1), String.raw`\frac1\;2`); click(root, 'Check interval and reveal');
+    expect(root.textContent).toContain('box with a number'); expect(root.querySelector('.c-answer')).toBeNull();
+    edit(answer(root, 1), String.raw`\frac1{\;2}`); click(root, 'Check interval and reveal');
+    expect(root.textContent).toContain('Your open interval agrees'); expect(root.querySelector('.c-answer')!.textContent).toBe('0 < K < 1/2');
+  });
   it('grades visual endpoint fractions for a region narrower than native numeric resolution', async () => {
     const { root } = await open(); edit(root.querySelector('textarea')!, 's^3+s^2/100000000+s/100000000+100');
     edit(answer(root, 0), '-100'); edit(answer(root, 1), String.raw`-\frac{999999999999999999}{10000000000000000}`); click(root, 'Check interval and reveal');

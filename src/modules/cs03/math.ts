@@ -1,5 +1,21 @@
 /** Private exact coefficients plus bounded cubic root checks; no shared state. */
 function checkFractionMeaning(latex: string) {
+  // An unbraced TeX argument consumes one token. A spacing command in that
+  // position is the argument itself, so do not erase it and borrow a later digit.
+  function argument(start: number) {
+    let at = start; while (at < latex.length && /\s/.test(latex[at])) at++;
+    if (latex[at] === '{') {
+      let depth = 1;
+      for (let i = at + 1; i < latex.length; i++) { if (latex[i] === '{') depth++; if (latex[i] === '}' && !--depth) return i + 1; }
+      throw new Error('Complete and close the fraction or power box.');
+    }
+    if (/[0-9]/.test(latex[at] ?? '')) return at + 1;
+    throw new Error('Complete each fraction or power box with a number; a spacing symbol alone cannot fill the box.');
+  }
+  for (const match of latex.matchAll(/\\(?:dfrac|frac)|\^/g)) {
+    const first = argument(match.index + match[0].length);
+    if (match[0] !== '^') argument(first);
+  }
   const source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '');
   // Protect one-token fraction arguments and powers before inspecting invisible grouping.
   const adjacency = source.replace(/\^\{[0123]\}|\^[0123]/g, '^p').replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g, '@');
