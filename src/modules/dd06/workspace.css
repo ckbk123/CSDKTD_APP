@@ -1,0 +1,40 @@
+[data-module="DD06"] .dd06-tool { display: grid; grid-template-columns: minmax(0,1fr); gap: 18px; min-width: 0; font-size: 14px; line-height: 1.65; color: var(--text); }
+[data-module="DD06"] .dd06-view { min-width: 0; }
+[data-module="DD06"] .dd06-card { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+[data-module="DD06"] .dd06-fields { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin: 16px 0; }
+[data-module="DD06"] .dd06-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; color: var(--muted); font-size: 12px; }
+[data-module="DD06"] input, [data-module="DD06"] select { min-width: 0; width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--background); color: var(--text); font: inherit; font-size: 14px; }
+[data-module="DD06"] input[type="range"] { accent-color: var(--accent); padding: 0; }
+[data-module="DD06"] button { padding: 9px 13px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); font-size: 13px; }
+[data-module="DD06"] button:hover { background: var(--hover); }
+[data-module="DD06"] .dd06-primary { background: var(--tint); border-color: var(--accent); color: var(--accent-strong); }
+[data-module="DD06"] button:disabled { opacity: .7; }
+[data-module="DD06"] .dd06-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+[data-module="DD06"] h3 { margin: 0 0 14px; font-size: 17px; font-weight: 600; }
+[data-module="DD06"] h4 { margin: 22px 0 10px; font-size: 15px; }
+[data-module="DD06"] p { margin: 10px 0; overflow-wrap: anywhere; }
+[data-module="DD06"] .dd06-note { color: var(--muted); font-size: 12px; }
+[data-module="DD06"] .dd06-message { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--accent-strong); }
+[data-module="DD06"] .dd06-message:empty { display: none; }
+[data-module="DD06"] .dd06-plot { margin: 18px 0; padding: 10px; min-width: 0; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+[data-module="DD06"] figcaption { margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+[data-module="DD06"] .dd06-plot svg { display: block; width: 100%; height: auto; }
+[data-module="DD06"] .dd06-plot svg text { fill: var(--muted); font: 12px system-ui,sans-serif; }
+[data-module="DD06"] .dd06-grid { stroke: var(--line); stroke-width: 1; }
+[data-module="DD06"] .dd06-open { fill: var(--surface); stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 3 2; }
+[data-module="DD06"] .dd06-filled { fill: var(--accent); stroke: var(--accent); stroke-width: 1.4; }
+[data-module="DD06"] .dd06-selected { fill: var(--surface); stroke-width: 2.5; stroke-dasharray: none; }
+[data-module="DD06"] .dd06-cursor { stroke: var(--accent); stroke-dasharray: 5 4; }
+[data-module="DD06"] table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 12px; }
+[data-module="DD06"] th, [data-module="DD06"] td { padding: 8px; border-bottom: 1px solid var(--line); text-align: left; }
+[data-module="DD06"] .dd06-scroll { overflow-x: auto; max-width: 100%; }
+[data-module="DD06"] .dd06-readout { font-variant-numeric: tabular-nums; }
+[data-module="DD06"] .dd06-checked:not(:empty) { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+[data-module="DD06"] summary { cursor: pointer; color: var(--text); font-weight: 500; }
+[data-module="DD06"] .dd06-tool [hidden] { display: none; }
+@media (max-width:640px) {
+  [data-module="DD06"] .dd06-card { padding: 13px; }
+  [data-module="DD06"] .dd06-fields { grid-template-columns: 1fr; gap: 10px; }
+  [data-module="DD06"] .dd06-plot { padding: 5px; }
+  [data-module="DD06"] .dd06-plot svg { min-width: 540px; }
+}

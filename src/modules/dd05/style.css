@@ -1,0 +1,26 @@
+[data-module="DD05"] .ap-tool, [data-module="DD05"] .ap-results { display:grid; grid-template-columns:minmax(0,1fr); min-width:0; gap:1rem; }
+[data-module="DD05"] .ap-card { background:var(--surface); border:1px solid var(--line); border-radius:.75rem; padding:1rem; min-width:0; }
+[data-module="DD05"] .ap-card h3 { margin:0 0 .65rem; font-size:1.1rem; }
+[data-module="DD05"] .ap-card h4 { margin:.9rem 0 .5rem; }
+[data-module="DD05"] .ap-card p { margin:.5rem 0; line-height:1.55; overflow-wrap:anywhere; }
+[data-module="DD05"] .ap-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr)); gap:.75rem; margin:.75rem 0; }
+[data-module="DD05"] .ap-controls label { display:grid; gap:.35rem; }
+[data-module="DD05"] .ap-tool input, [data-module="DD05"] .ap-tool select, [data-module="DD05"] .ap-tool button { font:inherit; }
+[data-module="DD05"] .ap-tool input, [data-module="DD05"] .ap-tool select { width:100%; min-width:0; padding:.5rem; border:1px solid var(--line); border-radius:.4rem; background:var(--surface); color:var(--text); }
+[data-module="DD05"] .ap-actions { display:flex; flex-wrap:wrap; gap:.6rem; margin:.7rem 0; }
+[data-module="DD05"] .ap-actions button { border:1px solid var(--line); border-radius:.5rem; padding:.6rem .8rem; color:var(--text); background:var(--tint); cursor:pointer; }
+[data-module="DD05"] .ap-tool button:disabled, [data-module="DD05"] .ap-tool input:disabled { opacity:.6; cursor:default; }
+[data-module="DD05"] .ap-tool :focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+[data-module="DD05"] .ap-note { color:var(--muted); }
+[data-module="DD05"] .ap-scroll { overflow-x:auto; max-width:100%; border:1px solid var(--line); border-radius:.4rem; margin:.65rem 0; }
+[data-module="DD05"] .ap-scroll table { border-collapse:collapse; min-width:35rem; width:100%; font-variant-numeric:tabular-nums; }
+[data-module="DD05"] .ap-scroll th, [data-module="DD05"] .ap-scroll td { text-align:left; padding:.55rem .7rem; border-bottom:1px solid var(--line); white-space:nowrap; }
+[data-module="DD05"] .ap-scroll svg { display:block; min-width:680px; width:100%; }
+[data-module="DD05"] .ap-scroll svg text { fill:var(--muted); font:13px system-ui,sans-serif; }
+[data-module="DD05"] .ap-axis, [data-module="DD05"] .ap-unit { stroke:var(--muted); stroke-width:1; fill:none; }
+[data-module="DD05"] .ap-gridline { stroke:var(--line); stroke-width:1; }
+[data-module="DD05"] .ap-candidate { stroke:var(--text); stroke-width:1.8; stroke-dasharray:6 4; fill:none; }
+[data-module="DD05"] .ap-matched { stroke:var(--accent); stroke-width:2; fill:none; }
+[data-module="DD05"] .ap-target { fill:var(--surface); stroke:var(--muted); stroke-width:1.5; }
+[data-module="DD05"] .ap-marker { fill:var(--accent); stroke:var(--surface); stroke-width:1; }
+[data-module="DD05"] .ap-tool [hidden] { display:none !important; }

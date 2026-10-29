@@ -1,27 +1,79 @@
 # DD05 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** implemented
+- **Review:** independent coordinator integration review pending
+- **Assessed:** 2026-10-29; isolated base primary main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86`
+- **Owned scope:** `src/modules/dd05/**`; [accepted contract](TASK.md)
+- **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
+- **Branch:** `codex/dd05-analytical-pid-01a186d1`
+- **Worktree:** `C:\Users\baokh\.codex\worktrees\dd05-analytical-pid-01a186d1\CSDKTD APP`
+- **PR:** [DD05 #38](https://github.com/ckbk123/CSDKTD_APP/pull/38), attached; complete checked contribution prepared for independent review
 
-## Implemented and inspected
+## Accepted requirement audit
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Initial inspection found only immutable metadata and a blank synchronous mount, with no module tests. Primary's folder was clean/unreserved at the atomic claim. This fresh current-main worktree excludes earlier unmerged contributions, preserves all earlier worker branches/PRs and leaves primary8787 untouched. Node24.22.1 locked npm ci passed with zero vulnerabilities. `index.ts`, shared source, dependencies and other modules are unchanged. Local parser techniques are adapted from this worker's earlier owned DF04 contribution without a runtime sibling import.
 
-## Remaining acceptance work
+| Accepted requirement | Delivered evidence |
+|---|---|
+| Editable targets and tracking constraints | Shared visual positive first-order physical plant; native T/H/reference/gains; mapped continuous or direct complex pair, PI/PID structure, optional third pole, nonnegative/signed gains and comparator/physical tracking constraint |
+| Actual characteristic and coefficient matching | Full degree2 PI/degree3 PID equations, desired/candidate/matched columns, every unknown/residual, explicit digital rule and matched rational controller; independent source-input and exact changed fixtures |
+| Complete roots and extra modes | Independently computed roots of the actual full polynomial, residual/Vieta checks and per-pole disk classification; PID third mode retained even with Kd=0; pair-only order check rejected |
+| Realizability and incompatible constraints | Causal current-error rules, finite coefficient/gain bounds, signed-gain rejection/recovery, raw nonunit-sensor physical-error incompatibility and calibrated F=H recovery |
+| Actual sampled performance | Original zero-state controller/plant updates, output/error/control traces, exact first-order hold flow, energy on N holds, stable-limit guards, observed transient measures and explicit insufficient-horizon/conditioning/growth feedback |
+| Student attempt and visual reasoning | Candidate gains and three predictions before check, full solve/reveal, simultaneous candidate/matched results, pole/hold/output diagrams and numeric sample/memory contribution inspector |
+| Meaningful tests and integration |77 module tests,737 full tests, type/build/diff pass; bounded parser, formatting/real result-notation, physical-flow, mocked-interface and child-signal lifecycle checks |
+| Actual browser and lifecycle | Real editor fraction/power/nested/failed notation, native failures, constraints/changed models, keyboard/Enter/Escape/reset/leave/reopen/fast navigation, local fonts,390px layout and local keyboard scrolling checked below |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Source inspection and explicit convention
 
-## Evidence and next action
+The read-only Presentation workflow imported `Tài liệu/Chuong9_CSTD_Unicode_DayDuCongThuc.pptx` and rendered package slides28–32 outside Git. Slide28 visibly shows R minus sensor feedback, sampled error, digital GC, ZOH, physical plant and output, with the accepted source inputs G=10/(10s+1),H=.05,T2s,ζ.707,ωn2rad/s. Slide29 explicitly selects PI for zero error. Embedded formulas on slides29–32 were partly omitted by the renderer/text extraction, so unseen worked gains/derivations are not claimed inspected. The legacy originalPPT was located but not rendered. No deck edits/media entered Git.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+Baseline therefore uses PI with two full modes. The declared backward rectangular/current-error integrator and backward error-difference PID extension are implementation conventions; independently derived matched coefficients are not claimed transcriptions of omitted formulas. The extra-pole and calibration experiments are bounded proposed variations. The confirmed diagram's comparator error is e=F r−H y with raw F=1. Stable integral control makes comparator error zero, generally y∞=r/H; it does not make physical r−y zero under raw H≠1. Calibrated physical-reference mode uses F=H. This distinction is visible in equations, constraints, results and source/proposed-fixture labels.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+## Supported mathematics and bounds
+
+SISO physical G(s)=g/(τs+1), g=.05–100,τ=.01–100s; constant sensor H=.001–10, negative feedback, T=.001–10s,T/τ≤30, step reference−10 to10. At each tick read e[k]=F r[k]−H y[k], update controller, then hold u[k] on[kT,(k+1)T). Zero y[0],u[−1],e[−1],e[−2] and integral memory. Exact plant ZOH a=exp(−T/τ),b=g(1−a), y[k+1]=a y[k]+b u[k]. The sampled loop is discrete LTI; no ordinary continuous-time LTI claim is made for the entire clocked system.
+
+PI: u[k]−u[k−1]=q0e[k]+q1e[k−1], q0=Kp+KiT,q1=−Kp, C=(q0z+q1)/(z−1), Q=z²−(1+a)z+a+Hb(q0z+q1). PID adds backward difference Kd(e[k]−e[k−1])/T: q0=Kp+KiT+Kd/T,q1=−Kp−2Kd/T,q2=Kd/T; C=(q0z²+q1z+q2)/(z(z−1)), Q=z³−(1+a)z²+az+Hb(q0z²+q1z+q2). All full states/modes remain; no transfer cancellation certifies internal stability. PI omits the derivative state entirely. Unused PI derivative/extra and hidden target controls are not read.
+
+Continuous target pair exp((−ζωn±jωn√(1−ζ²))T): ζ=.05–.9999,ωn=.01–20rad/s,ζωnT≤20 and damped angle strictly belowπ; aliased targets receive feedback. Direct conjugate pair has positive imaginary part≥1e-5,radius≥1e-5 strictly inside the disk; repeated/under-resolved pairs are outside this bounded design. PID adds a real target−.95 to.95. PI matches both coefficients; PID matches all three including that extra root. Back-conversion is Kd=Tq2,Kp=−q1−2q2,Ki=(q0+q1+q2)/T for PID and the corresponding q2-free PI formula. Signed and tracking constraints remain separate from algebraic solvability.
+
+Native gains±1000, increment coefficients±1e5, monic actual characteristic coefficients±1e6. A bounded degree1–3 solver uses stable quadratic formulas/cubic real solution, exact zero deflation, every scaled root residual and full Vieta reconstruction checks. Near-multiple numerical ambiguity is unresolved, not a fabricated full set. Matching tolerance1e-8 relative coefficient scale; unit-radius boundary band1e-8. All displayed coefficients/roots are numerical approximations, with derived equations explicitly approximate; they are not general CAS proofs.
+
+Visual plant parser: decimals, signed/compact/nested fractions, polynomial factors/arithmetic, visible parentheses and literal powers0–2. No function labels, e/E symbols, hidden grouping, ambiguous mixed-number adjacency or rational cancellation. Bounds512 source characters,128 expanded tokens,8 logical levels,32 normalized nesting, degree4 intermediates and magnitude1e12 intermediates; literal/product/quotient/normalization underflow rejected. Native controls use the shared stateless raw-number reader and preserve valid exponent notation/intentional zero.
+
+N=10–2000 integer holds, horizon NT; output/control/error magnitude≤1e12, held-control energy≤1e28. A conservative local characteristic-recurrence-defect/modal amplification estimate suppresses a response/effort if estimated output/control error exceeds1e-7×max(1,|value|); roots are inflated for numeric roundoff. This is an explicit conservative support guard, not an exact floating-point error theorem. Growth/conditioning/unsupported roots produce no partial metrics. Original controller-memory contributions and next plant sample are independently inspectable; terminal k=N adds no new hold/energy.
+
+Stable limits require every full pole strictly inside and numerically active integral action. Comparator/physical limits remain distinct. Zero reference is identified as a trivial tracking test. Overshoot is observed relative to nonzero stable output limit; rise is first sampled10–90% crossing (zero sampled rise means both thresholds first exceeded at one sample);2% settling is an observed candidate only. Missing rise or last sample outside the band gives explicit insufficient-horizon feedback. No finite trace proves a future peak/settling tail. T∑u² is the held-signal energy identity up to floating arithmetic, counted only on N intervals.
+
+Output diagrams use the actual first-order held-plant flow at401 display times, stable incremental expm1 for short holds and affine exponential form for long decays, with at most201 actual sample markers; held-control diagrams include every interval. Finite display polylines are illustrations. All cases share physical model,T,reference convention/zero state/horizon. Numeric tables and680px diagrams scroll locally with keyboard alternatives. Own synchronous loading and child signal cover abort, explicit cleanup, partial mount failure and late imports. Whole-plant presets release the old editor and create one fresh caller-owned shared instance; ordinary edits remain local to the visit.
+
+## Independent fixtures
+
+- Separate65-digit standard Decimal exp/sqrt and90-term trigonometric series oracle, without module calls, gives source-input PI a=.81873075307798185867,b=1.8126924692201814133,target pair−.05626282518411268028±.01819256346493521628j,q0=21.30815277537984033619,q1=−8.99473343722304042902,Kp=8.99473343722304042902,Ki=6.15670966907839995359s⁻¹. Source raw y1=38.62512806892414438475,y2=17.97412484811529574759,stable y∞20,comparator0,physical error−19,first observed peak93.1256403446%. No unavailable mpmath package was installed.
+- Exact changed fixture g=τ1,H=.5,T=ln2,a=b=.5,target pair.2±.3j. PI Q=z²−.4z+.13,q=[4.4,−1.48],Kp1.48,KiT2.92. Outputs0,2.2,2.34,2.11; u0=4.4,u1=2.48; observed17% overshoot. PID extra−.2 gives Q=z³−.2z²+.05z+.026,q=[5.2,−1.8,.104],Kp1.592,KiT3.504,Kd/T.104. Outputs0,2.6,2.22,2.066; u1=1.84; observed30% overshoot.
+- Calibrated F=H halves raw output/control in that fixture and makes physical limit1/error0 without changing full poles. Doubling plant gain halves control/quarters energy while preserving output. Signed reference symmetry/zero input are checked. A positive extra pole requires negativeKd and fails only the selected nonnegative constraint.
+- Actual cubic complex/three-real/repeated/zero-root fixtures and Vieta checks retain every mode. A target pair alone fails a full PID order comparison. ZeroKi retains the unexcited integral mode and prevents strict final-value certification. Long hidden-marginal-mode traces trigger conservative roundoff feedback; short closed forms remain checked.
+- Half-hold output equals4.4(1−1/√2). At T/τ30 with proportional gain1/(1−exp(−30)), the actual second hold starts y1=1,u1=0; reconstruction after25 time constants retains exp(−25), avoiding a subtractive zero tail.
+
+## Actual production-browser gate
+
+Private in-app inventory explicitly matched codexSessionId `01a186d1-a367-78f1-98f5-e1cf147ef306`, initially no tabs. Only own tab10/preview127.0.0.1:8798 were used; no global lock, other reservation/tab/viewport or primary8787 was touched. In-app browser/system dark theme; precise engine version was not exposed. Light theme was not separately emulated. No Firefox/native-window testing is claimed.
+
+Actual Enter prepare/check/solve matched all source coefficients, complete actual poles, zero/nonzero error limits and observed93.12564%/6s settling candidate. Selected k1 gave y38.625128,e−.9312564,u−7.5299344,nexty17.974125 with increment residual≈−1.8e-15. Exact PI and PID fixtures, terminal sample, all three actual PID poles (including candidate zero mode) and separate matched extra mode were checked. Raw physical-error constraint was incompatible; calibrated F=H recovered physical limit1 and17% observed overshoot. Signed-gain option recovered the same causal negativeKd controller after its nonnegative constraint failed.
+
+Native1e-999 Kp hid stale results with underflow guidance;0e-999 and1e-2 were accepted. Aliased target,2001/fractional intervals and unstable gains1000 received explicit feedback/no partial metrics. The matched solution remained available when candidate growth failed, reenabling its sample inspector. Fractional sample input removed stale tables. Rebuilt exact PI comparison explicitly reported incomplete rise/settling at the candidate's finite horizon.
+
+Real fraction/power buttons constructed copied `\frac{1}{s+1^1}` and reproduced the exact PI fixture. Copied nested `\frac{\frac12}{s+1}` gave b=.25,q0=8.8, same y1=2.2 and doubled u1=4.96. Actual copied mixed `2\frac12`, e-symbol and unbraced s^1.0 drafts received their specific rejection/guidance. Entry separately observed empty, settled typing and copied actual source before interpreting results. Systems7 changed the field to7; Escape closed without navigation, then fresh-preset prepare/check/solve passed with one editor. Reset while keyboard open restored sourceT2 and closed it. Leave after editedT7 removed roots/fields; reopen restoredT2 and rapid library/module/library left zero old controls.
+
+Visual inspection found a desired-polynomial command joined as unknown `\approxz`. A real MathLive SSR check over every PI/PID result first reproduced this, then passed after the delimiter repair. Actual rebuilt screenshot shows correct Q*. PI prose now explicitly has no derivative-delay mode; only PID retains it. Source-render technical limitations stay in this record; the student flow states the relevant declared/proposed mathematics. Numeric source results did not change.
+
+At390×844, page width375px, fonts loaded/KaTeX_Main available and one root/editor. Tables used271px viewports with560–1416px content; diagrams271/680px. Keyboard ArrowRight moved coefficient table and output plot39.5px locally. Phone keyboard did not widen the page. Escape→PID preset→prepare/check/full solve retained one editor,375px page and all three actual roots. Both corrected equations and computed output/control plots were visually inspected. Warning/error logs were empty. Temporary viewport reset, tab closed and private preview stopped.
+
+Proofs outside Git in this worker's2026/10/29 visualization folder: `dd05-coefficients-fixed.png`, `dd05-phone-coefficients.png`, `dd05-phone-output.png`, plus source-only `dd05-source/slide-28.png` through `slide-32.png`. Selected final browser proofs were embedded in chat. The earlier broken result screenshot is diagnostic only. These are actual browser checks, not a claimed automated end-to-end command.
+
+## Validation and delivery
+
+Supported Node24.22.1: `npm test -- src/modules/dd05`77 tests in6 files (14 math,41 parser,2 formatting,2 physical reconstruction,12 mocked-interface/result-notation,6 lifecycle), `npm run check`, `npm test`737 tests in32 files, `npm run build` and `git diff --check` pass. View≈15.22kB gzip; existing MathLive221.50kB warning and20 local font assets remain. Generated dist/node_modules/source-inspection artifacts are not committed.
+
+No required owned exercise work or new API/dependency remains. The coordinator has acknowledged and browser-proven the separate common Escape capture correction for all clients; no shared copy/rebase or extra permission is needed for preserved worker contributions. This branch independently passed its fresh-editor preset recovery. PR38 is reused/attached for independent review; the current primary helper records the exact clean pushed tested HEAD on final submission. Earlier review returns retain priority; submission is a milestone in the continuous worker goal. No main merge, version change, deployment or new agents.
