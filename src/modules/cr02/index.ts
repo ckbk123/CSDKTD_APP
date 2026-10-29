@@ -1,6 +1,6 @@
 import type { ModuleManifest } from '../../core/module';
 
-export const manifest = {
+export const manifest = Object.freeze({
   id: "CR02",
   title: "ODE and Laplace",
   description: "Follow a linear equation into its transfer function.",
@@ -8,4 +8,4 @@ export const manifest = {
   category: "representation",
   defaultExample: "y'' + 3y' + 2y = u; y(0) = 0; y'(0) = 0",
   load: () => import('./workspace'),
-} satisfies ModuleManifest;
+} satisfies ModuleManifest);
