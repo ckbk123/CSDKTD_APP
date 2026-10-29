@@ -35,7 +35,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       if (time < 0 || time > result.full.horizon) throw new Error('Choose inspection time within the common horizon.');
       const pair = normalizedAt(result.pair.response, time), full = normalizedAt(result.full.response, time), finalValue = result.full.response.finalValue;
       q('.cf1-response').replaceChildren(responsePlot(result.pair, result.full, time));
-      q('.cf1-inspection').textContent = 'At t=' + f(time) + ' s: pair y=' + f(pair.value * finalValue) + ', full y=' + f(full.value * finalValue) + ' output units. Normalized pair/full=' + f(pair.value) + '/' + f(full.value) + '; common final value=' + f(finalValue) + ' output units.';
+      q('.cf1-inspection').textContent = 'At t=' + f(time) + ' s: pair y=' + f(pair.value * finalValue) + ', full y=' + f(full.value * finalValue) + ' output units. Normalized outputs: pair=' + f(pair.value) + ', full=' + f(full.value) + '; common final value=' + f(finalValue) + ' output units.';
     } catch (error) { q('.cf1-inspection').textContent = error instanceof Error ? error.message : 'Check inspection time.'; }
   }
   function compute(): void {
@@ -79,7 +79,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const reasoning = q('.cf1-reasoning'); reasoning.replaceChildren();
     const equation = (latex: string, label: string) => reasoning.append(createEquationDisplay(latex, label));
     equation(String.raw`T_2(s)=${baseLatex(pair.response)},\quad\omega_n=\sqrt{${ln(pair.response.model.a0)}}=${ln(pair.response.naturalFrequency)},\quad\zeta=\frac{${ln(pair.response.model.a1)}}{2\omega_n}=${ln(pair.response.damping)}`, 'Pair model, natural frequency and damping');
-    let factors = String.raw`T_{\rm full}(s)=T_2(s)`;
+    let factors = String.raw`T_{\mathrm{full}}(s)=T_2(s)`;
     if (full.response.model.pole !== undefined) { const p = ln(full.response.model.pole); factors += String.raw`\frac{${p}}{s+${p}}`; }
     if (full.response.model.zero !== undefined) { const z = full.response.model.zero; factors += String.raw`\left(1${z < 0 ? '-' : '+'}\frac{s}{${ln(Math.abs(z))}}\right)`; }
     equation(factors, 'Full chosen cascade with unchanged target pair');

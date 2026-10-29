@@ -1,6 +1,6 @@
 # CF01 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Assessed:** 2026-10-29; fresh primary main9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86 (v0.3.9)
 - **Owned scope:** src/modules/cf01/**; [accepted contract](TASK.md)
 - **Worker chat:** 01a18701-3f40-7572-9a49-7dc0103c9161
@@ -73,3 +73,48 @@ The workspace now owns a synchronous loading host and child abort signal around 
 The actual exercise UI now has visual T(s), editable requirements/band/rise/horizon/refinement, independent optional pole/zero controls, pair/full-response overlay, measurement markers, target-region plot, numeric inspection, prediction/reveal, measured/guideline comparison and complete retained pole/zero reasoning. Experiments add factors without replacing edited target-pair data. Native controls use readNumericInput. Invalid data clears old answers; invalid inspection preserves the previous valid plot. All styles are scoped and plots/tables have local horizontal scrolling.
 
 Current local total40 tests across5 files passes (response6, measurement7, input17, view5, workspace5). The view tests use a mock equation component and are not browser evidence. All700 application tests/31 files and npm run check pass; production build and actual private-context browser pass are the remaining delivery gates. A source inspection also corrected scientific-result formatting to use a real multiplication/power command rather than a string tab escape, with a regression. No PR or implemented-stage claim yet.
+
+## Final worker verification — 29 October 2026
+
+The accepted bounded exercise is implemented and worker-checked. Independent coordinator review/integration is pending. Ownership remains src/modules/cf01/** only; metadata/TASK, shared APIs, package versions/dependencies and primary8787 are unchanged. This branch was created from its recorded primary-main9d923d2 baseline, preserving earlier submissions without stacking them.
+
+| Accepted requirement | Delivered evidence |
+|---|---|
+| Derive damping/natural-frequency requirements | Editable overshoot/time/band inputs; typeset ζmin, decay guideline and ωn at minimum damping; pair coefficients yield actual ζ/ωn |
+| Place/read a target region | Computed damping wedge and decay line in plots.ts, with all retained poles, optional zero and repeated-pole multiplicity annotations; region explicitly remains a guideline |
+| Rise/peak/settling/overshoot and markers | measure.ts/response.ts; 1/2/5% bands, first10–90% or step-start-to100%, derivative extrema/crossing refinement, annotated response and numeric inspector |
+| Pair prediction versus full model | Solid full/dashed pair curves and measured/formula table; one optional pole/zero factor preserves the target pair and DC gain |
+| Changed modes/zeros | Actual slow-pole and RHP-zero controls/presets retain edited T(s); full retained pole/zero list and model factors; critical/triple and inverse-response fixtures |
+| Insufficient horizon | A future modal envelope is required; a last in-band sample alone never yields settling. An observed later violation can still disprove a target |
+| Attempt, reasoning, checked reveal | Prediction includes meets/fails/not-established, reveal checks both targets, shows formulas, full cascade, retained poles and envelope/refinement evidence |
+| Inputs and lifecycle | Bounded visual parser/shared native reader, stale-result removal, preserved invalid-cursor plot, owned loading host/child signal and partial-mount-failure resource tests |
+
+### Supported mathematics and bounds
+
+T₂(s)=g/(s²+a₁s+a₀), positive g and stable real second-order denominator, zero states, unit step. T is already a closed-loop input/output map. Optional p/(s+p) and (1+s/z) form the declared full cascade, retaining the pair and all denominator factors even with cancellation. Output final value is g/a₀; the plot uses y/y∞ (dimensionless), while numeric inspection reports output units. Time is seconds; frequencies/poles/zeros use rad/s or s⁻¹ as labeled. No actuator saturation, controller synthesis, persistence, remote computation or unstated feedback topology.
+
+Numerator10⁻⁹–1000; ωn0.05–20rad/s; ζ0.02–3; optional p and|z|0.02–50s⁻¹, with negative z meaning RHP zero; H0.05–100s. Visual input: one constant-over-degree2 fraction, decimal coefficients, visible grouping/products/powers0–2, at most512 characters/128 polynomial tokens/16 numeric wrapper levels, original coefficient magnitudes≤10⁶ and leading coefficient magnitude≥10⁻⁹. Scientific e-symbol syntax, hidden algebraic grouping, mixed/nested fractions and raw parenthesized/multi-digit unbraced exponent atoms reject; native ordinary exponents remain supported. Normalized model limits and nonzero underflow are checked independently.
+
+Modal evaluation supports exact repeated factors; distinct pole gaps≤10⁻⁵ times scale or modal coefficient sum>10⁶ reject. Initial-condition and three rational reconstruction residuals are checked. Real-pole coefficients are projected to their mathematically real value only after an imaginary-residual gate10⁻¹⁰×(1+|real part|); a browser-discovered tiny imaginary rounding residue had conservatively prevented a valid no-overshoot condition, now covered by an independent p=.2 closed formula. Full rational checks still follow the projection.
+
+Refinement tolerance10⁻⁵–10⁻³ (default10⁻⁴), at most16384 intervals. Pole-scale resolution, derivative-root brackets, midpoint interpolation and metric halving checks are separate from the future envelope. Excessive roundoff allowance or unresolved refinement returns feedback. Repeated tᵏe⁻σᵗ terms use the maximum over t≥H, not an assumed decreasing endpoint. These are numerical consistency/envelope checks, not interval-certified exact-time/global-extremum proofs. A peak remains horizon-qualified unless its future is excluded or a sufficient non-overshooting condition applies. Near-target numerical margins produce not established rather than an unsupported pass.
+
+### Independent and actual-browser checks
+
+Baseline closed-form and independently bisected roots: ζ=.5,ωn2, overshoot16.303353482158048%, peak1.8137993642342178s,10–90 rise.8187864736641739s; settling2%=4.038174486963996s,5%=2.6445466101521538s,1%=4.390282361937942s. The course's about4.039s matches a1ms first-inside sample. A4s guideline does not establish the actual2% target. References are analytic formulas/ordinary independent scalar bisection, not production response/root calls.
+
+Production browser at http://127.0.0.1:8975/#/module/CF01 used matching private codexSessionId01a18701-3f40-7572-9a49-7dc0103c9161 with no other tabs, per verified per-chat QA policy. Own tabs5 and6 were created sequentially and closed. Baseline measured/formula table and correct prediction feedback passed. All three bands and both rise definitions were exercised. Changing overshoot20→10% changed the damping region and pass/fail result. At5%, both default targets pass; at2%, measured settling exceeds the4s guideline.
+
+At H1.21s the endpoint is about1.000477, inside2%, yet settling and the performance prediction remain not established. Adding p=.2 keeps the pair and yields unestablished settling at10s; H40s measures about20.03167s with zero positive overshoot supported by modal dominance. Real fraction/power buttons entered1/(s²+2s+1); adding p1 gives triple poles and settling7.516604s, versus the pair's5.833922s. Both have no finite100% rise. Adding z−1 gives the independent inverse result y(1)=1−3/e≈−.1036383, and the pole plot labels the retained multiplicity×3 plus zero+1. The full cascade typesetting was corrected from an unsupported font macro during browser inspection.
+
+Native nonzero underflow in H clears both plot containers and hides old answers; time underflow preserves the prior valid plot, while genuine0e−400 selects t0 and ordinary1e1 sets H10. Near-coincident p1.0000001 gives conditioning feedback, and exact p1 still works. Actual malformed power entry and incomplete fraction boxes show useful guidance and hide old results. Equation selection, typing, fraction/power buttons, keyboard open/Escape dismissal and Tab-to-symbol controls were checked. Reset restores every baseline setting and hides answers. Leaving with the keyboard open removes CF01 and its keyboard; rapid CF01→CS01 navigation leaves no old root; reopening restores the baseline.
+
+Desktop1280×900 and narrow390×844, system dark theme, were inspected. Narrow document client/scroll width both375px. Plots are local281px/820px scrollers; comparison table is281px/680px. Negative tick labels were given adequate left margin after visual inspection. Scientific results use multiplication/powers rather than a tab escape; loaded fonts, readable fraction/power glyphs and empty warning/error logs were observed. Light-theme tokens are preserved but were not separately browser-tested. No broader browser/device guarantee is asserted.
+
+Outside-Git screenshots: C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/cf01-response.jpg, cf01-poles.jpg and cf01-narrow.jpg. The own viewport override was reset, both temporary tabs closed and private tab inventory empty. No Firefox controls or another chat's reservation/tab were used.
+
+### Final checks / delivery
+
+Relevant Vitest run:40 tests across5 files (response6, measurement7, input17, view5, workspace5). npm run check passes; npm test passes700/700 across31 files; npm run build and git diff --check pass after the final code. Only the existing MathLive chunk-size build warning remains. Mocked equation view tests are distinct from the real browser checks above. Exact successful commands used the bundled compatible Node24/npm toolchain in this worktree.
+
+Source provenance remains the atlas/continuous P2 audit and independently derived fixtures; original slide assets were not inspected. No shared dependency request or accepted exercise requirement remains unfinished within the declared bounds. A single PR will be created/reused, attached and recorded below before exact clean-HEAD claim submission. Independent review owns any later verified/integrated disposition. Earlier DF01/CF03 worktrees and claims remain preserved.

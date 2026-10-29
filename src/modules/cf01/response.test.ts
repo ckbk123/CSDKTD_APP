@@ -26,8 +26,12 @@ describe('CF01 full closed-loop modal response', () => {
     const changed = buildResponse({ g: 10, a1: 3, a0: 2 }); // final value5; normalized 2/[(s+1)(s+2)]
     near(changed.finalValue, 5);
     const extra = buildResponse({ g: 4, a1: 2, a0: 4, pole: 1 });
+    const slow = buildResponse({ g:4,a1:2,a0:4,pole:.2 });
+    expect(slow.modes.find(m=>m.pole.im===0)!.coefficient.im).toBe(0);
+    const A=-4/(.2*.2-2*.2+4),B=-1-A,C=(.2*A+B)/Math.sqrt(3);
     for (const t of [0, .05, 1, 4, 9]) {
       near(normalizedAt(changed, t).value, (1 - Math.exp(-t)) ** 2);
+      near(normalizedAt(slow,t).value,1+A*Math.exp(-.2*t)+Math.exp(-t)*(B*Math.cos(Math.sqrt(3)*t)+C*Math.sin(Math.sqrt(3)*t)));
       near(normalizedAt(extra, t).value, 1 + Math.exp(-t) * (-4 / 3 + Math.cos(Math.sqrt(3) * t) / 3 - Math.sin(Math.sqrt(3) * t) / Math.sqrt(3)));
     }
   });

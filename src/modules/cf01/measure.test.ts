@@ -17,6 +17,7 @@ describe('CF01 transient measurements and target guidelines', () => {
   it('changes band and rise definition using independently solved crossings', () => {
     const m = measure(baseline(), 10, 5, '0-100');
     near(m.riseTime, 1.2091995761561454); near(m.settlingTime, 2.6445466101521538);
+    near(measure(baseline(),10,1).settlingTime,4.390282361937942);
     expect(m.settlingTime).toBeLessThan(measure(baseline(), 10, 2).settlingTime!);
   });
   it('never labels a short apparently in-band endpoint as established settling', () => {
@@ -38,6 +39,7 @@ describe('CF01 transient measurements and target guidelines', () => {
     const short = measure(full, 10), longer = measure(full, 40);
     expect(full.poles.slice(0, 2)).toEqual(baseline().poles);
     expect(short.settlingTime).toBeUndefined(); expect(longer.settlingTime).toBeGreaterThan(15);
+    expect(short.noOvershoot).toBe(true); expect(longer.noOvershoot).toBe(true);
     expect(longer.overshootPercent).toBe(0);
     const noOvershoot = measure(buildResponse({ g: 4, a1: 2, a0: 4, pole: 1 }), 15, 2, '0-100');
     expect(noOvershoot.noOvershoot).toBe(true); expect(noOvershoot.riseTime).toBeUndefined();

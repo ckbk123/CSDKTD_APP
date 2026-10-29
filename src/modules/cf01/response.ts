@@ -71,7 +71,12 @@ export function buildResponse(input: Model): Response {
       for (let j = 1; j <= k; j++) value = sub(value, mul(denominator[j] ?? c(0), expansion[k - j]));
       expansion.push(div(value, denominator[0]));
       const power = group.multiplicity - 1 - k;
-      modes.push({ pole: group.pole, power, coefficient: scale(expansion[k], 1 / factorial(power)) });
+      const coefficient = scale(expansion[k], 1 / factorial(power));
+      if (group.pole.im === 0) {
+        if (Math.abs(coefficient.im) > 1e-10 * (1 + Math.abs(coefficient.re))) fail('The real-pole coefficient has an unresolved imaginary residual.');
+        coefficient.im = 0; // A real rational transfer has real residues at real poles.
+      }
+      modes.push({ pole: group.pole, power, coefficient });
     }
   }
   const coefficientScale = modes.reduce((sum, mode) => sum + magnitude(mode.coefficient), 0);
