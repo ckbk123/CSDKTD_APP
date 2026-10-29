@@ -145,7 +145,7 @@ function mountView({ container, signal }: ModuleContext, { createEquationDisplay
       } else modeInfo.append(el('p', 'The reduced scalar channel is constant; it has no dynamic poles. Internal modes still belong to the original realization.'));
       const plane = el('figure', undefined, 'cs-figure cs-plane'); plane.append(el('figcaption', view.input.value === 'original' ? 'Original eigenvalues (all states)' : 'Reduced scalar transfer poles'), polePlane(visibleRoots, selected)); plotArea.append(plane);
       try {
-        const maxFrequency = Math.max(0, ...analysis.eigenvalues.map(r => Math.abs(r.im))), count = Math.max(241, Math.ceil(seconds * maxFrequency * 24 / (2 * Math.PI)) + 1);
+        const maxFrequency = Math.max(0, ...visibleRoots.map(r => Math.abs(r.im))), count = Math.max(241, Math.ceil(seconds * maxFrequency * 24 / (2 * Math.PI)) + 1);
         if (count > 2049) throw new Error('Shorten the horizon to resolve the oscillation within 2,049 plot points.');
         const times = Array.from({ length: count }, (_, i) => seconds * i / (count - 1));
         if (chosen) plotArea.append(timePlot(times, [{ name: 'Selected real mode', values: times.map(t => modeAt(chosen, useGeneralized, t)), style: 'cs-solid' }], 'Selected modal component (numerical)'));
@@ -195,14 +195,24 @@ function mountView({ container, signal }: ModuleContext, { createEquationDisplay
 
 /** Keep the public synchronous entry importable without running a browser editor in Node. */
 export const mount: ModuleMount = context => {
+  if (context.signal.aborted) return;
   let disposed = false;
   let cleanup: (() => void) | undefined;
+  const visit = new AbortController();
   const loading = el('p', 'Loading visual inputs…'); context.container.append(loading);
+  const dispose = (): void => {
+    if (disposed) return;
+    disposed = true; visit.abort(); cleanup?.(); loading.remove(); context.signal.removeEventListener('abort', dispose);
+  };
+  context.signal.addEventListener('abort', dispose, { once: true });
   void import('../../shared/equations/input').then(ui => {
     if (disposed || context.signal.aborted) return;
-    loading.remove(); cleanup = mountView(context, ui);
+    loading.remove(); cleanup = mountView({ container: context.container, signal: visit.signal }, ui);
   }).catch(() => {
-    if (!disposed && !context.signal.aborted) loading.textContent = 'Visual inputs could not load. Reset the tool to try again.';
+    if (!disposed && !context.signal.aborted) {
+      visit.abort(); context.container.replaceChildren(loading);
+      loading.textContent = 'Visual inputs could not load. Reset the tool to try again.';
+    }
   });
-  return () => { disposed = true; cleanup?.(); loading.remove(); };
+  return dispose;
 };
