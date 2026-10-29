@@ -27,6 +27,8 @@ The claimed baseline has only metadata and a blank mount. There are no local alg
 
 ## Intended bounded mathematical domain
 
+**Mathematical checkpoint:** `math.ts` now implements the bounded ODE parser (prime/dot notation and compact numeric fractions), normalized/Laplace/TF/state equations, stable quadratic pole calculation, explicit DC-limit cancellation status, and a four-state augmented exponential for zero/step/ramp response. `math.test.ts` passed 33 tests, including the analytic baseline, W02, nonzero IC, repeated/complex poles, zero stiffness, derivative-input timing, stiff damping and the free-mass cubic ramp. UI, lifecycle and browser checks are still missing. The initial type check caught an unused test type import; it was removed before this checkpoint.
+
 Second-order passive mass/damper/spring models m y''+c y'+k y=b u+d u', with positive finite mass and nonnegative damping/stiffness. The model is SISO and linear; u' is the derivative of the same input. Zero and nonzero initial displacement/velocity are supported. The planned excitation modes are zero input, a step and a physical ramp, all starting with u(0−)=0. Step input derivatives require an explicitly shown velocity jump; a ramp avoids that impulse. No feedback connection is assumed.
 
 Visual ODE entry will accept numeric coefficients and standard prime/dot forms, including simple numeric fractions emitted by MathLive. Numeric physical controls provide an alternative. Coefficients are displayed in descending powers of s. Time is seconds, displacement metres, velocity m/s; mass kg, damping N s/m, stiffness N/m, with input-force conversion units declared beside the controls.
