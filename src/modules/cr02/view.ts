@@ -39,6 +39,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     </section>
     <section><h3>2. Transform one term at a time</h3>
       <p>Select a physical term above to link its force, ODE term, Laplace term and polynomial coefficient. Initial values belong in the transformed equation.</p>
+      <p class="muted">Numeric labels use 7 significant digits. Normalized coefficients and computed roots are numerical approximations; the derivative identities describe the applied model.</p>
       <div data-ui="term"></div><div data-ui="normalized"></div>
     </section>
     <section><h3>3. Set the experiment and predict</h3>
