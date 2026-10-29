@@ -18,7 +18,8 @@ describe('DF01 bounded visual transfer reader', () => {
   it('retains small nonzero residuals and typesets scientific numbers as powers of ten', () => {
     expect(format(1e-15)).toBe('1e-15');
     expect(latexNumber(1e-7)).toBe(String.raw`1\times 10^{-7}`);
-    expect(run('2e-7/(z-.8)').finalValue).toBeCloseTo(1e-6, 15);
+    expect(run('0.0000002/(z-.8)').finalValue).toBeCloseTo(1e-6, 15);
+    expect(() => parseTransfer('2e-7/(z-.8)')).toThrow(/Use real numbers/);
   });
 });
 describe('DF01 sample convention, independent fixtures and certificates', () => {

@@ -16,7 +16,9 @@ function multiply(a: number[], b: number[]): number[] {
   return trim(out);
 }
 function polynomial(source: string): number[] {
-  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|z|[()+*^\-]/g) ?? [];
+  // In a visual equation, "2e-7" means a variable e, not scientific syntax.
+  // Accept decimal coefficients only, rather than silently changing its meaning.
+  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|z|[()+*^\-]/g) ?? [];
   if (tokens.join('') !== source || tokens.length > 128) fail('Use real numbers, z, parentheses, +, −, products and powers 0, 1 or 2.');
   let at = 0;
   const peek = () => tokens[at];
