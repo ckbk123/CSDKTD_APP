@@ -85,4 +85,3 @@ describe('bounded visual polynomial parser and rational arithmetic', () => {
     expect(() => at(parseFamily('z^2+K'), parseNumber('10000000000000000000001/1000000000000000000'))).toThrow();
   });
 });
-

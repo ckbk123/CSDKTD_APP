@@ -59,5 +59,3 @@ describe('quadratic teaching flow', () => {
     const fresh = open(); expect(fresh.root.querySelector('textarea')!.value).toContain('0.2K'); expect(fresh.root.textContent).not.toContain('Complete strict intersection');
   });
 });
-
-
