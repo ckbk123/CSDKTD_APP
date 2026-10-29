@@ -1,6 +1,6 @@
 # DR02 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
@@ -53,8 +53,8 @@ Commands ran in this isolated worktree using bundled Node **v24.22.1** and npm *
 |---|---|
 | `npm ci` | Passed; 109 packages installed, no vulnerabilities reported |
 | `npm run check` | Passed |
-| `node node_modules/vitest/vitest.mjs run src/modules/dr02` | Passed: 38 tests, 4 files (after coordinator error-path correction) |
-| `npm test` | Passed: 80 tests, 10 files (after coordinator error-path correction) |
+| `node node_modules/vitest/vitest.mjs run src/modules/dr02` | Passed: 39 tests, 4 files (including compact fraction correction) |
+| `npm test` | Passed: 81 tests, 10 files (including compact fraction correction) |
 | `npm run build` | Passed; all 20 equation fonts emitted locally. Existing MathLive chunk-size warning remains. |
 | `git diff --check` | Passed |
 
@@ -66,7 +66,7 @@ Local screenshots (outside tracked source): `C:/Users/baokh/.codex/visualization
 
 ## Delivery and remaining boundaries
 
-The coordinator returned a compact-fraction input compatibility issue; its correction and PR delivery are tracked below. Independent integration review is pending. Light-theme rendering and browsers other than the in-app Chromium were not separately exercised; styling uses the shared light/dark tokens. No shared API/dependency request, version bump, main merge or deployment was made. Generated build/dependency files and screenshots are excluded from commits.
+The compact-fraction parser correction is implemented and mathematically tested; its PR delivery and deferred targeted browser follow-up are tracked below. Independent integration review is pending. Light-theme rendering and browsers other than the in-app Chromium were not separately exercised; styling uses the shared light/dark tokens. No shared API/dependency request, version bump, main merge or deployment was made. Generated build/dependency files and screenshots are excluded from commits.
 
 Early checkpoints: audit `05a13bd`, implementation `3a9331d` (pushed before interruption), user-requested pause checkpoint `39b6a99`. The resumed worker completed the remaining numerical/display hardening and browser verification. The branch/worktree and submitted claim retain the final deliverable for the integration owner.
 
@@ -82,6 +82,8 @@ After this correction: `npm run check`, all 38 DR02 tests, all 80 project tests,
 
 ## Compact fraction and PR follow-up (29 October 2026)
 
-The coordinator reopened DR02 for actual-editor compatibility: MathLive can emit `\frac12` for a visual 1/2. The local parser now accepts single-token fraction arguments, mixed braced/unbraced forms, and an outer parenthesized fraction. Tests independently check gain 0.5, a delayed unit gain, and the normalized denominator for 1/(z−0.5); incomplete, extra-token and zero-denominator compact forms still fail. All 39 module tests, all 81 project tests, type checking and production build passed. Production-browser 1/2 entry is pending while another worker holds QA.
+The coordinator reopened DR02 for actual-editor compatibility: MathLive can emit `\frac12` for a visual 1/2. The local parser now accepts single-token fraction arguments, mixed braced/unbraced forms, and an outer parenthesized fraction. Tests independently check gain 0.5, a delayed unit gain, and the normalized denominator for 1/(z−0.5); incomplete, extra-token and zero-denominator compact forms still fail. All 39 module tests, all 81 project tests, type checking and production build passed at code checkpoint `088b19c9fab33951e7b82eb0d189d41f48411453` and its documentation-only successors. The equation UI and previously checked browser behavior are unchanged.
 
-The revised human goal requires one GitHub PR per module and continued queue work after submission. No existing DR02 PR was found. The GitHub connector's create-PR action returned `403 Resource not accessible by integration`. Creation through the repository's existing GitHub sign-in succeeded: PR #5 above is open as a draft until the targeted visual fraction check completes, and its URL is attached. No credentials were exposed or committed.
+**Targeted browser follow-up remains explicit:** this worker has not separately entered visual 1/2 in the production browser after the correction. Actual compact serialization was reported by the coordinator from another worker's same-version MathLive browser QA, and that reported string and mixed forms are covered by the local parser tests. The coordinator asked for the targeted check if QA became available, then directed all workers to defer new QA acquisition until the coordinator's first-integration slot is released. The worker holds no reservation and will return to this same PR/worktree for the targeted check when scheduling resumes, checkpointing any newer module first. The comprehensive earlier production-browser evidence above remains valid; no new interactive-editor check is invented here.
+
+The revised human goal requires one GitHub PR per module and continued queue work after submission. No existing DR02 PR was found. The GitHub connector's create-PR action returned `403 Resource not accessible by integration`. Creation through the repository's existing GitHub sign-in succeeded: PR #5 above is the one open contribution PR, and its URL is attached. Its review description records the targeted QA deferral. No credentials were exposed or committed.
