@@ -1,6 +1,7 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft, type EquationInput } from '../../shared/equations/input';
 import { baseline, dbToLinear, diagnosePrediction, factorAt, frequency, frequencyGrid, fromAngular, normalize, parseReal, predictionAt, responseAt, slopeIntervals, toAngular, type Factor, type FrequencyUnit, type Model, type Prediction } from './math';
+import { readNumericInput as finite } from './numeric-input';
 import './workspace.css';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
@@ -13,9 +14,6 @@ function select(label: string, choices: readonly (readonly [string, string])[]) 
 function numeric(label: string, value: number, min: number, max: number) {
   const element = el('label', undefined, 'bode-control'), caption = el('span', label), input = el('input');
   input.type = 'number'; input.step = 'any'; input.value = String(value); input.min = String(min); input.max = String(max); input.setAttribute('aria-label', label); element.append(caption, input); return { element, input, caption };
-}
-function finite(input: HTMLInputElement, label: string): number {
-  const value = input.valueAsNumber; if (!input.value.trim() || !Number.isFinite(value)) throw new Error(`${label}: enter a finite number.`); return value;
 }
 function fmt(x: number, digits = 7): string {
   if (x === Infinity) return '∞';
@@ -57,8 +55,7 @@ function plot(omegas: readonly number[], curves: readonly Curve[], markers: read
   label(350, 305, `Frequency [${unit}] — logarithmic axis`);
   const grouped = new Map<string, { omega: number; names: string[]; style: string }>();
   markers.filter(m => m.omega >= start && m.omega <= end).forEach(m => { const key = `${m.style}:${x(m.omega).toFixed(2)}`; const previous = grouped.get(key); if (previous) previous.names.push(m.name); else grouped.set(key, { omega: m.omega, names: [m.name], style: m.style }); });
-  let markerIndex = 0;
-  for (const m of grouped.values()) { image.append(svg('line', { x1: x(m.omega), y1: 45, x2: x(m.omega), y2: 250, class: `bode-marker ${m.style}` })); label(x(m.omega), 34 + markerIndex++ % 2 * 12, m.names.join(',')); }
+  for (const m of grouped.values()) { image.append(svg('line', { x1: x(m.omega), y1: 45, x2: x(m.omega), y2: 250, class: `bode-marker ${m.style}` })); label(x(m.omega), m.style === 'bode-predicted-marker' ? 30 : 44, m.names.join(',')); }
   curves.forEach(c => image.append(svg('polyline', { points: c.values.map((value, i) => `${x(omegas[i]).toFixed(3)},${y(value).toFixed(3)}`).join(' '), class: `bode-line ${c.style}` })));
   image.append(svg('line', { x1: x(cursor), y1: 45, x2: x(cursor), y2: 255, class: 'bode-cursor' })); figure.append(image);
   const legend = el('div', undefined, 'bode-legend'); curves.forEach(c => legend.append(el('span', c.name, c.style))); figure.append(legend); return figure;

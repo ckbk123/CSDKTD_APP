@@ -45,7 +45,8 @@ describe('CP04 construction and lifecycle', () => {
   });
   it('reports a cursor outside the displayed horizon and clears stale results', async () => {
     const { container, controller, reveal } = await open(); reveal(); update(labeled(container, 'Cursor frequency [rad/s]'), '1000'); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.textContent).toContain('inside the displayed frequency range');
-    update(labeled(container, 'Cursor frequency [rad/s]'), '1e-9999'); reveal(); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.textContent).toContain('Frequency must be from'); controller.abort();
+    update(labeled(container, 'Cursor frequency [rad/s]'), '1e-9999'); reveal(); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.textContent).toContain('nonzero but too small to represent');
+    update(labeled(container, 'Cursor frequency [rad/s]'), '0e-999'); reveal(); expect(container.textContent).toContain('Frequency must be from'); controller.abort();
   });
   it('keeps a tiny but varying linear response visible instead of flattening it by an absolute axis tolerance', async () => {
     const { container, controller, reveal } = await open(); update(labeled(container, 'Raw gain K'), '.000001');

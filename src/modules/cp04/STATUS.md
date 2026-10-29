@@ -1,55 +1,80 @@
 # CP04 implementation status
 
-- **Stage:** in-progress
-- **Last assessed:** 2026-10-29
-- **Starting revision:** `8696261267b7620bfc101ce2b5f13772bfaa529a` (fresh primary-main snapshot)
-- **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`
-- **Ownership:** `src/modules/cp04/**`, claim `worker-cp04-01a18701`.
-- **Branch/worktree:** `codex/cp04-bode-01a18701`; `C:/Users/baokh/.codex/worktrees/cp04-bode-01a18701/CSDKTD APP`.
-- **Contract:** [TASK.md](TASK.md), atlas CP04 and continuous source audit P1.
+- **Stage:** implemented — accepted bounded exercise and project/browser checks complete; independent review pending.
+- **Assessed:** 2026-10-29; starting primary-main revision `8696261267b7620bfc101ce2b5f13772bfaa529a`.
+- **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`.
+- **Ownership/branch:** `src/modules/cp04/**`; `codex/cp04-bode-01a18701`; claim `worker-cp04-01a18701`.
+- **Worktree:** `C:/Users/baokh/.codex/worktrees/cp04-bode-01a18701/CSDKTD APP`.
+- **Contract:** [TASK.md](TASK.md), atlas CP04, continuous source audit P1 and current primary coordination/equation guides.
+- **PR / exact delivery revision:** added below after PR creation; shared claim records the final submitted SHA.
 
-## Requirement audit before implementation
+## Requirement-to-evidence audit
 
-Current `workspace.ts` is an empty synchronous mount, with metadata/lazy loading intact and no local tests. Preserve those foundations.
+| Accepted requirement | Implemented evidence | Remaining |
+| --- | --- | --- |
+| Normalize raw factors, preserve gain and identify corners | `math.ts`: a0 extraction, normalized gain, first-order corners and quadratic natural frequency/damping; `view.ts`: raw/normalized equations and coefficient controls | None in supported domain |
+| Add slopes and phase contributions | Grouped corner slope intervals; exact per-factor dB/phase plus gain/origin/delay contribution table; stated straight-line phase convention | None |
+| Student asymptotes and corner markers before reveal | Independent positive gain and per-factor corner guesses draw prediction-only magnitude/phase curves; reveal overlays checked construction and diagnoses normalization offset | None |
+| Select a factor | Selector overlays a normalized factor, gain, origin or delay term separately; constants remain in normalized gain | None |
+| Compare with exact response at one frequency | Numeric cursor, exact/asymptotic magnitude ratio, dB and unwrapped phase, signed errors; computed log-frequency plots | None |
+| Explicit pure delay | exp(-tau s) retained as an LTI element; zero magnitude contribution and -omega*tau phase; tested delay variation | No Pade mode is offered or implied |
+| rad/s/Hz and dB/linear toggles | Display conversions preserve physical omega and model coefficients; transfer equations retain angular coefficients | None |
+| Visual inputs, changed data and errors | Shared equation entry for coefficients/K/tau; bounded scalar parser, native-number guard and useful feedback; presets and editable factor order/position/count | None |
+| Lifecycle and scoped layout | Synchronous guarded lazy mount; all drafts/values inside visit; removable child signals; editor destruction on row removal/reset/leave; local SVG/table scrolling and scoped tokens | None |
+| Mathematical/project/browser verification | Independent fixtures, native guard checks, flow/cleanup tests and real Chromium scenarios below | Independent technical review at integration; no verified stage claimed |
 
-| Accepted requirement | Missing work / next action |
-| --- | --- |
-| Normalize factors and preserve gain | Editable raw first/second-order factor coefficients; show constant extraction and overall normalized gain |
-| Gain/corners, additive slopes and phases | Compute corner table, running slope intervals, factor contributions and unwrapped phase |
-| Student asymptote drawing and corner markers | Student normalization-gain and corner guesses generate an expected curve and markers before checked reveal |
-| Select a factor | Selector overlays that factor's normalized magnitude/phase contributions |
-| Exact versus asymptotic response and cursor error | Computed log-frequency plots and one numeric frequency cursor; compare magnitudes/phases and diagnose pure gain offset |
-| Explicit delay | Add exp(-tau s) as a separate exact phase term with unchanged magnitude; no Pade approximation |
-| rad/s versus Hz, dB versus linear | Convert display coordinates/controls while preserving the same physical frequency/model |
-| Bounded validation, visual equations, changed inputs | Shared visual scalar coefficient inputs with independently tested numeric/fraction grammar, error feedback and declared limits |
-| Lifecycle/scoped layout/tests/browser | Caller-owned mount state, abortable result controls and editor loading; meaningful fixtures, project checks and reserved real-browser QA |
+## Supported domain, units and limits
 
-## Chosen bounded domain
+Continuous-time SISO transfer K*s^n*exp(-tau*s) times up to six numerator/denominator factors. Factors use ascending raw coefficients a0+a1*s+a2*s². First order requires a0>0 and signed nonzero a1 (negative a1 represents a real right-half-plane pole/zero). Quadratics have positive coefficients and 0.05<=zeta<=1; overdamped real roots can be entered as separate first-order factors. First-order corners and quadratic natural frequencies lie in 10^-4–10^4 rad/s. n is an integer -3…3, tau is 0…10 s, and K is nonzero. Each nonzero coefficient/gain has magnitude 10^-6…10^6. General polynomial factoring, arbitrary-order input and a CAS are not claimed.
 
-Continuous-time scalar transfer represented as K s^n exp(-tau s) times up to six numerator/denominator factors. Each factor is a0+a1 s (a0>0, nonzero signed a1) or a0+a1 s+a2 s² with positive coefficients and under/critical damping (0.05<=zeta<=1); quadratic natural frequency and all first-order corners lie in 10^-4–10^4 rad/s. Higher or overdamped polynomials can be entered as separate supported real factors where applicable; there is no general factoring/CAS claim. n is an integer -3…3, tau is 0…10 s. Coefficient/gain numbers use bounded real decimal/fraction entry. All frequencies remain positive. A declared finite log grid is sampled for illustration, while frequency evaluation is analytic up to floating-point arithmetic. The tool makes no loop-stability or complete-resonance-search claim.
+Visual scalar notation supports signed integers/decimals (up to 9 decimal places and 12 digits per decimal token), simple slash or MathLive fractions including compact/mixed argument forms, and up to eight outer grouping/unary-sign layers. Normalized scalar notation is limited to 90 characters. Nested fractions, symbols/functions, sums/products and programming e/E literals in the visual field are rejected rather than reinterpreted. Incomplete drafts/placeholders and unsupported complete forms have separate feedback. Native numeric controls have a separate exponent grammar and reject nonzero underflow; frequency and gain-prediction bounds are checked locally.
 
-## Verification plan and source provenance
+Normalized gain is K times numerator a0 constants divided by denominator a0 constants. Numerical values are rounded; raw and normalized algebraic identities are distinguished from displayed numerical approximations. Magnitude is an output/input ratio, dB means 20 log10 of that ratio, omega is rad/s, f=omega/(2*pi) is Hz, delay is seconds and phase is unwrapped degrees. Negative K contributes +180 degrees. Coefficients use consistent time units. No feedback sign, controller sample period or time-domain initial-condition experiment is implied; unstable/improper factors are formal frequency evaluations, not claims of stable sinusoidal experiments or BIBO stability.
 
-The default raw factors (s+1)(s+2) must normalize to K_n=1/2, corners 1 and 2 rad/s and slopes 0,-20,-40 dB/decade. Independently, G(j)=1/(1+3j)=0.1-0.3j, magnitude sqrt(0.1), phase -atan(3). At omega=2 the magnitude is 1/sqrt(40). Test gain-offset prediction, factor rescaling, unit round trips, delay-only phase change, origin powers, signed first-order factors, a resonant quadratic and malformed/unsupported/bounded inputs.
+Magnitude asymptotes change by +/-20 dB/decade per first-order factor and +/-40 per quadratic; origin powers set the starting slope. Phase approximations transition from 0.1 to 10 times each corner at +/-45 or +/-90 degrees/decade. Delay phase is included directly in both exact and approximate rational-factor comparisons. The plots use 601 logarithmic samples plus in-range corners/cursor, with a 101–1,201 point helper bound. They illustrate analytic frequency evaluations up to floating-point arithmetic; they do not prove complete resonance/stability regions or locate all extrema. Small linear values use relative axis padding and nonnegative axes. Rounding tolerance at frequency/damping boundaries is 10^-12. Student corner comparison tolerance is 0.02 decade and gain tolerance 0.1 dB; predicted gain is bounded to 10^-100…10^100. Coincident predicted/checked corner labels have separate lanes.
 
-Read current primary coordination guides, TASK/STATUS/source, contribution/development/design/equation guides, atlas CP04, source audit P1 and shared math README. No shared mathematical helpers are available or required. Original course slides remain outside Git; the source audit's baseline is retained, and new numerical fixtures will be labeled proposed. All implementation and checks are pending; no completed exercise is claimed at this checkpoint.
+## Shared numeric-helper carry-forward
 
-## First calculation checkpoint
+This worktree predates primary main v0.3.3's `src/shared/numeric-input.ts`. The coordinator explicitly approved an equivalent tested local guard for in-flight branches, with integration-time import adaptation. Owned `numeric-input.ts` carries forward that stateless guard and is used for all native controls; it distinguishes intentional zero, normal exponent syntax and nonzero text rounded to zero. `numeric-input.test.ts` verifies the contract. No unowned shared file, package, rebase or main merge was added. The integration owner may replace this local import with the shared helper while rerunning checks.
 
-`math.ts` implements bounded visual number/fraction parsing, raw-factor normalization, additive exact numerical response, straight-line magnitude and phase approximations, pure delay, student-predicted curves, gain-offset diagnosis, slope intervals and a bounded logarithmic grid. `math.test.ts` passes 25 independent baseline/changed/boundary/failure checks under Node 24.22.1. At omega=1 the default gives magnitude sqrt(0.1), -10 dB and -atan(3); at omega=2 it gives 1/sqrt(40), with asymptote 1/4. Delay and unit-conversion invariants pass. UI and browser evidence remain missing. Frequency and quadratic-damping boundary comparisons allow relative/numeric 10^-12 rounding tolerance; predictions are bounded to 10^-100…10^100 to keep numerical curves finite.
+## Mathematical fixtures and provenance
 
-## Working exercise checkpoint
+The module follows atlas CP04 (Ch3 Bode sections; S05; E04) and continuous audit P1. Original course decks remain outside Git and were not newly inspected. Baseline provenance is retained; delay, quadratic, right-half-plane-zero and origin presets are explicitly labeled proposed fixtures.
 
-`view.ts` now provides shared visual coefficient/gain/delay inputs, first/second-order numerator/denominator factor controls, a bounded add/remove flow, student gain/corner markers and a prediction-only drawing before reveal. Checked results show raw/normalized transfer equations, constant extraction, gain diagnosis, corner/damping and slope tables, additive cursor contributions, exact/asymptotic errors and computed magnitude/phase plots. Frequency and magnitude units can change without changing the model; a selected factor/gain/origin/delay term is overlaid separately. Delay remains explicit, not Pade. Only the angular coefficient values enter the transfer equation even when plots/tables display Hz.
+- Baseline G=1/((s+1)(s+2)): K_n=1/2; corners 1,2 rad/s; slope intervals 0,-20,-40 dB/decade. Independently G(j)=1/(1+3j)=0.1-0.3j, giving magnitude sqrt(0.1), -10 dB and -atan(3)=-71.565051… degrees. At omega=2, magnitude is 1/sqrt(40), phase -108.434948… degrees; magnitude asymptotes at omega=1,2 are 1/2,1/4.
+- A missing factor-of-two normalization produces a uniform +6.0206 dB prediction offset with correct corners. Rescaling one raw denominator factor and K together preserves the transfer response.
+- Delay tau=0.5 changes only phase by -0.5*omega radians, including values beyond a principal +/-180-degree branch. rad/s/Hz conversions preserve the same frequency response.
+- Quadratic 1/(s²+s+4) has omega_n=2, zeta=0.25; at omega=2, exact magnitude 1/2 versus asymptote 1/4, phase -90 degrees. Its resonant discrepancy is not hidden by the approximation.
+- First-order LHP/RHP zero factors have the same magnitude and opposite phase contributions; origin powers and negative-gain phase remain explicit. Coincident corners combine their slope changes without an invented interval.
+- Independent validation includes malformed/unsupported inputs, dimensionless parameter bounds, zero gain, excessive factor count, inappropriate quadratic damping, invalid frequency/grid/prediction bounds, native underflow and tiny linear-magnitude scaling. G=10^-18/(s+1)^2 retains visible rolloff rather than flattening under an absolute plot tolerance.
 
-The public mount remains synchronous with an abort/disposal guard around lazy editor/view loading. Row editors/listeners use removable child signals and are destroyed on removal/reset/leave. All styles remain under CP04. Local-scrolling plot/table surfaces preserve narrow-layout readability; actual browser verification remains pending.
+## Actual automated verification
 
-Validation under Node 24.22.1: `npm run check` passed; `npm test` passed **114 tests in 10 files**, including **25 CP04 mathematical fixtures and 6 CP04 mocked-editor flow/lifecycle tests**. `npm run build` passed (existing MathLive chunk-size advisory only); `git diff --check` passed. A test selector initially counted legend labels as well as plotted curves and was narrowed to the actual polylines; no solver failure was found. No browser claims are made by these mocked-editor tests. Remaining acceptance work is real-browser editing/keyboard/fonts, changed/error data, reset/reopen/rapid navigation and narrow viewport, then PR and claim submission.
+Node 24.22.1 with npm 10.8.2 was invoked via the bundled Node executable and installed npm CLI, with the bundled Node prepended for child commands. `npm ci` installed the unchanged locked dependencies with zero reported vulnerabilities. No dependencies were modified.
 
-Visual-parser semantic review against the latest primary EQUATION_INPUT guide adds bounded outer grouping/unary-sign support and all compact/mixed fraction forms. `1e-2` and `1E-2` are rejected as displayed algebraic expressions, not read as JavaScript scientific literals; native numeric frequency controls retain their separate number grammar. Nested numeric fractions remain outside the simple-fraction domain. All **34 CP04 tests** now pass (28 mathematics/parser fixtures, 6 lifecycle/flow cases). Browser QA was busy with DS04 at this checkpoint; the worker preview is isolated on 8842.
+- `node node_modules/vitest/vitest.mjs run src/modules/cp04`: **41 passed** (28 mathematical/parser fixtures + 6 native-number checks + 7 flow/lifecycle/plot checks).
+- `npm run check`: **passed**, final rerun 2026-10-29 at approximately 18:27 ICT.
+- `npm test`: **124 passed in 11 files**, including the final marker-label and native-number changes.
+- `npm run build`: passed after the browser-identified marker-label correction. Only the existing MathLive large-chunk advisory remains; font assets are local.
+- `git diff --check`: **passed**, including the final owned diff.
 
-Latest pre-browser check: `npm test` passes **117 project tests** (including 34 CP04 tests), and `npm run build` passes after the grouping/parser correction and the keyboard cleanup for order/preset changes. Changing a quadratic to first order closes the active math keyboard before hiding a2. No remaining local implementation/test failure is known. Stage remains in-progress until reserved real-browser validation is complete.
+An initial flow test counted legend labels in addition to SVG contribution lines; its selector was corrected to the actual polylines. Numerical review found the small-linear-axis tolerance issue and added a regression. Browser inspection found overprinted predicted/checked labels at coincident corners; labels now use separate lanes and were rechecked after a production reload. These are resolved, not remaining issues.
 
-Plot review found and fixed an absolute axis-tolerance error for tiny linear magnitudes: a varying response near 10^-18 could be displayed flat. Axis padding now scales relative to the data, and linear magnitude axes stay nonnegative. A meaningful regression checks that G=10^-18/(s+1)^2 visibly rolls off across the frequency range. All **35 CP04 tests** pass (28 pure/parser + 7 flow/lifecycle/plot checks). Browser QA remains pending under the shared reservation.
+## Real-browser evidence
 
-Display labels for very small/large results now use multiplication and Unicode superscript powers of ten (equation results use typeset powers), following the current semantic guide. The tiny-magnitude regression checks that notation. Native cursor underflow such as 1e-9999 produces a frequency-range error, since zero is not a supported frequency; ordinary native exponent input remains supported in the positive gain prediction. All 35 module tests pass. The code/build is ready; no CP04 browser evidence has been claimed while waiting on the shared queue.
+In-app Chromium, own tab and isolated production preview http://127.0.0.1:8842/#/module/CP04, 2026-10-29 approximately 18:19–18:24 ICT. Exclusive QA acquired 11:18:39 UTC and released 11:24:37 UTC. Earlier reservations were respected; a briefly acquired slot was released unused for the coordinator. The primary preview on 8787 was not changed. Temporary viewport overrides were reset, the tab closed, and only this worker's preview was stopped after checks.
+
+- Prediction-only drawing contained two predicted curves and no checked verdict. Correct corner guesses [1,2] with gain 1 diagnosed the +6.021 dB normalization error; changing the guess to 0.5 matched the checked construction.
+- Baseline cursor at 1 rad/s showed 0.3162278, -10 dB, -71.56505 degrees; at 2 rad/s it showed 0.1581139, -16.0206 dB and -108.4349 degrees. Switching to 0.3183099 Hz and linear magnitude preserved those values. Factor selection added separate magnitude/phase overlays.
+- Delay preset retained baseline magnitude while changing phase to -100.2129 degrees at omega=1. Quadratic preset at omega=2 showed exact magnitude 0.5 versus 0.25 asymptotic and phase -90. RHP-zero preset showed 0.4472136 and -116.5651 degrees at omega=1; integrator preset phase was -161.5651 degrees.
+- Actual fraction-button entry into K: clear field, insert fraction, ordinary 1 / ArrowDown / 2 keys. K=1/2 produced magnitude 0.1581139 at omega=1. Starting with an outside minus before inserting the fraction produced K=-1/2 with the same magnitude and +108.4349-degree unwrapped phase. No scripted model-value assignment or mocked editor was used.
+- Actual visual coefficient change: factor 2 a0 changed from 2 to 3 using ordinary keys, yielding magnitude 0.2236068 and phase -63.43495 degrees at omega=1, consistent with G=1/((s+1)(s+3)).
+- Empty K and incomplete power boxes received completion feedback; visually typed 1e-2 was rejected as an unsupported algebraic expression. Native cursor 1e-9999 received explicit nonzero-underflow feedback; 0e-999 received the separate positive-frequency domain error, while 1e-2 was accepted.
+- Systems keyboard opened; Escape and Reset closed it. Switching a quadratic to first order closed the keyboard before hiding a2. Tab from the frequency cursor moved to the gain-prediction control. Adding/removing one factor changed editor counts 8→11→8, confirming removed row editors were released.
+- Reset restored baseline fields and guesses. Leaving for the catalogue removed all math-field elements. Three rapid CP04/CP03 navigation pairs left no old editors or CP04 content in CP03. Reopening CP04 restored baseline cursor values and predictions without late updates.
+- Desktop dark theme inspected at 1280x900; narrow dark theme at 390x844. Narrow document client/scroll width were both 375 px (scrollbar gutter). Plots were 307 px containers with local 580 px scroll areas; tables scrolled within 273 px containers. Coefficients, controls, fractions and equations remained readable. Local stylesheet assets rendered correctly and the browser warning/error log was empty. Light theme was not separately browser-tested; all styles use the existing shared tokens, and the browser API exposes no color-scheme emulation switch.
+- Screenshots outside Git: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-1ec8-7073-a23f-e744d40a5355/cp04-browser-evidence.jpg` and `cp04-narrow-evidence.jpg` in the same directory.
+
+## Remaining work / delivery
+
+No accepted exercise requirement remains within the supported domain. Independent technical review and integration are pending; no verified stage is claimed. Final checks, PR URL and shared-claim submission are recorded below. Preserve this worktree/branch for review corrections; no shared mathematical dependency is requested.
