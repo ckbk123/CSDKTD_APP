@@ -1,0 +1,36 @@
+[data-module="DP02"] .dp-tool { display: grid; gap: 16px; font-size: 14px; line-height: 1.6; min-width: 0; }
+[data-module="DP02"] .dp-card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; min-width: 0; background: var(--surface); }
+[data-module="DP02"] .dp-card h3 { font-size: 17px; margin: 0 0 10px; font-weight: 600; }
+[data-module="DP02"] .dp-card h4 { font-size: 14px; margin: 0; }
+[data-module="DP02"] .dp-card p { margin: 10px 0; overflow-wrap: anywhere; }
+[data-module="DP02"] .dp-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 14px 0; }
+[data-module="DP02"] label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+[data-module="DP02"] input, [data-module="DP02"] select { width: 100%; min-width: 0; padding: 9px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--background); color: var(--text); font: inherit; }
+[data-module="DP02"] .dp-presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+[data-module="DP02"] .dp-tool button { color: var(--text); background: var(--surface); border: 1px solid var(--line); padding: 9px 12px; border-radius: 7px; font: inherit; }
+[data-module="DP02"] .dp-tool button:hover { border-color: var(--accent); background: var(--tint); }
+[data-module="DP02"] .dp-tool .dp-primary { background: var(--tint); border-color: var(--accent); color: var(--accent-strong); }
+[data-module="DP02"] .dp-help, [data-module="DP02"] figcaption { color: var(--muted); font-size: 12px; }
+[data-module="DP02"] .dp-message { padding: 10px; border-left: 3px solid var(--accent); background: var(--tint); }
+[data-module="DP02"] .dp-results:not([hidden]) { display: grid; gap: 16px; }
+[data-module="DP02"] .dp-planes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+[data-module="DP02"] figure { margin: 0; min-width: 0; }
+[data-module="DP02"] svg { width: 100%; height: auto; display: block; }
+[data-module="DP02"] svg text { fill: var(--muted); font: 11px system-ui, sans-serif; }
+[data-module="DP02"] .dp-axis { stroke: var(--line); fill: none; stroke-width: 1.5; }
+[data-module="DP02"] .dp-circle { stroke: var(--muted); fill: none; stroke-width: 1.5; }
+[data-module="DP02"] .dp-reference, [data-module="DP02"] .dp-envelope { stroke: var(--muted); fill: none; stroke-dasharray: 5 4; stroke-width: 1.5; }
+[data-module="DP02"] .dp-radius, [data-module="DP02"] .dp-stem { stroke: var(--accent); fill: none; stroke-width: 1.5; }
+[data-module="DP02"] .dp-cross { stroke: var(--accent); fill: none; stroke-width: 2.5; }
+[data-module="DP02"] .dp-inverse { stroke: var(--text); fill: none; stroke-dasharray: 2 2; stroke-width: 1.5; }
+[data-module="DP02"] .dp-sample { fill: var(--accent); }
+[data-module="DP02"] .dp-branch { max-width: 240px; }
+[data-module="DP02"] .dp-table { overflow-x: auto; margin-top: 14px; }
+[data-module="DP02"] table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+[data-module="DP02"] th, [data-module="DP02"] td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+[data-module="DP02"] summary { cursor: pointer; font-weight: 600; }
+@media (max-width: 600px) {
+  [data-module="DP02"] .dp-card { padding: 12px; }
+  [data-module="DP02"] .dp-controls, [data-module="DP02"] .dp-planes { grid-template-columns: minmax(0, 1fr); }
+  [data-module="DP02"] .dp-tool button { min-height: 42px; }
+}

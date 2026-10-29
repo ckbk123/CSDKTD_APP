@@ -31,3 +31,9 @@ One scalar pole s=sigma+j*omega and its conjugate for a real modal illustration,
 Read TASK, atlas DP02, and docs/research/DISCRETE_EXERCISE_AUDIT.md (DP1). That audit cites S13:2,4,6,13–14 and CH8:4–6,43–44; original slides were not reinspected by this worker. The default (-2 ± 3j, T=0.1) is the accepted metadata fixture; expected numbers will be derived from exponential/trigonometric identities. Additional cases are independent analytic fixtures, not claimed source exercises.
 
 No implementation checks or browser QA performed yet. No shared dependency is required. All acceptance work above remains open at this checkpoint.
+
+## Implementation checkpoint (before final browser QA)
+
+Pure calculation/parser and SVG plots now exist in math.ts and plots.ts, with 37 independent fixture/parser tests passing. view.ts implements the visual input, numeric alternative, comparison/prediction/reveal, inverse branch selector, modal table/stems and alias identity/check. workspace.ts guards a deferred browser-only view import; entry-point inspection does not initialize MathLive. Input changes discard results and result listeners; abort/cleanup discard pending views and editor state.
+
+Checks so far: Node 24.22.1, npm ci (0 vulnerabilities), npm run check passed, npm test (79 tests) passed, npm run build passed with the existing MathLive chunk warning. The initial full-suite failure from eager MathLive initialization was fixed locally with the deferred view; no shared files changed. Production preview on worker port 8793, browser QA reservation held. Baseline, T=.2, inverse m=1, negative z=-.8, circle boundary and invalid T=0 checked in in-app Chromium. Keyboard, lifecycle and narrow checks remain open; stage stays in-progress.
