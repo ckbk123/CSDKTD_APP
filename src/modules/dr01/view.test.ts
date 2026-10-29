@@ -84,4 +84,17 @@ describe('DR01 exercise flow with an equation-interface mock', () => {
     visit.set('Gain c', '1e-2'); visit.click('Build transform'); visit.reveal();
     expect(visit.rows()[0]).toEqual(['0', '0', '0.01', '0.01']);
   });
+  it.each(['Gain c', 'Geometric pole a', 'Initial x[−1]', 'Initial x[−2]'])('rejects nonzero raw numeric underflow in %s', name => {
+    const visit = open(); visit.set(name, '1e-999');
+    if (name === 'Gain c' || name === 'Geometric pole a') visit.click('Build transform'); else visit.reveal();
+    expect(visit.container.querySelector('.dr01-message')!.textContent).toContain('nonzero but too small');
+    expect(visit.container.querySelector('.dr01-results')!.hasAttribute('hidden')).toBe(true);
+  });
+  it('accepts intentional zero mantissas even with extreme exponents', () => {
+    for (const text of ['0', '0e-999', '-0e-999']) {
+      const visit = open(); visit.set('Gain c', text); visit.set('Geometric pole a', '0e-999'); visit.set('Initial x[−1]', '0e-999'); visit.set('Initial x[−2]', '-0e-999');
+      visit.click('Build transform'); visit.reveal();
+      expect(visit.rows()[0]).toEqual(['0', '0', '0', '0']);
+    }
+  });
 });

@@ -20,6 +20,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   };
   const read = (input: HTMLInputElement, name: string): number => {
     if (!input.value.trim() || !Number.isFinite(input.valueAsNumber)) throw new Error(`Enter a finite ${name}.`);
+    if (input.valueAsNumber === 0 && /[1-9]/.test(input.value.trim().split(/[eE]/)[0])) throw new Error(`${name} is nonzero but too small for numeric entry. Use zero intentionally or a representable nonzero number.`);
     return input.valueAsNumber;
   };
   root.append(el('h2', 'Identify a sequence from its transform'), el('p', 'Predict the first samples, then reveal the causal inverse. Edit the fraction directly or build it from a sequence.'));

@@ -24,6 +24,13 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
       expect(values(expression)).toEqual([-.5, 0, 0, 0, 0, 0, 0, 0]);
     }
   });
+  it('uses only braces for TeX fraction arguments while retaining inner parentheses', () => {
+    expect(() => parseTransform(String.raw`\frac(1)(2)`)).toThrow(/Parentheses/);
+    expect(() => parseTransform(String.raw`\frac1(2)`)).toThrow(/Parentheses/);
+    expect(values(String.raw`\frac{(1)}{(2)}`)).toEqual([.5, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`-\frac{(1)}{(2)}`)).toEqual([-.5, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`\frac{\frac12}{(2)}`)).toEqual([.25, 0, 0, 0, 0, 0, 0, 0]);
+  });
   it('computes changed sign, gain, and a two-sample delay', () => {
     expect(values('2z^{-2}/(1+.5z^{-1})')).toEqual([0, 0, 2, -1, .5, -.25, .125, -.0625]);
   });

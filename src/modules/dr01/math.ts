@@ -46,8 +46,8 @@ function expandFractions(source: string, depth = 0): string {
   function argument(): string {
     while (/\s/.test(source[cursor] ?? '') && cursor < source.length) cursor++;
     const open = source[cursor];
-    if (open === '{' || open === '(') {
-      const close = open === '{' ? '}' : ')', start = ++cursor;
+    if (open === '{') {
+      const close = '}', start = ++cursor;
       let level = 1;
       while (cursor < source.length && level) {
         if (source[cursor] === open) level++;
@@ -58,6 +58,7 @@ function expandFractions(source: string, depth = 0): string {
       const content = source.slice(start, cursor++);
       return expandFractions(content, depth + 1);
     }
+    if (open === '(') throw new Error('Parentheses must be inside a complete numerator or denominator. Use the fraction button to group its arguments.');
     if (source.startsWith('\\frac', cursor)) { cursor += 5; return fraction(); }
     if (open && /^[0-9zq]$/.test(open)) { cursor++; return open; }
     throw new Error('Complete both fraction arguments; group multi-character terms inside the fraction.');
