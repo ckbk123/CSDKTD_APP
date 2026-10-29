@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress (TeX exponent-token review return)
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -129,3 +129,11 @@ The armed helper wait acquired DR01 after CF02 released. A coordinator schedulin
 - Reset again restored baseline 1,.8,.64,... . At 390×844 the document clientWidth and scrollWidth were both 375 px. Console warning/error inventory was empty. The viewport was restored, owned tab closed, preview stopped and QA released for the coordinator's DS01 slot. Earlier full edit/history/reopen/rapid-navigation/font evidence remains preserved above.
 
 Current module tests pass **88/88**, full `npm test` **130/130**, and type/production build pass with the unchanged shared MathLive chunk warning. The correction and this evidence are committed together and final checks are repeated at their exact clean HEAD before push/ready-PR/claim resubmission. No accepted requirement remains open within the declared domain. Final independent acceptance and the approved shared numeric-reader adaptation remain coordinator integration work. DP03 is preserved separately at `289ab6d` for its remaining browser pass.
+
+## Exponent-token review return — 29 October 2026
+
+The coordinator reopened `93829d1` after finding another notation mismatch: TeX consumes one unbraced exponent token, so raw q^12 displays q¹ followed by2, whereas the old parser consumed12 as a whole exponent. Raw signed exponents had the same boundary issue. Pinned MathLive MathML independently confirms q^12 and2^12 differ from q^{12} and2^{12}.
+
+The parser now accepts an unbraced exponent only when it is one unsigned digit, otherwise requesting the power button and a complete power box. Grouped multi-digit/signed exponents remain supported within −14..14. Independent fixtures check q^{12} as twelve zeros then a unit sample,2^{12}=4096,2^{−2}=.25,z^{−2} as a two-sample delay and an ordinary single-token2³=8. Nested fractions with ambiguous exponents are rejected too. High-power underflow/order fixtures now use explicit exponent groups so they continue checking their intended mathematics rather than failing at notation validation. The view gives concrete guidance and hides stale output for this error.
+
+At20:01 local, module tests pass **99/99**, full `npm test` **141/141**, and production/type build passes with the unchanged MathLive chunk warning. Fresh focused power-button/incomplete-power feedback and final clean exact-HEAD resubmission remain pending. Earlier completed browser evidence is preserved, not replaced by a claim that this new gate was already checked. DP03's full browser pass and responsive refinement are checkpointed clean at `ed83a36ba27ff8776717b2999a6bc87796ae1247`; its same exponent parser also needs the guard. QA is deferred for the announced DP04→coordinator DP02 order, then normal access can resume.

@@ -95,7 +95,7 @@ describe('DR01 exercise flow with an equation-interface mock', () => {
   });
   it('hides old results for mixed-number adjacency and accepts an explicit operation', () => {
     const visit = open(); visit.reveal();
-    for (const [expression, message] of [[String.raw`2\frac12`, 'Insert + for addition or × for multiplication'], [String.raw`q{+1}`, 'visible parentheses']]) {
+    for (const [expression, message] of [[String.raw`2\frac12`, 'Insert + for addition or × for multiplication'], [String.raw`q{+1}`, 'visible parentheses'], ['2^12', 'power box']]) {
       visit.field.value = expression; visit.field.dispatchEvent(new Event('input')); visit.reveal();
       expect(visit.container.querySelector('.dr01-results')!.hasAttribute('hidden')).toBe(true);
       expect(visit.container.querySelector('.dr01-message')!.textContent).toContain(message);

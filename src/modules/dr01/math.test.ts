@@ -100,6 +100,21 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
 });
 
 describe('bounded grammar and failures', () => {
+  it('checks the pinned editor distinction between one-token and grouped exponents', () => {
+    expect(convertLatexToMathMl('q^12')).toContain('<msup><mi>q</mi><mn>1</mn></msup><mn>2</mn>');
+    expect(convertLatexToMathMl('2^12')).toContain('<msup><mn>2</mn><mn>1</mn></msup><mn>2</mn>');
+    expect(convertLatexToMathMl('q^{12}')).toBe('<msup><mi>q</mi><mn>12</mn></msup>');
+  });
+  it.each(['q^12', '2^12', String.raw`\frac{q^12}{2}`, 'q^-2', 'q^+2', '2^-2', '2^+2', 'q^01', '(q+1)^12'])('rejects ambiguous unbraced exponent %s', expression => {
+    expect(() => parseTransform(expression)).toThrow(/power box/);
+  });
+  it('preserves complete multi-digit and signed power boxes and single-token exponents', () => {
+    expect(values('q^{12}', [0, 0], 16)).toEqual([...Array(12).fill(0), 1, 0, 0, 0]);
+    expect(values('2^{12}')).toEqual([4096, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values('2^{-2}')).toEqual([.25, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values('z^{-2}')).toEqual([0, 0, 1, 0, 0, 0, 0, 0]);
+    expect(values('2^3')).toEqual([8, 0, 0, 0, 0, 0, 0, 0]);
+  });
   it('checks the pinned editor meaning of numeric/fraction adjacency independently', () => {
     expect(convertLatexToMathMl(String.raw`2\frac12`)).toContain('&#x2064;');
     expect(convertLatexToMathMl(String.raw`\frac{2\frac12}{3}`)).toContain('&#x2064;');
@@ -132,7 +147,7 @@ describe('bounded grammar and failures', () => {
     expect(values(String.raw`\frac12\frac12`)).toEqual([.25, 0, 0, 0, 0, 0, 0, 0]);
     expect(values(String.raw`\frac{2+\frac12}{3}`)[0]).toBeCloseTo(5 / 6, 14);
   });
-  it.each(['', 'NaN', 'Infinity', 'sin(z)', String.raw`\sqrt{z}`, 's+1', '1/(0)', '1/(z-z)', '1+', '(z+1', String.raw`\frac{}{z}`, 'z^{1.5}', 'z^{15}', 'z^{-15}', '1/(1+q+q^2+q^3)', 'q^14+q^14*q', '1000001', '0.' + '0'.repeat(323) + '1', '0.0000000000001', '1/(0.00000000001+q)', '\\placeholder{}'])('rejects %s', expr => {
+  it.each(['', 'NaN', 'Infinity', 'sin(z)', String.raw`\sqrt{z}`, 's+1', '1/(0)', '1/(z-z)', '1+', '(z+1', String.raw`\frac{}{z}`, 'z^{1.5}', 'z^{15}', 'z^{-15}', '1/(1+q+q^2+q^3)', 'q^{14}+q^{14}*q', '1000001', '0.' + '0'.repeat(323) + '1', '0.0000000000001', '1/(0.00000000001+q)', '\\placeholder{}'])('rejects %s', expr => {
     expect(() => parseTransform(expr)).toThrow();
   });
   it.each(['z', 'z^2/(z-.8)', '1/q'])('explains future-sample forms: %s', expr => {
@@ -150,8 +165,8 @@ describe('bounded grammar and failures', () => {
     // The numerator is about 10^-312 (representable), then division by 10^12
     // gives about 10^-324, below the smallest positive floating-point number.
     expect(1e-312).toBeGreaterThan(0);
-    expect(() => parseTransform('(0.000000000001)^14*(0.000000000001)^12/(1000000)^2')).toThrow(/underflow during normalization/);
-    expect(() => parseTransform('1/((1000000)^2+(0.000000000001)^14*(0.000000000001)^12*q)')).toThrow(/underflow during normalization/);
+    expect(() => parseTransform('(0.000000000001)^{14}*(0.000000000001)^{12}/(1000000)^2')).toThrow(/underflow during normalization/);
+    expect(() => parseTransform('1/((1000000)^2+(0.000000000001)^{14}*(0.000000000001)^{12}*q)')).toThrow(/underflow during normalization/);
   });
   it.each(['1e-2', '1E-2', '.5e+1', '1e2z'])('rejects ambiguous visual scientific notation %s', expression => {
     expect(() => parseTransform(expression)).toThrow(/e\/E scientific notation/);

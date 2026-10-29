@@ -30,6 +30,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   limits.append(el('p', 'In the visual equation, use decimals or ×10ⁿ for powers of ten. The letters e/E are not exponent notation there. Ordinary number controls accept standard numeric entry separately.'));
   limits.append(el('p', 'Write mixed numbers with an explicit +, such as 2 + 1/2. Put × between a number and a fraction when you intend multiplication.'));
   limits.append(el('p', 'Use visible parentheses to group sums or products. Fraction bars and exponent positions already group their contents.'));
+  limits.append(el('p', 'Use the power button so the whole exponent, including its sign or several digits, stays inside the power box.'));
   root.append(limits);
   let draft: EquationDraft;
   const error = el('p', '', 'dr01-message'); error.setAttribute('role', 'status'); error.hidden = true;

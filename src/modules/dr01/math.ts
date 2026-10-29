@@ -124,6 +124,9 @@ export function parseTransform(latex: string): Transform {
     } else throw new Error('Complete each term with a number, z or a fraction.');
     if (peek() === '^') {
       take(); const braced = peek() === '{'; if (braced) take();
+      if (!braced && !/^\d$/.test(peek() ?? '')) {
+        throw new Error('Use the power button to keep the complete exponent inside its power box. Multi-digit or signed exponents need that grouping.');
+      }
       const sign = peek() === '-' ? (take(), -1) : peek() === '+' ? (take(), 1) : 1;
       const tokenPower = take(); const power = sign * Number(tokenPower);
       if (!tokenPower || !/^\d+$/.test(tokenPower) || Math.abs(power) > 14) throw new Error('Use integer powers between -14 and 14.');
