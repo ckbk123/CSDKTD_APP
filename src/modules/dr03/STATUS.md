@@ -9,7 +9,7 @@
 
 ## Initial evidence and requirement audit
 
-At claim, index.ts contains immutable metadata and its lazy workspace loader; workspace.ts is blank and no local tests exist. The default banner is only a notation preview. No exercise functionality is delivered at this checkpoint.
+At claim, index.ts contained immutable metadata and its lazy workspace loader; workspace.ts was blank and no local tests existed. The default banner is only a notation preview. The parser foundation below is now implemented; the state exercise and interface remain pending.
 
 | Accepted requirement | Missing work and planned verification |
 |---|---|
@@ -44,4 +44,14 @@ A fresh managed worktree was created at the exact new claim base, then its uniqu
 
 Implement pure bounded parsing, polynomial/state/history/canonical algebra and independent fixtures first, then the full input/derivation/delay-selection/sample-step interface. Keep exact identities, numerical realization residuals and finite sampled comparisons distinct. Checkpoint mathematical milestones and report unsupported mapping forms explicitly.
 
-Use shared readNumericInput for every native read, including optional badInput and sample index. Keep invalid raw drafts visible on Reveal; never coerce underflow with Number(value)||0. Preserve the owned child signal on lazy mount, release partial allocations immediately, and execute a cleanup returned after disposal. No implementation, mathematical check or browser pass is claimed by this initial audit.
+Use shared readNumericInput for every native read, including optional badInput and sample index. Keep invalid raw drafts visible on Reveal; never coerce underflow with Number(value)||0. Preserve the owned child signal on lazy mount, release partial allocations immediately, and execute a cleanup returned after disposal. No complete exercise or browser pass is claimed by this audit.
+
+## Parser foundation checkpoint
+
+rational.ts provides bounded immutable rational arithmetic (numerators/denominators at most8192 bits), with separate exact-decimal and IEEE-754 constructors. parser.ts normalizes the entered decimal rational-polynomial expression exactly before converting its final descending coefficients to browser numbers. It retains the original denominator without pole/zero cancellation and supports proper unreduced order0–2, including gain/zero channels. No sibling-module import, dynamic evaluation or dependency is used.
+
+Current limits:512 source characters,20 nested groups, intermediate degree6/coefficient magnitude10^12, entered/normalized coefficient magnitude10^6, leading denominator magnitude at least10^-8 and nonzero final coefficient magnitude at least10^-300. Explicit delay remains separate. Compact/mixed-argument/nested/signed/numeric-font fractions preserve TeX boundaries. Ambiguous mixed numbers, hidden algebraic grouping, visual e/E, unsupported font commands/functions, improper forms and invalid exponent tokenization are rejected.
+
+The55 local tests include independent polynomial identities, changed normalized coefficients, direct feedthrough, retained zero-channel denominator, exact decimal versus binary0.1, and (100000+.000001)^2-100000^2-.2=10^-12. Resource/underflow/zero-denominator and actual TeX fraction/power boundary cases pass. An unknown font command initially received grouping guidance; it is now rejected before group normalization as unsupported notation. A case-sensitive feedback assertion was corrected. npm test -- src/modules/dr03/parser.test.ts:55 passed; npm run check:passed. State construction, ZOH generation, canonical/history mapping, independent stepped comparisons, UI and browser verification remain unimplemented.
+
+Full branch npm test:715 passed across27 files. npm run build:passed, including its type check; existing MathLive large-chunk advisory only. These checks cover the parser foundation and existing main tools, not delivery of DR03's still-blank workspace.
