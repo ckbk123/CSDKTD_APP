@@ -5,6 +5,21 @@ import { parseAnswer, parseCharacteristic } from './parser';
 const coefficients = (source: string, gain = 20) => parseCharacteristic(source, gain).map(textQ);
 
 describe('CS02 visible characteristic polynomial grammar', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`\frac1\quad2`, String.raw`\frac\!12`, String.raw`\frac{1}\ 2`])('rejects spacing arguments before normalization: %s', fraction => {
+    expect(() => coefficients(`s+${fraction}`)).toThrow('spacing symbol'); expect(() => parseAnswer(fraction)).toThrow('spacing symbol');
+  });
+  it('preserves properly braced spacing controls and variable fraction tokens', () => {
+    expect(coefficients(String.raw`s+\frac1{\;2}`)).toEqual(['1/2', '1']);
+    expect(coefficients(String.raw`\frac s2+1`)).toEqual(['1', '1/2']);
+    expect(coefficients(String.raw`s+2^{\;2}`)).toEqual(['4', '1']);
+    expect(textQ(parseAnswer(String.raw`\frac1{\;2}`))).toBe('1/2');
+    expect(textQ(parseAnswer(String.raw`\frac1{\quad2}`))).toBe('1/2');
+    for (const source of [String.raw`s+2^\;2`, String.raw`s+2^\,2`]) expect(() => coefficients(source)).toThrow('spacing symbol');
+  });
+  it('does not fuse separate numeric tokens across explicit spacing', () => {
+    for (const source of [String.raw`s+1\;2`, String.raw`s+0.\,2`, String.raw`s+\frac{1\;2}{3}`, String.raw`s+1\quad2`, String.raw`s+1\; \,2`]) expect(() => coefficients(source)).toThrow('separated numbers');
+    expect(coefficients(String.raw`s+2\;s`)).toEqual(['0', '3']);
+  });
   it('reads the source polynomial and substitutes changed K before exact analysis', () => {
     expect(coefficients('P(s)=s^3+7s^2+10s+K')).toEqual(['20', '10', '7', '1']);
     expect(analyzeCoefficients(parseCharacteristic('s(s+2)(s+5)+K', 80)).right).toBe(2);
@@ -24,7 +39,8 @@ describe('CS02 visible characteristic polynomial grammar', () => {
     expect(coefficients('s+2^{12}')).toEqual(['4096', '1']);
     expect(coefficients('s^{+2}+1')).toEqual(['1', '0', '1']);
     expect(coefficients('s+2^3')).toEqual(['8', '1']);
-    for (const source of ['s+2^12', 's^12+1', 's^-2+1', 's^+2+1', 's^{0}2+1', 's^2.0+s', 's^{2}.0+s']) expect(() => coefficients(source), source).toThrow(/power box/);
+    for (const source of ['s+2^12', 's^12+1', 's^{0}2+1', 's^2.0+s', 's^{2}.0+s']) expect(() => coefficients(source), source).toThrow(/power box/);
+    for (const source of ['s^-2+1', 's^+2+1']) expect(() => coefficients(source), source).toThrow(/power box/);
     expect(() => coefficients('s^{12}+1')).toThrow('degree'); expect(() => coefficients('s+2^{13}')).toThrow('power');
   });
   it('rejects mixed-number adjacency before any coefficient expansion', () => {
@@ -40,7 +56,7 @@ describe('CS02 visible characteristic polynomial grammar', () => {
     for (const source of ['s+1e-2', 's+j', String.raw`s+\sqrt{2}`]) expect(() => coefficients(source)).toThrow('unsupported');
     expect(() => coefficients('s+1/s')).toThrow('nonzero constant'); expect(() => coefficients('s+1/0')).toThrow('nonzero constant');
     expect(() => coefficients('(s+1')).toThrow('Close'); expect(() => coefficients('s+')).toThrow('Complete');
-    expect(() => coefficients(String.raw`s+\frac-12`)).toThrow('fraction box'); expect(() => coefficients('0')).toThrow('degree');
+    expect(() => coefficients(String.raw`s+\frac-12`)).toThrow(/fraction.*box/); expect(() => coefficients('0')).toThrow('degree');
   });
   it('bounds source, tokens, nesting, literals and native selected K', () => {
     expect(() => coefficients('s+' + '1+'.repeat(300))).toThrow('600');

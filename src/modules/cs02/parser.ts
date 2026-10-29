@@ -4,8 +4,23 @@ type Token = { kind: 'number' | 'variable' | 'power' | '+' | '-' | '*' | '/' | '
 /** Read TeX argument boundaries before algebraic expansion; never erase generic braces. */
 function tokensOf(latex: string, answer: boolean): Token[] {
   if (!latex.trim() || latex.length > 600) throw new Error('Enter an expression using at most 600 characters.');
+  function rawArgument(start: number, fraction: boolean) {
+    let at = start; while (at < latex.length && /\s/.test(latex[at])) at++;
+    if (latex[at] === '{') {
+      let depth = 1;
+      for (let i = at + 1; i < latex.length; i++) { if (latex[i] === '{') depth++; if (latex[i] === '}' && !--depth) return i + 1; }
+      throw new Error('Complete and close the fraction or power box.');
+    }
+    if (/[0-9]/.test(latex[at] ?? '') || (fraction && ['s', 'K'].includes(latex[at]))) return at + 1;
+    throw new Error('Complete the fraction or power box; a spacing symbol cannot serve as its argument.');
+  }
+  for (const match of latex.matchAll(/\\(?:dfrac|frac)|\^/g)) {
+    const fraction = match[0] !== '^', end = rawArgument(match.index + match[0].length, fraction);
+    if (fraction) rawArgument(end, true);
+  }
+  if (/[0-9.](?:(?:\\[,!; ]|\\(?:qquad|quad)(?![A-Za-z]))\s*)+[0-9.]/.test(latex)) throw new Error('Use an explicit × between separated numbers; spacing must not join two numeric tokens.');
   const source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
-    .replace(/\\(?:quad|qquad)\b/g, '').replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(answer ? /$^/ : /^P\(s\)=/, '');
+    .replace(/\\(?:qquad|quad)(?![A-Za-z])/g, '').replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(answer ? /$^/ : /^P\(s\)=/, '');
   let at = 0;
   function argument(depth: number): Token[] {
     if (source[at] === '{') { at++; return read(true, depth + 1); }
