@@ -18,7 +18,8 @@ export const zero = rat(0n), one = rat(1n);
 /** Decimal entries have <=12 decimal places; exact fractions also hold generated pole products. */
 export function parseRational(source: string, limit = 100): Rational {
   if (!source.trim() || source.length > 512) throw new Error('Enter one bounded real number (at most 512 input characters).');
-  const s = source.replace(/\s|\\[,;!]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac').replace(/\\(?:left|right)/g, '');
+  if (/\\(?:[,;!]|quad|qquad|enspace|thinspace|medspace|thickspace|hspace|vspace)/.test(source)) throw new Error('Blank spacing cannot fill a fraction box here. Enter a simple number or a fraction with numeric arguments.');
+  const s = source.replace(/[ \t\r\n]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac').replace(/\\left(?=\()|\\right(?=\))/g, '');
   if (s.length > 100) throw new Error('Use at most 100 characters of numeric notation.');
   const decimal = (text: string): Rational => {
     if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text) || text.replace(/\D/g, '').length > 24) throw new Error('Enter a single numeric value or simple fraction. Mixed numbers, sums, products, e/E symbols and functions are unsupported; evaluate them first (for example, 2½ → 2.5).');

@@ -57,6 +57,11 @@ describe('CF04 independent course and changed-data fixtures',()=>{
     expect(T.re).toBeCloseTo(12/13,14);expect(T.im).toBeCloseTo(-8/13,14);expect(phase(m,'L',1)).toBeCloseTo(-90-Math.atan(.5)*180/Math.PI,13);
     expect(()=>at(m,'G',0)).toThrow('DC');expect(()=>at(m,'L',0)).toThrow('DC');expect(at(m,'T',0)).toEqual({re:1,im:0});
   });
+  it('preserves small closed-loop phase at large loop gain and small T at high frequency',()=>{
+    const large=at(model(['100','.001','100','0','0']),'T',1e-9);expect(Math.abs(large.im/(-1e-16)-1)).toBeLessThan(1e-12);
+    const tiny=at(model(['.001','100','.001','0','0']),'T',1e6),q=1e-6,dr=q-1e12,di=1e8,den=dr*dr+di*di;
+    expect(Math.abs(tiny.re/(q*dr/den)-1)).toBeLessThan(1e-12);expect(Math.abs(tiny.im/(-q*di/den)-1)).toBeLessThan(1e-12);
+  });
   it('checks all isolated performance candidates by transfer residuals on varied lead/lag models',()=>{
     for(const values of [['.5','3','7','.8','.2'],['3','1','1','.1','2'],['1','5','10','0','.2']]){
       const r=analyze(model(values));for(const c of r.gainCrossings)expect(abs(at(r.model,'L',c.omega))).toBeCloseTo(1,7);
@@ -68,7 +73,9 @@ describe('CF04 input grammar and bounded failures',()=>{
   it('accepts compact fraction buttons and outer signs/groups without mixed-number reinterpretation',()=>{
     for(const s of ['\\frac12','\\frac{1}2','\\frac1{2}','(1/2)','{.5}'])expect(textRat(parseRational(s))).toBe('1/2');
     expect(textRat(parseRational('(-\\frac12)'))).toBe('-1/2');expect(textRat(parseRational('.7071067812'))).toBe('1767766953/2500000000');
+    expect(textRat(parseRational('\\left(-\\frac12\\right)'))).toBe('-1/2');
   });
+  it.each(['\\frac\\,12','\\frac1\\!2','\\frac\\;12','\\frac 12','\\frac\\left 12','\\frac{1\\,}{2}'])('preserves argument boundaries by rejecting blank tokens in %s',s=>expect(()=>parseRational(s)).toThrow());
   it.each(['2\\frac12','1e-2','1E2','1{+2}','2^12','2^{12}','1+2','\\sqrt2','\\frac{\\frac12}2','','1/0','0.0000000000001','1'.repeat(513)])('rejects unsupported/incomplete %s',s=>expect(()=>parseRational(s)).toThrow());
   it('rejects zero/negative/under-bounded/improper and excessive coefficients',()=>{
     for(const entries of [['0','2','4','0','0'],['1','-2','4','0','0'],['1','2','4','.5','0'],['.0001','2','4','0','0'],['101','2','4','0','0']])expect(()=>model(entries)).toThrow();

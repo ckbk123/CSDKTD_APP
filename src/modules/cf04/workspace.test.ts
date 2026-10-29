@@ -18,7 +18,7 @@ describe('CF04 channels, change/hold experiments and bounded native controls',()
     const {container,controller,reveal}=await open();expect(container.querySelector('svg')).toBeNull();
     update(labeled(container,'Channel for gain/phase margins'),'L','change');update(labeled(container,'Channel for resonance/bandwidth'),'T','change');update(labeled(container,'Change only τz/τp: what happens to Kv?'),'same','change');reveal();
     expect(container.textContent).toContain('Margin channel: correct');expect(container.textContent).toContain('Response channel: correct');expect(container.textContent).toContain('Kv prediction: correct');
-    expect(container.textContent).toContain('51.827292');expect(container.textContent).toContain('Gain margin: infinite');expect(container.querySelectorAll('svg')).toHaveLength(3);controller.abort();
+    expect(container.textContent).toContain('51.827292');expect(labeled(container,'Unity-gain equation').textContent).toContain('+(4)x+(-16)');expect(container.textContent).toContain('Gain margin: infinite');expect(container.querySelectorAll('svg')).toHaveLength(3);controller.abort();
   });
   it('holds the baseline and compares the course lead without changing Kv',async()=>{
     const {container,controller,reveal}=await open();reveal();button(container,'Hold this result for comparison').click();update(labeled(container,'Frequency example'),'lead','change');expect(container.querySelector('svg')).toBeNull();reveal();
@@ -47,6 +47,8 @@ describe('CF04 channels, change/hold experiments and bounded native controls',()
   it('clicks a Bode plot with a numeric alternative and cleans old result listeners',async()=>{
     const {container,controller,reveal}=await open();reveal();const svg=container.querySelector<SVGSVGElement>('svg[data-bode]')!;svg.getBoundingClientRect=()=>({left:0,top:0,width:720,height:310} as DOMRect);
     svg.dispatchEvent(new MouseEvent('pointerdown',{bubbles:true,clientX:380,clientY:100}));expect(labeled<HTMLInputElement>(container,'Frequency cursor ω (rad/s)').valueAsNumber).toBeCloseTo(1,10);
+    const wide=container.querySelector<SVGSVGElement>('svg[data-bode]')!;wide.getBoundingClientRect=()=>({left:0,top:0,width:900,height:310} as DOMRect);
+    wide.dispatchEvent(new MouseEvent('pointerdown',{bubbles:true,clientX:628,clientY:100}));expect(labeled<HTMLInputElement>(container,'Frequency cursor ω (rad/s)').valueAsNumber).toBeCloseTo(10,10);
     const old=labeled<HTMLInputElement>(container,'Frequency cursor ω (rad/s)');reveal();update(old,'9');expect(labeled<HTMLInputElement>(container,'Frequency cursor ω (rad/s)').value).toBe('1');controller.abort();
   });
   it('restores a fresh baseline on reopen and removes held visit state',async()=>{

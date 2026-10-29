@@ -32,7 +32,9 @@ export function at(m:Model,channel:Channel,omega:number):Complex{
   const zz=num(z),pp=num(p),d=1+pp*pp*w2,C={re:K*(1+zz*pp*w2)/d,im:K*(zz-pp)*omega/d},L=times(C,G);if(channel==='L')return L;
   const dr=1+L.re,di=L.im,scale=Math.max(Math.abs(dr),Math.abs(di));
   if(scale<=1e-12*Math.max(1,abs(L)))throw new Error('The closed-loop frequency point is singular or too close to a pole for reliable magnitude.');
-  const x=dr/scale,y=di/scale,den=x*x+y*y;return{re:((L.re/scale)*x+(L.im/scale)*y)/den,im:((L.im/scale)*x-(L.re/scale)*y)/den};
+  const x=dr/scale,y=di/scale,den=x*x+y*y;
+  // T=1−1/(1+L) preserves a tiny phase for large L. Direct division preserves tiny T for small L.
+  return{re:abs(L)>2?1-(x/scale)/den:((L.re/scale)*x+(L.im/scale)*y)/den,im:(y/scale)/den};
 }
 export interface Algebra {
   q:Rational;z:Rational;p:Rational;characteristic:Polynomial;routh:Rational;
