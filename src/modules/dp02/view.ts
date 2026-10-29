@@ -18,7 +18,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         <button type="button" data-preset="boundary">Unit-circle mode</button>
       </div>
       <div class="dp-editor"></div>
-      <p class="dp-help">Enter a + bj (or s = a + bj). Decimal numbers, π, fractions, parentheses and arithmetic are supported. Write 0.01 here; e/E exponent notation is available in the numeric components below. Powers, functions and other variables are unsupported.</p>
+      <p class="dp-help">Enter a + bj (or s = a + bj). Decimal numbers, π, fractions, parentheses and arithmetic are supported. Write 0.01 here; e/E exponent notation is available in the numeric components below. Use explicit + or × between a number and a fraction. Powers, functions and other variables are unsupported.</p>
       <div class="dp-controls">
         <label>Real part σ (s⁻¹)<input data-field="sigma" type="number" value="-2" step="any" min="-1000" max="1000"></label>
         <label>Imaginary part ω (rad/s)<input data-field="omega" type="number" value="3" step="any" min="-10000" max="10000"></label>

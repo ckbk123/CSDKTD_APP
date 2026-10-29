@@ -12,6 +12,9 @@ describe('DP02 pole notation', () => {
     [String.raw`-\frac12+4j`, -0.5, 4], [String.raw`-\frac1{20}+j`, -0.05, 1],
     [String.raw`\frac{10}2+j\frac\pi2`, 5, Math.PI / 2],
     [String.raw`\frac1\frac23+j`, 1.5, 1],
+    [String.raw`-\left(\frac12\right)+3j`, -0.5, 3],
+    [String.raw`\frac{-1}2+3j`, -0.5, 3], [String.raw`\frac1{-2}+3j`, -0.5, 3],
+    [String.raw`2+\frac12+3j`, 2.5, 3], [String.raw`2\times\frac12+3j`, 1, 3],
   ])('parses %s', (input, real, imag) => expect(parsePole(input)).toEqual({ real, imag }));
   it.each(['', 's=', '1/0', 'NaN', 'Infinity', 'x+2j', 'j*j', '1/(1+j)', 'sin(2)',
     '2^3', '1..2', '2 3', '1+', '(1+2j', '1+2j)', '2=3', String.raw`\placeholder{}`, String.raw`\frac1`, String.raw`\frac{1}{}`, String.raw`\frac{1}{2`, '1e999', '1'.repeat(1025), '('.repeat(14) + '1' + ')'.repeat(14), Array(45).fill('1').join('+')])('rejects %s', input => {
@@ -23,6 +26,12 @@ describe('DP02 pole notation', () => {
   });
   it.each(['1e-2+3j', '1E-2+3j', '0e-999+j', '1.2e-3+2j'])('rejects visually algebraic exponent notation %s', input => {
     expect(() => parsePole(input)).toThrow(/visual field treats e and E as symbols/);
+  });
+  it.each([String.raw`2\frac12+3j`, String.raw`-2\frac{1}{2}+3j`])('rejects ambiguous mixed-number adjacency %s', input => {
+    expect(() => parsePole(input)).toThrow(/explicit \+ or ×/);
+  });
+  it('requires visible grouping instead of changing the meaning of hidden TeX groups', () => {
+    expect(() => parsePole(String.raw`{2}\frac12+3j`)).toThrow(/visible parentheses/);
   });
   it('expands normal HTML numeric exponents without changing visual meaning', () => {
     expect(decimalLiteral(0.01)).toBe('0.01');

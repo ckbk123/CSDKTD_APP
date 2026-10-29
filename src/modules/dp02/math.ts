@@ -51,8 +51,10 @@ export function parsePole(latex: string): Pole {
     if (depth > 12) fail('Use at most 12 levels of parentheses or fractions.');
     let output = '';
     while (cursor < source.length && source[cursor] !== '}') {
-      if (source.startsWith('\\frac', cursor)) output += fraction(depth);
-      else if (source[cursor] === '{') { cursor++; output += `(${group(depth + 1, true)})`; }
+      if (source.startsWith('\\frac', cursor)) {
+        if (/[0-9.]$/.test(output)) fail('Write an explicit + or × before an adjacent fraction. Mixed-number adjacency is not supported.');
+        output += fraction(depth);
+      } else if (source[cursor] === '{') fail('Use visible parentheses to group this expression.');
       else output += source[cursor++];
     }
     if (closing) {
