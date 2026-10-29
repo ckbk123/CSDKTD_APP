@@ -16,7 +16,7 @@
 [data-module="CD08"] .feedback-tool figure { margin:0; min-width:0; border:1px solid var(--line); border-radius:8px; padding:10px; }
 [data-module="CD08"] .feedback-tool figcaption { font-weight:550; }
 [data-module="CD08"] .feedback-tool svg { display:block; width:100%; height:auto; }
-[data-module="CD08"] .feedback-tool svg text { fill:var(--text); font:11px system-ui; }
+[data-module="CD08"] .feedback-tool svg text { fill:var(--text); font:14px system-ui; }
 [data-module="CD08"] .feedback-axis { stroke:var(--muted); stroke-width:1; }
 [data-module="CD08"] .feedback-raw { fill:none; stroke:var(--muted); stroke-width:2; stroke-dasharray:6 4; }
 [data-module="CD08"] .feedback-corrected { fill:none; stroke:var(--accent); stroke-width:2; }

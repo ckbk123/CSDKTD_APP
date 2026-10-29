@@ -1,7 +1,9 @@
 /** Small literal/matrix/quadratic grammar; never executes input as code. */
 function clean(text: string): string {
   if (text.length > 600) throw new Error('Use at most 600 characters per equation.');
-  return text.replace(/\\(?:left|right)/g, '').replace(/\\[,!;: ]/g, '').replace(/\s/g, '');
+  // A row separator followed by whitespace is two backslashes, not a TeX
+  // backslash-space command starting at its second backslash.
+  return text.replace(/\\(?:left|right)/g, '').replace(/(?<!\\)\\[,!;: ]/g, '').replace(/\s/g, '');
 }
 function argument(text: string, start: number): [string, number] {
   if (text[start] !== '{') {

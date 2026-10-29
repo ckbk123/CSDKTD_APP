@@ -10,6 +10,7 @@ function node<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string): HTM
 function svgNode(tag: string, attributes: Record<string, number | string>, text?: string) { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.entries(attributes).forEach(([k, v]) => e.setAttribute(k, String(v))); if (text) e.textContent = text; return e; }
 const plain = (v: number): string => v === 0 ? '0' : Number(v.toPrecision(7)).toString();
 const format = (v: number): string => plain(v).replace(/e([+-]?\d+)/, (_, exponent: string) => ` × 10^${Number(exponent)}`);
+const axisFormat = (v: number): string => v === 0 ? '0' : Math.abs(v) < .001 || Math.abs(v) >= 10000 ? v.toExponential(1) : Number(v.toPrecision(3)).toString();
 function tex(v: number): string { const parts = plain(v).split('e'); return parts.length === 1 ? parts[0] : `${parts[0]}\\times10^{${Number(parts[1])}}`; }
 const matrixTex = (a: readonly number[], columns: number) => `\\begin{bmatrix}${a.map((v, i) => `${tex(v)}${i === a.length - 1 ? '' : (i + 1) % columns ? '&' : '\\\\'}`).join('')}\\end{bmatrix}`;
 function button(label: string, action: string): HTMLButtonElement { const e = node('button', label); e.type = 'button'; e.dataset.action = action; return e; }
@@ -26,6 +27,13 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const invalidate = () => { revealed = false; view.replaceChildren(); message.textContent = 'Data changed. Apply the model to recompute the exercise.'; };
   for (const [i, label] of ['State matrix A (2 by 2)', 'Input column B (2 by 1)', 'Output row C (1 by 2)', 'Desired characteristic polynomial q(s)'].entries()) {
     const editor = createEquationInput({ label, value: INITIAL[i], signal, onChange: invalidate }); editors.push(editor); editorGrid.append(editor.element);
+    // Escape closes this editor's keyboard before MathLive can switch modes.
+    // Preserve the visual math mode used by the local parser and Restore action.
+    editor.element.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault(); event.stopPropagation();
+      editor.element.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.click();
+    }, { capture: true, signal });
   }
   const controls = node('div'); controls.className = 'feedback-controls';
   function numeric(parent: HTMLElement, label: string, name: string, value: string, placeholder?: string): HTMLInputElement {
@@ -48,11 +56,11 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const series = [...raw.map(select), ...(corrected?.map(select) ?? []), ...(label.startsWith('Output') ? [heldReference] : [])];
     let low = Math.min(0, ...series), high = Math.max(0, ...series); if (high === low) { low -= 1; high += 1; }
     const padding = (high - low) * .1; low -= padding; high += padding;
-    const duration = raw.at(-1)!.t, X = (t: number) => 48 + 425 * t / duration, Y = (y: number) => 185 - 155 * (y - low) / (high - low);
+    const duration = raw.at(-1)!.t, X = (t: number) => 88 + 385 * t / duration, Y = (y: number) => 185 - 155 * (y - low) / (high - low);
     const svg = svgNode('svg', { viewBox: '0 0 500 225', role: 'img', 'aria-label': `${label}; t from 0 to ${duration} seconds. ${corrected ? 'Solid: calculated prefilter; dashed: N=1.' : 'Dashed: N=1 only; no supported static prefilter is available.'} Values are available in the sample table.` });
-    svg.append(svgNode('line', { x1: 48, y1: 185, x2: 478, y2: 185, class: 'feedback-axis' }), svgNode('line', { x1: 48, y1: 25, x2: 48, y2: 185, class: 'feedback-axis' }), svgNode('text', { x: 43, y: 30, 'text-anchor': 'end' }, format(high)), svgNode('text', { x: 43, y: 185, 'text-anchor': 'end' }, format(low)), svgNode('text', { x: 48, y: 204 }, '0'), svgNode('text', { x: 465, y: 204 }, format(duration)), svgNode('text', { x: 235, y: 222 }, 'Time t (s)'));
+    svg.append(svgNode('line', { x1: 88, y1: 185, x2: 478, y2: 185, class: 'feedback-axis' }), svgNode('line', { x1: 88, y1: 25, x2: 88, y2: 185, class: 'feedback-axis' }), svgNode('text', { x: 83, y: 30, 'text-anchor': 'end' }, axisFormat(high)), svgNode('text', { x: 83, y: 185, 'text-anchor': 'end' }, axisFormat(low)), svgNode('text', { x: 88, y: 204 }, '0'), svgNode('text', { x: 465, y: 204 }, format(duration)), svgNode('text', { x: 235, y: 222 }, 'Time t (s)'));
     const path = (samples: Sample[], className: string) => svgNode('path', { d: samples.map((s, i) => `${i ? 'L' : 'M'}${X(s.t).toFixed(3)},${Y(select(s)).toFixed(3)}`).join(' '), class: className });
-    if (label.startsWith('Output')) svg.append(svgNode('line', { x1: 48, x2: 473, y1: Y(heldReference), y2: Y(heldReference), class: 'feedback-reference' }));
+    if (label.startsWith('Output')) svg.append(svgNode('line', { x1: 88, x2: 473, y1: Y(heldReference), y2: Y(heldReference), class: 'feedback-reference' }));
     svg.append(path(raw, 'feedback-raw')); if (corrected) svg.append(path(corrected, 'feedback-corrected'));
     const index = Math.round(selectedTime / duration * (raw.length - 1));
     for (const samples of corrected ? [raw, corrected] : [raw]) svg.append(svgNode('circle', { cx: X(samples[index].t), cy: Y(select(samples[index])), r: 3, class: 'feedback-marker' }));

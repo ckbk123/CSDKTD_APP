@@ -1,6 +1,6 @@
 # CD08 implementation status
 
-- **Stage:** in-progress — mathematical exercise and guided UI implemented; actual browser QA pending.
+- **Stage:** in-progress — mathematical exercise and guided UI implemented; actual IAB browser QA in progress.
 - **Assessed:** 2026-10-29; starting main `f99cfebb65495d3f4385a61dd1d25800e341ea68`.
 - **Ownership:** `src/modules/cd08/**`; [TASK.md](TASK.md), atlas CD08, continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -13,7 +13,7 @@
 
 | Accepted requirement | Current evidence and remaining gate |
 |---|---|
-| Editable small SISO model and target poles | Four shared visual inputs for A,B,C and the target polynomial, validated by bounded `parser.ts`. Native initial state/reference/horizon use shared `readNumericInput`. Actual matrix editing remains to be browser checked. |
+| Editable small SISO model and target poles | Four shared visual inputs for A,B,C and the target polynomial, validated by bounded `parser.ts`. Native initial state/reference/horizon use shared `readNumericInput`. Actual C first-cell keyboard selection and fraction-button entry changed C to [−1/2,0], producing N=−16 and DC−.0625. Ordinary target/power-button entry s²+4s+13 produces actual−2±3j and N13. |
 | Column-by-column controllability | B then AB construction, full matrix, independently normalized column determinant and declared numerical rank threshold in `math.ts`/`ui.ts`. Rank-deficient/near-deficient cases tested. |
 | Coefficient matching and K | Trace and determinant equations, substituted 2×2 solve, K and full A−BK shown. Actual characteristic coefficients and both eigenvalues independently checked. No selected-mode-only verification. |
 | Reference correction | Derives DC gain and N, checks baseline N=8 vs N=1 final gain1/8. Zero/too-small DC channel retains K and shows unavailable static prefilter. |
@@ -56,7 +56,17 @@ PR check passed at `21b30d0`: https://github.com/ckbk123/CSDKTD_APP/actions/runs
 
 ## Remaining gates and coordination
 
-Real browser matrix entry, power/fraction/Systems keyboard, baseline/changed outputs, rank/error paths, reset/reopen/rapid navigation/cleanup and narrow layout remain mandatory. No CD08 browser controls have been used yet. After the coordinator's DP03→DP04→DP02 gate, normal atomic acquisition repeatedly found newer owners (DP04,CF02,DS04,CP02,DR01); no reservation was interrupted. Acquisition waiters were stopped for the subsequent coordinator order: DD04→CP03→DR01→DP03→ordinary acquisition. DD04 is confirmed actively performing production checks. CD08 must resume supported acquisition only after that order is released, preserving any newer active holder. Do not submit or mark implemented before actual browser evidence and final combined checks. No shared change is required. Prior DS02 PR4 is integrated/verified (v0.3.3, followed by coordinator notation correction0.3.5) and preserved in its original worktree.
+### Actual production-browser pass in progress
+
+After DP03 released the last named slot, CD08 acquired QA through the current primary helper at2026-10-29T14:12:53.775Z. Own IAB tab2 at port8997, default viewport1280×720. Baseline numerical rank determinant−.3162278, K=[6,3], N8 and actual poles−4,−2 are displayed correctly; the genuine gain attempt passes. At t5 the table shows raw y=.1249887 and corrected y=.9999092. Real-target variation gives K=[3,3],N5; conjugate variation gives actual−2±3j,N13. Velocity output retains K and all state plots, DC0, and a single N1 sample row. Actual signed-fraction C and target-power entry are recorded in the requirement table above. Fonts report loaded, KaTeX_Main available, initial client/scroll widths both1265. Native1e−999 rejects nonzero underflow;0e−999 yields zero response;1e−2 yields initial efforts.01/.08; horizon0 rejects. A malformed B edit gives the declared matrix-dimension error and Restore recovers.
+
+Visual review exposed clipped long vertical-axis tick labels. The owned plot now reserves a wider left gutter, uses three significant digits (compact exponent notation for small/large ticks), and increases label size. Sample tables retain seven significant digits. Production build/type check passes; page was rebuilt/reloaded. Final visual/narrow confirmation remains required.
+
+The actual B=[0;0] edit exposed a cleanup bug: MathLive serializes a row as `\\ ` followed by the next cell. The former backslash-space removal consumed the second row backslash. Cleanup now protects row delimiters; the exact serialized fixture plus an A matrix regression pass. The rebuilt browser now reports the correct rank-below2 feedback for the same edit. Module tests pass58. An empty target and ordinary-key `1e-2` produce useful input feedback with results hidden. The Systems keyboard opens and its s key invalidates the old result. Escape exposed MathLive's LaTeX-entry mode switch, which interfered with Restore; an owned capture handler now closes the keyboard before that mode switch, without changing shared files. Post-rebuild Escape/Restore and final lifecycle checks remain pending.
+
+The coordinator requested a controlled isolation probe while CD08 retained QA: CD08 paused inputs at1280×720 (client1265×720), and remained exactly those dimensions while only the coordinator's browser changed to613×817. Inventory metadata identifies CD08 session01a18700-78e9-7a80-af1b-4436e25b10ff; its tab list contains only own tab2 at8997, not the coordinator's8787 user tab. The coordinator restored its probe, authorized parallel QA in verified private contexts, and CD08 released its obsolete global reservation while continuing its own test. No unsupported Firefox evidence is included.
+
+Remaining actual-browser gates: rank-loss feedback with a dimension-preserving edit, malformed/empty target feedback, Systems keyboard, reset/reopen/rapid navigation/cleanup, and narrow layout/axis labels. Do not submit or mark implemented before these and final combined checks. Before this pass, atomic acquisition repeatedly found newer owners; CD08 honored both ordered coordinator queues without interrupting any holder. No shared change is required. Prior DS02 PR4 is integrated/verified (v0.3.3, followed by coordinator notation correction0.3.5) and preserved in its original worktree.
 
 The external browser gate previously remained across three goal turns, so checkpoint `35053ca` was preserved as a blocked partial handoff. The human explicitly resumed the goal on29October; that same claim/worktree/PR is now active again. DD04 is integrated and CP03 is resubmitted; DR01/DP03 retain their named QA slots. At checkpoint `a1977f1`, CI passed: https://github.com/ckbk123/CSDKTD_APP/actions/runs/40885092378/job/123486537808. Complete actual browser checks and any repairs, record final evidence, run final exact-HEAD checks, push and submit through the current primary helper. Only then start another eligible module.
 

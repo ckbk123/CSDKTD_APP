@@ -106,6 +106,11 @@ describe('bounded visual semantics', () => {
     expect(parseMatrix(String.raw`C=\begin{pmatrix}-\frac12&0\end{pmatrix}`, 1, 2, 'C')).toEqual([-.5, 0]);
     expect(() => parseMatrix(String.raw`\begin{bmatrix}1&2&3\end{bmatrix}`, 2, 2, 'A')).toThrow(/row/);
   });
+  it('preserves MathLive row separators followed by serialization whitespace', () => {
+    expect(parseMatrix(String.raw`B=\begin{bmatrix}0\\ 0\end{bmatrix}`, 2, 1, 'B')).toEqual([0, 0]);
+    expect(parseMatrix(String.raw`A=\begin{bmatrix}0 & 1\\ -2 & -3\end{bmatrix}`, 2, 2, 'A')).toEqual([0, 1, -2, -3]);
+    expect(() => design({ ...BASE, B: parseMatrix(String.raw`\begin{bmatrix}0\\ 0\end{bmatrix}`, 2, 1, 'B') as unknown as Vector }, [6, 8])).toThrow(/rank/);
+  });
   it('expands supported target expressions including changed, repeated and conjugate targets', () => {
     close(parseTarget('q(s)=(s+2)(s+4)'), [6, 8]); close(parseTarget('s^{2}+6s+8'), [6, 8]);
     close(parseTarget('(s+3)^2'), [6, 9]); close(parseTarget('(s+2)^2+9'), [4, 13]);
