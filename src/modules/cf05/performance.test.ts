@@ -44,7 +44,7 @@ describe('CF05 independent complete response and frequency fixtures', () => {
     const loop = createLoop(p('1'), p('s^4+4s^3+6s^2+4s')), step = stepResponse(loop, 20);
     expect(loop.poles).toHaveLength(1); expect(loop.poles[0].multiplicity).toBe(4); expect(loop.poles[0].re).toBe(-1);
     for (const t of [1, 2, 5, 10]) { const at = step.points.find(s => Math.abs(s.t - t) < 1e-10)!; expect(at.y).toBeCloseTo(1 - Math.exp(-t) * (1 + t + t * t / 2 + t ** 3 / 6), 10); }
-    expect(step.tailCertified).toBe(true); expect(step.overshoot).toBe(0);
+    expect(step.tailCertified).toBe(true); expect(step.observedOvershoot).toBe(0);
   });
   it('changes gain, zero and a DC-normalized added loop pole from actual coefficients', () => {
     const original = baseline(), scaled = createLoop(original.n, original.d, 2), added = createLoop(original.n, original.d, 1, .5);
@@ -54,7 +54,7 @@ describe('CF05 independent complete response and frequency fixtures', () => {
     expect(frequency(added.n, added.d, .1)!.re).not.toBeCloseTo(frequency(original.n, original.d, .1)!.re, 3);
   });
   it('does not certify settling from a short horizon even if the trace enters the band', () => {
-    const short = stepResponse(second(), 1); expect(short.settling).toBeUndefined(); expect(short.tailCertified).toBe(false); expect(short.reason).toContain('not established');
+    const short = stepResponse(second(), 1); expect(short.settling).toBeUndefined(); expect(short.overshoot).toBeUndefined(); expect(short.tailCertified).toBe(false); expect(short.reason).toContain('not established');
     expect(stepResponse(second(), 12).settling).toBeDefined();
   });
   it('keeps unstable retained modes and boundary/zero-final responses distinct from settled metrics', () => {

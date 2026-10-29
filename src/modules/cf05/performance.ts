@@ -77,12 +77,13 @@ export function estimateEligibility(loop: Loop, f: FrequencyResult): string | un
   if (!loop.stable) return 'The full characteristic is not strictly stable; no settled-response estimate is offered.';
   if (f.dc === undefined || f.dc <= 0) return 'A positive nonzero closed-loop DC gain is required for this comparison.';
   if (f.crossovers.length !== 1) return 'The equivalent second-order heuristic requires one isolated positive gain crossover; all resolved crossings remain listed.';
-  if (loop.openPoles.some(r => r.re > 1e-9 || (Math.abs(r.re) <= 1e-9 && Math.abs(r.im) > 1e-9))) return 'Open-loop unstable or oscillatory axis modes violate this heuristic’s assumptions.';
-  if (loop.zeros.some(r => r.re >= -1e-9)) return 'A nonminimum-phase or axis zero violates the equivalent minimum-phase model assumption.';
+  let d = loop.d, integrators = 0; while (d.length > 1 && d[0].n === 0n) { d = d.slice(1); integrators++; }
+  if (integrators > 1 || (d.length > 1 && !hurwitz(d))) return 'Open-loop unstable/axis modes or multiple integrators violate this heuristic’s assumptions.';
+  if (loop.n.length > 1 && !hurwitz(loop.n)) return 'A nonminimum-phase or axis zero violates the equivalent minimum-phase model assumption.';
   return;
 }
 export interface Sample { readonly t: number; readonly y: number }
-export interface StepResult { readonly points: readonly Sample[]; readonly dt: number; readonly final?: number; readonly overshoot?: number; readonly peakTime?: number; readonly settling?: number; readonly tailBound?: number; readonly tailCertified: boolean; readonly reason?: string }
+export interface StepResult { readonly points: readonly Sample[]; readonly dt: number; readonly final?: number; readonly observedOvershoot?: number; readonly overshoot?: number; readonly peakTime?: number; readonly settling?: number; readonly tailBound?: number; readonly tailCertified: boolean; readonly reason?: string }
 export function stepResponse(loop: Loop, horizon: number): StepResult {
   if (!Number.isFinite(horizon) || horizon < .05 || horizon > 1000) throw new Error('Choose a response horizon from0.05 to1000 seconds.');
   const d = loop.characteristic.map(numeric), n = d.length - 1, c = Array.from({ length: n }, (_, i) => numeric(loop.n[i] ?? zero));
@@ -99,7 +100,7 @@ export function stepResponse(loop: Loop, horizon: number): StepResult {
   if (!loop.stable) return { points, dt, tailCertified: false, reason: 'The full characteristic is not strictly stable. Finite trace only; final value, overshoot and settling are not established.' };
   const final = numeric(over(loop.n[0], loop.characteristic[0]));
   if (final === 0) return { points, dt, final, tailCertified: false, reason: 'Final output is zero; relative overshoot and a relative2% settling band are undefined.' };
-  const normalized = points.map(p => p.y / final), peakIndex = normalized.reduce((best, y, i) => y > normalized[best] ? i : best, 0), overshoot = Math.max(0, 100 * (normalized[peakIndex] - 1));
+  const normalized = points.map(p => p.y / final), peakIndex = normalized.reduce((best, y, i) => y > normalized[best] ? i : best, 0), observedOvershoot = Math.max(0, 100 * (normalized[peakIndex] - 1));
   const certificate = tailCertificate(a, c), equilibrium = Array.from({ length: n }, (_, i) => i === 0 ? 1 / d[0] : 0), tailBound = certificate?.(state.slice(0, n).map((x, i) => x - equilibrium[i]));
   const tailCertified = tailBound !== undefined && tailBound <= .02 * Math.abs(final);
   let settling: number | undefined;
@@ -108,7 +109,9 @@ export function stepResponse(loop: Loop, horizon: number): StepResult {
     if (last >= 0 && last < points.length - 1) { const v0 = Math.abs(normalized[last] - 1), v1 = Math.abs(normalized[last + 1] - 1); settling = points[last].t + dt * (v0 - .02) / (v0 - v1); }
     else if (last < 0) settling = 0;
   }
-  return { points, dt, final, overshoot, peakTime: points[peakIndex].t, settling, tailBound, tailCertified, reason: tailCertified ? undefined : 'Settling is not established: extend the horizon until the all-future tail bound lies within the2% band (or rescale an unresolved certificate).' };
+  // A future peak must not be scored as zero merely because it was not observed.
+  const overshoot = tailBound !== undefined && tailBound / Math.abs(final) < observedOvershoot / 100 ? observedOvershoot : undefined;
+  return { points, dt, final, observedOvershoot, overshoot, peakTime: points[peakIndex].t, settling, tailBound, tailCertified, reason: tailCertified ? undefined : 'Settling is not established: extend the horizon until the all-future tail bound lies within the2% band (or rescale an unresolved certificate).' };
 }
 export function standardStep(estimate: Estimate, t: number): number { const wd = estimate.wn * Math.sqrt(1 - estimate.zeta ** 2); return 1 - Math.exp(-estimate.zeta * estimate.wn * t) * (Math.cos(wd * t) + estimate.zeta / Math.sqrt(1 - estimate.zeta ** 2) * Math.sin(wd * t)); }
 export function moveRealZero(n: Poly, rate: number): Poly {

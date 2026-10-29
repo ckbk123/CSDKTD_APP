@@ -34,9 +34,13 @@ export function tailCertificate(a: Matrix, c: readonly number[]): ((error: reado
     const n = a.length, equations = Array.from({ length: n * n }, () => Array.from({ length: n * n }, () => 0)), rhs = Array.from({ length: n * n }, () => 0);
     for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const row = i * n + j; rhs[row] = i === j ? -1 : 0; for (let k = 0; k < n; k++) { equations[row][k * n + j] += a[k][i]; equations[row][i * n + k] += a[k][j]; } }
     const flat = solve(equations, rhs), p = Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => (flat[i * n + j] + flat[j * n + i]) / 2));
+    // Check the actual symmetric result in absolute units of the identity RHS.
+    const lyapunovResidual = p.map((row, i) => row.map((_, j) => a.reduce((v, _, k) => v + a[k][i] * p[k][j] + p[i][k] * a[k][j], Number(i === j))));
+    if (normM(lyapunovResidual) > 1e-7) return;
     const l = p.map(row => row.map(() => 0));
     for (let i = 0; i < n; i++) for (let j = 0; j <= i; j++) { let v = p[i][j]; for (let k = 0; k < j; k++) v -= l[i][k] * l[j][k]; if (i === j) { if (v <= 1e-13 * normM(p)) return; l[i][j] = Math.sqrt(v); } else l[i][j] = v / l[j][j]; }
-    const dual = solve(p, c), outputEnergy = c.reduce((v, x, i) => v + x * dual[i], 0); if (!(outputEnergy >= 0)) return;
-    return error => { const pe = applyM(p, error), energy = error.reduce((v, x, i) => v + x * pe[i], 0); return Math.sqrt(Math.max(0, energy) * outputEnergy); };
+    const dual = Array.from({ length: n }, () => 0); for (let i = 0; i < n; i++) dual[i] = (c[i] - dual.slice(0, i).reduce((v, x, k) => v + l[i][k] * x, 0)) / l[i][i];
+    const outputEnergy = dual.reduce((v, x) => v + x * x, 0); if (!Number.isFinite(outputEnergy)) return;
+    return error => { const energy = l[0].reduce((v, _, j) => v + error.reduce((s, x, i) => s + l[i][j] * x, 0) ** 2, 0); return Math.sqrt(energy * outputEnergy); };
   } catch { return; }
 }
