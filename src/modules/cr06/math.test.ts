@@ -49,6 +49,21 @@ describe('CR06 independent continuous response fixtures', () => {
     const m: Model = { A: [[-1, 1], [0, -1]], B: [0, 0], C: [1, 0], D: 0 };
     for (const p of run(m, { ...settings, initial1: [0, 1] }).points) closeArray(p.total1, [p.t * Math.exp(-p.t), Math.exp(-p.t)]);
   });
+  it('matches a dense changed matrix through an independent Cayley-Hamilton formula', () => {
+    const m: Model = { A: [[1, 2], [3, 4]], B: [.5, -1], C: [2, 3], D: .2 };
+    const e = { ...settings, input: 2, initial1: [.3, -.4] };
+    for (const p of run(m, e).points) {
+      const d = Math.sqrt(33) / 2, h = Math.exp(2.5 * p.t), c = Math.cosh(d * p.t), s = Math.sinh(d * p.t) / d;
+      const f00 = h * (c - 1.5 * s), f01 = h * 2 * s, f10 = h * 3 * s, f11 = h * (c + 1.5 * s);
+      closeArray(p.phi[0], [f00, f01]); closeArray(p.phi[1], [f10, f11]);
+      // A^-1=[[-2,1],[1.5,-.5]] is used only by this nonsingular independent oracle.
+      const v0 = .5 * (f00 - 1) - f01, v1 = .5 * f10 - (f11 - 1);
+      closeArray(p.integral, [-2 * v0 + v1, 1.5 * v0 - .5 * v1]);
+      const x0 = .3 * f00 - .4 * f01 + 2 * (-2 * v0 + v1), x1 = .3 * f10 - .4 * f11 + 2 * (1.5 * v0 - .5 * v1);
+      closeArray(p.total1, [x0, x1]);
+      expect(Math.abs(p.y1 - (2 * x0 + 3 * x1 + .4))).toBeLessThan(1e-10 * Math.max(1, Math.abs(p.y1)));
+    }
+  });
   it('retains a hidden unstable state after channel cancellation', () => {
     const m: Model = { A: [[1, 0], [0, -2]], B: [0, 1], C: [0, 1], D: 0 };
     const r = run(m, settings);
