@@ -71,6 +71,15 @@ describe('exact computed response terms with independent inverses', () => {
     expect(exactRoot(rational(2n))).toBeUndefined();
     expect(exactRoot(rational(-1n))).toBeUndefined();
   });
+  it('places a negative sine/sinh coefficient on an additive term, not an adjacent product', () => {
+    const oscillatory = termsLatex(unitTerms(modelFromText('1', 's^2+2s+5'), 'step'));
+    // Independently: y=(1-exp(-t)[cos(2t)+sin(2t)/2])/5.
+    expect(oscillatory).toContain('\\cos\\left(2t\\right)-\\frac{\\frac{1}{5}}{2}\\sin');
+    const real = termsLatex(unitTerms(modelFromText('1', 's^2+3s+1'), 'step'));
+    // Negative cosh and negative sinh terms must be a sum with an outer minus.
+    expect(real).toContain('\\cosh\\left(\\sqrt{\\frac{5}{4}}t\\right)-\\frac{\\frac{3}{2}}');
+    expect(real).not.toContain('\\frac{-');
+  });
   it('polynomials declare descending visible order independently of storage', () => {
     expect(polynomial([decimal('1'), decimal('-2'), decimal('.5')])).toBe('\\frac{1}{2}s^{2}-2s+1');
     expect(polynomial([ZERO])).toBe('0');

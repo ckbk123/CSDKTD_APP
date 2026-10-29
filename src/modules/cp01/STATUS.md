@@ -1,12 +1,12 @@
 # CP01 implementation status
 
-- **Stage:** in-progress
-- **Current checkpoint:** full bounded workspace implemented; actual-browser verification and submission remain.
+- **Stage:** implemented
+- **Current checkpoint:** full bounded workspace, mathematical/project checks and actual-browser verification complete; independent integration review remains.
 - **Last assessed:** 2026-10-29
 - **Base:** primary-main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
 - **Branch/worktree:** `codex/cp01-time-response-7393`; `C:/Users/baokh/.codex/worktrees/cp01-time-response-7393/CSDKTD APP`.
-- **PR:** [#24](https://github.com/ckbk123/CSDKTD_APP/pull/24), draft pending actual-browser checks. Prior DS01 PR #10 accepted v0.3.6; CF02 PR #18 corrected/resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`, preserved for asynchronous review.
+- **PR:** [#24](https://github.com/ckbk123/CSDKTD_APP/pull/24), this module's single contribution. Prior DS01 PR #10 accepted v0.3.6; CF02 PR #18 corrected/resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`, preserved for asynchronous review.
 - **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md).
 
 ## Scope and source provenance
@@ -17,19 +17,19 @@ Read current primary AGENTS, START_HERE, AUTONOMOUS_WORKERS, COORDINATION, PROJE
 
 ## Requirement-to-evidence assessment
 
-| Accepted requirement | Implemented evidence | Remaining verification |
+| Accepted requirement | Implemented evidence | Acceptance evidence |
 |---|---|---|
-| Predict step/ramp/impulse/free response | Editable proper real order-1/2 N/D plus parallel direct path; five source shapes; optional checked numerical prediction before reveal; eleven computed experiment presets | Actual controls/editor and changed-data browser checks |
-| Input/output/initial-condition controls | `model.ts` normalizes full coefficients and extracts biproper direct gain; explicit phase state convention and units; numerator controls the output map | Actual browser editing |
-| Preserve initial conditions across representations | Exact phase/centered mapping, displayed realization and initial vector; coordinate change leaves inputs/results/paths intact | Actual coordinate switch |
-| Free/forced/total overlays | Separate zero-input and zero-state trajectories and states, superposition residual, distinct line patterns; input has separate scale | Desktop/narrow visual inspection |
-| Analytic terms | `analytic.ts` computes exact rational polynomial and real exponential/trigonometric terms for distinct/repeated/oscillatory/integrator modes; initial-condition and input transforms displayed | Typeset readability/font check |
-| Time cursor | Direct matrix-transition evaluation with numeric field, keyboard range and side selector; no interpolation across jumps | Keyboard and jump controls in browser |
-| Impulse and finite pulse | Signed ideal input/output delta **areas**, regular output curve separately; pulse width/height/area and delayed full-step identity; exact one-sided pulse endpoint | Area symbol and finite pulse browser checks |
-| Integrator/direct/differentiation caveats | Exact retained-mode category; stable asymptotic polynomial and endpoint horizon heuristic; no general settlement claim for integrators/oscillators/unstable modes; improper transfer rejected | Actual error paths |
-| Bounded mathematical errors | Exact grammar/coefficient checks, native nonzero-underflow rejection, finite state-transition/trace caps, truncation/sample-budget/pulse-horizon feedback | Actual editor/native errors |
-| Visit/lifecycle isolation | Synchronous owned loading node, child abort signal, late-load guard, partial-failure resource abort, explicit editor cleanup; old result listeners aborted when inputs change/recompute | Actual reset/reopen/rapid navigation |
-| Independent project/browser evidence | 186 module tests; all 530 local application tests; type/build pass | Browser reservation, actual QA, PR, exact clean submission |
+| Predict step/ramp/impulse/free response | Editable proper real order-1/2 N/D plus parallel direct path; five source shapes; optional checked numerical prediction before reveal; eleven computed experiment presets | All eleven actual presets and changed-value prediction pass |
+| Input/output/initial-condition controls | `model.ts` normalizes full coefficients and extracts biproper direct gain; explicit phase state convention and units; numerator controls the output map | Actual equation/native edits, fraction and power buttons pass |
+| Preserve initial conditions across representations | Exact phase/centered mapping, displayed realization and initial vector; coordinate change leaves inputs/results/paths intact | Actual centered switch preserves all path strings and cursor values |
+| Free/forced/total overlays | Separate zero-input and zero-state trajectories and states, superposition residual, distinct line patterns; input has separate scale | Actual desktop/narrow screenshots; keyboard plot scrolling |
+| Analytic terms | `analytic.ts` computes exact rational polynomial and real exponential/trigonometric terms for distinct/repeated/oscillatory/integrator modes; initial-condition and input transforms displayed | Independent 31 analytic tests and actual baseline/damped formula inspection |
+| Time cursor | Direct matrix-transition evaluation with numeric field, keyboard range and side selector; no interpolation across jumps | Actual numeric/arrow-key cursor and one-sided jumps pass |
+| Impulse and finite pulse | Signed ideal input/output delta **areas**, regular output curve separately; pulse width/height/area and delayed full-step identity; exact one-sided pulse endpoint | Actual signed-area symbols and pulse end values pass |
+| Integrator/direct/differentiation caveats | Exact retained-mode category; stable asymptotic polynomial and endpoint horizon heuristic; no general settlement claim for integrators/oscillators/unstable modes; improper transfer rejected | Independent improper-form tests; actual integrator/unstable/horizon cases |
+| Bounded mathematical errors | Exact grammar/coefficient checks, native nonzero-underflow rejection, finite state-transition/trace caps, truncation/sample-budget/pulse-horizon feedback | Actual invalid notation/native drafts remove stale results |
+| Visit/lifecycle isolation | Synchronous owned loading node, child abort signal, late-load guard, partial-failure resource abort, explicit editor cleanup; old result listeners aborted when inputs change/recompute | Actual reset/reopen/rapid routes pass; deferred partial-failure resource regression |
+| Independent project/browser evidence | 187 module tests; all 531 local application tests; type/build pass | Private chat-isolated production IAB QA; single attached PR; exact submission via current helper |
 
 ## Supported model and timing
 
@@ -60,18 +60,43 @@ Independent closed-form oracles include:
 - Exact IC coordinate/output equivalence, initial Laplace numerator, direct ordinary jumps and output delta area, finite-pulse endpoint continuity/jump and convergence away from 0, plus diagonal/rotation/nilpotent matrix-exponential oracles.
 - Pinned MathLive SSR MathML independently confirms mixed-number invisible-plus semantics and one-token exponent scope. This is parser semantic evidence, **not** real-browser editor certification.
 
-Module tests (186): 86 parser, 21 model, 22 response/transition, 5 rational, 30 analytic, 18 workspace-flow, 4 deferred-lifecycle. Workspace-flow uses explicit mock equation fields only for caller draft/ownership behavior; no actual MathLive functionality is inferred. Partial mount failure test registers a child-signal window resource then throws while parent remains active, and confirms immediate abort/recovery. Result replacement and visit cleanup tests prevent old listeners updating new results.
+Module tests (187): 86 parser, 21 model, 22 response/transition, 5 rational, 31 analytic, 18 workspace-flow, 4 deferred-lifecycle. Workspace-flow uses explicit mock equation fields only for caller draft/ownership behavior; no actual MathLive functionality is inferred. Partial mount failure test registers a child-signal window resource then throws while parent remains active, and confirms immediate abort/recovery. Result replacement and visit cleanup tests prevent old listeners updating new results.
 
 Checks under bundled Node v24.22.1 at this workspace checkpoint:
 
-- `node node_modules/vitest/vitest.mjs run src/modules/cp01`: **186 tests / 7 files pass**.
+- `node node_modules/vitest/vitest.mjs run src/modules/cp01`: **187 tests / 7 files pass**.
 - `npm run check`: passes.
-- `npm test`: **530 tests / 24 files pass**.
+- `npm test`: **531 tests / 24 files pass**.
 - `npm run build`: passes, 152 modules transformed; existing MathLive large-chunk advisory only.
 - `git diff --check`: passes.
 
-## Checkpoints and remaining work
+## Actual browser verification — 29 October 2026
+
+The integration coordinator supplied controlled evidence that IAB inventories and viewport overrides are private per chat, then authorized parallel QA after checking session identity. This chat's inventory reports browser 2 with `codexSessionId=01a186d1-f1f0-7393-88e7-377fbac7299a` and initially no tabs. Canceled obsolete global waiter session 92585 before testing; CD08's reservation was never released or altered. Used only this chat's created tab 4 and the isolated **production build** on `http://127.0.0.1:8799/#/module/CP01`. No Firefox launch/native input, primary8787 access or other worker tab use. Browser name is ChatGPT in-app browser; its engine/version was not exposed by the available inventory/read-only page surface.
+
+Passed in the actual browser:
+
+- All eleven experiment presets render two plots and computed cursor values. Baseline y(1)=0.1997882; changed poles/gain 0.3153829; free proposed fixture 0.6004236; repeated-pole step 0.2642411; damped 0.1971672; undamped 1.416147; first-integrator step 1; double-integrator ramp 0.1666667; regular ideal impulse 0.3678794; finite pulse 0.3869022; unstable step 1.718282.
+- Baseline with x(0)=[1,0] and a step checks a prediction 0.8002118. Switching phase→centered shows z(0)=[1,3/2] while all SVG path data and cursor output remain identical. Actual desktop screenshot distinguishes free, forced and total lines.
+- Real fraction button filled with 1, Tab, 2 copies as actual `application/x-latex` `\frac12`; numerator 1/2 produces y(1)=0.0998941. Real denominator power button builds s² and produces 0.25 with that numerator. Math keyboard toggle changes pressed state true→false on Escape.
+- Actual pasted visual inputs `s2\frac12`, `(s+1)2\frac12`, styled `s\mathrm{2}\frac12`, `1e-2`, bare `s^12`, grouped `s^{12}` and hidden `{s+1}2` receive explicit feedback and leave zero plots. Valid `2s\frac12+1` computes 0.4323324.
+- Native amplitude ±1e-999, empty and 11 reject with no old plots. Intentional 0e-999 gives zero; 1e-2 computes 0.001997882. Cursor underflow clears its numeric tables, keeps the checked model/plots and reports the error locally.
+- For 1/(s+1)+2, unit ideal input area 1 and output delta area 2 are separate symbols; ordinary output at 0−=0 and 0+=1. Unit-area W=.1 pulse has y(W−)=20.95163, y(W+)=.9516258 and continuous dynamic state; arrow-key range moves time .1→.15 and recomputes .9052145.
+- Unstable horizon 60 reports truncation at retained time 23, restricts cursor range and makes no settling claim. Pulse W=10 beyond horizon 5 reports the missing turn-off. Stable horizon .1 with prediction time .1 gives the insufficient-horizon heuristic.
+- Desktop 1280×720 and narrow 390×844 dark mode: readable local math glyphs, `document.fonts.status='loaded'`, zero module MathLive display-error nodes. On narrow screen page scroll width equals client width 375; field widths 277; plots have 650 px scrollable content within 275 px regions. ArrowRight moves only the focused output plot scrollLeft 0→40. No page overflow.
+- Leave while math keyboard is open removes all CP01 fields, curves and root; reopen, shell Reset example and repeated rapid catalogue↔CP01 route sequences return exactly two fresh fields, no old plots/loading/scaffold, and baseline 0.1997882 after reveal. These are actual rapid navigations, without a forced network delay; deterministic pending-import and partial-failure cases also have unit coverage.
+- Actual typesetting caught unsupported legacy `\rm` labels; replaced them with `\mathrm{...}`, rebuilt/reloaded and visually rechecked. Independent formula review also corrected the outer minus separating sine/sinh terms, with a semantic sign regression. Axis labels use four significant digits to fit, cursor tables seven. Both baseline and damped computed terms now render without error.
+- Console warning/error log is empty. Viewport override reset and verified 1280×720; owned tab closed and tab inventory empty; private preview stopped; no global QA reservation or waiter held.
+
+Screenshots are local evidence outside Git:
+
+- `C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d1-f1f0-7393-88e7-377fbac7299a/cp01-baseline-terms.png`
+- Same directory: `cp01-free-forced-desktop.png`, `cp01-baseline-cursor.png`, `cp01-damped-terms.png`, `cp01-mobile-controls.png`, `cp01-mobile-plot.png`.
+
+## Checkpoints and disposition
 
 Setup `449c98d` recorded the full audit and private claim/worktree. Parser prototype `422b053` was preserved before prioritizing CF02's returned correction. Mathematical-core checkpoint `21eac440af88ff072c08589fef21e8d3ba7eb037` passed 134 local module tests / 478 full tests, before the UI existed. CF02 correction completed and resubmitted before CP01 resumed.
 
-Current code supplies the full bounded exercise; **browser acceptance is still pending**. No CP01 browser tab, preview server, IAB reservation or native focus is held. Latest queue has another owner's CD08 IAB QA; native Firefox is separately coordinated for DF04. Honor active holders/named order; preserve primary8787. After a genuine isolated reserved browser session, record actual checks/screenshots, fix any issues, rerun relevant final checks, create/attach the single PR, push clean final HEAD and submit the exact tested claim. Stage must remain in-progress until this work is done.
+Full analytic/UI checkpoint `a5df141` passed 186/530 tests before the final sign/typesetting/axis corrections. PR #24 was created as a draft and attached, with its pending browser work disclosed. Earlier exact-head CI `fb38653879233fb3834c050538236ec30d85e466` passed at [run 40890513979](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40890513979/job/123505833004); that is historical checkpoint evidence, not final-head acceptance.
+
+The full accepted bounded exercise now has mathematical, project and actual-browser evidence. Independent coordinator review/integration remains; no release/version/deployment is claimed. Preserve this worktree, branch and exact submitted revision for corrections on the same PR. Prior contributions remain recoverable. No shared-helper request or unowned change remains. Global application checks reflect this isolated v0.3.5-based branch; the coordinator owns current-main combined integration checks.

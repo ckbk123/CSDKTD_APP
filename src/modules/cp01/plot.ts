@@ -1,6 +1,7 @@
 import type { Point } from './response';
 
 export const numeric = (value: number): string => value === 0 ? '0' : Number(value.toPrecision(7)).toString();
+const axisNumber = (value: number): string => value === 0 ? '0' : Number(value.toPrecision(4)).toString();
 const NS = 'http://www.w3.org/2000/svg';
 const svgNode = <K extends keyof SVGElementTagNameMap>(tag: K, attributes: Record<string, string>, text?: string): SVGElementTagNameMap[K] => {
   const node = document.createElementNS(NS, tag); for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
@@ -22,7 +23,7 @@ export function responsePlot(points: readonly Point[], input: boolean, title: st
   for (let i = 0; i <= 4; i++) {
     const value = low + (high - low) * i / 4, time = end * i / 4;
     svg.append(svgNode('line', { x1: '90', x2: '735', y1: String(y(value)), y2: String(y(value)), class: 'cp-gridline' }));
-    svg.append(svgNode('text', { x: '82', y: String(y(value) + 4), 'text-anchor': 'end' }, numeric(value)));
+    svg.append(svgNode('text', { x: '82', y: String(y(value) + 4), 'text-anchor': 'end' }, axisNumber(value)));
     svg.append(svgNode('text', { x: String(x(time)), y: '237', 'text-anchor': 'middle' }, numeric(time)));
   }
   svg.append(svgNode('line', { x1: '90', x2: '735', y1: String(y(0)), y2: String(y(0)), class: 'cp-axis' }));

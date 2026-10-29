@@ -153,19 +153,19 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
       display(derivation, `G(s)=${fraction(m.parallel)}+\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}=${fraction(m.direct)}+\\frac{${polynomial(m.b)}}{${polynomial(m.denominator)}}`, 'Normalized transfer and direct-path decomposition');
       paragraph(derivation, 'Coefficients are displayed in descending powers. The monic denominator and strict remainder define the retained phase realization, even when transfer poles cancel. Transfer functions describe zero initial state; free motion is added separately.');
       const repTarget = element('div'); derivation.append(repTarget); represented = { m, x, target: repTarget }; renderRepresentation(m, x, repTarget);
-      display(derivation, `Y_{\\rm free}(s)=\\frac{${polynomial(initialTransformNumerator(m, x))}}{${polynomial(m.denominator)}},\\quad U(s)=${inputTransform(input)}`, 'Initial-condition and input transforms');
-      display(derivation, 'Y(s)=Y_{\\rm free}(s)+G(s)U(s)', 'Superposition in the unilateral Laplace transform');
+      display(derivation, `Y_{\\mathrm{free}}(s)=\\frac{${polynomial(initialTransformNumerator(m, x))}}{${polynomial(m.denominator)}},\\quad U(s)=${inputTransform(input)}`, 'Initial-condition and input transforms');
+      display(derivation, 'Y(s)=Y_{\\mathrm{free}}(s)+G(s)U(s)', 'Superposition in the unilateral Laplace transform');
       const analytic = card(results, '5. Read the computed response terms');
-      display(analytic, `y_{\\rm free}(t)=${termsLatex(free)}`, 'Exact free response terms');
+      display(analytic, `y_{\\mathrm{free}}(t)=${termsLatex(free)}`, 'Exact free response terms');
       if (input.kind === 'pulse') {
         display(analytic, `W=${fraction(input.width)},\\quad A=${fraction(input.amplitude)},\\quad A/W=${fraction(div(input.amplitude, input.width))}`, 'Pulse width, signed area and height');
         display(analytic, `\\phi(t)=${termsLatex(forced)}`, 'Height-scaled full step response');
-        display(analytic, `y_{\\rm forced}(t)=\\phi(t)-H(t-${fraction(input.width)})\\phi(t-${fraction(input.width)})`, 'Delayed-step pulse response');
+        display(analytic, `y_{\\mathrm{forced}}(t)=\\phi(t)-H(t-${fraction(input.width)})\\phi(t-${fraction(input.width)})`, 'Delayed-step pulse response');
         paragraph(analytic, 'H is the unit step. At W use the left side before subtracting the delayed value at zero, and the right side after subtracting it. This includes the ordinary direct-path jump.');
-      } else display(analytic, `y_{\\rm forced,reg}(t)=${termsLatex(forced)}`, 'Exact regular forced response terms');
-      display(analytic, 'y_{\\rm total,reg}(t)=y_{\\rm free}(t)+y_{\\rm forced,reg}(t)', 'Superposition of ordinary response components');
+      } else display(analytic, `y_{\\mathrm{forced,reg}}(t)=${termsLatex(forced)}`, 'Exact regular forced response terms');
+      display(analytic, 'y_{\\mathrm{total,reg}}(t)=y_{\\mathrm{free}}(t)+y_{\\mathrm{forced,reg}}(t)', 'Superposition of ordinary response components');
       if (input.kind === 'impulse') {
-        display(analytic, `u(t)=${fraction(areas.input)}\\delta(t),\\quad y_{\\rm singular}(t)=${fraction(areas.output)}\\delta(t)`, 'Ideal input and direct output impulse areas');
+        display(analytic, `u(t)=${fraction(areas.input)}\\delta(t),\\quad y_{\\mathrm{singular}}(t)=${fraction(areas.output)}\\delta(t)`, 'Ideal input and direct output impulse areas');
         paragraph(analytic, `Signed impulse areas: input ${exactText(areas.input)} input-units·s; output ${exactText(areas.output)} output-units·s. The curve contains only the regular response. The arrow is an area symbol, not a finite peak. At 0− the forced state is zero; at 0+ its last phase state has jumped by A.`);
       }
       paragraph(analytic, 'These are exact identities for the entered rational coefficients. Exponential and trigonometric values and the curves are numerical approximations. Radical frequencies remain exact; repeated roots use their polynomial-times-exponential limit. The formulas apply for t ≥ 0, with one-sided values at input jumps.', true);
@@ -174,7 +174,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
       const outputPlot = responsePlot(run.points, false, 'Free, forced and total ordinary output', input.kind === 'impulse' && areas.output.n ? exactText(areas.output) : undefined);
       const inputPlot = responsePlot(run.points, true, 'Active input on its own scale', input.kind === 'impulse' && areas.input.n ? exactText(areas.input) : undefined);
       plots.append(outputPlot.element, inputPlot.element);
-      paragraph(plots, 'Separate input and output scales keep a narrow pulse readable. Scroll a plot horizontally on a small screen. The cursor values below are computed directly at the requested time and side, without interpolating across jumps.', true);
+      paragraph(plots, 'Separate input and output scales keep a narrow pulse readable. Scroll a plot horizontally on a small screen. Axis labels use four significant digits; cursor tables use seven. Cursor values are computed directly at the requested time and side, without interpolating across jumps.', true);
       if (run.truncated) paragraph(plots, `Trace stopped early: ${run.reason}`);
       if (run.resolutionLimited) paragraph(plots, 'The 20,000 base-interval budget was reached. Fast modes may be under-resolved; shorten the horizon. The analytic terms remain separate from the sampled curve.');
       if (run.pulseEndsAfterHorizon) paragraph(plots, 'The pulse ends after this horizon. Increase the horizon to inspect its turn-off and the subsequent response.');
@@ -204,7 +204,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
       paragraph(interpretation, `Retained denominator modes: ${m.behavior === 'stable' ? 'strictly stable' : m.behavior === 'integrator' ? 'one origin integrator' : m.behavior === 'double-integrator' ? 'double origin integrator' : m.behavior === 'oscillator' ? 'undamped oscillation' : 'unstable'}. A finite or flat portion of a trace is not a settling certificate.`);
       if (m.behavior === 'stable') {
         const asymptote = input.kind === 'step' || input.kind === 'ramp' ? forced.polynomial : [];
-        display(interpretation, `y_{\\rm total}(t)-\\left(${polynomial(asymptote, 't')}\\right)\\longrightarrow0`, 'Exact asymptotic polynomial for stable retained dynamics');
+        display(interpretation, `y_{\\mathrm{total}}(t)-\\left(${polynomial(asymptote, 't')}\\right)\\longrightarrow0`, 'Exact asymptotic polynomial for stable retained dynamics');
         paragraph(interpretation, asymptote.slice(1).some(c => c.n) ? 'The nonzero polynomial slope means there is no finite final value. Stable modes alone do not make a ramp response settle.' : 'All retained transient modes decay. The remaining constant, or zero, is the final ordinary output value.');
         const expected = asymptote.reduceRight((sum, coefficient) => sum * end.t + toNumber(coefficient, true), 0);
         paragraph(interpretation, `At the retained endpoint ${numeric(end.t)} s: y ≈ ${numeric(end.total)}, asymptotic polynomial ≈ ${numeric(expected)}, difference ≈ ${numeric(end.total - expected)}.`, true);

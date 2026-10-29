@@ -121,7 +121,10 @@ export function termsLatex(e: Expression, t = 't'): string {
       const frequency = exact ? fraction(exact) : `\\sqrt{${fraction(magnitude)}}`;
       const argument = `${frequency}${t}`, inner: string[] = [];
       if (b.c.n) inner.push(`${fraction(b.c)}\\${positive ? 'cosh' : 'cos'}${parentheses(argument)}`);
-      if (b.k.n) inner.push(`${b.k.n > 0n && inner.length ? '+' : ''}\\frac{${fraction(b.k)}}{${frequency}}\\${positive ? 'sinh' : 'sin'}${parentheses(argument)}`);
+      if (b.k.n) {
+        const negative = b.k.n < 0n, sign = negative ? '-' : inner.length ? '+' : '';
+        inner.push(`${sign}\\frac{${fraction(negative ? neg(b.k) : b.k)}}{${frequency}}\\${positive ? 'sinh' : 'sin'}${parentheses(argument)}`);
+      }
       terms.push(`+${exp}${parentheses(inner.join(''))}`);
     }
   }
