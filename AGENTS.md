@@ -14,6 +14,8 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 
 ## Read before editing
 
+The human ended the current ten-worker continuous batch with a stop-after-current instruction; see [COORDINATION](docs/COORDINATION.md). Honor explicit finite assignments. Friends contributing from separate computers use [EXTERNAL_CONTRIBUTORS](docs/EXTERNAL_CONTRIBUTORS.md) and its portable one-task prompt; the owner's absolute local path and local claim registry do not coordinate other clones.
+
 If the user gives the generic worker goal without a module ID, follow [docs/AUTONOMOUS_WORKERS.md](docs/AUTONOMOUS_WORKERS.md): repeatedly choose and atomically claim a tractable unfinished module, implement it in its own worktree/branch, verify it, open or update its one pull request and submit its exact tested revision, then immediately select the next eligible module. Do not ask the user to choose IDs or stop after the first submission. Implement only one module at a time; preserve prior submitted claims/worktrees for asynchronous review. Explicit single-module assignments can remain finite, but concurrent workers must still reserve ownership.
 
 Read the current AGENTS, START_HERE, AUTONOMOUS_WORKERS and COORDINATION guides from the **primary checkout** `C:\Users\baokh\OneDrive\BKHCM\2026-2027\CSDKTD\CSDKTD APP` before every new contribution and review return. Preserved worktrees may contain an older finite worker prompt. The primary guides govern coordination; the claimed module's TASK remains its acceptance contract.

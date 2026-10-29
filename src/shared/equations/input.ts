@@ -156,9 +156,13 @@ export function createEquationInput(options: EquationInputOptions): EquationInpu
   tools.append(keyboard);
   field.addEventListener('input', () => update(true), { signal: listeners.signal });
   field.addEventListener('mount', () => { field.menuItems = []; update(false); }, { signal: listeners.signal });
-  // Shell navigation must not steal Escape or native editing/search shortcuts.
+  // Intercept Escape before MathLive's target handler can enter LaTeX mode.
   element.addEventListener('keydown', event => {
-    if (event.key === 'Escape') { window.mathVirtualKeyboard.hide(); event.stopPropagation(); }
+    if (event.key !== 'Escape') return;
+    event.preventDefault(); event.stopPropagation(); window.mathVirtualKeyboard.hide();
+  }, { capture: true, signal: listeners.signal });
+  // Native editing/search shortcuts still reach the field without shell navigation.
+  element.addEventListener('keydown', event => {
     if ((event.ctrlKey || event.metaKey) && ['f', 'Home'].includes(event.key)) event.stopPropagation();
   }, { signal: listeners.signal });
   element.append(label, field, tools, issue);

@@ -1,5 +1,17 @@
 # Coordinator review checkpoints — 29 October 2026
 
+## Current delivery boundary
+
+The human ended the continuous worker loop: finish current work, push a checked contribution or honest partial, and stop. All ten received the amendment. The subsequent request is to integrate the submitted batch; known failing calculations remain held until repaired and checked. Historical pending notes below retain their dates and are superseded only by an explicit later disposition.
+
+## CF02 and shared Escape correction — 0.3.10
+
+CF02 source `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`, PR #18, cleared independent mathematical and final parser review. Its 57,696 independent scalar comparisons have maximum scaled discrepancy 2.22e-13. Coordinator initialization ownership and local spacing/delimiter fixes add 45 regressions to the worker's 165: 210 module tests pass. The final parser has another 104 independent controls. Shared Escape capture adds seven tests and fixes the actual Escape→preset failure. All **877 application tests, 32 coordination tests, type checking and production build pass**. Desktop/phone production checks and a final rebuilt baseline/fraction/Escape→preset smoke pass are recorded in CF02 STATUS; no deployment occurred.
+
+Separate pending corrections are deliberately not described as part of this release: CS01's floating modal projection can excite an exactly absent fast mode (A=[[0,1],[-1,8.125]], x0=[1.1,.1375], t=5 returns x1≈28.188 instead of2.05507); its exact-rational repair has independent review in an isolated correction branch. A general TeX-argument preflight and six existing callers remain under review. CF02 uses its own checked bounded parser and does not depend on that draft helper.
+
+Pending owner returns retain their original PRs and source: CP01 PR24 (unexcited fast-mode contamination), CF03 PR22 (unbraced parenthesis/power meaning), CR01 PR25 and CS03 PR26 (erased spacing argument), CD08 PR20 (spacing arguments and phone plot labels). DF04 PR23 source `3b70ee553c4061cec46a046daa93f0ffc69ae93a` also has a confirmed terminal-tick defect: T=.3,H=.9 adds a fourth zero-length hold/raw error sample; T=.001022,H=2.044 falsely exceeds2000 intervals. Its 71 tests and1180 independent scalar checks otherwise pass (maximum scaled discrepancy4.37e-15). Require a documented tick/horizon rounding policy preserving genuine partial holds. These are explicit integration actions or preserved handoffs, not accepted tools.
+
 These are preliminary independent reviews, not acceptance of later moving branch tips. Recheck the exact submitted SHA and subsequent changes, review real-browser evidence, and run combined checks before merging. [COORDINATION.md](COORDINATION.md) owns the current continuous-worker policy and release ledger. No exercise had been merged when this checkpoint was written.
 
 | Module / reviewed revision | Independent evidence | Findings sent to worker / next review |

@@ -86,6 +86,8 @@ Distinguish TeX argument braces from visible parentheses. Fraction arguments and
 
 An exponent also consumes one unbraced TeX token. For example, `q^12` renders q to the first power followed by 2, whereas `q^{12}` puts both digits in the exponent. Preserve that distinction or reject ambiguous unbraced multi-character/signed exponents with power-box guidance. Include `q^12` versus `q^{12}` and `2^12` versus `2^{12}` in tests; fixtures intending the twelfth power must use the properly grouped notation.
 
+Spacing commands and some Unicode blanks also consume an unbraced argument. Do not erase them before identifying fraction/exponent boxes: `\frac1\;2` does not mean 1/2, whereas `\frac1{\;2}` has a real denominator box containing 2. Delimiter sizing commands must keep their actual delimiter boundaries too. A bounded parser may conservatively reject unsupported forms with completion guidance; it must not silently reinterpret the displayed equation. CF02 has local regression coverage; a broader shared preflight is still under separate review until published.
+
 ### Native numeric controls
 
 Use `readNumericInput(input, label)` from `src/shared/numeric-input.ts` when reading native number controls. It preserves representable exponent syntax and intentional zero, but rejects empty/nonfinite values and a nonzero raw mantissa that the browser rounds to zero, such as `1e-999`. The helper is stateless and does not change the control. Bounds, integer requirements, units and subsequent numerical conditioning remain the module's responsibility.
@@ -99,6 +101,8 @@ An older preserved branch may lack this helper. With an explicit coordinator dis
 The wrapper imports `mathlive/fonts.css` and `mathlive/static.css`. Vite emits all 20 referenced WOFF2 fonts as local hashed assets. The build disables asset inlining so even the smallest font remains a same-origin file, compatible with `font-src 'self'`. `MathfieldElement.fontsDirectory = null` disables MathLive's separate automatic font lookup; the imported CSS supplies the fonts. No runtime CDN is required. Keep the CSS import, build setting and font lookup setting together.
 
 The wrapper sets `soundsDirectory = null`, `computeEngine = null` and `speechEngine = 'local'`. It does not load a remote solver or speech service. The math keyboard is shared by MathLive, but exercise values are not shared. Our cleanup hides the keyboard and removes the field; MathLive disposes its internal field when disconnected. Do not call private disposal methods or preserve a field across module visits.
+
+The shared wrapper intercepts Escape during ancestor capture, before MathLive's target handler can switch into raw LaTeX mode. It dismisses the keyboard while preserving ordinary typing and subsequent preset replacement. Keep this listener inside the wrapper's owned lifetime; a late bubbling handler alone does not provide the same guarantee. Verify Escape→preset→solve with the actual editor when integrating an older contribution.
 
 The existing CSP allows the generated inline styles MathLive needs, while scripts and fonts remain same-origin. Link/HTML-style macros are overridden as display-only by the wrapper, and stock menu actions are hidden. Keep untrusted input out of application-authored `innerHTML`; the display helper inserts MathLive-generated markup. Bundled notices are in `public/licenses/MathLive-LICENSE.txt` and `public/licenses/KaTeX-Fonts-LICENSE.txt`.
 

@@ -2,6 +2,13 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.10 — 29 October 2026
+
+- CF02: predict and derive steady-state error for reference, plant-input disturbance and sensor noise, distinguish comparator and physical tracking errors, and compare exact limits or polynomial asymptotes with a qualified numerical trace.
+- Accept [PR #18](https://github.com/ckbk123/CSDKTD_APP/pull/18), source `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`, with independently checked channel mathematics, bounded visual entry and initialization cleanup. All 877 application tests, 32 coordination tests, type checking, production build and desktop/phone browser checks pass.
+- Fix shared equation-editor Escape handling so a later preset remains editable and parseable. Seven focused regressions and actual Escape→preset/fraction-entry checks pass.
+- Record the human's stop-after-current amendment for the ten workers and provide a finite, portable contribution prompt for outside contributors. Unmerged submissions and known review findings remain explicit handoffs.
+
 ## 0.3.9 — 29 October 2026
 
 - Correct deferred workspace cleanup in DS03, DP01, DS02 and DP02. Each visit owns a child abort signal; partial mounting failures and explicit disposal immediately release listeners/editor resources, including a disposer returned during an abort.
