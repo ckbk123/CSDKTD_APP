@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { baseline, dbToLinear, diagnosePrediction, factorAt, frequencyGrid, fromAngular, normalize, parseReal, predictionAt, responseAt, slopeIntervals, toAngular, type Model } from './math';
+import { baseline, dbToLinear, diagnosePrediction, factorAt, frequencyGrid, fromAngular, normalize, parseDelay, parseReal, predictionAt, responseAt, slopeIntervals, toAngular, type Model } from './math';
 
 describe('Bode normalization and independent reference values', () => {
   it('normalizes the default raw factors and adds slopes at both corners', () => {
@@ -57,9 +57,30 @@ describe('Bode normalization and independent reference values', () => {
   it('combines coincident corner slope changes without inventing an interval', () => {
     const f = baseline().factors[0]; expect(slopeIntervals({ gain: 1, originPower: 0, delay: 0, factors: [f, f] })).toEqual([{ from: 0, to: 1, slope: 0 }, { from: 1, to: Infinity, slope: -40 }]);
   });
+  it('groups scale-equivalent factors at one corner with one combined slope change', () => {
+    for (const corner of [1e-4, 1 / 3, 1, 1e4]) {
+      const a = { kind: 'first' as const, position: 'pole' as const, a0: corner * .3, a1: .3, a2: 0 }, b = { ...a, a0: corner, a1: 1 };
+      const model = { ...baseline(), factors: [a, b] }, rows = slopeIntervals(model);
+      expect(rows).toHaveLength(2); expect(rows.map(row => row.slope)).toEqual([0, -40]); expect(rows[0].to).toBeCloseTo(corner, 12);
+      expect(slopeIntervals({ ...model, factors: [b, a] })).toEqual(rows);
+    }
+    const rows = slopeIntervals({ ...baseline(), factors: [{ kind: 'first', position: 'pole', a0: .1, a1: .3, a2: 0 }, { kind: 'second', position: 'pole', a0: 1, a1: 3, a2: 9 }] });
+    expect(rows.map(row => row.slope)).toEqual([0, -60]);
+  });
+  it('keeps physically distinct nearby corners outside the grouping tolerance', () => {
+    const f = { kind: 'first' as const, position: 'pole' as const, a0: 1 / 3, a1: 1, a2: 0 };
+    const rows = slopeIntervals({ ...baseline(), factors: [f, { ...f, a0: f.a0 * (1 + 1e-9) }] });
+    expect(rows.map(row => row.slope)).toEqual([0, -20, -40]); expect(rows[1].to).toBeGreaterThan(rows[1].from);
+  });
 });
 
 describe('bounded visual-number grammar and failure cases', () => {
+  it('permits short positive delays at visual precision without relaxing coefficient bounds', () => {
+    for (const source of ['.0000001', '\\frac{1}{10000000}', '.000000001']) expect(parseDelay(source)).toBeGreaterThan(0);
+    const delay = parseDelay('.0000001'); expect(delay).toBe(1e-7); expect(parseDelay('0')).toBe(0); expect(parseDelay('10')).toBe(10);
+    expect(() => parseReal('.0000001')).toThrow(/10⁻⁶/); expect(() => parseDelay('-.0000001')).toThrow(/Delay/); expect(() => parseDelay('10.1')).toThrow(/Delay/); expect(() => parseDelay('.0000000001')).toThrow(/decimal places/);
+    expect(responseAt({ ...baseline(), delay }, 10000).phase - responseAt(baseline(), 10000).phase).toBeCloseTo(-.001 * 180 / Math.PI, 12);
+  });
   it('accepts actual compact/braced MathLive fractions and signed decimals', () => {
     expect(parseReal('\\frac12')).toBe(0.5); expect(parseReal('\\frac{1}2')).toBe(0.5); expect(parseReal('\\frac1{2}')).toBe(0.5); expect(parseReal('-\\frac{1}{4}')).toBe(-0.25); expect(parseReal('\\frac{12}3')).toBe(4); expect(parseReal('.125')).toBe(0.125);
   });
@@ -67,6 +88,9 @@ describe('bounded visual-number grammar and failure cases', () => {
     expect(parseReal('-\\left(\\frac12\\right)')).toBe(-0.5); expect(parseReal('\\left(\\frac{-1}{2}\\right)')).toBe(-0.5); expect(parseReal('{-(-.5)}')).toBe(0.5);
     expect(() => parseReal('(1)(2)')).toThrow(); expect(() => parseReal('('.repeat(9) + '1' + ')'.repeat(9))).toThrow();
     expect(() => parseReal('\\frac{\\frac12}{3}')).toThrow();
+  });
+  it('rejects displayed mixed numbers and their signed/grouped variants in this scalar-only grammar', () => {
+    for (const source of ['2\\frac12', '-2\\frac12', '\\left(2\\frac12\\right)', '2{\\frac12}', '\\frac{2\\frac12}{3}', '2+\\frac12', '2\\times\\frac12']) expect(() => parseReal(source)).toThrow(/unsupported/);
   });
   it.each(['', 'NaN', 'Infinity', 's', '2+3', '1e-2', '1E-2', '\\pi', '\\sqrt{2}', '\\frac10', '1000001', '.0000000001', '1'.repeat(100)])('rejects invalid numeric entry %s', source => { expect(() => parseReal(source)).toThrow(); });
   it('rejects excessive order, zero gain, invalid delay and unsupported quadratic damping', () => {

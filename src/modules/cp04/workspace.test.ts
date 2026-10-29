@@ -23,6 +23,14 @@ async function open() {
 }
 afterEach(() => document.body.replaceChildren());
 describe('CP04 construction and lifecycle', () => {
+  it('shows one slope event for scaled coincident factors and accepts a short visual delay', async () => {
+    const { container, controller, reveal } = await open();
+    update(labeled(container, 'Factor 1 coefficient a₀'), '.1'); update(labeled(container, 'Factor 1 coefficient a₁'), '.3'); update(labeled(container, 'Factor 2 coefficient a₀'), '1'); update(labeled(container, 'Factor 2 coefficient a₁'), '3');
+    update(labeled(container, 'Pure delay τ [s]'), '.0000001'); reveal();
+    const slopeTable = [...container.querySelectorAll('table')].find(t => t.textContent?.includes('Total slope [dB/dec]'))!;
+    expect([...slopeTable.tBodies[0].rows].map(row => row.cells[1].textContent)).toEqual(['0', '-40']); expect(slopeTable.textContent).not.toContain('-20'); expect(container.textContent).toContain('τ=1×10⁻⁷ s'); expect(container.querySelector('.bode-verdict')).not.toBeNull();
+    update(labeled(container, 'Upper frequency [rad/s]'), '10000'); update(labeled(container, 'Cursor frequency [rad/s]'), '10000'); expect(container.textContent).toContain('-180.0535'); controller.abort();
+  });
   it('draws only the student curve before reveal and diagnoses a normalization offset', async () => {
     const { container, controller, reveal } = await open(); update(labeled(container, 'Your corner for factor 2 [rad/s]'), '2');
     button(container, 'Draw my asymptote').click(); expect(container.textContent).toContain('Your predicted asymptotes'); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.querySelectorAll('polyline')).toHaveLength(2);

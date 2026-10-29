@@ -14,7 +14,7 @@ export const MIN_FREQUENCY = 1e-4, MAX_FREQUENCY = 1e4;
 const degrees = 180 / Math.PI;
 const clamp = (x: number, low: number, high: number): number => Math.max(low, Math.min(high, x));
 
-export function parseReal(source: string): number {
+function parseScalar(source: string): number {
   const s = source.replace(/\s|\\[,;!]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac').replace(/\\(?:left|right)/g, '');
   if (!s || s.length > 90) throw new Error('Enter one real number, decimal or simple fraction.');
   const decimal = (part: string): number => {
@@ -50,9 +50,19 @@ export function parseReal(source: string): number {
     return decimal(text);
   };
   const value = scalar(s, 0);
+  if (!Number.isFinite(value)) throw new Error('Enter a finite number.');
+  return value;
+}
+export function parseReal(source: string): number {
+  const value = parseScalar(source);
   if (!Number.isFinite(value) || Math.abs(value) > 1e6 || (value !== 0 && Math.abs(value) < 1e-6)) {
     throw new Error('Use zero or a number with magnitude between 10⁻⁶ and 10⁶.');
   }
+  return value;
+}
+export function parseDelay(source: string): number {
+  const value = parseScalar(source);
+  if (value < 0 || value > 10) throw new Error('Delay must be from 0 to 10 s.');
   return value;
 }
 export function frequency(value: number): void {
@@ -120,11 +130,18 @@ export function diagnosePrediction(model: Model, prediction: Prediction): string
   return 'Normalization gain (within 0.1 dB) and corner markers (within 0.02 decade) match the asymptotic construction.';
 }
 export function slopeIntervals(model: Model): { from: number; to: number; slope: number }[] {
-  const normalized = normalize(model), corners = [...new Set(normalized.factors.map(f => f.corner))].sort((a, b) => a - b);
+  const normalized = normalize(model), events: { corner: number; change: number }[] = [];
+  // Relative grouping matches the declared 10⁻¹² boundary resolution over all
+  // supported frequency scales. Compare to the group anchor, not transitively.
+  for (const factor of [...normalized.factors].sort((a, b) => a.corner - b.corner)) {
+    const last = events[events.length - 1], change = 20 * factor.direction * factor.order;
+    if (last && Math.abs(factor.corner - last.corner) <= 1e-12 * Math.max(factor.corner, last.corner)) last.change += change;
+    else events.push({ corner: factor.corner, change });
+  }
   const intervals: { from: number; to: number; slope: number }[] = []; let from = 0, slope = 20 * model.originPower;
-  for (const corner of corners) {
+  for (const { corner, change } of events) {
     intervals.push({ from, to: corner, slope });
-    slope += normalized.factors.filter(f => f.corner === corner).reduce((value, f) => value + 20 * f.direction * f.order, 0); from = corner;
+    slope += change; from = corner;
   }
   intervals.push({ from, to: Infinity, slope }); return intervals;
 }

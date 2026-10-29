@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft, type EquationInput } from '../../shared/equations/input';
-import { baseline, dbToLinear, diagnosePrediction, factorAt, frequency, frequencyGrid, fromAngular, normalize, parseReal, predictionAt, responseAt, slopeIntervals, toAngular, type Factor, type FrequencyUnit, type Model, type Prediction } from './math';
+import { baseline, dbToLinear, diagnosePrediction, factorAt, frequency, frequencyGrid, fromAngular, normalize, parseDelay, parseReal, predictionAt, responseAt, slopeIntervals, toAngular, type Factor, type FrequencyUnit, type Model, type Prediction } from './math';
 import { readNumericInput as finite } from './numeric-input';
 import './workspace.css';
 
@@ -69,12 +69,12 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   const globals = el('div', undefined, 'bode-fields'), factorArea = el('div'), results = el('div', undefined, 'bode-results'), message = el('p', 'Place your gain and corner markers, then draw your prediction.', 'bode-message'); message.setAttribute('role', 'status');
   let last: { model: Model; prediction: Prediction; checked: boolean } | undefined; let unit: FrequencyUnit = 'rad/s'; let nextId = 0; let rows: Row[] = [];
   function invalidate(): void { if (signal.aborted) return; last = undefined; results.replaceChildren(); message.textContent = 'Inputs changed. Draw your prediction or reveal the checked construction again.'; }
-  function binding(label: string, value: string, ownerSignal = signal): Binding {
+  function binding(label: string, value: string, ownerSignal = signal, parse = parseReal): Binding {
     let draft: EquationDraft;
     const input = createEquationInput({ label, value, signal: ownerSignal, onChange: next => { draft = next; invalidate(); } }); draft = input.getValue();
-    return { input, read: () => { draft = input.getValue(); if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error(`Complete ${label} and check its notation.`); return parseReal(draft.latex); } };
+    return { input, read: () => { draft = input.getValue(); if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error(`Complete ${label} and check its notation.`); return parse(draft.latex); } };
   }
-  const gain = binding('Raw gain K', '1'), delay = binding('Pure delay τ [s]', '0'); globals.append(gain.input.element, delay.input.element); root.append(globals);
+  const gain = binding('Raw gain K', '1'), delay = binding('Pure delay τ [s]', '0', signal, parseDelay); globals.append(gain.input.element, delay.input.element); root.append(globals);
   const origin = select('Power of s at the origin', Array.from({ length: 7 }, (_, i) => [String(i - 3), `${i - 3}${i - 3 < 0 ? ' — poles at zero' : i - 3 > 0 ? ' — zeros at zero' : ' — no origin factor'}`])); origin.input.value = '0'; root.append(origin.element, factorArea);
   const add = el('button', 'Add a factor', 'button'); add.type = 'button'; root.append(add);
   const displayControls = el('div', undefined, 'bode-controls'), units = select('Frequency unit', [['rad/s', 'rad/s'], ['Hz', 'Hz']]), magnitude = select('Magnitude unit', [['db', 'dB'], ['linear', 'Linear ratio']]);
@@ -88,6 +88,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   assumptions.append(el('p', 'The continuous-time scalar model is K·sⁿ·exp(−τs) times at most six first/second-order numerator or denominator factors. Edit coefficients in ascending order: a₀+a₁s+a₂s². First order requires a₀>0 and signed nonzero a₁; negative a₁ places the real pole/zero in the right half-plane. Quadratics require positive coefficients and 0.05≤ζ≤1; enter overdamped real roots as separate first-order factors. Corners/natural frequencies are 10⁻⁴–10⁴ rad/s.'));
   assumptions.append(el('p', 'Enter signed numbers, decimals (up to 9 decimal places, 12 digits total), or simple fractions. Nonzero coefficient/gain magnitudes are 10⁻⁶–10⁶. K cannot be zero; n is −3…3 and delay is 0…10 s. Coefficients have consistent time units, magnitude is an output/input ratio, and dB means 20 log₁₀ of that ratio. Frequencies are angular rad/s or f=ω/(2π) Hz; phases are unwrapped degrees (negative K contributes +180°). No feedback, initial condition or sample period is implied. Unstable factors are formal frequency evaluations, not stable sinusoidal experiments.'));
   assumptions.append(el('p', 'Magnitude straight lines are asymptotic approximations. Phase uses linear transitions from 0.1 to 10 times each corner: ±45°/decade per first-order factor and ±90°/decade per quadratic. Delay phase −ωτ is added directly, with no Padé approximation. Numerical curves use 601 log-spaced points plus corners/cursor; they are sampled illustrations, not a complete resonance or stability proof. Boundary rounding tolerance is 10⁻¹². Display values are rounded. On a narrow screen, scroll within each plot or table.')); root.append(assumptions);
+  assumptions.append(el('p', 'The slope table combines corner events within a relative 10⁻¹² frequency tolerance into one simultaneous change. More widely separated corners remain separate. Pure delay accepts 0–10 s at the stated decimal/fraction precision, including positive values smaller than the coefficient/gain minimum.'));
 
   function refreshChoices(): void {
     const previous = factorChoice.input.value; while (factorChoice.input.options.length > 4) factorChoice.input.remove(4);
