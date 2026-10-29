@@ -26,3 +26,11 @@ Support real rational expressions in z with numerator degree at most 14 and deno
 ## Evidence and remaining work
 
 Course context read: atlas DR01, discrete source audit DR1, and E09's finite-sequence adaptation. Original source slides/PDF have not been independently re-inspected; added numeric fixtures will be identified as independent fixtures, not new source claims. All implementation and verification rows above remain open at this checkpoint. No shared dependency changes requested.
+
+## Implementation checkpoint (before browser verification)
+
+- Added local bounded arithmetic parser and causal recurrence inversion in math.ts; linked transform forms, factors, unilateral correction and sequence builders in view.ts.
+- Added prediction/reveal, selected-sample memory arithmetic, sample table and computed SVG stems. Sum/average examples preserve explicit tap weights.
+- Browser-only equation view now loads after the synchronous mount, guarded against abort/cleanup. A direct top-level MathLive import exposed its Node SSR limitation in the existing catalogue test; module-local view loading resolves this without shared edits.
+- `npm run check` passed and production build passed before the view split; the existing MathLive chunk-size warning remains. Initial full test run exposed the SSR import issue; after the fix `npm test` passed 81/81. Additional edge checks are still being added.
+- Shared browser reservation was busy (DP02) at 15:50 local time; no browser controls used. Browser checks and final rerun remain required. Stage remains in-progress.
