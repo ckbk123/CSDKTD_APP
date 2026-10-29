@@ -1,6 +1,6 @@
 # DP02 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress (coordinator review correction)
 - **Assessed:** 2026-10-29; implementation revision `beedadb`, based on `c5d1135`
 - **Ownership:** `src/modules/dp02/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
@@ -29,7 +29,7 @@ The starting workspace was blank; no working mathematical features were replaced
 
 One pole s=σ+jω and its conjugate. This is a free-mode mapping lesson within SISO LTI theory, with x[0]=1 and no forcing input or feedback loop. The real modal sequence is Re(exp(skT))=r^k cos(kθ). No transfer-function order, arbitrary state model, multiplicity or whole-system stability is inferred.
 
-The visual field accepts an optional s=, decimal/scientific real numbers, one j, π, parentheses, real-scalar arithmetic (+, −, multiplication, real division) and visual fractions. Products of two imaginary terms, complex denominators, functions, powers, other variables and lists of poles are rejected. Limits: 256 source characters, 80 tokens, 12 grouping/unary levels. Numeric σ/ω fields are an equivalent keyboard-friendly alternative.
+The visual field accepts an optional s=, decimal real numbers, one j, π, parentheses, real-scalar arithmetic (+, −, multiplication, real division) and visual fractions. Products of two imaginary terms, complex denominators, functions, powers, other variables and lists of poles are rejected. Limits: 1024 source characters, 80 tokens, 12 grouping/unary levels. Numeric σ/ω fields are an equivalent keyboard-friendly alternative.
 
 T and reference T are 0.001–10 seconds; |σ|≤1000 s⁻¹, |ω|≤10000 rad/s, |σT|≤20 and |ωT|≤200π. N is an integer 4–100, and growing plots require σTN≤30. Nonfinite/empty values and exceeded limits give errors before results render. The derived alias/inverse frequency can lie outside the editable pole range; it is a derived branch value, not an extra accepted model input.
 
@@ -109,3 +109,8 @@ QA was acquired through the atomic helper after the previous worker released it.
 
 QA was released and worker preview 8793 stopped. No remaining required module work or shared dependency is deferred. This is implemented, not independently reviewed/verified; coordinator review may return corrections on the same preserved PR branch. No primary-main merge, version bump or deployment was performed.
 
+## Coordinator review return: visual exponent notation
+
+The coordinator reopened PR3's existing claim at 0872a05 after finding that parsePole("1e-2+3j") interpreted a scientific numeric literal although MathLive displays e/E algebraically. The visual parser now rejects e/E with a surface-specific explanation. HTML numeric controls retain ordinary exponent and underflow handling; their finite values are expanded to unambiguous decimal notation before writing the visual field. The source limit is now 1024 characters (still 80 tokens/12 levels), enough for exact decimal expansion of any finite numeric component, including subnormals.
+
+Added four visual e/E rejection regressions, decimal serialization tests and decimal-form underflow fixtures. Representable tiny decimals remain intact; no textual e is silently interpreted as a numeric exponent. npm test -- src/modules/dp02 passes 62 tests. Full checks and a focused real-browser visual-vs-numeric check remain pending before resubmission of the same PR/branch. DD04 is safely checkpointed at 2b6a442 in its own worktree/PR9 and will resume after this review return is resubmitted.

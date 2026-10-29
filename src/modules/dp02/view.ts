@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { aliasExperiment, inversePole, mapPole, modeSamples, parsePole, radialMovement, type Pole } from './math';
+import { aliasExperiment, decimalLiteral, inversePole, mapPole, modeSamples, parsePole, radialMovement, type Pole } from './math';
 import { complex, fmt, polePlanes, sequencePlot, texNumber } from './plots';
 import './style.css';
 
@@ -18,7 +18,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         <button type="button" data-preset="boundary">Unit-circle mode</button>
       </div>
       <div class="dp-editor"></div>
-      <p class="dp-help">Enter a + bj (or s = a + bj). Real numbers, π, fractions, parentheses and arithmetic are supported. Powers, functions and other variables are unsupported. Or edit the numeric components below.</p>
+      <p class="dp-help">Enter a + bj (or s = a + bj). Decimal numbers, π, fractions, parentheses and arithmetic are supported. Write 0.01 here; e/E exponent notation is available in the numeric components below. Powers, functions and other variables are unsupported.</p>
       <div class="dp-controls">
         <label>Real part σ (s⁻¹)<input data-field="sigma" type="number" value="-2" step="any" min="-1000" max="1000"></label>
         <label>Imaginary part ω (rad/s)<input data-field="omega" type="number" value="3" step="any" min="-10000" max="10000"></label>
@@ -39,7 +39,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     </section>
     <div class="dp-results" hidden></div>
     <details class="dp-card dp-limits"><summary>Supported domain and numerical limits</summary>
-      <p>One pole and its conjugate; T from 0.001 to 10 s; |σ| ≤ 1000 s⁻¹, |ω| ≤ 10000 rad/s, |σT| ≤ 20, |ωT| ≤ 200π, N from 4 to 100, and σTN ≤ 30 for growing modes. The visual expression is limited to 256 characters, 80 tokens and 12 grouping levels. Inverse branches m = −5,…,5.</p>
+      <p>One pole and its conjugate; T from 0.001 to 10 s; |σ| ≤ 1000 s⁻¹, |ω| ≤ 10000 rad/s, |σT| ≤ 20, |ωT| ≤ 200π, N from 4 to 100, and σTN ≤ 30 for growing modes. The visual expression is limited to 1024 characters, 80 tokens and 12 grouping levels. Inverse branches m = −5,…,5.</p>
       <p>Exact exponential/log identities are evaluated in floating point. Angles use (−π, π]; radii within 10⁻¹⁰ of 1 are labeled near-boundary. Very small decaying tails can round to zero. The finite stem plot illustrates a selected free mode and is not a general system stability test. No transfer-function order, pole multiplicity, input/output stability or controller is inferred.</p>
     </details>`;
   container.append(root);
@@ -82,7 +82,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     invalidate();
     try {
       const p = { real: readNumber(sigma, 'σ'), imag: readNumber(omega, 'ω') };
-      equation.setValue(`s=${p.real}${p.imag < 0 ? '-' : '+'}${Math.abs(p.imag)}j`);
+      equation.setValue(`s=${decimalLiteral(p.real)}${p.imag < 0 ? '-' : '+'}${decimalLiteral(Math.abs(p.imag))}j`);
       draft = equation.getValue();
     } catch (error) {
       equation.setValue(''); draft = equation.getValue();

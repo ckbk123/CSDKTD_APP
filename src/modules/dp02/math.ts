@@ -5,19 +5,34 @@ export const RADIUS_TOLERANCE = 1e-10;
 
 function fail(message: string): never { throw new Error(message); }
 
+/** Expand an HTML numeric value to visually unambiguous decimal notation.
+ * MathLive treats e/E as algebraic symbols, not a numeric exponent separator. */
+export function decimalLiteral(value: number): string {
+  if (!Number.isFinite(value)) fail('Use a finite numeric component.');
+  const text = String(value);
+  if (!/[eE]/.test(text)) return text;
+  const sign = value < 0 ? '-' : '';
+  const [mantissa, exponent] = String(Math.abs(value)).split('e');
+  const digits = mantissa.replace('.', '');
+  const point = (mantissa.includes('.') ? mantissa.indexOf('.') : mantissa.length) + Number(exponent);
+  return sign + (point <= 0 ? `0.${'0'.repeat(-point)}${digits}`
+    : point >= digits.length ? digits + '0'.repeat(point - digits.length) : `${digits.slice(0, point)}.${digits.slice(point)}`);
+}
+
 /** Bounded arithmetic over real scalars and one j. No powers/functions/variables.
  * Supports visual fractions, pi, implicit scalar multiplication, and parentheses.
  * Division by a complex denominator and products of two imaginary terms are rejected.
  */
 export function parsePole(latex: string): Pole {
   if (!latex.trim()) fail('Enter a pole, for example −2 + 3j.');
-  if (latex.length > 256) fail('Keep the pole expression within 256 characters.');
+  if (latex.length > 1024) fail('Keep the pole expression within 1024 characters.');
   if (/[\d.]\s+[\d.]/.test(latex)) fail('Separate numbers with an arithmetic operator.');
   let source = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:mathrm|operatorname)\{j\}/g, 'j')
     .replace(/\\(?:,|;|!|quad|qquad| )/g, '').replace(/\\pi/g, 'π')
     .replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
     .replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\s/g, '');
   source = source.replace(/^s=/, '');
+  if (/[eE]/.test(source)) fail('The visual field treats e and E as symbols. Use decimal numbers here, or scientific notation in the numeric components.');
   // MathLive emits both braced fractions and TeX's single-token shorthand.
   let cursor = 0;
   const fraction = (depth: number): string => {
@@ -46,9 +61,9 @@ export function parsePole(latex: string): Pole {
     return output;
   };
   source = group(0, false);
-  if (/[^0-9.πj+*/()eE-]/.test(source)) fail('Use real numbers, j, π, fractions and + − × ÷ only; enter one pole.');
+  if (/[^0-9.πj+*/()-]/.test(source)) fail('Use real numbers, j, π, fractions and + − × ÷ only; enter one pole.');
   if ((source.match(/j/g) ?? []).length > 1) fail('Enter one rectangular pole a + bj, with at most one j.');
-  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|π|j|[+*/()-]/g) ?? [];
+  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|π|j|[+*/()-]/g) ?? [];
   if (tokens.join('') !== source || !tokens.length) fail('Check the numbers in the pole expression.');
   if (tokens.length > 80) fail('Use at most 80 numbers, symbols and operators.');
   let at = 0;
@@ -77,7 +92,7 @@ export function parsePole(latex: string): Pole {
     if (token === 'π') return { real: Math.PI, imag: 0 };
     if (!token || !/^[\d.]/.test(token)) fail('Complete the pole expression.');
     const value = Number(token);
-    if (value === 0 && /[1-9]/.test(token.split(/[eE]/)[0])) fail('A nonzero number is too small to represent. Use a larger magnitude.');
+    if (value === 0 && /[1-9]/.test(token)) fail('A nonzero number is too small to represent. Use a larger magnitude.');
     return checked({ real: value, imag: 0 });
   };
   const product = (depth: number): Pole => {
