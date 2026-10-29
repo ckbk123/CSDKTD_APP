@@ -82,6 +82,16 @@ describe('CR02 applied model and experiment state',()=>{
     expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
     expect(view.container.textContent).toContain('Command amplitude/slope must be finite');view.close();
   });
+  it('dismisses the keyboard before Escape can switch the editor to raw notation, then removes that listener',()=>{
+    const previous=window.mathVirtualKeyboard,hide=vi.fn();Object.defineProperty(window,'mathVirtualKeyboard',{value:{hide},configurable:true});
+    try{
+      const view=visit(),field=view.container.querySelector<HTMLTextAreaElement>('[aria-label="Physical ODE"]')!,editorHandler=vi.fn();field.addEventListener('keydown',editorHandler);
+      const escape=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true});field.dispatchEvent(escape);
+      expect(escape.defaultPrevented).toBe(true);expect(editorHandler).not.toHaveBeenCalled();expect(hide).toHaveBeenCalledOnce();
+      view.click('W02 worksheet');view.click('Reveal derivation & response');expect(view.container.textContent).toContain('0.1142073');
+      view.close();field.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));expect(hide).toHaveBeenCalledOnce();
+    }finally{Object.defineProperty(window,'mathVirtualKeyboard',{value:previous,configurable:true});}
+  });
   it('aborts old listeners and reopens at the baseline without carrying state',()=>{
     const first=visit();first.click('Nonzero initial displacement');const oldButton=[...first.container.querySelectorAll('button')].find(b=>b.textContent==='Reveal derivation & response')!;first.close();
     const next=visit();oldButton.click();expect(next.field('Initial displacement y(0−) (m)').value).toBe('0');

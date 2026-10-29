@@ -66,6 +66,12 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const equation = createEquationInput({ label:'Physical ODE', value:odeLatex(model), signal, onChange: next => {
     draft = next; dirty = true; physicalInvalid = false; ui('term').replaceChildren(); ui('normalized').replaceChildren(); invalidate('Equation changed. Apply it to update the physical model before revealing a response.');
   } });
+  // Escape dismisses this exercise's keyboard before MathLive can enter its
+  // separate raw-notation mode, which leaves programmatic presets uncommitted.
+  equation.element.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault(); event.stopPropagation(); window.mathVirtualKeyboard.hide();
+  }, { capture: true, signal });
   ui('equation').append(equation.element); draft = equation.getValue();
   const y0 = control('Initial displacement y(0−) (m)',0), v0 = control('Initial velocity y′(0−) (m/s)',0), amplitude = control('Command amplitude / ramp slope',1);
   const horizon = control('Plot horizon (s)',10), count = control('Computed points',301), prediction = control('Predicted free response at cursor (m)',0), cursor = control('Time cursor (s)',1);

@@ -60,9 +60,14 @@ export function parseOde(latex: string): Model {
   }
   text = text.replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\ddot\{?y\}?/g, "y''").replace(/\\dot\{?y\}?/g, "y'").replace(/\\dot\{?u\}?/g, "u'")
-    .replace(/\\prime/g, "'");
+    .replace(/\\doubleprime/g, "''").replace(/\\prime/g, "'");
   if (/[eE]/.test(text)) fail('Enter decimal coefficients, not e/E notation: the visual editor treats e/E as mathematical symbols.');
-  text = expandFractions(text).replace(/([yu])\^\{('{1,2})\}/g, '$1$2').replace(/([yu])\^('{1,2})/g, '$1$2')
+  if (/[0-9)]\^\{?[+-]?[0-9]/.test(text)) fail('Enter decimal coefficients such as 0.01. Coefficient powers of ten are not supported in this ODE input.');
+  text = expandFractions(text).replace(/([yu])((?:\^\{'+\}|\^'+|')+)/g, (_, variable: string, suffix: string) => {
+    const order = [...suffix].filter(character => character === "'").length;
+    if (order > (variable === 'y' ? 2 : 1)) fail('Only derivatives through y″ and the first derivative u′ are supported.');
+    return variable + "'".repeat(order);
+  })
     .replace(/y''/g, 'Y2').replace(/y'/g, 'Y1').replace(/u'/g, 'U1').replace(/y/g, 'Y0').replace(/u/g, 'U0');
   const scalar = String.raw`[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?`;
   const unsigned = scalar.replace('[+-]?', '');

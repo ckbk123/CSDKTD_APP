@@ -10,6 +10,14 @@ describe('CR02 bounded visual ODE entry', () => {
   it.each(["y''+3y'+2y=u", String.raw`y^{\prime\prime}+3y^{\prime}+2y=u`, String.raw`\ddot{y}+3\dot{y}+2y=u`, "1*y''+3*y'+2*y=1*u+0*u'"])( 'reads equivalent prime/dot forms: %s', text => {
     expect(parseOde(text)).toEqual(BASELINE);
   });
+  it('accepts successive prime superscripts copied from ordinary browser typing', () => {
+    for(const derivative of [String.raw`y^{\prime}^{\prime}`,String.raw`y^{\prime}\prime`,String.raw`y'^{\prime}`,String.raw`y^{\doubleprime}`]) expect(parseOde(`2${derivative}+5y^{\\prime}+3y=u`)).toEqual({m:2,c:5,k:3,b:1,d:0});
+    expect(parseOde(String.raw`y^{\prime}^{\prime}+3y^{\prime}+2y=4u+u^{\prime}`)).toEqual({...BASELINE,b:4,d:1});
+  });
+  it('rejects excessive derivatives after combining prime notation', () => {
+    for(const equation of [String.raw`y^{\prime}^{\prime}^{\prime}+3y=u`,String.raw`y^{\prime}^{\prime}+3y=u^{\prime}^{\prime}`]) expect(()=>parseOde(equation)).toThrow(/derivatives/);
+    expect(()=>parseOde(String.raw`y^{\prime}^{\prime}+3y^{\prime}+2y=1\times10^{-2}u`)).toThrow(/decimal coefficients such as 0.01/);
+  });
   it('accepts compact and mixed numeric coefficient fractions', () => {
     for (const coefficient of ['\\frac12', '\\frac1{2}', '\\frac{1}2', '\\frac{1}{2}']) expect(parseOde(`${coefficient}y''+3y'+2y=u`)).toEqual({ ...BASELINE, m: .5 });
     expect(parseOde("2y''+5y'+3y=u'+4u")).toEqual({ m: 2, c: 5, k: 3, b: 4, d: 1 });
