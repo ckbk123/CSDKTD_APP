@@ -32,7 +32,7 @@ export function conditionPlot(model: Model, gain: number, minimum: number, maxim
   }
   shape(svg, 'text', { x: 145, y: 255 }, short(minimum)); shape(svg, 'text', { x: 450, y: 255, 'text-anchor': 'end' }, short(maximum));
   shape(svg, 'text', { x: 300, y: 276, 'text-anchor': 'middle' }, 'K (dimensionless)');
-  const note = document.createElement('p'); note.className = 'c-small'; note.textContent = `Tint shows each strict region; open circles exclude equality. The final row is the intersection. The marker is selected K.${gain < minimum || gain > maximum ? ' Selected K lies outside this window.' : ''} The exact global set is derived below; the drawing is clipped to the chosen window.`; out.append(note); return out;
+  const note = document.createElement('p'); note.className = 'c-small'; note.textContent = `Tint shows each strict region; open circles exclude equality. The final row is the intersection. The marker is selected K.${gain < minimum || gain > maximum ? ' Selected K lies outside this window.' : ''} Scroll this diagram horizontally on narrow screens. The exact global set is derived above; the drawing is clipped to the chosen window.`; out.append(note); return out;
 }
 export function rootPlot(roots: readonly Complex[]) {
   const { out, svg } = figure('All three characteristic roots', 'Cubic roots in the complex s plane; shaded left half-plane', '0 0 360 290');

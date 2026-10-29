@@ -22,6 +22,8 @@
 [data-module="CS03"] .cubic-tool figcaption { font-weight: 600; margin-bottom: .5rem; }
 [data-module="CS03"] .cubic-tool svg { display: block; width: 100%; max-width: 680px; margin: auto; overflow: visible; }
 [data-module="CS03"] .c-roots svg { max-width: 430px; }
+[data-module="CS03"] .c-conditions { overflow-x: auto; }
+[data-module="CS03"] .c-conditions svg { min-width: 440px; }
 [data-module="CS03"] .cubic-tool svg text { fill: var(--text); font: 14px system-ui,sans-serif; }
 [data-module="CS03"] .c-axis { stroke: var(--muted); stroke-width: 1; }
 [data-module="CS03"] .c-stable, [data-module="CS03"] .c-left { fill: var(--accent); fill-opacity: .16; }
