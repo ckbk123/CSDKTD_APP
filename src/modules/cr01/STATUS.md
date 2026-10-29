@@ -1,6 +1,6 @@
 # CR01 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `4d8064fa03de2ae62ff7b5f505fa725168b522d8` (primary main v0.3.8)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
@@ -71,3 +71,13 @@ A fresh own in-app Chromium tab used only this worktree's production preview at1
 - At390×844, document client/scroll widths were both375px before/after reveal and with the coefficient drafts open. The computed root plane had a283px local region and320px content; ArrowRight scrolled it37.5px. Plane labels, exact equations, tables and coefficient controls were visually inspected. No page-wide overflow. The private viewport override was reset, the owned tab closed and the owned preview stopped.
 
 The original course decks were not newly inspected; TASK/atlas source anchors remain provenance and the quartic remains explicitly proposed. The optional Bairstow display is not implemented; exact expansion, factoring, discriminants and checked numerical roots cover the required exercise. No unresolved worker-owned requirement or shared dependency remains. Independent integration review is pending.
+
+## Coordinator spacing-argument review return — 22:25 local
+
+The coordinator reopened this preserved claim/PR after independently passing the unchanged60 tests/type and67 algebra fixtures with220 known roots/scale changes. The returned defect was spacing commands erased before TeX argument boundaries: raw\frac1\;2 and\frac\,12 became1/2, and2^\;2 became4 despite the pinned editor placing the spacing atom in the argument and the following digit outside.
+
+`expression.ts` now expands fraction arguments before removing structural wrappers, retains spacing/presentation commands as tokens, and ignores them only in complete arithmetic or braced argument contexts. Unbraced spacing fraction/power arguments reject with completion/power-box guidance. Proper\frac1{\;2} and2^{\;2}, compact fractions, explicit signed/grouped expressions and ordinary powers remain checked. Numeric tokens separated by spacing are not merged, and the mixed-number guard remains active. Independent pinned MathLive MathML regressions confirm the actual outside-digit structure rather than restating the parser.74 module tests and type checking pass.
+
+The coordinator explicitly owns the tiny reentrant late-disposer guard at integration, like DP03; no wrapper/shared/rebase edits are needed in this correction. That replaces the earlier worker self-review draft notice as its disposition. CP05 is checkpointed at65d2c9e with only a recovery plan; it remains suspended here. CS05 PR29 shares this grammar and was reported for its own coordinator return; its frozen branch has not been edited.
+
+Stage is in-progress until focused actual editor/error/recovery evidence, full project checks and exact new-head commit/push/ready/resubmission are complete. The unchanged large independent root grid is not being repeated.

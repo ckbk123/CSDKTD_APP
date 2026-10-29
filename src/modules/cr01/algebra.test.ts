@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { coefficientContributions, compareRational, discriminant, expandedFactors, factorPolynomial, fromPoles, roots } from './algebra';
 import { decimal, numeric, one, plus, rat, same, textR, zero } from './exact';
 import { parsePolynomial as parse } from './expression';
+import { convertLatexToMathMl } from 'mathlive';
 
 const coefficients = (s: string) => parse(s).map(textR);
 describe('CR01 exact algebra and independent root fixtures', () => {
@@ -73,6 +74,20 @@ describe('CR01 exact algebra and independent root fixtures', () => {
 });
 
 describe('CR01 displayed equation semantics and bounds', () => {
+  it('independently distinguishes spacing argument atoms in the pinned editor', () => {
+    expect(convertLatexToMathMl(String.raw`\frac1\;2`)).toMatch(/<mfrac>.*<mspace[^>]*\/><\/mfrac><mn>2<\/mn>/);
+    expect(convertLatexToMathMl(String.raw`2^\;2`)).toMatch(/<msup>.*<mspace[^>]*\/><\/msup><mn>2<\/mn>/);
+    expect(convertLatexToMathMl(String.raw`\frac1{\;2}`)).toMatch(/<mfrac>.*<mrow><mspace[^>]*\/><mn>2<\/mn><\/mrow><\/mfrac>/);
+  });
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`\frac1\!2`, String.raw`\frac1\ 2`, String.raw`\frac1\quad2`, String.raw`\frac1{\frac1\;2}`, String.raw`\frac\displaystyle12`])('rejects incomplete spacing-command fraction arguments%s', s => expect(() => parse(s)).toThrow(/fraction button/));
+  it.each([String.raw`2^\;2`, String.raw`s^\,2`, String.raw`2^\!2`, String.raw`2^\ 2`, String.raw`2^\quad2`])('rejects a spacing-command power argument%s', s => expect(() => parse(s)).toThrow(/power button/));
+  it('retains proper braced spacing controls without merging numeric tokens', () => {
+    expect(coefficients(String.raw`\frac1{\;2}`)).toEqual(['1/2']); expect(coefficients(String.raw`\frac{\,1}2`)).toEqual(['1/2']);
+    expect(coefficients(String.raw`\frac1{\quad2}`)).toEqual(['1/2']); expect(coefficients(String.raw`2^{\;2}`)).toEqual(['4']);
+    expect(coefficients(String.raw`2^{-\;2}`)).toEqual(['1/4']); expect(coefficients(String.raw`2\;s+\,1`)).toEqual(['1', '2']);
+    expect(() => parse(String.raw`2^{1\;2}`)).toThrow(/one integer/); expect(() => parse(String.raw`1\;2`)).toThrow(/Mixed/);
+    expect(() => parse(String.raw`\;2\frac12`)).toThrow(/Mixed/);
+  });
   it.each(['\\frac12', '\\frac{1}2', '\\frac1{2}', '\\frac{1}{2}', '\\frac{\\frac12}{2}*2'])('accepts equivalent fraction form %s', s => expect(coefficients(s)).toEqual(['1/2']));
   it.each(['-\\frac12', '\\frac{-1}{2}', '(-\\frac12)'])('preserves a negative ratio %s', s => expect(coefficients(s)).toEqual(['-1/2']));
   it.each(['2\\frac12', '-2\\frac12', '{2}\\frac12', 's2\\frac12', '\\frac{2\\frac12}{3}'])('rejects ambiguous mixed-number adjacency %s', s => expect(() => parse(s)).toThrow(/explicit|Mixed/));
