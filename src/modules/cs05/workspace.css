@@ -1,0 +1,27 @@
+[data-module="CS05"] .cs05-tool, [data-module="CS05"] .cs05-output { display: grid; gap: 1rem; min-width: 0; color: var(--text); }
+[data-module="CS05"] [hidden] { display: none !important; }
+[data-module="CS05"] .cs05-tool p, [data-module="CS05"] .cs05-tool h2, [data-module="CS05"] .cs05-tool h3 { margin: 0; }
+[data-module="CS05"] .cs05-tool p { line-height: 1.6; }
+[data-module="CS05"] .cs05-card { display: grid; gap: .8rem; padding: 1rem; border: 1px solid var(--line); background: var(--surface); border-radius: .7rem; min-width: 0; }
+[data-module="CS05"] details.cs05-card { display: block; }
+[data-module="CS05"] details.cs05-card > :not(summary) { margin-top: .8rem; }
+[data-module="CS05"] summary { cursor: pointer; font-weight: 600; }
+[data-module="CS05"] .cs05-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; min-width: 0; }
+[data-module="CS05"] .cs05-actions, [data-module="CS05"] .cs05-boundary { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; min-width: 0; }
+[data-module="CS05"] .cs05-field { display: grid; gap: .3rem; min-width: 0; }
+[data-module="CS05"] .cs05-tool button, [data-module="CS05"] .cs05-tool select, [data-module="CS05"] .cs05-tool input { color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: .4rem; padding: .55rem .7rem; font: inherit; max-width: 100%; }
+[data-module="CS05"] .cs05-tool button { cursor: pointer; white-space: normal; }
+[data-module="CS05"] .cs05-tool button:hover { background: var(--tint); }
+[data-module="CS05"] .cs05-message { padding: .6rem 0; }
+[data-module="CS05"] .cs05-scroll { overflow-x: auto; min-width: 0; }
+[data-module="CS05"] svg { display: block; width: 100%; min-width: 340px; max-height: 380px; }
+[data-module="CS05"] svg text { fill: var(--muted); font: 11px system-ui; }
+[data-module="CS05"] .cs05-axis { stroke: var(--line); stroke-width: 1; }
+[data-module="CS05"] .cs05-stable, [data-module="CS05"] .cs05-included { fill: var(--tint); stroke: var(--accent); }
+[data-module="CS05"] .cs05-excluded { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+[data-module="CS05"] .cs05-branch { fill: none; stroke: var(--accent); stroke-width: 1.6; }
+[data-module="CS05"] .cs05-selected { fill: none; stroke: var(--text); stroke-width: 2.4; }
+[data-module="CS05"] table { width: 100%; border-collapse: collapse; overflow-wrap: anywhere; }
+[data-module="CS05"] th, [data-module="CS05"] td { text-align: left; padding: .5rem .25rem; border-bottom: 1px solid var(--line); }
+[data-module="CS05"] :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 600px) { [data-module="CS05"] .cs05-grid { grid-template-columns: minmax(0, 1fr); } [data-module="CS05"] .cs05-card { padding: .7rem; } }
