@@ -162,15 +162,52 @@ export function analyze(m: Model, gain: number | Rational) {
   const signChanges = signs && signs.every(s => s !== 0) ? signs.slice(1).filter((s, i) => s !== signs[i]).length : null;
   return { gain: k, c, evaluated, ...solution, tolerance, residual, formalStable, rightCount, nearAxis, firstColumn, signChanges };
 }
-export interface Prediction { readonly kind: 'finite' | 'all' | 'empty'; readonly lower: number; readonly upper: number; readonly lowerClosed: boolean; readonly upperClosed: boolean }
+/** Constant-only visual endpoint arithmetic; independent of the polynomial grammar. */
+export function parseEndpoint(latex: string): Rational {
+  if (!latex.trim() || latex.length > 300) throw new Error('Enter a numeric endpoint using at most 300 characters.');
+  let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '');
+  source = source.replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g,
+    (_all, n, nd, d, dd) => `((${n ?? nd})/(${d ?? dd}))`).replace(/\{/g, '(').replace(/\}/g, ')');
+  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|[()+\-*/]/g) ?? [];
+  if (!tokens.length || tokens.join('') !== source || tokens.length > 80) throw new Error('Endpoint: use numbers, signed numeric fractions and arithmetic, up to 80 symbols. Variables, powers, nested fraction notation and visual e notation are unsupported.');
+  let at = 0, depth = 0;
+  function atom(): Rational {
+    if (++depth > 12) throw new Error('Use at most twelve endpoint groups.');
+    const token = tokens[at++]; let out: Rational;
+    if (token === '(') { out = sum(); if (tokens[at++] !== ')') throw new Error('Close every endpoint group.'); }
+    else if (token && /^(?:\d|\.)/.test(token)) {
+      const [whole, fraction = ''] = token.split('.');
+      if (token.replace('.', '').length > 80 || fraction.length > 50) throw new Error('Endpoint literals allow at most 80 digits and 50 decimal places.');
+      out = q(BigInt((whole || '0') + fraction), 10n ** BigInt(fraction.length));
+    } else throw new Error('Complete both numerical endpoints.');
+    depth--; return out;
+  }
+  function signed(): Rational { if (tokens[at] === '+' || tokens[at] === '-') { const sign = tokens[at++]; const out = signed(); return sign === '-' ? neg(out) : out; } return atom(); }
+  function product(): Rational {
+    let out = signed();
+    while (tokens[at] === '*' || tokens[at] === '/') { const operator = tokens[at++], right = signed(); out = operator === '*' ? mul(out, right) : div(out, right); }
+    return out;
+  }
+  function sum(): Rational { let out = product(); while (tokens[at] === '+' || tokens[at] === '-') { const operator = tokens[at++], right = product(); out = operator === '+' ? add(out, right) : sub(out, right); } return out; }
+  const out = sum(); if (at !== tokens.length) throw new Error('Check endpoint operators and groups.');
+  if (Math.abs(numberOf(out)) > 1e13) throw new Error('Endpoint answer magnitude must be at most 10¹³.');
+  return out;
+}
+export interface Prediction { readonly kind: 'finite' | 'all' | 'empty'; readonly lower: number | Rational; readonly upper: number | Rational; readonly lowerClosed: boolean; readonly upperClosed: boolean }
 export function checkPrediction(m: Model, answer: Prediction): { correct: boolean; message: string } {
   const expected = interval(m);
   if (answer.kind !== expected.kind) return { correct: false, message: `The derived set is ${expected.kind === 'empty' ? 'empty' : expected.kind === 'all' ? 'all real gains' : 'a finite open interval'}. Inspect every Routh condition.` };
   if (answer.kind !== 'finite') return { correct: true, message: 'Your gain-set prediction agrees.' };
-  if (![answer.lower, answer.upper].every(Number.isFinite) || answer.lower >= answer.upper) throw new Error('Enter finite increasing predicted endpoints.');
+  if ([answer.lower, answer.upper].some(v => typeof v === 'number' && !Number.isFinite(v))) throw new Error('Enter finite increasing predicted endpoints.');
+  const predictedLower = typeof answer.lower === 'number' ? fromNumber(answer.lower) : answer.lower, predictedUpper = typeof answer.upper === 'number' ? fromNumber(answer.upper) : answer.upper;
+  if (compare(predictedLower, predictedUpper) >= 0) throw new Error('Enter finite increasing predicted endpoints.');
   if (answer.lowerClosed || answer.upperClosed) return { correct: false, message: 'Strict stability excludes both endpoints. An imaginary-axis root cannot be included.' };
-  const lower = numberOf(expected.lower!), upper = numberOf(expected.upper!);
-  const close = (a: number, b: number) => Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(b));
-  const correct = close(answer.lower, lower) && close(answer.upper, upper);
-  return { correct, message: correct ? 'Your open interval agrees (endpoint comparison tolerance 10⁻⁶ relative to at least 1).' : 'The endpoint values differ. Solve both affine conditions and intersect them.' };
+  const magnitude = (v: Rational) => v.n < 0n ? neg(v) : v, widthLimit = div(sub(expected.upper!, expected.lower!), q(10000));
+  const close = (actual: Rational, target: Rational) => {
+    const scale = compare(magnitude(target), ONE) > 0 ? magnitude(target) : ONE, standard = div(scale, q(1_000_000));
+    const tolerance = compare(standard, widthLimit) < 0 ? standard : widthLimit;
+    return compare(magnitude(sub(actual, target)), tolerance) <= 0;
+  };
+  const correct = close(predictedLower, expected.lower!) && close(predictedUpper, expected.upper!);
+  return { correct, message: correct ? 'Your open interval agrees. Exact fractions are accepted; decimal tolerance is at most 10⁻⁶ relative to at least 1 and 10⁻⁴ of the interval width.' : 'The endpoint values differ. Solve both affine conditions and intersect them; use exact fractions for very narrow intervals.' };
 }

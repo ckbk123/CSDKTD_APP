@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { add, analyze, checkPrediction, conditions, div, interval, latexOf, mul, neg, numberOf, parseModel, q, sub, textOf, type Model, type Polynomial, type Rational } from './math';
+import { add, analyze, checkPrediction, conditions, div, interval, latexOf, mul, neg, numberOf, parseEndpoint, parseModel, q, sub, textOf, type Model, type Polynomial, type Rational } from './math';
 import { conditionPlot, rootPlot } from './plots';
 import './workspace.css';
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
@@ -35,7 +35,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   draft = input.getValue(); root.append(input.element);
   const details = el('details'), summary = el('summary', 'Supported equations and limits'); details.append(summary);
   details.append(el('p', 'Use sums, products, parentheses, powers 0..3, decimals (six places/nine digits per number) and signed numeric fractions. At most 300 characters, 160 symbols and twelve nested groups. Nested fraction notation, visual e notation and K inside D are unsupported. Final nonzero coefficients: magnitude 10⁻⁸..100, reduced fraction parts ≤10¹²; leading coefficient exactly 1. Exact fraction components are bounded to 2048 bits.'));
-  details.append(el('p', 'g: zero or magnitude 10⁻⁸..100. Manual selected K and plot endpoints: −1000..1000. Exact inspection buttons can select gains outside that window. Native numeric controls accept finite exponents but reject nonzero underflow. Endpoint answers use comparison tolerance 10⁻⁶ relative to at least 1. Root coordinates are numerical; the interval proof is exact.')); root.append(details);
+  details.append(el('p', 'g: zero or magnitude 10⁻⁸..100. Manual selected K and plot endpoints: −1000..1000. Exact inspection buttons can select gains outside that window. Native numeric controls accept finite exponents but reject nonzero underflow. Endpoint answers accept exact visual fractions or decimals; comparison tolerance is at most 10⁻⁶ relative to at least 1 and 10⁻⁴ of interval width. Endpoint grammar: constant arithmetic, 300 characters/80 symbols/12 groups, 80 digits/50 decimal places per literal, answer magnitude ≤10¹³. Root coordinates are numerical; the interval proof is exact.')); root.append(details);
   const controls = el('div', undefined, 'c-controls'); root.append(controls);
   function numeric(parent: HTMLElement, label: string, value: number | null, onChange?: (v: number) => void) {
     const wrap = el('label', label), field = el('input'); field.type = 'number'; field.step = 'any'; field.value = value === null ? '' : String(value);
@@ -50,10 +50,14 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const kindLabel = el('label', 'Gain-set type'), kind = el('select');
   for (const [value, label] of [['finite', 'Finite interval'], ['all', 'All real K'], ['empty', 'Empty set']]) { const option = el('option', label); option.value = value; kind.append(option); }
   kindLabel.append(kind); answerControls.append(kindLabel);
-  const lower = numeric(answerControls, 'Predicted lower endpoint', null), upper = numeric(answerControls, 'Predicted upper endpoint', null);
+  function answerChanged() { if (model) { predictionFeedback = 'Your interval answer changed; check again.'; render(); } }
+  const lower = createEquationInput({ label: 'Predicted lower endpoint', value: '', signal, onChange: answerChanged }), upper = createEquationInput({ label: 'Predicted upper endpoint', value: '', signal, onChange: answerChanged });
+  answerControls.append(lower.element, upper.element);
+  attempt.append(el('p', 'Enter numerical endpoints using fractions or decimal approximations, then choose whether each endpoint is included. Very narrow intervals require exact fractions or sufficiently precise decimals.', 'c-small'));
   function endpoint(label: string) { const wrap = el('label', label), select = el('select'); for (const [value, text] of [['open', 'Open (excluded)'], ['closed', 'Closed (included)']]) { const option = el('option', text); option.value = value; select.append(option); } wrap.append(select); answerControls.append(wrap); return select; }
   const lowerType = endpoint('Lower endpoint inclusion'), upperType = endpoint('Upper endpoint inclusion');
-  kind.addEventListener('change', () => { for (const field of [lower, upper, lowerType, upperType]) field.disabled = kind.value !== 'finite'; }, { signal });
+  kind.addEventListener('change', () => { lower.element.hidden = upper.element.hidden = kind.value !== 'finite'; lowerType.disabled = upperType.disabled = kind.value !== 'finite'; answerChanged(); }, { signal });
+  lowerType.addEventListener('change', answerChanged, { signal }); upperType.addEventListener('change', answerChanged, { signal });
   const actions = el('div', undefined, 'c-actions'); root.append(actions, error, result);
   function button(parent: HTMLElement, text: string, action: () => void) {
     const node = el('button', text); node.type = 'button'; node.addEventListener('click', () => {
@@ -65,14 +69,21 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   function solve(grade: boolean) {
     try {
       if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error('Complete the denominator and check its visual notation.');
-      model = parseModel(draft.latex, gainFactor); predictionFeedback = grade ? checkPrediction(model, { kind: kind.value as 'finite' | 'all' | 'empty', lower: numericValue(lower), upper: numericValue(upper), lowerClosed: lowerType.value === 'closed', upperClosed: upperType.value === 'closed' }).message : 'Derivation revealed. Compare it with your interval answer.';
+      model = parseModel(draft.latex, gainFactor);
+      let answerLower = q(0), answerUpper = q(0);
+      if (grade && kind.value === 'finite') {
+        const drafts = [lower.getValue(), upper.getValue()];
+        if (drafts.some(value => value.empty || value.hasPlaceholders || value.syntaxIssues.length)) throw new Error('Complete both numerical endpoints and their visual notation.');
+        answerLower = parseEndpoint(drafts[0].latex); answerUpper = parseEndpoint(drafts[1].latex);
+      }
+      predictionFeedback = grade ? checkPrediction(model, { kind: kind.value as 'finite' | 'all' | 'empty', lower: answerLower, upper: answerUpper, lowerClosed: lowerType.value === 'closed', upperClosed: upperType.value === 'closed' }).message : 'Derivation revealed. Compare it with your interval answer.';
       render();
     } catch (reason) { model = null; showError(reason); }
   }
   button(actions, 'Check interval and reveal', () => solve(true)); button(actions, 'Reveal derivation', () => solve(false));
   function preset(source: string, g: number, k: number, min: number, max: number) {
     input.setValue(source); draft = input.getValue(); gainFactor = g; gain = k; minimum = min; maximum = max; exactGain = null;
-    gField.value = String(g); kField.value = String(k); minField.value = String(min); maxField.value = String(max); lower.value = ''; upper.value = ''; invalidate();
+    gField.value = String(g); kField.value = String(k); minField.value = String(min); maxField.value = String(max); lower.setValue(''); upper.setValue(''); invalidate();
   }
   button(actions, 'W06 cubic experiment', () => preset('D(s)=s^3+6s^2+8s', 1, 10, -10, 60));
   button(actions, 'Reverse gain polarity', () => preset('D(s)=s(s+2)(s+5)', -1, -10, -80, 10));
@@ -132,5 +143,5 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
       }
     } catch (reason) { showError(reason); }
   }
-  return () => { input.destroy(); root.remove(); };
+  return () => { input.destroy(); lower.destroy(); upper.destroy(); root.remove(); };
 };

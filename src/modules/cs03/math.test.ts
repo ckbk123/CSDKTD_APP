@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyze, checkPrediction, cubicRoots, fromNumber, interval, numberOf, parseDenominator, parseModel, q, textOf } from './math';
+import { analyze, checkPrediction, cubicRoots, fromNumber, interval, numberOf, parseDenominator, parseEndpoint, parseModel, q, textOf } from './math';
 
 const baseline = () => parseModel('D(s)=s(s+2)(s+5)', 1);
 const endpoints = (source: string, g = 1) => {
@@ -132,5 +132,23 @@ describe('student interval answers', () => {
     expect(checkPrediction(parseModel('(s+1)^3', 0), { ...answer, kind: 'all' }).correct).toBe(true);
     expect(checkPrediction(parseModel('s^3+s', 1), { ...answer, kind: 'empty' }).correct).toBe(true);
     expect(checkPrediction(baseline(), { ...answer, kind: 'empty' }).correct).toBe(false);
+  });
+  it('accepts exact visual fractions and constant arithmetic without discarding grouping', () => {
+    expect(textOf(parseEndpoint(String.raw`-\frac13`))).toBe('-1/3');
+    expect(textOf(parseEndpoint(String.raw`2\times(\frac{1}{3})-1`))).toBe('-1/3');
+    expect(textOf(parseEndpoint('-99.9999999999999999'))).toBe('-999999999999999999/10000000000000000');
+    for (const source of ['', 's', '1/0', '1e-9', '(1)(2)', String.raw`\frac1{\frac12}`, '1'.repeat(81), '0.' + '0'.repeat(50) + '1']) expect(() => parseEndpoint(source)).toThrow();
+  });
+  it('grades distinct exact endpoints even when both round to the same binary number', () => {
+    const m = parseModel('s^3+s^2/100000000+s/100000000+100', 1), set = interval(m);
+    const nativeRatio = (value: { n: bigint; d: bigint }) => Number(value.n) / Number(value.d);
+    expect(nativeRatio(set.lower!)).toBe(nativeRatio(set.upper!));
+    expect(checkPrediction(m, { ...answer, lower: parseEndpoint('-100'), upper: parseEndpoint('-999999999999999999/10000000000000000') }).correct).toBe(true);
+    expect(checkPrediction(m, { ...answer, lower: -100, upper: -99.999999 }).correct).toBe(false);
+  });
+  it('cannot accept an unrelated tiny interval through an absolute tolerance floor', () => {
+    const m = parseModel('s^3+s^2/100000000+s/100000000', 100);
+    expect(checkPrediction(m, { ...answer, lower: 0, upper: 1e-7 }).correct).toBe(false);
+    expect(checkPrediction(m, { ...answer, lower: q(0), upper: q(1, 10n ** 18n) }).correct).toBe(true);
   });
 });

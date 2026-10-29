@@ -22,11 +22,12 @@ async function open(immediateAbort = false) {
 function click(root: HTMLElement, text: string) { const button = [...root.querySelectorAll('button')].find(b => b.textContent === text); expect(button, text).toBeDefined(); button!.click(); }
 function edit(field: HTMLInputElement | HTMLTextAreaElement, value: string) { field.value = value; field.dispatchEvent(new Event('input', { bubbles: true })); }
 function scalar(root: HTMLElement, index: number) { return root.querySelectorAll('input')[index]; }
+function answer(root: HTMLElement, index: number) { return root.querySelectorAll('textarea')[index + 1]; }
 
 describe('CS03 complete cubic workspace', () => {
   it('grades the interval, intersects all conditions and classifies every endpoint mode', async () => {
     const { root } = await open(); expect(root.querySelector('.c-answer')).toBeNull();
-    edit(scalar(root, 4), '0'); edit(scalar(root, 5), '70'); click(root, 'Check interval and reveal');
+    edit(answer(root, 0), '0'); edit(answer(root, 1), '70'); click(root, 'Check interval and reveal');
     expect(root.textContent).toContain('Your open interval agrees'); expect(root.querySelector('.c-answer')!.textContent).toBe('0 < K < 70');
     expect(root.querySelectorAll('svg')).toHaveLength(2); expect(root.querySelectorAll('.c-stable')).toHaveLength(5);
     click(root, 'Inspect K = 70'); expect(root.textContent).toContain('Not strictly stable'); expect(root.textContent).toContain('Exact factor (s+a)(s²+b)'); expect(root.querySelectorAll('.c-root')).toHaveLength(3);
@@ -36,8 +37,8 @@ describe('CS03 complete cubic workspace', () => {
     click(root, 'Inspect interval midpoint'); expect(root.textContent).toContain('Strictly stable by the exact inequalities');
   });
   it('distinguishes a wrong closed-endpoint answer from a missing answer', async () => {
-    const { root } = await open(); click(root, 'Check interval and reveal'); expect(root.textContent).toContain('finite increasing');
-    edit(scalar(root, 4), '0'); edit(scalar(root, 5), '70'); root.querySelectorAll('select')[2].value = 'closed'; click(root, 'Check interval and reveal');
+    const { root } = await open(); click(root, 'Check interval and reveal'); expect(root.textContent).toContain('Complete both numerical endpoints');
+    edit(answer(root, 0), '0'); edit(answer(root, 1), '70'); root.querySelectorAll('select')[2].value = 'closed'; click(root, 'Check interval and reveal');
     expect(root.textContent).toContain('Strict stability excludes both endpoints'); expect(root.querySelector('.c-answer')).not.toBeNull();
   });
   it('recomputes the W06 and negative-polarity experiments', async () => {
@@ -47,12 +48,18 @@ describe('CS03 complete cubic workspace', () => {
   });
   it('handles all-real and empty sets without fake finite endpoints', async () => {
     const { root } = await open(); click(root, 'Gain-independent experiment'); const kind = root.querySelector('select')!; kind.value = 'all'; kind.dispatchEvent(new Event('change'));
-    expect(scalar(root, 4).disabled).toBe(true); click(root, 'Check interval and reveal'); expect(root.querySelector('.c-answer')!.textContent).toBe('All real K');
+    expect(answer(root, 0).parentElement!.hidden).toBe(true); click(root, 'Check interval and reveal'); expect(root.querySelector('.c-answer')!.textContent).toBe('All real K');
     edit(root.querySelector('textarea')!, 's^3+s'); click(root, 'Reveal derivation'); expect(root.querySelector('.c-answer')!.textContent).toContain('Empty set'); expect(root.textContent).toContain('division by a is not performed');
   });
   it('preserves exact fractional gains in the root calculation', async () => {
     const { root } = await open(); edit(root.querySelector('textarea')!, 's^3+s^2+s+0.1'); edit(scalar(root, 0), '0.3'); click(root, 'Reveal derivation'); click(root, 'Inspect K = -1/3');
     expect(root.textContent).toContain('All roots at K = -1/3'); expect(root.textContent).toContain('s1 = 0 + 0j'); expect(root.textContent).toContain('Exact factor s(s²+as+b)');
+  });
+  it('grades visual endpoint fractions for a region narrower than native numeric resolution', async () => {
+    const { root } = await open(); edit(root.querySelector('textarea')!, 's^3+s^2/100000000+s/100000000+100');
+    edit(answer(root, 0), '-100'); edit(answer(root, 1), String.raw`-\frac{999999999999999999}{10000000000000000}`); click(root, 'Check interval and reveal');
+    expect(root.textContent).toContain('Your open interval agrees'); expect(root.querySelector('.c-answer')!.textContent).toBe('-100 < K < -999999999999999999/10000000000000000');
+    edit(answer(root, 1), '-99'); expect(root.textContent).toContain('Your interval answer changed; check again.'); click(root, 'Check interval and reveal'); expect(root.textContent).toContain('The endpoint values differ');
   });
   it('clears stale answers and distinguishes visual grammar, numeric and window failures', async () => {
     const { root } = await open(); click(root, 'Reveal derivation'); edit(scalar(root, 1), '1e-999'); expect(root.textContent).toContain('finite manual K'); expect(root.querySelectorAll('svg')).toHaveLength(0);
