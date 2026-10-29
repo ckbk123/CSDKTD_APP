@@ -82,3 +82,8 @@ Input review also added MathLive's compact fraction serialization (single-digit 
 
 Narrow-screen preparation keeps plot labels at a readable minimum scale with scrolling confined to each figure (rather than shrinking axes with the whole SVG). The production build still passes; actual viewport evidence remains pending.
 
+## Delivery checkpoint
+
+Final verification on 2026-10-29 at approximately 17:12 ICT: module tests 40/40, project tests 82/82, `npm run check` and `npm run build` passed after the browser-tested source changes. Browser reservation was released and its tab closed. Final implementation checkpoint `52a36fa91b89ea481c86b3aca9c4f7707c05bd28` is pushed. The final status-only commit will additionally record the PR URL and exact submission metadata.
+
+PR creation through the connected GitHub integration returned HTTP 403 `Resource not accessible by integration`. No PR was created by that call. The GitHub CLI is not installed in PATH or the usual local install locations. The implementation is complete; PR creation is pending a normal browser fallback once the coordinator's reserved next QA slot is released. No app dependency or credential changes have been made.
