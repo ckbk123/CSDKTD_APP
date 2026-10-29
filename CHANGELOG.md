@@ -2,6 +2,13 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.7 — 29 October 2026
+
+- DP02: map a continuous pole/conjugate pair into the z plane, predict period-dependent radius changes, inspect modal samples and choose inverse-log branches to understand frequency aliasing.
+- Accept [PR #3](https://github.com/ckbk123/CSDKTD_APP/pull/3), source `f6c7b7414e5990bca9a573f58337f9a0ee9c0f5e`, with [independent mathematical and browser evidence](src/modules/dp02/STATUS.md). The coordinator applied the shared native-number reader while preserving decimal visual entry and bounds.
+- All 529 application tests, type checking and production build pass. Fifteen added UI regressions cover native inputs; production checks confirm changed-period geometry, branch selection, aliasing, alternating decay, narrow layout and fresh visits.
+- Agent guidance now makes exponent token boundaries and synchronous loading-node ownership explicit, following independent review and actual browser findings.
+
 ## 0.3.6 — 29 October 2026
 
 - DS01: edit discrete poles, predict internal and channel stability, inspect geometric/Jordan sequences and real state blocks, and compare semisimple boundary modes with hidden unstable states.

@@ -84,6 +84,8 @@ Numeric/fraction adjacency needs its own check **before** normalization discards
 
 Distinguish TeX argument braces from visible parentheses. Fraction arguments and exponents need their proper grouping, but standalone formatting braces in `1{+2}` or `{z+2}z` do not show the student parentheses. Do not silently replace them with visible algebraic grouping. Preserve the displayed meaning when unambiguous, or reject unsupported hidden grouping and request visible parentheses. Test these cases separately from ordinary fraction arguments, numeric wrappers and explicit parenthesized expressions.
 
+An exponent also consumes one unbraced TeX token. For example, `q^12` renders q to the first power followed by 2, whereas `q^{12}` puts both digits in the exponent. Preserve that distinction or reject ambiguous unbraced multi-character/signed exponents with power-box guidance. Include `q^12` versus `q^{12}` and `2^12` versus `2^{12}` in tests; fixtures intending the twelfth power must use the properly grouped notation.
+
 ### Native numeric controls
 
 Use `readNumericInput(input, label)` from `src/shared/numeric-input.ts` when reading native number controls. It preserves representable exponent syntax and intentional zero, but rejects empty/nonfinite values and a nonzero raw mantissa that the browser rounds to zero, such as `1e-999`. The helper is stateless and does not change the control. Bounds, integer requirements, units and subsequent numerical conditioning remain the module's responsibility.
