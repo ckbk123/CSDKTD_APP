@@ -78,4 +78,3 @@ Production build inspected on 2026-10-29 in the in-app Chromium browser, system 
 - Leaving while the keyboard is open removes it. Rapid DP01→DP02 navigation shows only DP02's workspace, then reopening DP01 starts fresh; no late sequence controls/results appear in the other module.
 - At viewport override 390×844, document client/scroll widths both equal 375 CSS px (scrollbar accounted for): no page-wide horizontal overflow. Plot regions are 305 px wide with their 560 px diagrams scrolling internally. Controls wrap, equations scroll locally and the math keyboard fits. Desktop stems and modal text were visually inspected at the default viewport. Light theme and other browser engines were not separately tested.
 - Browser warning/error log is empty at the end. Build output emits all 20 same-origin font files. These observations do not claim every browser/device was tested.
-
