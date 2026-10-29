@@ -28,3 +28,13 @@ The source audit's DF1 entry supports recurrence/state comparison and sampled me
 ## Remaining work
 
 Implementation, mathematical tests, actual browser checks, final project checks and delivery remain. No shared dependency changes are needed.
+
+## Implementation checkpoint (before browser QA)
+
+- `math.ts`: bounded visual-fraction polynomial parser, stable order 1–2 model, independently stepped recurrence/state realization, final value, band and conservative future-error bound.
+- `view.ts` and scoped `style.css`: editable model/T/N/band, stems and sample inspector, manual predictions and reveal, oscillatory and short-horizon experiments, equations and units.
+- `workspace.ts`: synchronous guarded lazy view; cleanup also prevents a late view import from mounting.
+- `math.test.ts`: 27 mathematical/parser tests; `workspace.test.ts`: 2 late-import/cleanup tests.
+- Node 24.22.1 and locked dependencies installed in this worktree. An initial `npm ci` used the machine default Node 20 and printed engine warnings; it was repeated successfully under Node 24 via explicit npm CLI invocation. No dependency files changed.
+- `npm run check` passed. A first full `npm test` exposed MathLive's Node SSR export when importing the workspace; moving browser initialization into the visit-owned lazy view resolved it without shared changes. Full `npm test` now passes **8 files / 71 tests**. Production build passed before this lazy-view adjustment; rerun required for final evidence.
+- Browser QA reservation was busy (DR01); no browser surface has been accessed. Browser verification and final delivery remain pending; stage stays in-progress.

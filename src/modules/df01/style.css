@@ -1,0 +1,33 @@
+[data-module="DF01"] .df-tool { display: grid; gap: 18px; font-size: 14px; line-height: 1.65; min-width: 0; }
+[data-module="DF01"] .df-card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; min-width: 0; }
+[data-module="DF01"] .df-card h3 { font-size: 16px; margin: 0 0 10px; font-weight: 600; }
+[data-module="DF01"] .df-card p { margin: 10px 0; overflow-wrap: anywhere; }
+[data-module="DF01"] .df-muted { color: var(--muted); font-size: 12px; }
+[data-module="DF01"] .df-controls { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin: 16px 0; }
+[data-module="DF01"] .df-controls label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; }
+[data-module="DF01"] .df-controls input, [data-module="DF01"] .df-controls select { width: 100%; min-width: 0; min-height: 42px; border: 1px solid var(--line); border-radius: 6px; padding: 8px; color: var(--text); background: var(--surface); font: inherit; }
+[data-module="DF01"] .df-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+[data-module="DF01"] .df-check { display: flex; gap: 8px; align-items: start; }
+[data-module="DF01"] .df-check input { margin-top: 6px; }
+[data-module="DF01"] .df-status, [data-module="DF01"] .df-feedback, [data-module="DF01"] .df-inspector { border-left: 3px solid var(--accent); padding-left: 10px; }
+[data-module="DF01"] .df-feedback:empty { display: none; }
+[data-module="DF01"] .df-plot { min-width: 0; overflow-x: auto; }
+[data-module="DF01"] .df-plot svg { display: block; width: 100%; min-width: 540px; height: auto; color: var(--text); }
+[data-module="DF01"] .df-plot text { fill: currentColor; font: 12px sans-serif; }
+[data-module="DF01"] .df-gridline { stroke: var(--line); stroke-width: 1; }
+[data-module="DF01"] .df-axis { stroke: var(--muted); stroke-width: 1; }
+[data-module="DF01"] .df-band { fill: var(--tint); }
+[data-module="DF01"] .df-final { stroke: var(--muted); stroke-dasharray: 7 4; stroke-width: 1.5; }
+[data-module="DF01"] .df-stem { stroke: var(--accent); stroke-width: 1; }
+[data-module="DF01"] .df-dot { fill: var(--accent); }
+[data-module="DF01"] .df-selected { stroke: var(--muted); stroke-dasharray: 2 4; }
+[data-module="DF01"] .df-marker { stroke: var(--accent); stroke-dasharray: 5 4; }
+[data-module="DF01"] .df-ring { stroke: var(--text); fill: var(--surface); stroke-width: 2; }
+[data-module="DF01"] .df-reasoning { min-width: 0; }
+[data-module="DF01"] .df-reasoning .equation-display { max-width: 100%; overflow-x: auto; padding: 10px 0; }
+[data-module="DF01"] summary { cursor: pointer; font-weight: 550; }
+@media (max-width: 760px) {
+  [data-module="DF01"] .df-controls { grid-template-columns: 1fr; }
+  [data-module="DF01"] .df-card { padding: 12px; }
+  [data-module="DF01"] .df-actions .button { width: 100%; }
+}
