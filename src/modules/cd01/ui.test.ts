@@ -57,4 +57,7 @@ describe('reasoned linear controller teaching flow',()=>{
   it('caps temporary notes and starts the next mount from the course baseline',()=>{
     const v=open();for(let k=0;k<9;k++){v.choose('reason','structure');v.action('apply').click();}expect(v.root.querySelectorAll('ol li')).toHaveLength(8);v.set('kp','7');v.choose('reason','effort');v.action('apply').click();const next=open();expect(next.input('kp').value).toBe('4');expect(next.root.querySelectorAll('ol li')).toHaveLength(1);expect(next.root.querySelectorAll('figure')).toHaveLength(0);
   });
+  it('preserves the valid selected trial when a simpler comparison exceeds its response bound',()=>{
+    const v=open();mocks.editors[0].edit(String.raw`G(s)=\frac1{s^2-s-1}`);v.set('kd','4');v.set('horizon','100');v.choose('reason','data');v.action('apply').click();v.action('reveal').click();expect(v.root.textContent).toContain('P comparison unavailable');expect(v.root.textContent).toContain('All 4 actual modes');expect(v.root.textContent).toContain('Classification: stable');expect(v.root.querySelectorAll('figure')).toHaveLength(4);
+  });
 });

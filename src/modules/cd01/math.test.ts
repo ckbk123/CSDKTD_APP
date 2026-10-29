@@ -57,6 +57,9 @@ describe('linear P/PI/filtered PD/PID model and independent responses',()=>{
     expect(p.overshoot).toBe(0);expect(p.overshootFinal).toBeGreaterThan(8);expect(p.inBandAtEnd).toBe(false);expect(p.inFinalBandAtEnd).toBe(true);
     expect(p.lastOutsideFinalBand!).toBeLessThan(pi.lastOutsideFinalBand!);expect(p.steadyError!).toBeGreaterThan(pi.steadyError!);
   });
+  it('starts a sampled final-value window at zero when no sample leaves it',()=>{
+    const r=simulate(build(plant,{...base,kind:'P'}),{...options,initial:[2/3,0]});expect(r.inFinalBandAtEnd).toBe(true);expect(r.lastOutsideFinalBand).toBeNull();expect(r.observedFinalWindowStart).toBe(0);expect(r.steadyError).toBeCloseTo(1/3,12);
+  });
   it('retains the cancelled internal mode in an independently analytic PI fixture',()=>{
     const m=build(plant,{...base,kind:'PI',kp:1,ki:1}),r=simulate(m,options);
     expect(m.order).toBe(3);modesNear(m.poles,[[-1,0],[-1,0],[-1,0]],1e-5);
@@ -89,6 +92,10 @@ describe('linear P/PI/filtered PD/PID model and independent responses',()=>{
     const boundary=build(plant,{...base,kind:'P',kp:-2});expect(boundary.stability).toBe('near boundary');expect(boundary.poles.some(p=>p[0]===0)).toBe(true);
     const short=simulate(build(plant,{...base,kind:'PI',kp:1,ki:1}),{...options,horizon:1});expect(short.inBandAtEnd).toBe(false);expect(short.lastOutsideBand).toBe(1);
     const zeroRef=simulate(build(plant,base),{...options,reference:0});expect(zeroRef.overshoot).toBeNull();expect(zeroRef.lastOutsideBand).toBeNull();
+  });
+  it('stabilizes an authored unstable plant while simpler comparisons grow beyond the horizon bound',()=>{
+    const p={b:1,a1:-1,a0:-1},c={...base,kd:4},m=build(p,c);near(m.actual,[1,19,63,62,40]);expect(m.stability).toBe('stable');expect(simulate(m,{...options,horizon:100}).samples.at(-1)!.y).toBeCloseTo(1,8);
+    expect(()=>simulate(build(p,{...c,kind:'P'}),{...options,horizon:100})).toThrow(/magnitude/);
   });
   it('bounds gains, filter, targets, states and horizons',()=>{
     for(const p of [{...plant,b:0},{...plant,a1:Infinity},{...plant,b:101}])expect(()=>build(p,base)).toThrow();

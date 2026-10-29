@@ -10,7 +10,7 @@ export interface Options {initial:readonly[number,number];integral:number;filter
 export interface Sample {t:number;y:number;velocity:number;error:number;integral:number;filter:number;u:number;p:number;i:number;d:number}
 export interface Run {
   samples:Sample[];overshoot:number|null;lastOutsideBand:number|null;inBandAtEnd:boolean|null;
-  finalValue:number|null;overshootFinal:number|null;lastOutsideFinalBand:number|null;inFinalBandAtEnd:boolean|null;
+  finalValue:number|null;overshootFinal:number|null;lastOutsideFinalBand:number|null;inFinalBandAtEnd:boolean|null;observedFinalWindowStart:number|null;
   peakEffort:number;steadyError:number|null;step:number;coarse:boolean;
 }
 export function standard(controller:Controller):{ti:number|null;td:number;tf:number}|null {
@@ -81,11 +81,12 @@ export function simulate(model:Model,options:Options):Run {
   let lastOutsideBand:number|null=null,inBandAtEnd:boolean|null=null;
   if(r!==0){const outside=samples.filter(s=>Math.abs(s.y-r)>.02*Math.abs(r));lastOutsideBand=outside.length?outside.at(-1)!.t:0;inBandAtEnd=Math.abs(samples.at(-1)!.y-r)<=.02*Math.abs(r);}
   const finalValue=model.dcGain===null?null:r*model.dcGain;
-  let overshootFinal:number|null=null,lastOutsideFinalBand:number|null=null,inFinalBandAtEnd:boolean|null=null;
+  let overshootFinal:number|null=null,lastOutsideFinalBand:number|null=null,inFinalBandAtEnd:boolean|null=null,observedFinalWindowStart:number|null=null;
   if(finalValue!==null&&finalValue!==0){
     overshootFinal=Math.max(0,...samples.map(s=>100*(s.y/finalValue-1)));
-    const outside=samples.filter(s=>Math.abs(s.y-finalValue!)>.02*Math.abs(finalValue!));
-    lastOutsideFinalBand=outside.length?outside.at(-1)!.t:0;inFinalBandAtEnd=Math.abs(samples.at(-1)!.y-finalValue)<=.02*Math.abs(finalValue);
+    let lastIndex=-1;samples.forEach((s,i)=>{if(Math.abs(s.y-finalValue!)>.02*Math.abs(finalValue!))lastIndex=i;});
+    lastOutsideFinalBand=lastIndex<0?null:samples[lastIndex].t;inFinalBandAtEnd=Math.abs(samples.at(-1)!.y-finalValue)<=.02*Math.abs(finalValue);
+    if(inFinalBandAtEnd)observedFinalWindowStart=lastIndex<0?0:samples[lastIndex+1].t;
   }
-  return{samples,overshoot,lastOutsideBand,inBandAtEnd,finalValue,overshootFinal,lastOutsideFinalBand,inFinalBandAtEnd,peakEffort:Math.max(...samples.map(s=>Math.abs(s.u))),steadyError:model.dcGain===null?null:r*(1-model.dcGain),step,coarse:step*Math.max(...model.poles.map(p=>Math.hypot(...p)))>.25};
+  return{samples,overshoot,lastOutsideBand,inBandAtEnd,finalValue,overshootFinal,lastOutsideFinalBand,inFinalBandAtEnd,observedFinalWindowStart,peakEffort:Math.max(...samples.map(s=>Math.abs(s.u))),steadyError:model.dcGain===null?null:r*(1-model.dcGain),step,coarse:step*Math.max(...model.poles.map(p=>Math.hypot(...p)))>.25};
 }
