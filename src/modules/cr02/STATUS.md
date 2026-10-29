@@ -25,7 +25,7 @@ The claimed baseline contained metadata and a blank mount, with no local mathema
 | Prediction, errors and lifecycle | Prediction before reveal, edits invalidate answers, local state, abort-safe lazy loading, attached load-error recovery and cleanup tests |
 | Visual equations and narrow layout | Shared MathLive input/display and scoped styles implemented; actual keyboard/fonts/phone/navigation QA pending |
 | Independent mathematics | 41 mathematical/parser/notation tests, including required analytic fixtures and 3,906 independent changed-model comparisons |
-| Project validation | 50 local tests, 92 full-project tests, type check, build and diff whitespace check pass |
+| Project validation | 51 local tests, 93 full-project tests, type check, build and diff whitespace check pass |
 
 ## Supported mathematical domain
 
@@ -43,9 +43,9 @@ Quadratic roots use a cancellation-resistant real-root formula. DC results disti
 
 Commands ran here with bundled Node 24:
 
-- `node node_modules/vitest/vitest.mjs run src/modules/cr02`: **3 files, 50 tests passed** (41 math/parser/notation, six caller-state, three loading/lifecycle).
+- `node node_modules/vitest/vitest.mjs run src/modules/cr02`: **3 files, 51 tests passed** (41 math/parser/notation, seven caller-state, three loading/lifecycle).
 - `npm run check`: passed.
-- `npm test`: **9 files, 92 tests passed**.
+- `npm test`: **9 files, 93 tests passed**.
 - `npm run build`: passed; existing MathLive chunk-size warning remains.
 - `git diff --check`: passed.
 
@@ -71,4 +71,7 @@ DR02 remains separately submitted at `a8d544aaafe122588b8b58fa88a8b06a4594813e`,
 
 Primary v0.3.3 introduced stateless readNumericInput(input,label). This older branch retains its independently tested equivalent local native-number guard: empty/nonfinite/over-limit entries fail, and a nonzero significand that underflows to zero is rejected. The coordinator explicitly approved this carry-forward on 29 October 2026 and will adapt the import during checked integration. No unowned helper was copied and no rebase/main merge was performed.
 
-The static interface audit also made metadata immutable, clarified rounded numerical labels, gave diagrams/plots keyboard-accessible local horizontal scrolling to retain readable labels on phones, and cleared stale selected Laplace terms after invalid initial data. The affected 50 module tests and production build pass. Actual-browser evidence is still pending. Current recoverable implementation checkpoint before this documentation is 977b39b1c84c43f9c5d57921cb2413e0d4464f07.
+The static interface audit also made metadata immutable, clarified rounded numerical labels, gave diagrams/plots keyboard-accessible local horizontal scrolling to retain readable labels on phones, and cleared stale selected Laplace terms after invalid initial data. The affected 51 module tests and production build pass. Actual-browser evidence is still pending. Current recoverable implementation checkpoint before this documentation is 977b39b1c84c43f9c5d57921cb2413e0d4464f07.
+
+Zero-input mode now ignores an unused disabled command-amplitude draft; switching back to step/ramp requires a valid amplitude. Its caller regression passes. Current totals: 51 local tests, 93 project tests; type check (through build), production build and whitespace check pass. QA remains pending under the coordinator's DD04/CS01 priority order; this worker released an acquired but unused slot without opening a browser tab.
+

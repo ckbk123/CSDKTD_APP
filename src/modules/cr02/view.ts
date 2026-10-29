@@ -81,7 +81,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     try { renderTerm(); } catch(reason) { ui('term').replaceChildren(); error(reason); }
   });
   function initial(): Initial { return {y:numeric(y0.input,'Initial displacement',100),v:numeric(v0.input,'Initial velocity',100)}; }
-  function experiment(): Experiment { return { initial:initial(), excitation:excitation.value as Excitation, amplitude:numeric(amplitude.input,'Command amplitude/slope',100) }; }
+  function experiment(): Experiment { return { initial:initial(), excitation:excitation.value as Excitation, amplitude:excitation.value==='zero'?0:numeric(amplitude.input,'Command amplitude/slope',100) }; }
 
   const table = el('table'), head = el('thead'), heading = el('tr');
   for (const label of ['Select physical term','Coefficient cell','ODE term / side']) heading.append(el('th',label)); head.append(heading); table.append(head);

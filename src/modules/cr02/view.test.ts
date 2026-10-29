@@ -70,6 +70,18 @@ describe('CR02 applied model and experiment state',()=>{
     expect(view.container.textContent).toContain('y′(0+) = y′(0−) + dA/m = 1 m/s');
     expect(view.container.querySelector('[aria-label="Modified states and one-input state equation"]')!.textContent).toContain("x_2=y'-(1)u");view.close();
   });
+  it('uses zero command even when a disabled amplitude draft is empty',()=>{
+    const view=visit();view.change('Initial displacement y(0−) (m)','1');
+    view.change('Command amplitude / ramp slope','');view.change('One scalar command','zero');
+    expect(view.field('Command amplitude / ramp slope').disabled).toBe(true);
+    view.click('Reveal derivation & response');
+    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(false);
+    expect(view.container.querySelector('[aria-label="Numerical response at cursor"]')!.textContent).toContain('0.6004236');
+    expect(view.container.textContent).toContain('Command u = 0 input units');
+    view.change('One scalar command','step');view.click('Reveal derivation & response');
+    expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
+    expect(view.container.textContent).toContain('Command amplitude/slope must be finite');view.close();
+  });
   it('aborts old listeners and reopens at the baseline without carrying state',()=>{
     const first=visit();first.click('Nonzero initial displacement');const oldButton=[...first.container.querySelectorAll('button')].find(b=>b.textContent==='Reveal derivation & response')!;first.close();
     const next=visit();oldButton.click();expect(next.field('Initial displacement y(0−) (m)').value).toBe('0');
