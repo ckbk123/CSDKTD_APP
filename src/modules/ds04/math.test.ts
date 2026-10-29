@@ -32,13 +32,17 @@ describe('DS04 bounded exact polynomial entry', () => {
     String.raw`2\frac12z+1`, String.raw`-2\frac12z+1`, String.raw`(2\frac12)z+1`,
     String.raw`z+(2\frac12)(z+1)`, String.raw`\left(-2\frac{1}2\right)z+1`,
     String.raw`2\frac{-1}{2}z+1`, String.raw`z+(2\dfrac{1}{2})^2`,
+    String.raw`2\,\frac12z+1`, String.raw`2{\frac12}z+1`, String.raw`{2}\frac12z+1`,
+    String.raw`({-2}\frac12)z+1`, String.raw`2.\frac12z+1`,
+    String.raw`2{-\frac12}z+1`, String.raw`{2+3z}\frac12+1`,
   ])('rejects displayed mixed-number meaning before fraction expansion: %s', source => {
     expect(() => parsePolynomial(source)).toThrow('Insert + or ×');
   });
   it('preserves explicit addition, explicit multiplication and unambiguous grouped products', () => {
     expect(parsePolynomial(String.raw`(2+\frac12)z+1`).map(exactText)).toEqual(['1', '5/2', '0']);
-    for (const source of [String.raw`2\times\frac12z+1`, String.raw`2(\frac12)z+1`, String.raw`(2)\frac12z+1`, String.raw`{2}\frac12z+1`]) expect(parsePolynomial(source).map(exactText)).toEqual(['1', '1', '0']);
+    for (const source of [String.raw`2\times\frac12z+1`, String.raw`2(\frac12)z+1`, String.raw`(2)\frac12z+1`, String.raw`(2)\times\frac12z+1`]) expect(parsePolynomial(source).map(exactText)).toEqual(['1', '1', '0']);
     expect(parsePolynomial(String.raw`\frac12\frac12z+1`).map(exactText)).toEqual(['1', '1/4', '0']);
+    expect(parsePolynomial(String.raw`2z^{2}\frac12+1`).map(exactText)).toEqual(['1', '0', '1']);
     expect(parsePolynomial(String.raw`-(2+\frac12)z+1`).map(exactText)).toEqual(['1', '-5/2', '0']);
   });
 });

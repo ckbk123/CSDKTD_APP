@@ -1,5 +1,4 @@
 /** Local, bounded quadratic feedback mathematics; coefficient order is ascending. */
-import { convertLatexToMathMl } from 'mathlive';
 export interface Rational { readonly n: bigint; readonly d: bigint }
 const abs = (n: bigint) => n < 0n ? -n : n;
 export function rational(n: bigint | number, d: bigint | number = 1): Rational {
@@ -43,14 +42,12 @@ function decimal(token: string): Rational {
 /** Textbook polynomial entry; numeric fractions include MathLive's \frac12. */
 export function parsePolynomial(latex: string): Polynomial {
   if (!latex.trim() || latex.length > 300) throw new Error('Enter a polynomial using at most 300 characters.');
-  if (/\\(?:dfrac|frac)/.test(latex)) {
-    // The pinned renderer marks a displayed mixed number with MathML invisible plus.
-    // Check notation before expansion; every coefficient is still parsed/computed below.
-    let notation: string;
-    try { notation = convertLatexToMathMl(latex); } catch { throw new Error('Check the fraction notation before computing.'); }
-    if (/&#(?:x0*2064|0*8292);|\u2064/i.test(notation)) throw new Error('Mixed numbers are unsupported here. Insert + or × between the whole number and fraction.');
-  }
   let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(/^[ND]\(z\)=/, '');
+  // Keep each numeric fraction and each power opaque while checking adjacency.
+  // Invisible braces/spaces cannot turn a displayed mixed number into a product.
+  const adjacency = source.replace(/\^\{[012]\}|\^[012]/g, '^p').replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g, '@');
+  if (/[{}]/.test(adjacency)) throw new Error('Use visible parentheses for grouped terms; fraction boxes accept numbers only. Insert + or × between a whole number and fraction.');
+  if (/\d\.?@/.test(adjacency)) throw new Error('Mixed numbers are unsupported here. Insert + or × between the whole number and fraction.');
   source = source.replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g,
     (_all, n, nd, d, dd) => `((${n ?? nd})/(${d ?? dd}))`).replace(/\^\{([012])\}/g, '^$1').replace(/\{/g, '(').replace(/\}/g, ')');
   const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|[z()+\-*/^]/g) ?? [];

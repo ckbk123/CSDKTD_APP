@@ -36,7 +36,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const dInput = createEquationInput({ label: 'Denominator D(z)', value: 'D(z)=z(z-1)', signal, onChange: d => { dDraft = d; invalidate(); } });
   root.append(nInput.element, dInput.element); nDraft = nInput.getValue(); dDraft = dInput.getValue();
   root.append(element('p', 'Grammar: sums/products, parentheses, powers 0/1/2, decimals (up to 6 places, 9 digits per number) and numeric fractions. At most 300 characters, 160 terms/symbols and 12 nested groups per polynomial. Final nonzero coefficients: magnitude 10⁻⁸ to 100; reduced fraction numerators/denominators at most 10¹². K belongs in its own control.', 'g-small'));
-  root.append(element('p', 'A visual fraction may contain signed numeric literals in its numerator and denominator. Mixed numbers are unsupported: insert + or × between a whole number and fraction. Nested fraction notation is unsupported; use a single reduced fraction or products instead.', 'g-small'));
+  root.append(element('p', 'A visual fraction may contain signed numeric literals in its numerator and denominator. Use visible parentheses for grouped terms. Mixed numbers are unsupported: insert + or × between a whole number and fraction. Nested fraction notation is unsupported; use a single reduced fraction or products instead.', 'g-small'));
   const controls = element('div', undefined, 'g-controls'); root.append(controls);
   function numeric(label: string, value: number, change: (n: number) => void): HTMLInputElement {
     const wrap = element('label', label), field = element('input'); field.type = 'number'; field.min = '-100'; field.max = '100'; field.step = 'any'; field.value = String(value);
