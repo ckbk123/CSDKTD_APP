@@ -61,9 +61,14 @@ describe('Bode normalization and independent reference values', () => {
 
 describe('bounded visual-number grammar and failure cases', () => {
   it('accepts actual compact/braced MathLive fractions and signed decimals', () => {
-    expect(parseReal('\\frac12')).toBe(0.5); expect(parseReal('-\\frac{1}{4}')).toBe(-0.25); expect(parseReal('\\frac{12}3')).toBe(4); expect(parseReal('.125')).toBe(0.125);
+    expect(parseReal('\\frac12')).toBe(0.5); expect(parseReal('\\frac{1}2')).toBe(0.5); expect(parseReal('\\frac1{2}')).toBe(0.5); expect(parseReal('-\\frac{1}{4}')).toBe(-0.25); expect(parseReal('\\frac{12}3')).toBe(4); expect(parseReal('.125')).toBe(0.125);
   });
-  it.each(['', 'NaN', 'Infinity', 's', '2+3', '\\pi', '\\sqrt{2}', '\\frac10', '1000001', '.0000000001', '1'.repeat(100)])('rejects invalid numeric entry %s', source => { expect(() => parseReal(source)).toThrow(); });
+  it('preserves outer grouping and unary signs without treating products as numbers', () => {
+    expect(parseReal('-\\left(\\frac12\\right)')).toBe(-0.5); expect(parseReal('\\left(\\frac{-1}{2}\\right)')).toBe(-0.5); expect(parseReal('{-(-.5)}')).toBe(0.5);
+    expect(() => parseReal('(1)(2)')).toThrow(); expect(() => parseReal('('.repeat(9) + '1' + ')'.repeat(9))).toThrow();
+    expect(() => parseReal('\\frac{\\frac12}{3}')).toThrow();
+  });
+  it.each(['', 'NaN', 'Infinity', 's', '2+3', '1e-2', '1E-2', '\\pi', '\\sqrt{2}', '\\frac10', '1000001', '.0000000001', '1'.repeat(100)])('rejects invalid numeric entry %s', source => { expect(() => parseReal(source)).toThrow(); });
   it('rejects excessive order, zero gain, invalid delay and unsupported quadratic damping', () => {
     const model = baseline();
     expect(() => normalize({ ...model, gain: 0 })).toThrow(/nonzero/);

@@ -15,7 +15,7 @@ const degrees = 180 / Math.PI;
 const clamp = (x: number, low: number, high: number): number => Math.max(low, Math.min(high, x));
 
 export function parseReal(source: string): number {
-  const s = source.replace(/\s|\\[,;!]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac');
+  const s = source.replace(/\s|\\[,;!]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac').replace(/\\(?:left|right)/g, '');
   if (!s || s.length > 90) throw new Error('Enter one real number, decimal or simple fraction.');
   const decimal = (part: string): number => {
     if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(part) || part.replace(/\D/g, '').length > 12 || (part.split('.')[1]?.length ?? 0) > 9) {
@@ -23,16 +23,33 @@ export function parseReal(source: string): number {
     }
     return Number(part);
   };
-  const fraction = /^([+-]?)\\frac(\{[^{}]+\}|\d)(\{[^{}]+\}|\d)$/.exec(s);
-  const slash = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\/([+-]?(?:\d+(?:\.\d*)?|\.\d+))$/.exec(s);
-  let value: number;
-  if (fraction || slash) {
-    const argument = (text: string): string => text.startsWith('{') ? text.slice(1, -1) : text;
-    const numerator = decimal(fraction ? argument(fraction[2]) : slash![1]);
-    const denominator = decimal(fraction ? argument(fraction[3]) : slash![2]);
-    if (!denominator) throw new Error('A fraction denominator cannot be zero.');
-    value = numerator / denominator * (fraction?.[1] === '-' ? -1 : 1);
-  } else value = decimal(s);
+  const grouped = (text: string): boolean => {
+    const open = text[0], close = open === '(' ? ')' : open === '{' ? '}' : '';
+    if (!close || !text.endsWith(close)) return false;
+    let depth = 0;
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === open) depth++; else if (text[i] === close) depth--;
+      if (depth === 0 && i !== text.length - 1) return false;
+      if (depth < 0) return false;
+    }
+    return depth === 0;
+  };
+  const scalar = (text: string, depth: number): number => {
+    if (depth > 8) throw new Error('Use at most eight outer groups or unary signs.');
+    if (grouped(text)) return scalar(text.slice(1, -1), depth + 1);
+    if (text.startsWith('-') || text.startsWith('+')) return (text[0] === '-' ? -1 : 1) * scalar(text.slice(1), depth + 1);
+    const fraction = /^\\frac(\{[^{}]+\}|\d)(\{[^{}]+\}|\d)$/.exec(text);
+    const slash = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\/([+-]?(?:\d+(?:\.\d*)?|\.\d+))$/.exec(text);
+    if (fraction || slash) {
+      const argument = (part: string): string => part.startsWith('{') ? part.slice(1, -1) : part;
+      const numerator = decimal(fraction ? argument(fraction[1]) : slash![1]);
+      const denominator = decimal(fraction ? argument(fraction[2]) : slash![2]);
+      if (!denominator) throw new Error('A fraction denominator cannot be zero.');
+      return numerator / denominator;
+    }
+    return decimal(text);
+  };
+  const value = scalar(s, 0);
   if (!Number.isFinite(value) || Math.abs(value) > 1e6 || (value !== 0 && Math.abs(value) < 1e-6)) {
     throw new Error('Use zero or a number with magnitude between 10⁻⁶ and 10⁶.');
   }
