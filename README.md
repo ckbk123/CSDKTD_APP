@@ -1,37 +1,53 @@
 # CSDKTD APP
 
-A proposed native C learning application for **Cơ sở điều khiển tự động (EE2019)**, scoped to **SISO LTI**.
+A native **C11 / Raven** desktop shell for learning **SISO LTI control theory**.
 
-**Current stage: course architecture and exercise-tool specification.** The hierarchy below follows the instructor's direction. Detailed interactions and release priorities remain open for review.
+The first implementation provides the global interface and independent subapplication containers. Mathematical tools will be implemented inside those containers later.
 
-```text
-Continuous                         Discrete
-  System Representation              System Representation
-  Plots                              Plots
-  Stability                          Stability
-  Performance                        Performance
-  Controller Design                  Controller Design
+## What works now
+
+- An HCMUT-branded entry interface with Continuous and Discrete sections.
+- Five topic groups in each section: System Representation, Plots, Stability, Performance and Controller Design.
+- A responsive card grid, topic filtering and module search.
+- All **56 module routes**, each opening its own page inside the **same native window**.
+- A baseline-example description, an empty content container, Back navigation and Reset example.
+- Fresh module state on each visit. No lesson saving, persistence, project files or export workflow.
+
+Each subapplication has its own C static-library target and private lifecycle. Shared stateless mathematical/visual helpers can be added later without introducing a shared mutable exercise model. The module structure improves ownership and change boundaries; linked C libraries still share one process and do not provide crash isolation.
+
+The logo comes from the existing instructor course assets. It is embedded so the executable does not depend on the original OneDrive path. See [asset provenance](assets/README.md).
+
+![Continuous section overview](docs/images/home.png)
+
+![A module's blank workspace](docs/images/module.png)
+
+## Build and run on Windows
+
+Use Visual Studio 2022 with **Desktop development with C++**, CMake **3.24 or later**, and Git. Run from a Developer PowerShell at the repository root:
+
+```powershell
+cmake -S . -B build/windows -G "Visual Studio 17 2022" -A x64
+cmake --build build/windows --config Release --parallel
+ctest --test-dir build/windows -C Release --output-on-failure
+cmake --install build/windows --config Release --prefix out/windows
+& ".\out\windows\bin\CSDKTD APP.exe"
 ```
 
-The same saved model moves through these workspaces. A plot can be reused to construct a graph, explain stability, measure performance or design a controller. Several internal states and a Luenberger observer remain compatible with one external input/output.
+The build executable is `build/windows/Release/CSDKTD APP.exe`. Installation puts it in `out/windows/bin` and includes upstream notices. The normal GUI currently requires a working **Vulkan driver**. The Vulkan SDK is not a student runtime requirement; initial source configuration may fetch Raven and Vulkan headers.
 
-## Read in this order
+The shell has been built and tested locally on Windows x64. Linux, macOS, Windows 7/8/8.1 and the complete requested Windows release matrix remain unverified. See [development/build instructions](docs/DEVELOPMENT.md) and [platform feasibility](docs/PLATFORM_FEASIBILITY.md) before making compatibility claims. Generated binaries and build folders are not committed.
 
-1. [Course architecture and scope](docs/FUNCTIONAL_SPECIFICATION.md): understand the ten blocks and how they connect.
-2. [Instructor review](docs/FEATURE_REVIEW.md): review blocks first, then choose their exercise modes.
-3. [Exercise tool atlas](docs/EXERCISE_TOOL_ATLAS.md): inspect 56 modes, each tied to a student task, visual explanation and verification contract.
+## Develop a subapplication
 
-The atlas's modes are parts of ten workspaces, not 56 standalone applications. Reusable math, diagrams and plots support them.
+Start with [modules/README.md](modules/README.md), the [module contract](include/csdktd/module.h), and one directory such as `modules/cr05`. Implement its controls under the shell-provided container, keep state in `host->state`, and release resources on unmount. The shell owns the outer window and navigation.
 
-## Evidence and implementation constraints
+The shell currently links no numerical or symbolic library. [Mathematical backend options](docs/MATH_BACKEND_OPTIONS.md) compares C-callable numerical, control and exact-algebra candidates for later modules.
 
-- [Continuous exercise audit](docs/research/CONTINUOUS_EXERCISE_AUDIT.md) and [Discrete exercise audit](docs/research/DISCRETE_EXERCISE_AUDIT.md): deeper course examples, worksheets, original-slide anchors and diagnostics.
-- [External exercise patterns](docs/research/EXTERNAL_EXERCISE_REFERENCES.md): verified university/author problems that inform the interaction design.
-- [Existing applet references](docs/research/APPLET_REFERENCES.md): interaction precedents and mathematical references.
-- [Slide review](docs/research/SLIDE_REVIEW.md) and [inventory](docs/research/SLIDE_INVENTORY.json): 24 decks / 882 indexed slides, with review limits and provenance.
-- [Platform feasibility](docs/PLATFORM_FEASIBILITY.md): C/Raven/Vulkan assessment for requested Windows versions, Linux and macOS. These platforms remain unverified targets.
-- [Scope and migration](docs/research/SCOPE_AND_MIGRATION.md): disposition of the first draft's features.
+## Course plan and evidence
 
-The app's active plan excludes MIMO, nonlinear/ON-OFF/saturation/anti-windup simulation, PLC/hardware control and a general-purpose CAS. Polynomial/rational algebra needed for LTI exercises remains in Representation. Explicit course delay problems remain in scope.
+- [Functional specification](docs/FUNCTIONAL_SPECIFICATION.md): accepted subject hierarchy and independent-module architecture.
+- [Exercise tool atlas](docs/EXERCISE_TOOL_ATLAS.md): the mathematical tasks and checks to implement in each module.
+- [Feature status](docs/FEATURE_REVIEW.md): all 56 concepts accepted, mathematical implementation pending.
+- [Continuous](docs/research/CONTINUOUS_EXERCISE_AUDIT.md) and [Discrete](docs/research/DISCRETE_EXERCISE_AUDIT.md) exercise audits, [external exercises](docs/research/EXTERNAL_EXERCISE_REFERENCES.md), and [slide inventory](docs/research/SLIDE_INVENTORY.json).
 
-No application has been implemented. Course decks/textbooks remain outside this repository. External code/assets have not been incorporated; dependency and project licensing remain implementation decisions. Prepared/revised 28 October 2026.
+The course decks/textbooks remain outside this repository. No application-wide software license has been selected. Raven and other supplied assets retain their own notices; see [third-party notices](THIRD_PARTY_NOTICES.md).

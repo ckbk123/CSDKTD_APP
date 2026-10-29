@@ -1,8 +1,8 @@
 # Exercise tools inside the ten course blocks
 
-**Revision 2, 28 October 2026.** Read the [course architecture](FUNCTIONAL_SPECIFICATION.md) first. The entries below are modes of its ten workspaces, not 56 unrelated applications. Shared diagrams, plots and equations follow the selected SISO LTI case between workspaces.
+**Revision 3, 29 October 2026. Subapplication concepts accepted; mathematical implementation pending.** Read the [course architecture](FUNCTIONAL_SPECIFICATION.md) first. The 56 entries are independent subapplications grouped into ten subject workspaces. Each opens its own content container inside the same native window, owns its model and temporary state, and starts from its baseline example on every visit. No case follows navigation between tools.
 
-Every entry specifies a problem students can attempt, an interaction that exposes the concept, and an answer/verification contract. The instructor can adapt the notation, reveal order and problem data in the [review sheet](FEATURE_REVIEW.md). Implementation priorities remain pending.
+Every entry specifies a problem students can attempt, an interaction that exposes the concept, and an answer/verification contract. The instructor can adapt the notation, reveal order and problem data in the [review sheet](FEATURE_REVIEW.md). The current milestone builds catalogue navigation and blank content containers. Module-specific educational functionality follows later. Saving, persistence, project files and export are outside the requested scope.
 
 ## Source and fixture notation
 
@@ -96,7 +96,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Tool:** frequency/amplitude entry, transient reveal, paired time markers, and one linked Bode/Nyquist cursor. Let students place phase/amplitude markers before revealing the calculation.
 
-**Check/variation:** at `ω=1 rad/s`, the shared plant has magnitude `0.316228` and phase `-71.565°`. Distinguish phase sign and degrees/radians. A time-domain measurement before transient decay is not a steady-state frequency result. Stable-frequency experiments and analytic evaluation on an unstable model must be labeled differently.
+**Check/variation:** at `ω=1 rad/s`, this mode's baseline plant has magnitude `0.316228` and phase `-71.565°`. Distinguish phase sign and degrees/radians. A time-domain measurement before transient decay is not a steady-state frequency result. Stable-frequency experiments and analytic evaluation on an unstable model must be labeled differently.
 
 <a id="cp04"></a>
 ### CP04 — Build a Bode plot from factors
@@ -159,7 +159,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Exercise:** combine open-loop RHP poles and mapped-contour windings to count closed-loop RHP roots. **Evidence:** Ch4:58–71, including unstable-open-loop and nonunit-sensor cases; S09; E05.
 
-**Tool:** reuse CP05's curve with `P,N,Z`, explicit clockwise/counterclockwise convention, selected `L=CGH` and computed closed-loop roots. Make a wrong open-loop count visible before giving the answer.
+**Tool:** construct this module's own curve using a stateless Nyquist helper also usable by CP05, with `P,N,Z`, explicit clockwise/counterclockwise convention, selected `L=CGH` and computed closed-loop roots. Make a wrong open-loop count visible before giving the answer.
 
 **Check/variation:** include an unstable-open-loop fixture and a scalar `H≠1`. No encirclement is not universally sufficient for stability. Imaginary-axis poles require the documented contour procedure. Boundary hits at `-1` are distinct from a strict-stability conclusion.
 
@@ -197,7 +197,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Exercise:** compute IAE/ISE/ITAE/ITSE and explain why two controller rankings differ. **Evidence:** Ch5:28–32; S07:6,9–11.
 
-**Tool:** shade incremental error contributions, choose a common horizon and overlay error with `u(t)`. Save baseline/variant runs and display units.
+**Tool:** shade incremental error contributions, choose a common horizon and overlay error with `u(t)`. Compare baseline/variant runs temporarily within this module and display units; discard visit state on leaving.
 
 **Check/variation:** verify a selected sum/integral independently at a finer tolerance. Time-weighted criteria emphasize later error. A short horizon or truncation must not allow an unstable design to be described as optimal. Controller effort is a comparison measure within the LTI scope; no saturation model is introduced.
 
@@ -336,7 +336,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Exercise:** derive a scalar pulse TF from blocks, summers, delays and declared sampling boundaries. **Evidence:** Ch7:22–29 and diagram examples; S12.
 
-**Tool:** shared block/SFG editor labels continuous versus discrete subparts and sample/hold boundaries during conversion. Once the discrete model is established, CR05's structural Mason workflow operates with `z` gains.
+**Tool:** this module's block/SFG editor labels continuous versus discrete subparts and sample/hold boundaries during conversion. Once its discrete model is established, reusable stateless Mason helpers operate with `z` gains. Its diagram/model state is separate from CR05.
 
 **Check/variation:** the source delayed plant uses `5 exp(-.2s)/s^2`, `T=.2`, `H=.1` and controller `u[k]=10e[k]-2e[k-1]`. Confirm its exact topology before adopting an answer. The pulse transform of a continuous cascade is generally not the product of separately discretized blocks without intervening sampling.
 
@@ -385,7 +385,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Tool:** angle vectors, real-axis segments, asymptotes/break points, branch tracking and a visible unit circle. Test candidate points through the magnitude/angle conditions.
 
-**Check/variation:** students identify the entire selected characteristic root set, then hand it to DS04 for stability. Continuous locus algebraic rules can be shared where applicable, but stability regions and time interpretation are discrete. Respect the sign/range of the varying parameter.
+**Check/variation:** students identify the entire selected characteristic root set. A related DS04 exercise can use matching data entered manually; no model is handed between modules. Continuous locus algebraic rules can be shared where applicable, but stability regions and time interpretation are discrete. Respect the sign/range of the varying parameter.
 
 ## Discrete / Stability
 
@@ -421,7 +421,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Exercise:** locate all unit-circle crossings and stable K regions. **Evidence:** Ch8:20–31; S13; E10.
 
-**Tool:** share DP04's graph with a gain-interval bar, full root list, boundary equations and Jury/transformed-Routh checks where applicable.
+**Tool:** build this module's own locus graph using reusable stateless drawing/calculation helpers, with a gain-interval bar, full root list, boundary equations and Jury/transformed-Routh checks where applicable.
 
 **Check/variation:** inspect crossings at `+1`, `-1` and complex unit-circle points. A selected attractive branch cannot conceal another outside the disk. Report disconnected stable sets if present rather than a forced single maximum. Keep numerical searches distinct from exact gain-region derivation.
 
@@ -430,7 +430,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Exercise:** connect a unit-circle mapping with closed-loop root count. **Evidence:** Ch8 frequency analysis and E10; a complete guided contour lesson is an instructor-review extension.
 
-**Tool:** DP03 curve with contour orientation, inside/outside pole accounting, open-loop unstable-pole count and an explicit convention. Compare the predicted closed-loop count with the actual polynomial.
+**Tool:** this module's own unit-circle mapping curve, with contour orientation, inside/outside pole accounting, open-loop unstable-pole count and an explicit convention. Compare the predicted closed-loop count with the actual polynomial.
 
 **Check/variation:** define the discrete contour and sign convention rather than copying a continuous positive-frequency shortcut. Poles on the contour and strict-stability boundaries need separate handling. Do not claim that the local slides contain a complete worked contour exercise when they establish only the broader frequency-analysis relevance.
 
@@ -468,7 +468,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Exercise:** compare the same physical task at several T values and explain the difference between fixed-controller and redesigned-controller runs. **Evidence:** S12–15 sample-period tasks; Ch8 quality; this comparison interface is a proposed synthesis.
 
-**Tool:** baseline snapshots with T/control policy visible, common seconds horizon and sample-weighted error/effort accumulation.
+**Tool:** temporary comparisons within this module, with T/control policy visible, common seconds horizon and sample-weighted error/effort accumulation. Return to the baseline on the next visit.
 
 **Check/variation:** an ISE approximation uses `T sum(e[k]^2)` under a stated quadrature convention; a raw sample sum changes scale with T. Keep gains fixed only when the experiment says so. More plot points do not imply a faster controller, and discrete samples alone do not establish intersample behavior.
 
@@ -526,7 +526,7 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Tool:** controllability columns, coefficient matching or a selected algorithm, actual `eig(Ad-BdKd)` and tracking gain with T visible.
 
-**Check/variation:** for the shared ZOH model at `.1 s`, targets `.7,.8` give displayed `Kd≈[4.956502,2.335770]`, `Nd≈6.956502`. Recompute from exact matrices, not rounded displays. Original problems37/41 add target pairs specified through continuous damping/frequency. A sample-period change requires a declared model/redesign policy.
+**Check/variation:** for this mode's baseline ZOH model at `.1 s`, targets `.7,.8` give displayed `Kd≈[4.956502,2.335770]`, `Nd≈6.956502`. Recompute from exact matrices, not rounded displays. Original problems37/41 add target pairs specified through continuous damping/frequency. A sample-period change requires a declared model/redesign policy.
 
 <a id="dd07"></a>
 ### DD07 — Design a sampled Luenberger observer
@@ -537,7 +537,9 @@ The existing mechanical plant, nested-loop and session examples below are author
 
 **Check/variation:** the common sampled case targets `.3,.4` and displays `Ld≈[1.023568;1.498984]`; verify from the full-precision model. A rounded source observer example may not reproduce its target roots exactly, so retain rounding evidence. Choose/display predictor versus current-estimate timing; copying continuous L or mixing update conventions is incorrect.
 
-## Linked exercise paths for review
+## Related teaching sequences
+
+Each row is a conceptual teaching sequence. Modules remain independent: each begins from its own baseline, and students can manually enter matching exercise data. There is no automatic shared-case transfer.
 
 | Path | Sequence of tools | What the student must explain |
 |---|---|---|
@@ -548,4 +550,4 @@ The existing mechanical plant, nested-loop and session examples below are author
 | A sampled plant problem | DR05 → DR02/DR03 → DP02/DP03 → DS02/DS03 → DF01/DF02 | Timing/hold assumptions, stable parameter range and units in error/response |
 | A digital controller problem | DD01 or DD02/DD05 → DD04 → DS04 → DF03/DF04 | Emulation versus direct design, correct recurrence and actual sampled-loop behavior |
 
-These are guided paths through the adopted hierarchy. Saving, comparison, keyboard entry, lesson reveal and export are shared workspace services. They do not need separate curricular tool entries.
+These sequences connect concepts, not mutable application state. Grid navigation and keyboard entry are shell services; baseline reset, temporary comparison and answer reveal belong to each module. Stateless math/UI helpers can be reused. The application does not require saving, persistence, project files or export.

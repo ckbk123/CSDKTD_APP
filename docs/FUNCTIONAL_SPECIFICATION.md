@@ -1,6 +1,6 @@
 # CSDKTD APP: course architecture and functional plan
 
-**Revision 2, 28 October 2026. Proposed behavior for instructor review.** The application covers **single-input, single-output, linear time-invariant systems**. Its organization follows the mathematical course, with exercise-specific tools inside each block. This replaces the previous flat F01–F35 catalog.
+**Revision 3, 29 October 2026. Subapplication scope accepted; mathematical implementation pending.** The application covers **single-input, single-output, linear time-invariant systems**. Its organization follows the mathematical course, with exercise-specific tools inside each block. This replaces the previous flat F01–F35 catalog.
 
 ## 1. Scope
 
@@ -44,13 +44,23 @@ CSDKTD APP — SISO LTI
 | Performance | How well does the system meet its time/frequency requirements? | Errors, transient metrics, frequency specifications and declared assumptions |
 | Controller Design | Which controller/observer meets those requirements? | A derivation followed by actual poles and verified full-model performance |
 
-These are task workspaces sharing one mathematical model. A root-locus graphic appears in Plots to explain construction, in Stability to find stable gain intervals, and in Design to place compensator poles/zeros. The instructions and conclusion change; students do not re-enter the model or encounter three unrelated plotting engines.
+These are ten subject groups containing independent subapplications. Each subapplication owns its model, inputs, results and temporary UI state. Root-locus construction, stable-gain analysis and compensator design may reuse stateless plot/math helpers, but each opens its own page with its own baseline example. Changes made in one subapplication do not update another subapplication.
 
-**Navigation example:** represent `G=1/[s(s+2)]`; construct its root locus; derive stable K; measure ramp error/settling; design a lead controller; verify the full resulting loop. A second path takes the mechanical ODE through a SISO state realization, state feedback and an observer.
+**Teaching sequence example:** students can study `G=1/[s(s+2)]` in several independent tools: representation, root-locus construction, stable-gain analysis, error measurement and lead design. Each tool starts from its declared local example. A teacher may ask students to enter matching data manually; navigation does not transfer a mutable model or result between tools.
+
+## Single-window shell architecture — 29 October 2026
+
+The entry interface is a grid of subapplications organized by domain and subject. Clicking a tile replaces the current content inside the same native **CSDKTD APP** window. Home/back navigation returns to the catalogue. Subapplications do not open separate native windows.
+
+Each subapplication has its own C library target and a narrow lifecycle: mount into the shell-provided content container, reset to its baseline, and unmount/release state. It owns only its private state and child widgets. The shell owns navigation and the outer window. Immutable catalogue metadata and stateless helpers may be shared; mutable exercise models are module-local.
+
+The present development milestone supplies the shell, catalogue, baseline metadata and empty content containers. Those containers are intentionally ready for later module-specific interfaces and solvers. Returning to a subapplication starts a new baseline visit. Saving, session restoration, project files and export are not required.
+
+Separate libraries make ownership and dependencies explicit; they do not provide process-level memory isolation. Each future module must respect its lifecycle and avoid mutable cross-module globals.
 
 ## 3. What makes an exercise tool
 
-Each concept that forms an identified exercise family gets a dedicated **mode inside its home workspace**. Its contract contains:
+Each concept that forms an identified exercise family gets a dedicated **subapplication inside its subject group**. Its contract contains:
 
 1. A problem with assumptions and editable data.
 2. A student attempt: expression, sketch, table entry, selected loop, predicted result or chosen parameter.
@@ -60,9 +70,9 @@ Each concept that forms an identified exercise family gets a dedicated **mode in
 
 Examples include highlighting the coefficients used in a Routh cell, showing which old samples a recurrence reads, selecting a shared node between Mason loops, or mapping a contour point into a Nyquist curve. Highlighted equations, matrix rows and tables can be more informative than animation.
 
-Explore, Guided and Check-my-work modes apply inside each tool. Instructor presets/reveal settings, saving, comparison, localization and export are shared controls. They do not become additional subject blocks. Local reveal controls are teaching aids, not secure examinations.
+Explore, Guided and Check-my-work behaviors can be implemented inside each tool later. Every tool has a baseline default example and starts fresh when opened. Any comparison or answer-reveal state is local to that visit. Localization, keyboard input and reusable visual controls can share code. Saving, project files, persistence and export are outside the requested product. Local reveal controls are teaching aids, not secure examinations.
 
-Tool identifiers below are review references; student menus use subject names. The [exercise tool atlas](EXERCISE_TOOL_ATLAS.md) details tasks, controls, visual behavior, source anchors and checks. The [review sheet](FEATURE_REVIEW.md) starts with the ten blocks and then their modes. The instructor's hierarchy and SISO-only direction are adopted; detailed interactions and implementation priorities remain proposals.
+Tool identifiers below are review references; student menus use subject names. The [exercise tool atlas](EXERCISE_TOOL_ATLAS.md) details tasks, controls, visual behavior, source anchors and checks. The [review sheet](FEATURE_REVIEW.md) starts with the ten blocks and then their modes. The instructor has accepted the hierarchy and all 56 logical subapplication concepts. The immediate implementation milestone is the global interface and blank subapplication containers; mathematical functionality and detailed interactions follow later.
 
 ## 4. Continuous systems
 
@@ -226,13 +236,13 @@ Jury and transformed Routh are both course-backed methods. Choose/display a tran
 | DD06 | Discrete SISO state feedback, controllability and reference multiplier |
 | DD07 | Discrete Luenberger observer and combined feedback timing |
 
-Emulating a continuous controller and directly designing a discrete one are distinct tasks. Recheck actual sampled-loop stability and performance after either. State and observer gains must match the saved sample time. An ideal derivative recurrence and a filtered recurrence have different structures. Observer timing must state the update convention actually used. Analytical target-pole matching must verify all remaining modes and realization constraints.
+Emulating a continuous controller and directly designing a discrete one are distinct tasks. Recheck actual sampled-loop stability and performance after either. State and observer gains must match the active subapplication's sample time. An ideal derivative recurrence and a filtered recurrence have different structures. Observer timing must state the update convention actually used. Analytical target-pole matching must verify all remaining modes and realization constraints.
 
 ## 6. Shared mathematical and UI services
 
-A saved case contains domain, coefficients/factors/state realization, explicit delays, sample period, scalar loop/channel, inputs, initial conditions, requirements and a baseline/variant history. Model changes update dependent views together or mark results stale. Saving/export/localization and keyboard/numeric alternatives to dragging are shared controls.
+Each subapplication creates its own in-memory exercise state from immutable baseline data: domain, coefficients/factors or state realization, delays, sample period, selected scalar channel, inputs, initial conditions and requirements. Its own dependent views update together or mark its own results stale. Leaving the page releases that visit's state. Reopening starts from the baseline. No model, history or result travels automatically to another subapplication, and no project/save/export service is required.
 
-The C implementation separates model/solvers from UI. Reusable services cover expression/polynomial algebra, roots, scalar block/SFG structure, matrices, simulation, plot construction and exercise feedback. Continuous/discrete policies supply the relevant transforms, tests and design methods. Raven remains a UI candidate subject to the [platform assessment](PLATFORM_FEASIBILITY.md); no runtime support claim follows from this curriculum revision.
+The C implementation separates subapplication code from reusable stateless math/UI services. Future services can cover polynomial algebra, roots, scalar block/SFG structure, matrices, simulation, plot construction and exercise feedback. Callers own mutable input/output/workspace objects. A shared service must not retain a process-wide current system that couples unrelated tools. Raven supplies the current native shell direction, subject to the [platform assessment](PLATFORM_FEASIBILITY.md); no cross-platform certification follows from this documentation.
 
 Exact algebra, numerical estimates and textbook approximations have different labels. Declare coefficient order, factor domain, transform convention, initial conditions, metric definitions, units, horizon, tolerances and resource limits. A numerical sample is supporting evidence, not a proof of symbolic equivalence. A canceled transfer factor cannot alone establish internal stability. Unsupported/singular cases and incomplete enumeration must receive explicit results.
 
@@ -246,11 +256,11 @@ Evaluate coverage by exercise families within a block, not by the number of slid
 
 Proposed dependency sequence:
 
-1. Review the adopted ten-block architecture and the individual exercise contracts.
-2. Run C/UI/platform and exact-algebra trials on a small pole/response exercise.
-3. Build shared representations, case saving and explanatory plotting.
-4. Complete the block/SFG/Mason workflow, then continuous stability/performance and selected designs.
-5. Build discrete representation/sequence foundations, then its stability/performance/design methods.
-6. Verify end-to-end paths: diagram to TF to poles to stability to performance to controller, and continuous model to a documented sampled design.
+1. Implement the accepted grid entry interface and single-window navigation into independent blank subapplication containers.
+2. Verify navigation, module lifecycle, baseline reset and UI/platform behavior without introducing mathematical runtime dependencies.
+3. Implement the first selected subapplication with its local baseline, narrow service interfaces and explanatory plotting.
+4. Develop the other representation, stability, performance and controller-design subapplications independently, with module-specific checks.
+5. Add the corresponding discrete subapplications and their own recurrence, stability and design methods.
+6. Verify related teaching sequences using matching manually entered or predefined local examples, without automatic cross-module state transfer.
 
-This is mathematical dependency order, not a commitment to implement every mode in one release. The [review sheet](FEATURE_REVIEW.md) records which modes and source-course extensions to build first.
+All 56 subapplication concepts are accepted in scope, but they need not be mathematically implemented in one release. The [review sheet](FEATURE_REVIEW.md) distinguishes accepted scope from implementation status.
