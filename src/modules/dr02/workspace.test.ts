@@ -6,8 +6,12 @@ vi.mock('./view', () => view);
 beforeEach(() => view.mount.mockReset().mockImplementation(() => vi.fn()));
 it('attaches recoverable feedback when view mounting throws after adding partial content', async () => {
   const controller = new AbortController(), container = document.createElement('div');
+  const released = vi.fn(), leakedListener = vi.fn(); let viewSignal: AbortSignal | undefined;
   document.body.append(container);
-  view.mount.mockImplementationOnce(() => {
+  view.mount.mockImplementationOnce((...args: unknown[]) => {
+    viewSignal = (args[0] as {signal:AbortSignal}).signal;
+    viewSignal.addEventListener('abort', released, {once:true});
+    window.addEventListener('dr02-failed-mount-resource', leakedListener, {signal:viewSignal});
     container.append(document.createElement('section'));
     throw new Error('View mount failed');
   });
@@ -17,7 +21,22 @@ it('attaches recoverable feedback when view mounting throws after adding partial
   expect(container.children.length).toBe(1);
   expect(container.querySelector('[role="alert"]')?.isConnected).toBe(true);
   expect(container.textContent).toContain('Reset the workspace to try again.');
+  expect(viewSignal?.aborted).toBe(true); expect(controller.signal.aborted).toBe(false); expect(released).toHaveBeenCalledOnce();
+  window.dispatchEvent(new Event('dr02-failed-mount-resource')); expect(leakedListener).not.toHaveBeenCalled();
   controller.abort(); cleanup?.(); container.remove();
+});
+it('disposal releases view resources even when the parent has not yet aborted', async () => {
+  const controller=new AbortController(),container=document.createElement('div'), released=vi.fn(), viewCleanup=vi.fn();
+  view.mount.mockImplementationOnce((...args:unknown[])=>{(args[0] as {signal:AbortSignal}).signal.addEventListener('abort',released,{once:true});return viewCleanup;});
+  const cleanup=mount({container,signal:controller.signal}); expect(container.textContent).toContain('Loading difference-equation');
+  await vi.dynamicImportSettled(); cleanup?.(); expect(released).toHaveBeenCalledOnce(); expect(viewCleanup).toHaveBeenCalledOnce(); expect(controller.signal.aborted).toBe(false); expect(container.children.length).toBe(0);
+});
+it('parent abort removes the loading node without waiting for explicit disposal', async () => {
+  const controller=new AbortController(),container=document.createElement('div'),cleanup=mount({container,signal:controller.signal});
+  expect(container.children.length).toBe(1); controller.abort(); expect(container.children.length).toBe(0); await vi.dynamicImportSettled();expect(view.mount).not.toHaveBeenCalled();cleanup?.();
+});
+it('does not initialize an already aborted visit', async () => {
+  const controller=new AbortController(),container=document.createElement('div');controller.abort();mount({container,signal:controller.signal});await vi.dynamicImportSettled();expect(container.children.length).toBe(0);expect(view.mount).not.toHaveBeenCalled();
 });
 it('does not attach mount-failure feedback after the visit has been aborted', async () => {
   const controller = new AbortController(), container = document.createElement('div');
