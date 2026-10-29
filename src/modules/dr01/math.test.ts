@@ -12,6 +12,13 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
       expect(parseTransform(expr)).toEqual({ b: [1], a: [1, -.8] });
     }
   });
+  it('accepts MathLive single-token fractions without merging their digit arguments', () => {
+    expect(values(String.raw`\frac12`)).toEqual([.5, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`\frac1{1-0.5z^{-1}}`)).toEqual([1, .5, .25, .125, .0625, .03125, .015625, .0078125]);
+    expect(values(String.raw`\frac{z}{z-\frac12}`)).toEqual([1, .5, .25, .125, .0625, .03125, .015625, .0078125]);
+    expect(parseTransform(String.raw`\frac1\frac23`)).toEqual({ b: [1.5], a: [1] });
+    expect(() => parseTransform(String.raw`\frac1`)).toThrow(/fraction/);
+  });
   it('computes changed sign, gain, and a two-sample delay', () => {
     expect(values('2z^{-2}/(1+.5z^{-1})')).toEqual([0, 0, 2, -1, .5, -.25, .125, -.0625]);
   });

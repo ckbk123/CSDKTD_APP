@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress (compact-fraction browser follow-up pending)
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -42,8 +42,8 @@ Course context read: atlas DR01, discrete source audit DR1 and E09's finite-sequ
 Run in this isolated worktree with Node 24.22.1 (explicit bundled runtime and npm CLI; runtime directory on PATH):
 
 - `npm run check`: passed.
-- `node node_modules/vitest/vitest.mjs run src/modules/dr01`: 50/50 tests passed across three files.
-- `npm test`: 92/92 tests passed across nine files.
+- `node node_modules/vitest/vitest.mjs run src/modules/dr01`: 51/51 tests passed across three files.
+- `npm test`: 93/93 tests passed across nine files.
 - `npm run build`: passed, including its TypeScript check. The pre-existing shared MathLive chunk-size warning remains; all 20 WOFF2 font assets are emitted locally.
 - `git diff --check`: passed. All tracked changes are confined to this module folder.
 
@@ -68,3 +68,7 @@ The coordinator's preliminary read-only review of `0e470130f9adc8b72aa59e32737cf
 ## Remaining work and delivery boundary
 
 No accepted requirement remains open within the declared domain. No shared API/package/deployment changes or dependency requests. This contribution is implemented and checked on its own branch; serial integration and version management belong to the coordinator. No merge, version bump or deployment was performed. The final exact tested commit/branch/worktree are recorded in the submitted claim.
+
+## Pull request and compact-fraction follow-up
+
+PR: https://github.com/ckbk123/CSDKTD_APP/pull/1 (same preserved branch, draft while this correction is checked). Under the human's expanded continuous-worker instruction, the coordinator reopened the existing claim. The parser now expands MathLive's single-token fraction arguments before tokenizing numbers: \frac12, \frac1{...}, mixed braced arguments and nested fractions are supported. A regression independently checks 1/2, a changed .5 geometric sequence and nested 1/(2/3). Module tests pass 51/51, application tests 93/93 and the production build passes. A real-editor shorthand check remains pending shared QA; earlier browser evidence above is preserved and not substituted for this new check. Next action: reserve QA, enter 1/2 with the fraction button, verify its inverse and final resubmission, then claim the next module under the continuous goal. Earlier one-module stopping language is superseded by the latest human steering.

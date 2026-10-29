@@ -39,14 +39,45 @@ function operation(x: Fraction, y: Fraction, op: string): Fraction {
   return simplify(add(multiply(x.b, y.a), multiply(y.b, x.a), op === '-' ? -1 : 1), multiply(x.a, y.a));
 }
 
+/** MathLive may serialize single-character fraction arguments without braces. */
+function expandFractions(source: string, depth = 0): string {
+  if (depth > 24) throw new Error('Use fewer nested groups.');
+  let cursor = 0, result = '';
+  function argument(): string {
+    while (/\s/.test(source[cursor] ?? '') && cursor < source.length) cursor++;
+    const open = source[cursor];
+    if (open === '{' || open === '(') {
+      const close = open === '{' ? '}' : ')', start = ++cursor;
+      let level = 1;
+      while (cursor < source.length && level) {
+        if (source[cursor] === open) level++;
+        if (source[cursor] === close) level--;
+        if (level) cursor++;
+      }
+      if (level) throw new Error('Close the fraction or parentheses.');
+      const content = source.slice(start, cursor++);
+      return expandFractions(content, depth + 1);
+    }
+    if (source.startsWith('\\frac', cursor)) { cursor += 5; return fraction(); }
+    if (open && /^[0-9zq]$/.test(open)) { cursor++; return open; }
+    throw new Error('Complete both fraction arguments; group multi-character terms inside the fraction.');
+  }
+  function fraction(): string { const numerator = argument(), denominator = argument(); return `\\frac{${numerator}}{${denominator}}`; }
+  while (cursor < source.length) {
+    if (source.startsWith('\\frac', cursor)) { cursor += 5; result += fraction(); }
+    else result += source[cursor++];
+  }
+  return result;
+}
+
 /** Small arithmetic grammar, never JavaScript evaluation or a symbolic CAS. */
 export function parseTransform(latex: string): Transform {
   if (!latex.trim()) throw new Error('Enter a transform or build one from a sequence.');
   if (latex.length > 600) throw new Error('Use an expression of at most 600 characters.');
-  const source = latex.replace(/^\s*[XH]\s*\(\s*z\s*\)\s*=\s*/, '')
+  const source = expandFractions(latex.replace(/^\s*[XH]\s*\(\s*z\s*\)\s*=\s*/, '')
     .replace(/\\(?:left|right|displaystyle|textstyle)\b/g, '')
     .replace(/\\(?:cdot|times)/g, '*').replace(/\\(?:dfrac|tfrac)/g, '\\frac')
-    .replace(/\\[,;! ]/g, '').replace(/−/g, '-');
+    .replace(/\\[,;! ]/g, '').replace(/−/g, '-'));
   const tokens: string[] = [];
   let pos = 0;
   while (pos < source.length) {
