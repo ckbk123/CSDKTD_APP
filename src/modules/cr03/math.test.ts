@@ -54,6 +54,12 @@ describe('CR03 independent realization fixtures', () => {
     const fourth = canonical({ numerator: [1], denominator: [1, 10, 35, 50, 24] });
     expect(fourth.A[3]).toEqual([-24, -50, -35, -10]); expect(transferOf(fourth)).toEqual({ numerator: [1], denominator: [1, 10, 35, 50, 24] });
   });
+  it('recovers a noncanonical fourth-order transfer from independently eliminated signal equations', () => {
+    // Eliminating x2=s*x1, x3=(s²+s+1)*x1 and
+    // x4=(s³+3s²+5s+2)*x1 gives P=s⁴+6s³+17s²+20s+9.
+    const model: StateModel = { A: [[0, 1, 0, 0], [-1, -1, 1, 0], [0, -2, -2, 1], [0, 0, -3, -3]], B: [0, 0, 0, 2], C: [3, 0, 0, 0], D: .5 };
+    expect(transferOf(model)).toEqual({ numerator: [.5, 3, 8.5, 10, 10.5], denominator: [1, 6, 17, 20, 9] });
+  });
   it('keeps hidden modes distinct from equivalent zero-state transfer functions', () => {
     const hidden: StateModel = { A: [[1, 0], [0, -2]], B: [0, 1], C: [1, 1], D: 0 };
     expect(transferOf(hidden)).toEqual({ numerator: [1, -1], denominator: [1, 1, -2] });
@@ -108,6 +114,14 @@ describe('CR03 bounded failures and numerical qualification', () => {
     expect(rank([[1e-15, 0], [0, 2e-15]])).toBe(2);
     expect(equivalence({ numerator: [1], denominator: [1, 3, 2] }, { numerator: [2], denominator: [1, 3, 2] }).matches).toBe(false);
     expect(equivalence({ numerator: [1], denominator: [1, 3, 2] }, { numerator: [2], denominator: [2, 6, 4] }).matches).toBe(true);
+    expect(equivalence({ numerator: [1e-200], denominator: [1, 1] }, { numerator: [0], denominator: [1] }).matches).toBe(false);
+    expect(equivalence({ numerator: [1e-200], denominator: [1, 1] }, { numerator: [2e-200], denominator: [2, 2] }).matches).toBe(true);
+  });
+  it('does not silently erase an unrepresentable nonzero transfer or coordinate gain', () => {
+    const tiny: StateModel = { A: [[-1]], B: [1e-200], C: [1e-200], D: 0 };
+    expect(() => transferOf(tiny)).toThrow(/underflows/);
+    expect(() => at(tiny, [0], 1, 1)).toThrow(/underflows/);
+    expect(() => coordinates({ ...tiny, B: [1], C: [1e-320] }, [[1e6]], [0])).toThrow(/underflows/);
   });
   it('supports coordinate-scaled initial states while bounding trajectory work', () => {
     const changed = coordinates(BASELINE, [[1000, 0], [0, 1000]], [1, 0]);

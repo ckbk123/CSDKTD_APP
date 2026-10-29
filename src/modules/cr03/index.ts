@@ -1,6 +1,6 @@
 import type { ModuleManifest } from '../../core/module';
 
-export const manifest = {
+export const manifest = Object.freeze({
   id: "CR03",
   title: "State representations",
   description: "Compare transfer functions and state coordinates.",
@@ -8,4 +8,4 @@ export const manifest = {
   category: "representation",
   defaultExample: "A = [0,1; -2,-3]; B = [0;1]; C = [1,0]; D = 0",
   load: () => import('./workspace'),
-} satisfies ModuleManifest;
+} satisfies ModuleManifest);

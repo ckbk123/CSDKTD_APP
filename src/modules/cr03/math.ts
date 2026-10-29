@@ -35,19 +35,25 @@ export function identity(size: number): number[][] { return Array.from({ length:
 export function norm(matrix: Matrix): number { return Math.max(0, ...matrix.map(row => row.reduce((sum, value) => sum + Math.abs(value), 0))); }
 function add(a: Matrix, b: Matrix): number[][] { return a.map((row, i) => row.map((value, j) => value + b[i][j])); }
 function scale(a: Matrix, factor: number): number[][] { return a.map(row => row.map(value => value * factor)); }
-export function multiply(a: Matrix, b: Matrix): number[][] {
+export function multiply(a: Matrix, b: Matrix, strict = false): number[][] {
   const rows = a.length, inner = rows ? a[0].length : b.length, columns = b.length ? b[0].length : 0;
   if (b.length !== inner || a.some(row => row.length !== inner) || b.some(row => row.length !== columns)) fail('Matrix multiplication dimensions do not agree.');
   const result = Array.from({ length: rows }, (_, i) => Array.from({ length: columns }, (_, j) => {
+    if (strict) return dot(a[i], b.map(row => row[j]));
     let sum = 0; for (let k = 0; k < inner; k++) sum += a[i][k] * b[k][j]; return sum;
   }));
   bounded(result.flat(), 'Matrix calculation', 1e100); return result;
 }
 export function vector(matrix: Matrix, values: readonly number[]): number[] {
   if (matrix.some(row => row.length !== values.length)) fail('State vector dimensions do not agree.');
-  return matrix.map(row => row.reduce((sum, value, j) => sum + value * values[j], 0));
+  return matrix.map(row => dot(row, values));
 }
-function dot(a: readonly number[], b: readonly number[]): number { return a.reduce((sum, value, i) => sum + value * b[i], 0); }
+function dot(a: readonly number[], b: readonly number[]): number {
+  let sum = 0, underflow = false;
+  for (let i = 0; i < a.length; i++) { const product = a[i] * b[i]; if (a[i] !== 0 && b[i] !== 0 && product === 0) underflow = true; sum += product; }
+  if (sum === 0 && underflow) fail('A nonzero matrix/vector product underflows. Rescale the model or coordinates.');
+  bounded([sum], 'Matrix/vector product', 1e100); return sum;
+}
 export function validateModel(model: StateModel): void {
   const n = model.A.length;
   if (n > MAX_ORDER || model.A.some(row => row.length !== n) || model.B.length !== n || model.C.length !== n) fail('Use square A, column B, row C and scalar D, with zero to four states.');
@@ -87,7 +93,7 @@ export function transferOf(model: StateModel): Transfer {
   validateModel(model); const n = model.A.length, denominator = [1], moments: number[] = []; let F = identity(n);
   for (let k = 1; k <= n; k++) {
     moments.push(dot(model.C, vector(F, model.B)));
-    const AF = multiply(model.A, F), coefficient = -AF.reduce((sum, row, i) => sum + row[i], 0) / k;
+    const AF = multiply(model.A, F, true), coefficient = -AF.reduce((sum, row, i) => sum + row[i], 0) / k;
     denominator.push(coefficient); F = add(AF, scale(identity(n), coefficient));
   }
   const numerator = denominator.map((value, i) => model.D * value + (i ? moments[i - 1] : 0));
@@ -98,7 +104,7 @@ export function coordinates(model: StateModel, T: Matrix, initial: readonly numb
   validateModel(model); const n = model.A.length;
   if (T.length !== n || initial.length !== n) fail('Coordinate and initial-state dimensions must match A.');
   bounded(initial, 'Initial state', 100); const inverted = inverse(T);
-  const A = multiply(multiply(T, model.A), inverted.matrix), B = vector(T, model.B), C = n ? multiply([model.C], inverted.matrix)[0] : [];
+  const A = multiply(multiply(T, model.A, true), inverted.matrix, true), B = vector(T, model.B), C = n ? multiply([model.C], inverted.matrix, true)[0] : [];
   const next = { A, B, C, D: model.D }; validateModel(next);
   const left = multiply(A, T), right = multiply(T, model.A), output = n ? multiply([C], T)[0] : [];
   const residual = Math.max(0, ...left.flatMap((row, i) => row.map((value, j) => Math.abs(value - right[i][j]))), ...output.map((value, i) => Math.abs(value - model.C[i])));
@@ -106,7 +112,7 @@ export function coordinates(model: StateModel, T: Matrix, initial: readonly numb
 }
 export function observability(model: StateModel): number[][] {
   validateModel(model); const rows: number[][] = []; let row = [...model.C];
-  for (let k = 0; k < model.A.length; k++) { rows.push(row); row = multiply([row], model.A)[0]; }
+  for (let k = 0; k < model.A.length; k++) { rows.push(row); row = multiply([row], model.A, true)[0]; }
   return rows;
 }
 export function controllability(model: StateModel): number[][] {
@@ -137,7 +143,8 @@ export function equivalence(first: Transfer, second: Transfer): { matches: boole
   const a = convolution(first.numerator, second.denominator), b = convolution(second.numerator, first.denominator), length = Math.max(a.length, b.length);
   while (a.length < length) a.unshift(0); while (b.length < length) b.unshift(0);
   bounded([...a, ...b], 'Equivalence comparison', 1e30);
-  const residual = Math.max(0, ...a.map((value, i) => Math.abs(value - b[i]))) / Math.max(1, ...a.map(Math.abs), ...b.map(Math.abs));
+  const magnitude = Math.max(0, ...a.map(Math.abs), ...b.map(Math.abs));
+  const residual = magnitude === 0 ? 0 : Math.max(0, ...a.map((value, i) => Math.abs(value - b[i]))) / magnitude;
   return { matches: residual <= 1e-8, residual };
 }
 function exponential(matrix: Matrix): number[][] {
