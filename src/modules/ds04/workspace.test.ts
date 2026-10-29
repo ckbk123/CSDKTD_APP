@@ -70,6 +70,7 @@ describe('DS04 complete teaching workspace', () => {
   it('validates gain and plotting bounds without leaving an old graph visible', async () => {
     const { root } = await open(); click(root, 'Check prediction and reveal');
     edit(root.querySelector('input')!, ''); expect(root.textContent).toContain('finite K'); expect(root.querySelectorAll('svg')).toHaveLength(0);
+    edit(root.querySelector('input')!, '1e-999'); expect(root.textContent).toContain('finite K'); expect(root.querySelectorAll('svg')).toHaveLength(0);
     edit(root.querySelector('input')!, '1'); expect(root.querySelectorAll('svg')).toHaveLength(2);
     edit(root.querySelectorAll('input')[1], '7'); expect(root.textContent).toContain('minimum < maximum'); expect(root.querySelectorAll('svg')).toHaveLength(0);
   });

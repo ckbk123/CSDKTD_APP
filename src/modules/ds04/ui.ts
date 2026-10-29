@@ -40,7 +40,12 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const controls = element('div', undefined, 'g-controls'); root.append(controls);
   function numeric(label: string, value: number, change: (n: number) => void): HTMLInputElement {
     const wrap = element('label', label), field = element('input'); field.type = 'number'; field.min = '-100'; field.max = '100'; field.step = 'any'; field.value = String(value);
-    field.addEventListener('input', () => change(field.value.trim() ? Number(field.value) : NaN), { signal }); wrap.append(field); controls.append(wrap); return field;
+    field.addEventListener('input', () => {
+      const raw = field.value.trim(), value = Number(raw);
+      // A native numeric field may retain a nonzero literal that Number rounds to zero.
+      const underflow = value === 0 && /[1-9]/.test(raw.split(/[eE]/)[0]);
+      change(raw && !underflow ? value : NaN);
+    }, { signal }); wrap.append(field); controls.append(wrap); return field;
   }
   const gainInput = numeric('Selected gain K (−100 to 100)', gain, v => { gain = v; exactGain = null; if (model) render(); });
   numeric('Locus window K minimum', minimum, v => { minimum = v; if (model) render(); });

@@ -79,3 +79,6 @@ At the submitted revision the root list used exact K=10/3 for N=-3z²/10,D=z², 
 
 Correction checks: npm test -- src/modules/ds04 passes 41/41 (32 math,9 workspace); npm run check passes; npm test passes 83/83 across8files; npm run build passes (existing MathLive chunk warning only); git diff --check passes. The targeted production-browser recheck is pending while DS01 finishes and the coordinator takes its explicitly reserved next slot. Earlier full browser evidence above still applies to the otherwise unchanged module. This is a recoverable review checkpoint, not a resubmission yet.
 
+
+The review pass also reproduced native numeric underflow (nonzero raw 1e-999 became Number zero) in this branch's own controls. A local input guard now routes that case to existing visible numeric feedback, with a workspace regression; intentional zero and ordinary finite exponent values remain valid. This old-baseline branch does not import an unmerged shared helper. The production build and41modulechecks pass after this guard. Coordinator QA has resumed normal availability; DP02 currently holds it, so DS04 is waiting through an event-driven helper request without altering another reservation.
+
