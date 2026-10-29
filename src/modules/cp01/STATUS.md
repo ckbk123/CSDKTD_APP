@@ -1,7 +1,7 @@
 # CP01 implementation status
 
-- **Stage:** implemented
-- **Current checkpoint:** full bounded workspace, mathematical/project checks and actual-browser verification complete; independent integration review remains.
+- **Stage:** in-progress
+- **Current checkpoint:** priority numerical-conditioning correction after independent review; revised modal free response passes targeted tests, final browser/project evidence and same-PR resubmission remain.
 - **Last assessed:** 2026-10-29
 - **Base:** primary-main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
@@ -100,3 +100,19 @@ Setup `449c98d` recorded the full audit and private claim/worktree. Parser proto
 Full analytic/UI checkpoint `a5df141` passed 186/530 tests before the final sign/typesetting/axis corrections. PR #24 was created as a draft and attached, with its pending browser work disclosed. Earlier exact-head CI `fb38653879233fb3834c050538236ec30d85e466` passed at [run 40890513979](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40890513979/job/123505833004); that is historical checkpoint evidence, not final-head acceptance.
 
 The full accepted bounded exercise now has mathematical, project and actual-browser evidence. Independent coordinator review/integration remains; no release/version/deployment is claimed. Preserve this worktree, branch and exact submitted revision for corrections on the same PR. Prior contributions remain recoverable. No shared-helper request or unowned change remains. Global application checks reflect this isolated v0.3.5-based branch; the coordinator owns current-main combined integration checks.
+
+## Returned numerical-conditioning defect — correction in progress
+
+Independent review of frozen `87034c7` reproduced free-response failure in supported models. For G=1/[(s−2)(s+3)], x(0−)=[1,−3], the actual w=y=e^(−3t) became −128 at cursor20, trace20 ended near−171.434 and trace30 falsely truncated. For G=1/[(s−.1)(s−10)], x=[1,.1], the actual e^(.1t) became16384 at cursor5 and the trace also invented a fast mode. The displayed exact modal formulas were correct, but both transition multiplication/iteration and the previous cosh/sinh numerical evaluator suffered cancellation after exponential amplification. The source187-test suite did not cover these conditioned eigenvector fixtures; the earlier implemented label is superseded until correction verification finishes.
+
+DS05 was checkpointed/pushed at `3550f6bd93969c709388c3b5127e413759b363f1` before returning to this preserved worktree/same PR24. Current primary guides were reread. The coordinator owns any CF02 integration-only wrapper adaptation; no action or unowned edit is taken there.
+
+Implemented correction:
+
+- `compileTerms` resolves real modal coefficients before exponentiation. Perfect-square rational discriminants use exact coefficients/rates, so a genuinely zero component stays absent. Irrational-root small coefficients come from their exact rational modal product divided by the well-conditioned larger coefficient, avoiding subtraction of rounded nearly equal values. No tolerance trims a small growing mode. Near-coincident modes use the regular basis for |sqrt(delta)t|<.5; large exponential products can use a logarithmic magnitude. An exact nonzero coefficient outside floating range raises explicit rescaling feedback.
+- `response.ts` evaluates each free phase state and free output from those prepared expressions at absolute time, independently of the plotting steps. It no longer iterates a rounded free state through an unstable transition or recomputes its output by subtracting large state contributions. The forced matrix engine and its bounds are retained.
+- The cursor now also typesets its ordinary output with multiplication/power-of-ten notation for small or large values. Compact numeric tables remain available.
+
+New independent checks: all six originally added direct/analytic/trace regressions failed before repair. Nine conditioning tests now cover both reported examples at20/30 and5, every retained trace sample, genuine fast components down to2×10^-21, near-coincident rational roots, an irrational near-eigenvector and explicit nonrepresentable-coefficient failure. The irrational oracle uses Python Decimal at85digits: G=1/(s²−2), x=[1,−1.414213562373095], y(30)=45.9667975612399498165191…; this small genuine unstable component is retained. Two workspace-flow regressions check the repaired fixtures and typeset scientific output.
+
+Current local module check: **198 tests / 8 files pass**, and `npm run check` passes. Full final project checks and actual private-browser correction checks are next; this is not yet a corrected submission. Historical browser evidence above remains valid for those earlier flows, and must not be presented as verification of this new numerical path.

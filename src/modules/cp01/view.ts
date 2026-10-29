@@ -4,7 +4,7 @@ import { readNumericInput } from '../../shared/numeric-input';
 import { forcedTerms, fraction, freeTerms, inputTransform, polynomial, termsLatex } from './analytic';
 import { centeredInitial, excitation, initialState, initialTransformNumerator, makeModel, outputCoefficients, type InputKind, type Model } from './model';
 import { parsePolynomial } from './parser';
-import { numeric, responsePlot } from './plot';
+import { numeric, numericLatex, responsePlot } from './plot';
 import { decimal, div, exactText, neg, toNumber, ZERO, type Rational } from './rational';
 import { impulseAreas, sample, trace, type Point, type Side } from './response';
 import './style.css';
@@ -191,6 +191,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
         try {
           const time = readNumericInput(cursor, 'Cursor time'); if (time < 0 || time > end.t) throw new Error(`Cursor time must be between 0 and ${numeric(end.t)} seconds in the retained trace.`);
           const p = sample(m, input, x, time, side.value as Side); slider.value = String(time); outputPlot.cursor(time); inputPlot.cursor(time); cursorValues.replaceChildren();
+          display(cursorValues, `t=${numericLatex(time)}\\,\\mathrm{s},\\quad y_{\\mathrm{total,reg}}(t^{${p.side === 'left' ? '-' : '+'}})\\approx ${numericLatex(p.total)}`, 'Computed ordinary output at the cursor');
           const row = (p: Point): string[] => [numeric(p.t) + (p.side === 'left' ? '−' : '+'), numeric(p.input), numeric(p.free), numeric(p.forced), numeric(p.total)];
           table(cursorValues, 'Computed cursor values; ordinary parts only', ['t (s)', 'u', 'y free', 'y forced', 'y total'], [row(p)]);
           table(cursorValues, 'Phase-state components at the cursor', ['State', 'Free', 'Forced', 'Total'], p.freeState.map((v, i) => [`x${i + 1}`, numeric(v), numeric(p.forcedState[i]), numeric(v + p.forcedState[i])]));

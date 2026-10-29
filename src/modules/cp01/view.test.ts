@@ -29,6 +29,16 @@ function reveal(root: HTMLElement): void { root.querySelector('form')!.dispatchE
 function result(root: HTMLElement): HTMLElement { return root.querySelector('[aria-label="Checked response"]')!; }
 function preset(root: HTMLElement, value: string): void { edit(field(root, 'Experiment'), value, true); }
 describe('complete response exercise flow', () => {
+  it.each([
+    ['(s-2)(s+3)', '-3', '20', '8.756511\\times10^{-27}'],
+    ['(s-.1)(s-10)', '.1', '5', '1.648721'],
+  ])('keeps an unexcited fast mode absent in the actual workspace flow for %s', (denominator, derivative, time, expected) => {
+    const { root } = open(); edit(root.querySelectorAll('textarea')[1], denominator);
+    edit(field(root, 'Input shape'), 'free', true); edit(field(root, 'Initial x₁ = w(0−)'), '1'); edit(field(root, 'Initial x₂ = w′(0−), order 2 only'), derivative);
+    edit(field(root, 'Trace horizon (s)'), time); edit(field(root, 'Prediction time (s), right-hand value'), time); reveal(root);
+    expect(result(root).querySelector('[aria-label="Computed ordinary output at the cursor"]')!.textContent).toContain(expected);
+    expect(result(root).textContent).not.toContain('Trace stopped early');
+  });
   it('reveals computed baseline terms and direct cursor value only on request', () => {
     const { root } = open(); expect(result(root).children).toHaveLength(0); reveal(root);
     expect(result(root).textContent).toContain('e^{-t}'); expect(result(root).textContent).toContain('0.1997882');

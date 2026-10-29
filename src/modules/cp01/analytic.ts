@@ -1,5 +1,5 @@
 import { initialState, type Excitation, type Model } from './model';
-import { add, div, mul, neg, rational, sub, toNumber, ZERO, type Rational } from './rational';
+import { add, decimal, div, mul, neg, rational, sub, toNumber, ZERO, type Rational } from './rational';
 
 /** Exact real basis: exp(rate*t) [c C_delta(t) + k S_delta(t)]. */
 export interface Block { readonly rate: Rational; readonly delta: Rational; readonly c: Rational; readonly k: Rational }
@@ -55,21 +55,62 @@ export function unitTerms(m: Model, kind: 'step' | 'ramp' | 'impulse'): Expressi
 export function forcedTerms(m: Model, input: Excitation): Expression {
   return input.kind === 'free' ? expression() : scale(unitTerms(m, input.kind === 'pulse' ? 'step' : input.kind), input.kind === 'pulse' ? div(input.amplitude, input.width) : input.amplitude);
 }
-/** For a pulse this is its unshifted on-segment; subtract its delayed copy at width. */
-export function evaluateTerms(e: Expression, t: number): number {
-  let value = e.polynomial.reduceRight((s, c) => s * t + toNumber(c, true), 0);
-  for (const b of e.blocks) {
-    const delta = toNumber(b.delta, true), c = toNumber(b.c, true), k = toNumber(b.k, true), rate = toNumber(b.rate, true);
-    let C = 1, S = t;
-    if (delta) {
-      const frequency = Math.sqrt(Math.abs(delta)), angle = frequency * t;
-      C = delta > 0 ? Math.cosh(angle) : Math.cos(angle);
-      S = delta > 0 ? Math.sinh(angle) / frequency : Math.sin(angle) / frequency;
-    }
-    value += Math.exp(rate * t) * (c * C + k * S);
-  }
-  return value;
+function exponentialProduct(coefficient: number, exponent: number): number {
+  if (!coefficient) return 0; // A true zero component must never amplify numerical noise.
+  const result = Math.abs(exponent) < 700 ? coefficient * Math.exp(exponent)
+    : Math.sign(coefficient) * Math.exp(Math.log(Math.abs(coefficient)) + exponent);
+  if (!Number.isFinite(result)) throw new Error('A modal response overflowed. Shorten the horizon or rescale the experiment.');
+  return result;
 }
+/** Prepare modal coefficients before exponentiation, without rounding small modes to zero. */
+export function compileTerms(e: Expression): (t: number) => number {
+  const polynomial = e.polynomial.map(c => toNumber(c));
+  const blocks = e.blocks.map(b => {
+    const delta = toNumber(b.delta, true), c = toNumber(b.c), k = toNumber(b.k), rate = toNumber(b.rate, true);
+    if (delta > 0) {
+      const exactBeta = exactRoot(b.delta), beta = Math.sqrt(delta);
+      let plus: number, minus: number, plusRate: number, minusRate: number;
+      if (exactBeta) {
+        // This includes exact stable/slow eigenvectors in an otherwise unstable realization.
+        plus = toNumber(div(add(b.c, div(b.k, exactBeta)), two));
+        minus = toNumber(div(sub(b.c, div(b.k, exactBeta)), two));
+        plusRate = toNumber(add(b.rate, exactBeta), true); minusRate = toNumber(sub(b.rate, exactBeta), true);
+      } else {
+        // Compute the larger coefficient directly; obtain the small one from its
+        // exact rational product. Subtracting rounded c and k/beta loses real modes.
+        const modalProduct = div(sub(mul(b.c, b.c), div(mul(b.k, b.k), b.delta)), rational(4n));
+        if (b.c.n * b.k.n >= 0n) {
+          plus = (c + k / beta) / 2;
+          minus = plus ? toNumber(div(modalProduct, decimal(plus.toString(), true))) : 0;
+        } else {
+          minus = (c - k / beta) / 2;
+          plus = minus ? toNumber(div(modalProduct, decimal(minus.toString(), true))) : 0;
+        }
+        const rateProduct = toNumber(sub(mul(b.rate, b.rate), b.delta), true);
+        if (rate >= 0) { plusRate = rate + beta; minusRate = rateProduct / plusRate; }
+        else { minusRate = rate - beta; plusRate = rateProduct / minusRate; }
+      }
+      return (t: number): number => {
+        if (!t) return c;
+        // The regular basis avoids subtracting large nearly coincident modes.
+        if (Math.abs(beta * t) < .5) return exponentialProduct(c * Math.cosh(beta * t) + k * Math.sinh(beta * t) / beta, rate * t);
+        return exponentialProduct(plus, plusRate * t) + exponentialProduct(minus, minusRate * t);
+      };
+    }
+    if (delta < 0) {
+      const frequency = Math.sqrt(-delta);
+      return (t: number): number => exponentialProduct(c * Math.cos(frequency * t) + k * Math.sin(frequency * t) / frequency, rate * t);
+    }
+    return (t: number): number => exponentialProduct(c + k * t, rate * t);
+  });
+  return (t: number): number => {
+    const value = polynomial.reduceRight((sum, coefficient) => sum * t + coefficient, 0) + blocks.reduce((sum, at) => sum + at(t), 0);
+    if (!Number.isFinite(value)) throw new Error('The numerical analytic response exceeded the finite range. Shorten the horizon.');
+    return value;
+  };
+}
+/** For a pulse this is its unshifted on-segment; subtract its delayed copy at width. */
+export function evaluateTerms(e: Expression, t: number): number { return compileTerms(e)(t); }
 function squareRoot(n: bigint): bigint | undefined {
   if (n < 0n) return undefined;
   if (n < 2n) return n;

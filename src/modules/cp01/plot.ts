@@ -1,6 +1,10 @@
 import type { Point } from './response';
 
 export const numeric = (value: number): string => value === 0 ? '0' : Number(value.toPrecision(7)).toString();
+export function numericLatex(value: number): string {
+  const text = numeric(value), scientific = /^(.+)e([+-]?\d+)$/.exec(text);
+  return scientific ? `${scientific[1]}\\times10^{${Number(scientific[2])}}` : text;
+}
 const axisNumber = (value: number): string => value === 0 ? '0' : Number(value.toPrecision(4)).toString();
 const NS = 'http://www.w3.org/2000/svg';
 const svgNode = <K extends keyof SVGElementTagNameMap>(tag: K, attributes: Record<string, string>, text?: string): SVGElementTagNameMap[K] => {

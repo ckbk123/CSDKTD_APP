@@ -1,5 +1,6 @@
 import { excitation, initialState, stateMatrix, type Excitation, type Model } from './model';
-import { div, mul, toNumber, ZERO, type Rational } from './rational';
+import { compileTerms, freeTerms } from './analytic';
+import { div, mul, toNumber, ONE, ZERO, type Rational } from './rational';
 
 export type Side = 'left' | 'right';
 export interface Point {
@@ -54,11 +55,20 @@ function inputValue(input: Excitation, t: number, side: Side): number {
   }
   return 0; // Regular part only; ideal impulse area is recorded separately.
 }
-function point(model: Model, input: Excitation, t: number, side: Side, freeState: readonly number[], forcedState: readonly number[]): Point {
+function point(model: Model, input: Excitation, t: number, side: Side, freeState: readonly number[], forcedState: readonly number[], freeOutput: number): Point {
   const c = model.b.map(x => toNumber(x)), u = inputValue(input, t, side);
-  const free = c.reduce((s, x, i) => s + x * freeState[i], 0);
+  const free = freeOutput;
   const forced = c.reduce((s, x, i) => s + x * forcedState[i], 0) + toNumber(model.direct) * u;
   return { t, side, input: u, free, forced, total: free + forced, freeState: [...freeState], forcedState: forcedState.slice(0, model.order) };
+}
+/** Absolute-time modal evaluation prevents iteration from inventing unexcited unstable modes. */
+function freeEvaluation(model: Model, initial: readonly Rational[]) {
+  const output = compileTerms(freeTerms(model, initial));
+  const coordinates = Array.from({ length: model.order }, (_, i) => {
+    const stateOutput: Model = { ...model, b: Array.from({ length: model.order }, (_, j) => i === j ? ONE : ZERO), direct: ZERO };
+    return compileTerms(freeTerms(stateOutput, initial));
+  });
+  return { output, state: (t: number): number[] => coordinates.map(at => at(t)) };
 }
 function inRange(p: Point): boolean { return [p.t, p.input, p.free, p.forced, p.total, ...p.freeState, ...p.forcedState].every(x => Number.isFinite(x) && Math.abs(x) <= 1e10); }
 export function impulseAreas(model: Model, input: Excitation): { input: Rational; output: Rational } {
@@ -72,8 +82,7 @@ function unitInputState(model: Model, t: number, ramp: boolean): number[] {
 export function sample(model: Model, input: Excitation, initial: readonly Rational[], t: number, side: Side = 'right'): Point {
   validate(model, input, initial);
   if (!Number.isFinite(t) || t < 0 || t > 60 || !['left', 'right'].includes(side)) throw new Error('Cursor time must be between 0 and 60 seconds with a left/right side.');
-  const x0 = initial.map(x => toNumber(x));
-  const free = x0.some(x => x !== 0) ? vectorProduct(transition(stateMatrix(model), t), x0) : Array<number>(model.order).fill(0);
+  const exactFree = freeEvaluation(model, initial), free = exactFree.state(t);
   let forced = Array<number>(model.order).fill(0);
   if (input.amplitude.n && (t > 0 || side === 'right')) {
     const amplitude = toNumber(input.amplitude);
@@ -86,7 +95,7 @@ export function sample(model: Model, input: Excitation, initial: readonly Ration
       forced = t > width ? vectorProduct(transition(stateMatrix(model), t - width), during) : during;
     }
   }
-  const result = point(model, input, t, side, free, forced);
+  const result = point(model, input, t, side, free, forced, exactFree.output(t));
   if (!inRange(result)) throw new Error('The cursor response exceeds the 10¹⁰ state/signal range. Choose an earlier time or rescale the experiment.');
   return result;
 }
@@ -101,12 +110,13 @@ export function trace(model: Model, input: Excitation, initial: readonly Rationa
   const width = input.kind === 'pulse' ? toNumber(input.width) : Infinity;
   if (width <= horizon) times.add(width);
   if (input.kind === 'pulse') for (let k = 1; k < 20; k++) { const t = width * k / 20; if (t < horizon) times.add(t); }
-  let free = initial.map(x => toNumber(x)), forced = Array<number>(forcedMatrix.length).fill(0), previous = 0;
-  const points: Point[] = [point(model, input, 0, 'left', free, forced)];
+  const exactFree = freeEvaluation(model, initial);
+  let free = exactFree.state(0), forced = Array<number>(forcedMatrix.length).fill(0), previous = 0;
+  const points: Point[] = [point(model, input, 0, 'left', free, forced, exactFree.output(0))];
   if (input.kind === 'impulse') forced[m - 1] = toNumber(input.amplitude);
   else if (input.kind !== 'free') forced[forced.length - 1] = input.kind === 'pulse' ? toNumber(div(input.amplitude, input.width)) : toNumber(input.amplitude);
-  points.push(point(model, input, 0, 'right', free, forced));
-  const cacheA = new Map<number, Matrix>(), cacheForced = new Map<number, Matrix>();
+  points.push(point(model, input, 0, 'right', free, forced, exactFree.output(0)));
+  const cacheForced = new Map<number, Matrix>();
   function advance(matrix: Matrix, state: number[], dt: number, cache: Map<number, Matrix>): number[] {
     if (!state.some(x => x !== 0)) return state;
     let map = cache.get(dt); if (!map) { map = transition(matrix, dt); if (cache.size === 128) cache.delete(cache.keys().next().value!); cache.set(dt, map); }
@@ -116,13 +126,13 @@ export function trace(model: Model, input: Excitation, initial: readonly Rationa
   for (const t of [...times].sort((x, y) => x - y)) {
     if (!t) continue;
     try {
-      const dt = t - previous; free = advance(a, free, dt, cacheA); forced = advance(forcedMatrix, forced, dt, cacheForced); previous = t;
+      const dt = t - previous; free = exactFree.state(t); forced = advance(forcedMatrix, forced, dt, cacheForced); previous = t;
       if (t === width) {
-        const left = point(model, input, t, 'left', free, forced);
+        const left = point(model, input, t, 'left', free, forced, exactFree.output(t));
         if (!inRange(left)) return result(true, 'A state or response component exceeded 10¹⁰. The trace stopped before the requested horizon.');
         points.push(left); forced[m] = 0;
       }
-      const p = point(model, input, t, 'right', free, forced);
+      const p = point(model, input, t, 'right', free, forced, exactFree.output(t));
       if (!inRange(p)) return result(true, 'A state or response component exceeded 10¹⁰. The trace stopped before the requested horizon.');
       points.push(p);
     } catch (error) { return result(true, error instanceof Error ? error.message : 'The bounded numerical response could not continue.'); }
