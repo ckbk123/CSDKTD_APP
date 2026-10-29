@@ -33,6 +33,7 @@ export function parsePole(latex: string): Pole {
     .replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\s/g, '');
   source = source.replace(/^s=/, '');
   if (/[eE]/.test(source)) fail('The visual field treats e and E as symbols. Use decimal numbers here, or scientific notation in the numeric components.');
+  if (source.includes('^')) fail('Powers are not supported in this field. Use decimal components, for example 0.01.');
   // MathLive emits both braced fractions and TeX's single-token shorthand.
   let cursor = 0;
   const fraction = (depth: number): string => {

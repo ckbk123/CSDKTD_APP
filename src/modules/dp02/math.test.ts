@@ -27,6 +27,9 @@ describe('DP02 pole notation', () => {
   it.each(['1e-2+3j', '1E-2+3j', '0e-999+j', '1.2e-3+2j'])('rejects visually algebraic exponent notation %s', input => {
     expect(() => parsePole(input)).toThrow(/visual field treats e and E as symbols/);
   });
+  it('explains a scientific paste normalized by MathLive to a textbook power', () => {
+    expect(() => parsePole(String.raw`1\times10^{-2}+3j`)).toThrow(/Powers are not supported/);
+  });
   it.each([String.raw`2\frac12+3j`, String.raw`-2\frac{1}{2}+3j`])('rejects ambiguous mixed-number adjacency %s', input => {
     expect(() => parsePole(input)).toThrow(/explicit \+ or ×/);
   });

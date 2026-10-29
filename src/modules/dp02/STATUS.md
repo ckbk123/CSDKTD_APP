@@ -1,7 +1,7 @@
 # DP02 implementation status
 
-- **Stage:** in-progress (coordinator review correction)
-- **Assessed:** 2026-10-29; implementation revision `beedadb`, based on `c5d1135`
+- **Stage:** implemented (review correction checked; independent acceptance pending)
+- **Assessed:** 2026-10-29; review correction checked on this branch, based on `c5d1135`; exact final tested SHA is recorded in the submitted claim
 - **Ownership:** `src/modules/dp02/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Worker:** `worker-dp02-01a186d1`, branch `codex/dp02-pole-mapping-01a186d1`
@@ -118,3 +118,17 @@ Added four visual e/E rejection regressions, decimal serialization tests and dec
 Three additional view-wiring regressions verify that visual e notation cannot reach computation, numeric1e-7 produces the decimal draft s=0.0000001+3j before solving, and numeric1e-999 retains its underflow error. These use mocked presentation only, not a claim of real MathLive behavior. Module tests now pass65/65; the full suite passes107/107 and type checking passes. Focused browser QA is deferred for the coordinator's next DP01 integration slot per scheduling notice; no new acquisition attempt will run until its release notice.
 
 The current primary equation guide was checked after the v0.3.2 release. Eight further semantic fixtures now cover outer minus/parentheses, minus in numerator/denominator, explicit addition/multiplication with a fraction, ambiguous whole-number adjacency and hidden TeX grouping. Numeric/fraction adjacency is rejected unless + or × is explicit; standalone hidden TeX groups require visible parentheses. Compact and nested fraction arguments remain supported. An initial adjacency check wrongly rejected a nested compact fraction; the regression caught it and the check was moved into the expression group scanner before these checks passed. Current results:73 module tests,115 full-project tests, type check and production build pass. Focused browser verification remains pending; stage stays in-progress until resubmission evidence is complete.
+
+## Review correction: final production evidence and resubmission
+
+The focused production-browser gate ran under an atomic DP02 reservation on port8793, in the worker's own in-app Chromium tab, after the coordinator released its DS02 integration slot. It checked the corrected visual/native boundary:
+
+- Entering a visual e symbol and revealing produced the explicit e/E-symbol explanation and no computed result. Pure regressions also reject the exact algebraic source1e-2+3j. MathLive sometimes normalizes a complete scientific paste to the visible textbook power1×10^(-2)+3j; this supported-editor/unsupported-parser case now has a specific powers-not-supported message rather than a grouping message. The final rebuilt production page showed that message and no result. Powers remain outside the declared grammar.
+- Native σ=1e-7 with ω=3 computed the intended pole. Copying the actual editor selection exposed application/x-latex s=0.0000001+3j, proving that the field contains decimal notation rather than algebraic e. Native σ=1e-2 gave s=.01+3j, z≈.956292+.295816j and r≈1.001. Native σ=1e-999 produced the nonzero-underflow error and removed prior output.
+- A negative numerator constructed with the real fraction button (select−1, fraction, denominator2, exit, +3j) computed s=−.5+3j, r≈.951229 and z≈.908744+.281108j. No mocked editor was used for this check. Compact, nested and outer-sign equivalence are independently covered by parser tests.
+- At390×844, the decimal equation remained readable with document width375 within viewport390; fonts reported loaded and KaTeX_Main was available. Warning/error logs were empty. Reset restored σ=−2; the earlier complete lifecycle/keyboard/rapid-navigation checks remain applicable because the correction changes parsing/serialization and feedback only. Temporary viewport settings were reset, the worker tab closed, QA released and the worker preview stopped.
+- Local proof capture (outside Git): C:\Users\baokh\.codex\visualizations\2026\10\29\01a186d1-a367-78f1-98f5-e1cf147ef306\dp02-review-decimal.png.
+
+Final corrected checks: npm test -- src/modules/dp02: **74 passed in3 files** (66 math/parser,5 deferred lifecycle,3 mocked view wiring); npm run check: **passed**; npm test: **116 passed in9 files**; npm run build: **passed**. DP02 view is about8.02kB gzip; the existing MathLive warning remains about221.49kB gzip with20 local fonts. Git diff whitespace checks pass. No dependency/shared/configuration change, rebase, primary merge, version bump or deployment was made.
+
+PR #3 remains the single attached review contribution. The original review defect is corrected within the accepted bounded grammar; no required work is deferred. This resubmission records implemented status, not independent verification. DD04 PR9 is preserved at b6367fa with its own active claim and incomplete browser gate, to resume after this exact corrected branch is submitted.
