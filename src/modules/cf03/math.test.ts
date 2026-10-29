@@ -61,7 +61,8 @@ describe('CF03 independent finite-horizon fixtures', () => {
   it('uses common horizons and a separately accumulated finer trapezoidal check', () => {
     const r=simulate(parsePlant('1/(s+1)'),{kp:1,ki:0},2,1e-5);
     const check=verifyIntegral(r,'ISE');
-    expect(check.intervals).toBe(2*r.intervals);
+    expect(check.intervals).toBeGreaterThanOrEqual(2*r.intervals);
+    expect(check.tolerance).toBeCloseTo(r.tolerance/10,12);
     expect(check.consistent).toBe(true);
     near(check.trapezoid,.5+.25*(1-Math.exp(-4))+.0625*(1-Math.exp(-8)),1e-5);
     const longer=simulate(parsePlant('1/(s+1)'),{kp:1,ki:0},4);
@@ -81,5 +82,6 @@ describe('CF03 independent finite-horizon fixtures', () => {
     expect(()=>uniform(base,{kp:4,ki:0},10,3)).toThrow(/even/);
     expect(()=>simulate({g:NaN,a:[1,3,2]},{kp:4,ki:0},10)).toThrow(/normalized/);
     expect(()=>simulate(base,{kp:4,ki:NaN},10)).toThrow(/finite/);
+    expect(()=>verifyIntegral(simulate(base,{kp:4,ki:0},1,1e-8),'IAE')).toThrow(/finest tolerance/);
   });
 });

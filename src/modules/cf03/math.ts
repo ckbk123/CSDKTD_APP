@@ -107,13 +107,18 @@ export function panel(run: Run, time: number, metric: Metric): { index: number; 
 }
 /** Different quadrature rule on a twice-finer state grid. This tests numerical
  * consistency, not a certified bound on exact ODE/quadrature error. */
-export function verifyIntegral(run: Run, metric: Metric): { trapezoid: number; fineSimpson: number; relativeChange: number; consistent: boolean; intervals: number } {
-  const fine = uniform(run.plant, run.controller, run.horizon, run.intervals * 2);
-  const h = run.horizon / (run.intervals * 2);
+export function verifyIntegral(run: Run, metric: Metric): { trapezoid: number; fineSimpson: number; relativeChange: number; ruleChange: number; consistent: boolean; intervals: number; tolerance: number } {
+  if (run.tolerance <= 1e-8) fail('Already at the supported finest tolerance10⁻⁸; a finer-tolerance check is unavailable.');
+  const tolerance = Math.max(1e-8, run.tolerance / 10);
+  const refined = simulate(run.plant, run.controller, run.horizon, tolerance);
+  const intervals = refined.intervals * 2;
+  const fine = uniform(run.plant, run.controller, run.horizon, intervals);
+  const h = run.horizon / intervals;
   let sum = (density(fine.samples[0], metric) + density(fine.samples.at(-1)!, metric)) / 2;
   for (let i = 1; i < fine.samples.length - 1; i++) sum += density(fine.samples[i], metric);
   const trapezoid = sum * h, relativeChange = Math.abs(trapezoid - run.totals[metric]) / (1 + Math.abs(trapezoid));
-  return { trapezoid, fineSimpson: fine.totals[metric], relativeChange, consistent: relativeChange <= 5 * run.tolerance, intervals: run.intervals * 2 };
+  const ruleChange = Math.abs(trapezoid - fine.totals[metric]) / (1 + Math.abs(fine.totals[metric]));
+  return { trapezoid, fineSimpson: fine.totals[metric], relativeChange, ruleChange, consistent: ruleChange <= 5 * tolerance && relativeChange <= 5 * run.tolerance, intervals, tolerance };
 }
 export function ranking(a: number, b: number): 'A' | 'B' | 'tie' {
   return Math.abs(a - b) <= 1e-8 * Math.max(1, Math.abs(a), Math.abs(b)) ? 'tie' : a < b ? 'A' : 'B';
