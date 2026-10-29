@@ -37,6 +37,19 @@ describe('quadratic Jury interval: independent analytic fixtures', () => {
     expect(intervalText(intersect([{ slope: rat(2), offset: rat(3) }]))).toBe('K > -3/2');
     expect(intersect([{ slope: rat(0), offset: rat(0) }]).empty).toBe(true);
   });
+  it('derives an independent family with changed slopes and intercepts in both coefficients', () => {
+    // P(1)=11/10+3K/5, P(-1)=3/2-2K/5; product bounds are redundant.
+    const f = parseFamily('z^2+(0.5K-0.2)z+(0.1K+0.3)');
+    expect(intervalText(intersect(conditions(f)))).toBe('-11/6 < K < 15/4');
+    // Endpoint factorizations: (z-1)(z-7/60), (z+1)(z+27/40).
+    const low = at(f, rat(-11, 6)), high = at(f, rat(15, 4));
+    expect(low.roots.map(r => r.re).sort((a, b) => a - b)[0]).toBeCloseTo(7 / 60, 13);
+    expect(low.roots.map(r => r.re).sort((a, b) => a - b)[1]).toBeCloseTo(1, 13);
+    expect(high.roots.map(r => r.re).sort((a, b) => a - b)[0]).toBeCloseTo(-1, 13);
+    expect(high.roots.map(r => r.re).sort((a, b) => a - b)[1]).toBeCloseTo(-27 / 40, 13);
+    expect(low.stable || high.stable).toBe(false);
+    expect(at(f, rat(0)).stable).toBe(true);
+  });
   it('handles conjugate and repeated boundary roots and Jury singular rows', () => {
     for (const expression of ['z^2+1', 'z^2-2z+1', 'z^2+2z+1', 'z^2-1']) {
       const r = at(parseFamily(expression), rat(0));

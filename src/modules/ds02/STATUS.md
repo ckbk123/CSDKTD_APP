@@ -60,3 +60,5 @@ Real-browser editing/calculation, reset, reopen, fast navigation/late updates, k
 ## Review correction checkpoint (2026-10-29)
 
 Coordinator preliminary inspection found that lesson redraws disconnected the currently focused button. `ui.ts` now captures the focused lesson action/value (or input name) and restores the matching recreated control, with an intentional heading fallback. `workspace.test.ts` checks focus through Reveal/Hide, gain, condition, exact boundary, sweep and clear-sweep. Module tests now pass 31 tests; type check passes. Real keyboard verification remains mandatory. Fractional sweep bounds also retain exact fractions across repeated redraws rather than becoming unsupported long decimals.
+
+Final independent changed-family fixture: z²+(.5K−.2)z+(.1K+.3) has strict interval (−11/6,15/4); endpoint factorizations are (z−1)(z−7/60) and (z+1)(z+27/40). The added test checks both endpoints and an interior gain. Current `npm test` passes 74 tests in 9 files (32 local DS02 tests). Shared browser QA moved from the completed DR01 check to active DS03 checks; DS02 continues to wait without taking another worker's browser controls.
