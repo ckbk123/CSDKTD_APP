@@ -1,6 +1,6 @@
 # DP03 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `8696261267b7620bfc101ce2b5f13772bfaa529a` (primary main v0.3.1)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
@@ -133,3 +133,9 @@ Current module tests pass **65/65**, full `npm test` **148/148**, and production
 After the assigned DR01 check, the exclusive DP03 reservation used a fresh owned Chromium tab on the rebuilt production preview at13518. The module sets the created MathLive field's public `smartSuperscript=false` option so positive multi-digit exponents stay in their power box. This module-local setting was explicitly approved by the coordinator, uses no shared-file changes and is disposed with the caller-owned editor.
 
 Actual power-button typing checked complete2^{12}→4096,2^{−2}→.25 andz^{−2} atΩ=π/2→−1 (unit magnitude, −180° phase). Entering2, a power-box1, ArrowRight and a baseline2 produced the required whole-power-box guidance with hidden results. A completeq^{12} reached the separate order-four limit; an empty power placeholder produced completion feedback with hidden results. Reset restored the rounded source atΩ=.1; changingΩ toπ/2 again matched−.03469125+.02315621j and the independent warped/unwarped comparison. Console warning/error inventory was empty. The owned tab was closed, no viewport override was changed, the owned preview was stopped and the helper reservation released. The coordinator was notified that ordinary IAB acquisition could resume. No Firefox/native-focus controls were used. This closes the last affected browser gate; the earlier full font/keyboard/phone/lifecycle pass remains applicable.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `820853476e92798305fc03a4c134751d9acca0af`, [PR #14](https://github.com/ckbk123/CSDKTD_APP/pull/14), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.

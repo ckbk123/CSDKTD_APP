@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -148,3 +148,9 @@ The coordinator assigned CP03→DR01→DP03 after earlier slot races. DR01 acqui
 - Reset restored1,.8,.64,... . Console warning/error inventory was empty. The owned tab was closed, preview stopped and DR01 reservation released before DP03's assigned slot. No viewport override was changed during this focused pass; earlier full font/keyboard/narrow/reset/reopen/navigation evidence remains recorded above.
 
 The public-property override is the only additional editor configuration; its type-only MathLive import adds no runtime dependency. The final source passes **99/99 module tests**, **141/141 application tests**, type checking and production build (existing MathLive chunk warning). This evidence is committed with the implementation and exact clean-HEAD checks precede final push/ready-PR/submission. No accepted requirement remains open within the declared domain. Independent acceptance and the approved shared numeric-reader adaptation remain coordinator integration work.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `c37e47065c1b5a487ebd5041a2c75f88330d4dfd`, [PR #1](https://github.com/ckbk123/CSDKTD_APP/pull/1), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.

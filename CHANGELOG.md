@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.13 — 30 October 2026
+
+- Integrate fifteen reviewed tools: DR01/DR02/DR05 discrete representations, DP03/DP04 frequency/root-locus plots, DS04 exact gain regions, DF01 sampled performance, CR02 physical ODEs, CP01/CP03/CP04 time/sinusoidal/Bode analysis, CF03 error/effort comparison, CD08 state feedback, CS03 Routh gain design and DF04 sample-period comparisons.
+- Preserve each [submitted source and PR](docs/releases/v0.3.13.json), complete shared input/lifecycle integration and retain bounded mathematical assumptions. Fix DF04's phantom terminal hold and CP04's native-underflow unit conversion; keep CP01's independently checked modal repair.
+- All 2,605 application tests, type checking, production build and fifteen-tool desktop/phone browser smoke gates pass. [Batch evidence](docs/INTEGRATION_BATCHES.md) distinguishes the coordinator checks from earlier worker evidence. No deployment occurred.
+
 ## 0.3.12 — 29 October 2026
 
 - CR01: expand editable polynomial products, explain coefficient contributions, verify exact rational factors through degree four, inspect residual-checked numerical roots/multiplicities, and compare rational expressions with their original excluded points retained.

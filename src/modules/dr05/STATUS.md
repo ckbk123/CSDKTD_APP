@@ -1,6 +1,6 @@
 # DR05 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Assessed:** 2026-10-29. Contribution base: 8696261267b7620bfc101ce2b5f13772bfaa529a. This delivery record accompanies the tested tree; the submitted claim names its exact final commit.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802
 - **Branch/worktree:** codex/dr05-zoh-f802; C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP
@@ -121,3 +121,9 @@ Second review correction, completed 2026-10-29 after verifying this worker's pri
 The accepted bounded exercise and the second review correction are implemented and checked. Independent final coordinator review/integration remains separate; this record does not claim verified status. The exact clean tested final revision is committed/pushed and named by the resubmitted claim. No package, shell, routing, deployment or sibling-module edits are included.
 
 This branch predates main v0.3.3's readNumericInput(input,label). Its tested equivalent local native-number guard is an approved carry-forward under the coordinator's 2026-10-29 instruction. The coordinator owns import adaptation and its checks during integration; no unowned shared file, rebase or merge was added for that rollout. The same PR/branch is preserved for exact clean resubmission and later review.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `5c0c63b9449387b2b591ae3883ea80095cc746d6`, [PR #11](https://github.com/ckbk123/CSDKTD_APP/pull/11), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.

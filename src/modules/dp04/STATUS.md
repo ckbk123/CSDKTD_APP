@@ -1,6 +1,6 @@
 # DP04 implementation status
 
-- **Stage:** implemented (review corrections checked; independent integration review pending)
+- **Stage:** verified
 - **Assessed:** 2026-10-29; starting primary main `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d`
 - **Owned scope:** `src/modules/dp04/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
@@ -131,3 +131,9 @@ Actual close-zero fixture `\frac{z-0.9999999999999999}{z(z-1)}` retained distinc
 At390×844 the final long-label table had281px local viewport/640px content, accepted keyboard ArrowRight and scrolled40px; page width remained375px and fonts were loaded. Actual mixed input `\frac{2\frac{1}{2}}{z(z-1)}` was copied intact and rejected with the explicit +/× message/no quiz. This extends the earlier editor-rejection evidence with a direct semantic-parser check. Reset returned the baseline; its computed unit-circle locus was visually inspected/captured. Browser warning/error logs were empty. Proof files outside Git: `dp04-review-close-interval.png` and `dp04-final-root-locus.png` in this worker's visualization folder. Temporary viewport was reset, own tab closed, preview stopped and QA released at13:31:15Z.
 
 Final corrected commands: `npm test -- src/modules/dp04`104/104 in4 files, `npm run check`, `npm test`307/307 in19 files and `npm run build` all pass. Final DP04 view is about13.40kB gzip; the existing MathLive chunk warning remains. Accepted bounded exercise work and both requested corrections are complete. The same PR19/branch and preserved submission history are reused; the current primary helper records the clean pushed tested HEAD. Independent coordinator acceptance remains pending, with no shared dependency, merge, deployment or version change.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `08a95d187856973eeb1d9b375ff68f20b1382047`, [PR #19](https://github.com/ckbk123/CSDKTD_APP/pull/19), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.

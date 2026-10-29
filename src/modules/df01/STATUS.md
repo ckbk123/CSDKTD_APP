@@ -1,6 +1,6 @@
 # DF01 implementation status
 
-- **Stage:** implemented (hidden-brace correction checked; coordinator native-number adaptation pending before acceptance)
+- **Stage:** verified
 - **Assessed:** 2026-10-29; base `c5d1135`, tested implementation `717adda`; earlier checkpoints `a798749`, `309dbc8`
 - **Ownership:** `src/modules/df01/**`; acceptance: [TASK.md](TASK.md)
 
@@ -111,3 +111,9 @@ Held DF01 QA via current primary helper. Used a new dedicated hidden Chromium ta
 - Screenshot: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/df01-hidden-braces.jpg` (outside Git).
 
 Correction verification: 44 module tests /86 application tests, `npm run check`, `npm run build`, and `git diff --check` pass; unchanged MathLive size warning. The latest same-PR submission includes this evidence. Native-number API adaptation remains coordinator-owned and pending before acceptance, as explicitly assigned above; it is not claimed complete in this worker tree.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `fbf7f22953c2edb5017dac4748b4328a01a47164`, [PR #16](https://github.com/ckbk123/CSDKTD_APP/pull/16), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.

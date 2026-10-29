@@ -1,0 +1,97 @@
+{
+  "version": "0.3.13",
+  "date": "2026-10-30",
+  "applicationTests": 2605,
+  "modules": [
+    {
+      "id": "DR01",
+      "source": "c37e47065c1b5a487ebd5041a2c75f88330d4dfd",
+      "pr": 1,
+      "decision": "accepted"
+    },
+    {
+      "id": "DR02",
+      "source": "271d2df700504012089729492926157786299683",
+      "pr": 5,
+      "decision": "accepted"
+    },
+    {
+      "id": "DR05",
+      "source": "5c0c63b9449387b2b591ae3883ea80095cc746d6",
+      "pr": 11,
+      "decision": "accepted"
+    },
+    {
+      "id": "DP03",
+      "source": "820853476e92798305fc03a4c134751d9acca0af",
+      "pr": 14,
+      "decision": "accepted"
+    },
+    {
+      "id": "DP04",
+      "source": "08a95d187856973eeb1d9b375ff68f20b1382047",
+      "pr": 19,
+      "decision": "accepted"
+    },
+    {
+      "id": "DS04",
+      "source": "a0d37046499fd44a5bbc5a96244d39301486a315",
+      "pr": 13,
+      "decision": "accepted"
+    },
+    {
+      "id": "DF01",
+      "source": "fbf7f22953c2edb5017dac4748b4328a01a47164",
+      "pr": 16,
+      "decision": "accepted"
+    },
+    {
+      "id": "CR02",
+      "source": "8faeb86640e29d02323fc2c8d5d978a22e82193a",
+      "pr": 12,
+      "decision": "accepted"
+    },
+    {
+      "id": "CP03",
+      "source": "3a8f79e4715a1d9b34bdd3b0635d83a9093007ab",
+      "pr": 7,
+      "decision": "accepted"
+    },
+    {
+      "id": "CP04",
+      "source": "3c6eb86f704576f86c93f948a45b348719a2badc",
+      "pr": 15,
+      "decision": "accepted"
+    },
+    {
+      "id": "DF04",
+      "source": "3b70ee553c4061cec46a046daa93f0ffc69ae93a",
+      "pr": 23,
+      "decision": "accepted"
+    },
+    {
+      "id": "CP01",
+      "source": "cfaccb5be0e7477a423b34d3d98d41c17094b78e",
+      "pr": 24,
+      "decision": "accepted"
+    },
+    {
+      "id": "CF03",
+      "source": "6758759fd095d77297ed3911f45d9c845a59bb97",
+      "pr": 22,
+      "decision": "accepted"
+    },
+    {
+      "id": "CD08",
+      "source": "203b9852f64d2a9d3ddcd354f5679d1a6b0efb0d",
+      "pr": 20,
+      "decision": "accepted"
+    },
+    {
+      "id": "CS03",
+      "source": "b86bc17ef98a29d6624acfa7fe4e273a5ef701dd",
+      "pr": 26,
+      "decision": "accepted"
+    }
+  ]
+}

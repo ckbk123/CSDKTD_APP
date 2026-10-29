@@ -1,6 +1,6 @@
 # DR02 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Integration action:** the coordinator explicitly approved the tested local native-number reader and owns adapting all native controls to the shared API before acceptance. Worker exercise/browser checks are complete; independent coordinator review is pending.
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
@@ -157,3 +157,9 @@ On 29 October the human explicitly authorized direct communication with the coor
 The coordinator acknowledged the actual signed 1/2 and power-box browser evidence and instructed the worker to canonicalize Stage as `implemented`, record this disposition, check and submit the exact clean pushed HEAD in the existing PR #5, then resume CR03. Final independent source review still applies; no `verified` stage or accepted release is claimed here. The coordinator also owns the shared Escape fix in its next main integration; the tested local capture repair remains valid in this older branch.
 
 This final delivery change is documentation only. Executable code and tests remain those checked at `f77bc16`: 86 module tests, 128 project tests, type/build/diff, successful CI and all recorded private-IAB checks. The final exact submission SHA is recorded by the current primary claim helper after the delivery recheck, commit and push. All accepted bounded exercise requirements and worker verification are complete. The former native-reader disposition block is resolved; the shared adaptation is an assigned integration action.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `271d2df700504012089729492926157786299683`, [PR #5](https://github.com/ckbk123/CSDKTD_APP/pull/5), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.

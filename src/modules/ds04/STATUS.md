@@ -1,6 +1,6 @@
 # DS04 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Owned folder:** `src/modules/ds04/**`; [TASK](TASK.md)
@@ -113,3 +113,9 @@ Actual production Chromium on this worker's preview8824 passed under a DS04 rese
 Native nonzero1e-999 showed finite-K feedback and ZERO SVG plots inside the computed-result region (equation toolbars have unrelated SVG icons). Intentional0e-999 selected K=0, and native1e-2 selected K=.01 normally. Reset/reveal restored0<K<5/2. Math fractions/parentheses/fonts and the Systems keyboard rendered visibly; Escape closed the keyboard. Phone390x844 measured scrollWidth=clientWidth=375 with the full baseline result, including the updated grammar note. The focused proof screenshot used1280x1000 to show the entered mixed expression and its feedback together. Browser error/warning log was empty. Viewport override was reset, own tab closed, QA released, and preview1042 stopped; primary8787 was untouched.
 
 Evidence artifact (outside Git): C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-2175-7122-ad9f-c01694059c6c/ds04-mixed-fraction.png. This focused browser pass supplements the original full reset/reopen/rapid-navigation/keyboard/phone evidence and the exact-singular selection pass above. No accepted bounded requirement or returned defect remains open; final independent review/integration is still the coordinator's responsibility. The implemented policy is the PURE lexical/visible-parentheses preflight above, not the earlier historical renderer prototype. The same PR#13 is retained. Final submission will record this clean HEAD after re-running57owned/99full tests, type/build and diff checks; source code is unchanged by this evidence-only commit.
+
+## Combined coordinator acceptance — 0.3.13
+
+Accepted source `a0d37046499fd44a5bbc5a96244d39301486a315`, [PR #13](https://github.com/ckbk123/CSDKTD_APP/pull/13), with its independent mathematical/source review and returned-correction evidence retained. Coordinator preparation applies the recorded shared native-number/TeX-argument and owned-lifecycle adaptations with focused regressions. All 2,605 combined application tests, type checking and production build pass.
+
+Actual production-browser smoke checks exercised this tool's default reveal and navigation at desktop and 390×844. Phone client/scroll widths were 375/375; no alert or warning/error log was observed. This supplements separately attributed worker changed-data, actual input/font/keyboard and detailed lifecycle evidence. It is not a new exhaustive mathematical or all-browser certificate. See docs/INTEGRATION_BATCHES.md for targeted checks and the complete batch.
