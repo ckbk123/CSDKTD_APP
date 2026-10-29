@@ -1,6 +1,6 @@
 # CR05 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Assessed code baseline:** `e0b7ddb`
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
@@ -12,13 +12,13 @@
 - The original assessed `workspace.ts` was a blank synchronous mount; the current work below implements it.
 - The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
 
-## Remaining acceptance work
+## Completed bounded acceptance work
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+- [x] Editable signed block nets and signal channels, visual gains and bounded mathematical validation.
+- [x] Complete path/loop/non-touching enumeration, path cofactors and exact checked Mason result.
+- [x] Linked graph/block highlighting, trace/prediction attempts and staged reasoning/reveal.
+- [x] Independent baseline, changed-data, singularity, notation, conditioning and real resource-limit fixtures.
+- [x] Actual production-browser editing, reset/reopen, keyboard, narrow-screen and cleanup checks below.
 
 ## Evidence and next action
 
@@ -63,3 +63,37 @@ Point checks: a retained branch pole at s=−1 reports unavailable evaluation; o
 Narrow390×844: document client/scroll widths both375px; local graph279/820px. Branch controls and buttons wrap; long determinant equations scroll locally. Fonts status loaded. First Escape closes the real math keyboard. Tab participates in the editor's internal fraction navigation; toolbar Enter and remaining keyboard checks are still pending. Leaving with a keyboard open removes CR05/keyboard; rapid CR05→CS01 leaves no old root; reopening restores course baseline and hides results. Screenshots outside Git: cr05-graph.jpg and cr05-narrow.jpg under this chat's visualization folder.
 
 Latest local tests56 pass and type/build pass; latest complete application run was714 tests before the final2 regressions. Remaining: final full checks, final browser presentation/keyboard/log checks after rebuilding, STATUS completion/PR/delivery. Browser tab/viewport/own preview remain active for those checks. Light theme was not separately tested; no Firefox or all-browser guarantee.
+
+## Final worker verification — 29 October 2026
+
+The full accepted bounded exercise is implemented and checked. The checkpoint paragraphs above are historical; this record supersedes their pending-check lists. Independent coordinator review/integration remains pending.
+
+| Requirement | Final evidence |
+|---|---|
+| Choose signal nodes; convert structured block nets | Editable signal list, imposed input/output, signed gain blocks and endpoints; equations assembled directly from those original connections; branch IDs link block cards and computed graph |
+| Trace/select before enumeration | Ordered branch buttons, valid path/loop checks with repeated/disconnected-node feedback; saved attempts and count predictions; actual browser path r→e→x→y passed |
+| Touching and non-touching loops | Canonical directed cycles include self-loops and parallel branches; pair test highlights shared nodes; every disjoint set, including triples, contributes with the right sign |
+| Δ and each Δk before final simplification | Separate enumeration, determinant/cofactor and simplify actions; ordered set-size terms; path-specific exclusions/shared nodes and assembled Mason numerator |
+| Baseline and full original-model equation check | Independent hand derivation and exact Gaussian elimination from original signed blocks, then separate complex numeric point/residual comparison |
+| Broader changed/failure fixtures | H2=3; intermediate output; added direct branch; quadratic G1 and cubic overall TF; two paths/disjoint triples/self-loops/distinct cofactors; singular, near-singular and over-limit graphs |
+| Lifecycle and real equation entry | Owned synchronous loading host/child signal; partial-mount-throw resource regression; actual fraction/power buttons, typed gains, keyboard/Escape/Enter, reset/leave/reopen/rapid navigation/narrow layout |
+
+### Exact support and limitations
+
+Continuous SISO scalar signal equations, zero initial conditions; each non-input signal equals the sum of its incoming signed branch outputs. The externally imposed input must have no incoming nonzero branch. Output may be any other declared signal. Each signal's units must be consistent; s has units s⁻¹ and gains/coefficients carry the corresponding signal/time units. No sampling, time-domain simulation or stability certification. Gain-level and network-level rational cancellation are formal algebra; no claim is made about hidden physical states, retained realization modes or numerical evaluation at a removed branch singularity.
+
+2–7 distinct signal names (letter followed by up to7 letters/digits), 1–16 distinct branches; zero-gain branches are ignored by enumeration. Each branch is a proper real rational function, reduced numerator/denominator degree≤2. Private coefficient arrays use ascending powers; displayed polynomials use conventional descending powers. Visual input≤256 characters,96 primary atoms,12 nested primary levels, decimal literals≤1000 with≤9 digits and≤6 decimal places. Ordinary sums/unary signs, products, visible parentheses, fractions (including compact TeX token arguments/numeric nested fractions) and powers0–2 are supported. Bare adjacent numeric atoms require explicit multiplication. Hidden algebraic braces, mixed-number adjacency, e/E notation, unsupported symbols/functions, ambiguous unbraced powers and zero-to-zero power reject. Empty/incomplete/editor-syntax feedback is distinct from unsupported mathematics.
+
+All algebra is exact over rational coefficients, with no floating-point polynomial trimming. Per calculation:200,000 coefficient operations,2048-bit numerator/denominator integers and intermediate degree64; per gain parse:30,000 operations. Presentation also caps the common denominator at4096 bits and each typeset equation at8192 characters. Enumeration caps10,000 visits,128 paths,128 elementary loops and256 nonempty non-touching sets. Tests exercise actual16-branch graphs with324 potential paths and more than256 possible loop sets; neither returns a partial answer. Large arithmetic/notation/graph cases produce feedback. Path/loop selection is bounded to7 branches and rejects disconnected or repeated signal traces.
+
+The independent complex point check uses |s|≤100, a relative scaled pivot threshold10⁻¹¹, scaled equation residual≤10⁻⁹ and relative Mason/direct disagreement≤10⁻⁸. A near-singular exact fixture with loop product.999999×1.000001 yields exact gain999999000000; the numeric check explicitly refuses it. Exact identities and finite-precision audits remain distinct. Each graph is schematic, with connections defined by endpoints, and no line-crossing connectivity assumption.
+
+### Final checks and browser evidence
+
+Using the bundled compatible Node24/npm toolchain in this isolated worktree: `npm exec -- vitest run src/modules/cr05` passes58 tests (46 math/parser,7 mocked view,5 workspace); `npm run check` passes; `npm test` passes718/718 across29 files; `npm run build` passes; `git diff --check` passes. Build has only the existing MathLive chunk-size warning. The final changes after these checks are documentation/delivery records only. No dedicated end-to-end command was invented.
+
+Latest production browser check after the final UI build confirmed toolbar Enter inserts a fraction, incomplete boxes receive specific guidance, shell Reset example restores exactly5 baseline fields and no prior answers, and baseline DC remains.2. Calculation bounds are available in a collapsed details section. The final narrow page client/scroll widths remain375/375px. System-dark desktop1280×900 and narrow390×844 were inspected; local fonts loaded and browser warning/error logs were empty. Tab within a fraction participates in MathLive's field navigation; toolbar keyboard activation and native controls were tested separately. Light theme was not separately browser-tested.
+
+Own tabs7 and8 were closed; viewport override reset; final private tab inventory empty. Screenshots outside Git: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/cr05-graph.jpg`, `cr05-result.jpg` and `cr05-narrow.jpg`. Own preview8976 is stopped before delivery. No Firefox/native windows, another chat's tabs/QA lock or primary8787 were used.
+
+Source provenance: repository atlas/audits, not newly inspected original slides. Baseline equations and expected results were independently derived; broader fixtures remain explicitly proposed. No accepted requirement or shared dependency remains unfinished within these bounds. Only `src/modules/cr05/**` changed; metadata/TASK/shared APIs, dependencies, versions and deployment are unchanged. One PR will be created/reused, attached and recorded below before exact clean-HEAD submission. Earlier submissions remain preserved, including the separately flagged CF01 notation self-audit awaiting coordinator reopening.

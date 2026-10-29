@@ -98,4 +98,20 @@ describe('Mason and original signal equations', () => {
     expect(() => validate({ ...net, branches: [...net.branches, net.branches[0]] })).toThrow(/distinct/);
     expect(() => numericCheck(net, analyze(net), { re: 101, im: 0 })).toThrow(/100/);
   });
+  it('stops real over-limit path and non-touching-set enumerations without partial answers', () => {
+    const nodes = ['r', 'a', 'b', 'c', 'd', 'e', 'y'], branches: Net['branches'] = [];
+    const counts = [3, 3, 3, 3, 2, 2];
+    counts.forEach((count, i) => { for (let j = 0; j < count; j++) branches.push({ id: `p${i}${j}`, from: nodes[i], to: nodes[i + 1], gain: constant(1n) }); });
+    expect(() => analyze({ nodes, branches, source: 'r', target: 'y' })).toThrow(/128.*paths|128-path/);
+    const self: Net['branches'] = [];
+    counts.forEach((count, i) => { for (let j = 0; j < count; j++) self.push({ id: `l${i}${j}`, from: nodes[i + 1], to: nodes[i + 1], gain: constant(1n, 10n) }); });
+    expect(() => analyze({ nodes, branches: self, source: 'r', target: 'y' })).toThrow(/256.*sets/);
+  });
+  it('keeps exact near-singular algebra distinct from a reliable numeric check', () => {
+    const net: Net = { nodes: ['r', 'a', 'b', 'y'], source: 'r', target: 'y', branches: [
+      { id: 'p', from: 'r', to: 'a', gain: constant(1n) }, { id: 'f', from: 'a', to: 'b', gain: parseGain('.999999') }, { id: 'h', from: 'b', to: 'a', gain: parseGain('1.000001') }, { id: 'o', from: 'b', to: 'y', gain: constant(1n) },
+    ] };
+    const a = analyze(net); expect(coefficients(a.transfer)).toEqual({ numerator: ['999999000000'], denominator: ['1'] });
+    expect(() => numericCheck(net, a, { re: 0, im: 0 })).toThrow(/poorly conditioned/);
+  });
 });
