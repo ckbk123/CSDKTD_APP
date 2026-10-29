@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { parseTransfer } from './input';
+import { parseTransfer, latexNumber } from './input';
 import { buildResponse } from './response';
 describe('CF01 bounded visual transfer input', () => {
+  it('typesets scientific results with multiplication and a power, never a tab escape', () => {
+    expect(latexNumber(1e-7)).toBe(String.raw`1\times10^{-7}`);
+    expect(latexNumber(.5)).toBe('0.5');
+  });
   it('reads baseline, products, changed normalization and visible unary grouping', () => {
     expect(parseTransfer('4/(s^2+2s+4)')).toEqual({g:4,a1:2,a0:4});
     expect(parseTransfer('T(s)=8/(2s^2+4s+8)')).toEqual({g:4,a1:2,a0:4});

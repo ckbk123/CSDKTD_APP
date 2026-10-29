@@ -185,4 +185,4 @@ export function parseTransfer(latex: string): Pick<Model, 'g' | 'a1' | 'a0'> {
   return { g, a1, a0 };
 }
 export const format = (v: number): string => Number(v.toPrecision(7)).toString();
-export const latexNumber = (v: number): string => format(v).replace(/e([+-]?\d+)$/, (_, power: string) => `\times10^{${Number(power)}}`);
+export const latexNumber = (v: number): string => format(v).replace(/e([+-]?\d+)$/, (_, power: string) => `\\times10^{${Number(power)}}`);
