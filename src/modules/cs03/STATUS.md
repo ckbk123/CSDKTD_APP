@@ -31,3 +31,28 @@ Time is normalized in seconds (s has inverse-second units); polynomial coefficie
 
 Private exact-rational polynomial parsing, cubic Routh interval derivation, numerical cubic roots and interval grading are drafted in math.ts. Node 24 npm run check passes; no mathematical tests or interface/browser verification yet, so stage remains in-progress. CS03 is checkpointed while the worker addresses coordinator-returned DS04 PR #13 singular-gain plot consistency. Resume this preserved worktree afterward; no CS03 work was discarded.
 
+
+## Implemented slice and verification checkpoint
+
+The full bounded exercise is now implemented in private math.ts, ui.ts, plots.ts and scoped workspace.css; workspace.ts defers the browser editor import and guards abort/cleanup. Metadata stays unchanged. Stage remains in-progress until actual production-browser checks and final delivery are recorded.
+
+- Editable D(s) and g derive P=D+Kg under negative unity feedback; no cancellation, including gain-independent g=0 (all D modes retained).
+- Exact rational a>0,b>0,c>0,ab-c>0 derive the complete open interval, all-real or empty set. Every condition and the intersection share one gain axis, with exact equality values, open boundary markers and numeric window/current-gain controls.
+- Student answers select finite/all-real/empty, both numeric endpoints and explicit open/closed inclusion. Grading and an independent reveal action explain errors. W06, reverse-polarity and gain-independent experiments recompute from data.
+- The Routh table, nonzero first-column sign changes, zero-pivot/zero-row feedback and exact endpoint factors are displayed. Exact inspection buttons preserve rational gains at c=0/c=ab, midpoint and both exterior points; all three roots remain visible. Global buttons can inspect boundaries outside the manual gain/window range.
+- Cubic roots use exact discriminant sign, exact c=0/c=ab factors, real Cardano/trigonometric branches and explicit repeated/triple cases. Imaginary parts avoid subtraction cancellation. Coordinates are approximate. Every result checks the complex polynomial residual normalized by the sum of term magnitudes or1 (maximum1e-8). Axis comparison is1e-8 times max(1,largest mode magnitude); exact inequalities decide strict stability even when numerical roots are within tolerance of the axis.
+- Native controls reject empty/nonfinite numbers and nonzero raw underflow; ordinary numeric exponents remain valid. This equivalent local guard is an approved carry-forward on a branch predating the coordinator's shared readNumericInput rollout; adapt at integration rather than adding unowned files or rebasing. Visual e notation is separately rejected, not silently interpreted as a decimal.
+
+Input grammar: exactly monic cubic after expansion, ascending internal rational coefficients [d,b,a,1], powers0..3 and constant division only. Visual numeric fractions allow signed literal arguments and compact MathLive bracing, not nested fraction notation. Limits:300characters,160tokens,12groups; numeric literals9digits/6places; final coefficient magnitude zero or1e-8..100; reduced coefficient parts<=1e12; exact intermediates<=2048bits. g zero or magnitude1e-8..100; manualK/window bounded[-1000,1000]. Invalid/unsupported data clears stale answers/plots. No higher-order or arbitrary K-dependent a/b region is claimed.
+
+Independent fixtures: source baseline0<K<70 and roots{0,-2,-5} at0, {-7,+/-j sqrt10} at70; W06 gives0<K<48 and {-6,+/-j sqrt8} at48. Proposed independently derived changes include negativeg=-1 =>-70<K<0, constant-term offset1 =>-1<K<69, g=-2 and offset1 =>-69/2<K<1/2, fractional endpoint-1/3 withg=.3, stable/all-real and boundary/empty g=0 cases. Factored cubics supply distinct real, conjugate, repeated and triple-root oracles. Forty-eight changed coefficient triples satisfy independently evaluated complex residuals and Vieta sums; tiny conjugate parts near a triple root and balanced huge rational conversion are preserved. Original slides were not inspected; existing source/audit provenance is unchanged.
+
+Actual checks on this isolated Node24 worktree:
+
+- npm test -- src/modules/cs03:44/44 passed (36math/parser,8workspace/lifecycle).
+- npm run check:passed.
+- npm test:178/178 passed across13files on the recorded main0.3.2 baseline.
+- npm run build:passed; existing MathLive chunk warning only.
+- git diff --check:passed.
+
+Real-browser visual editing/font/keyboard, reset/reopen/fast navigation, narrow viewport and final PR/commit/submission remain open. DS04 review correction is frozen pending its shared QA slot; CS03 offline work proceeds independently without simultaneous edits in DS04. No shared files/configuration/dependencies/version/deployment were changed.

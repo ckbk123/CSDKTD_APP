@@ -147,12 +147,20 @@ export function analyze(m: Model, gain: number | Rational) {
   const evaluated = conditions(m).map(condition => add(condition.constant, mul(condition.slope, k)));
   const solution = cubicRoots(m.a, m.b, c), scale = Math.max(1, ...solution.roots.map(z => Math.hypot(z.re, z.im))), tolerance = 1e-8 * scale;
   if (solution.roots.some(z => !Number.isFinite(z.re) || !Number.isFinite(z.im))) throw new Error('Numerical root check exceeded its range. Choose less extreme data.');
+  const av = numberOf(m.a), bv = numberOf(m.b), cv = numberOf(c);
+  const residual = Math.max(...solution.roots.map(z => {
+    let re = 1, im = 0;
+    for (const coefficient of [av, bv, cv]) { const next = re * z.re - im * z.im + coefficient; im = re * z.im + im * z.re; re = next; }
+    const radius = Math.hypot(z.re, z.im);
+    return Math.hypot(re, im) / Math.max(1, radius ** 3 + Math.abs(av) * radius ** 2 + Math.abs(bv) * radius + Math.abs(cv));
+  }));
+  if (!Number.isFinite(residual) || residual > 1e-8) throw new Error('The numerical roots failed their polynomial residual check. Choose better-conditioned data.');
   const rightCount = solution.roots.filter(z => z.re > tolerance).length, nearAxis = solution.roots.some(z => Math.abs(z.re) <= tolerance);
   const formalStable = evaluated.every(v => v.n > 0n), abMinusC = sub(mul(m.a, m.b), c);
   const firstColumn = m.a.n ? [ONE, m.a, div(abMinusC, m.a), c] : null;
   const signs = firstColumn?.map(v => compare(v, ZERO));
   const signChanges = signs && signs.every(s => s !== 0) ? signs.slice(1).filter((s, i) => s !== signs[i]).length : null;
-  return { gain: k, c, evaluated, ...solution, tolerance, formalStable, rightCount, nearAxis, firstColumn, signChanges };
+  return { gain: k, c, evaluated, ...solution, tolerance, residual, formalStable, rightCount, nearAxis, firstColumn, signChanges };
 }
 export interface Prediction { readonly kind: 'finite' | 'all' | 'empty'; readonly lower: number; readonly upper: number; readonly lowerClosed: boolean; readonly upperClosed: boolean }
 export function checkPrediction(m: Model, answer: Prediction): { correct: boolean; message: string } {
