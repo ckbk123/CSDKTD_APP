@@ -1,0 +1,33 @@
+[data-module="DP03"] .dp03-tool { display: grid; gap: 16px; min-width: 0; font-size: 14px; line-height: 1.6; }
+[data-module="DP03"] .dp03-tool h2, [data-module="DP03"] .dp03-tool h3, [data-module="DP03"] .dp03-tool p { margin: 0 0 8px; }
+[data-module="DP03"] .dp03-tool h2 { font-size: 20px; }
+[data-module="DP03"] .dp03-tool h3 { font-size: 16px; }
+[data-module="DP03"] .dp03-card { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+[data-module="DP03"] .dp03-card summary { font-weight: 600; cursor: pointer; }
+[data-module="DP03"] .dp03-card[open] summary { margin-bottom: 12px; }
+[data-module="DP03"] .dp03-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+[data-module="DP03"] .dp03-field { display: grid; align-content: start; gap: 5px; font-size: 12px; color: var(--muted); }
+[data-module="DP03"] .dp03-tool input { width: 100%; min-width: 0; min-height: 40px; padding: 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); font: inherit; }
+[data-module="DP03"] .dp03-tool input[type="range"] { padding: 0; accent-color: var(--accent); }
+[data-module="DP03"] .dp03-tool button { min-height: 38px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
+[data-module="DP03"] .dp03-tool button:hover { border-color: var(--accent); background: var(--tint); }
+[data-module="DP03"] .dp03-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+[data-module="DP03"] .dp03-output { display: grid; gap: 16px; min-width: 0; }
+[data-module="DP03"] .dp03-tool [hidden] { display: none; }
+[data-module="DP03"] .dp03-message { padding: 10px; border-left: 3px solid var(--accent); background: var(--tint); }
+[data-module="DP03"] .dp03-plots { display: grid; gap: 14px; min-width: 0; }
+[data-module="DP03"] .dp03-scroll { min-width: 0; overflow-x: auto; }
+[data-module="DP03"] .dp03-tool svg { width: 100%; height: auto; max-height: 340px; }
+[data-module="DP03"] .dp03-tool svg text { fill: var(--muted); font: 12px sans-serif; }
+[data-module="DP03"] .dp03-axis { stroke: var(--line); stroke-width: 1.5; }
+[data-module="DP03"] .dp03-grid-line { stroke: var(--line); stroke-width: .5; }
+[data-module="DP03"] .dp03-line, [data-module="DP03"] .dp03-circle { fill: none; stroke: var(--accent); stroke-width: 2; }
+[data-module="DP03"] .dp03-comparison { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 4; }
+[data-module="DP03"] .dp03-marker { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+[data-module="DP03"] .equation-display { max-width: 100%; overflow-x: auto; }
+@media (max-width: 600px) {
+  [data-module="DP03"] .dp03-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-module="DP03"] .dp03-card { padding: 10px; }
+  [data-module="DP03"] .dp03-tool svg { min-width: 320px; }
+  [data-module="DP03"] .dp03-tool svg.dp03-wide-plot { min-width: 600px; }
+}

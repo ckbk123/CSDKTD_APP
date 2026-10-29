@@ -1,27 +1,135 @@
 # DP03 implementation status
 
-- **Stage:** scaffold
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Starting revision:** `8696261267b7620bfc101ce2b5f13772bfaa529a` (primary main v0.3.1)
+- **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
+- **Branch:** `codex/dp03-frequency-7e78`
+- **Worktree:** `C:\Users\baokh\.codex\worktrees\dp03-frequency-7e78\CSDKTD APP`
+- **Ownership:** `src/modules/dp03/**`; [accepted contract](TASK.md)
+- **PR:** https://github.com/ckbk123/CSDKTD_APP/pull/14
 
-## Implemented and inspected
+## Current delivery assessment — 21:13 local, 29 October 2026
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The accepted bounded exercise is implemented and checked. The earlier sections below retain checkpoint history; their pending items are superseded by this assessment and the two actual browser evidence sections.
 
-## Remaining acceptance work
+| Accepted requirement | Delivered evidence |
+|---|---|
+| Editable real rational model | `expression.ts`, visual equation input, bounded real causal order ≤4 and semantic/error regressions. |
+| Linked unit-circle, magnitude, phase and Nyquist | `frequency.ts` direct evaluation and `view.ts` computed plots, numeric/range cursor, singular/zero gaps, equal gain-unit Nyquist axes and clipping feedback. |
+| Normalized and physical frequency | Explicit Ω rad/sample, ω rad/s, Hz and T; changed-T browser fixture holds coefficients fixed. |
+| W construction and warping | Computed bilinear polynomial coefficients, substitution and warping equations, residual and explicitly approximate unwarped comparison. Independent source, first-order and fourth-order fixtures. |
+| Aliases beyond Nyquist | Signed physical-frequency experiment, periodicity/conjugacy tests and positive/negative actual browser checks. |
+| Prediction, variation and failure feedback | Optional checked gain/phase predictions, three editable presets, invalid/incomplete input, bounds, poles, zeros, native underflow and ambiguous-notation feedback. |
+| Isolation and verification | Local math/view/lifecycle tests; actual production browser editing, keyboard/fonts, reset/reopen, rapid navigation and 390px layout evidence below. |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+Final local commands under Node 24.22.1: `npm run check` passed; `node node_modules/vitest/vitest.mjs run src/modules/dp03 --reporter dot` passed **65/65**; `npm test -- --reporter dot` passed **148/148**; `npm run build -- --logLevel warn` passed. The existing shared MathLive chunk-size warning remains. `git diff --check` and exact clean-HEAD validation are part of final submission. This branch owns only DP03 files and preserves its original main baseline; no package/shared/deployment changes or merge/rebase.
 
-## Evidence and next action
+Supported domain and tolerances remain those documented below and in the visible conventions panel. Original source decks were not newly inspected; rounded source anchors and independently proposed fixtures remain distinct. The coordinator explicitly owns adapting the tested equivalent local native-number reader to the newer shared reader during integration. No unresolved worker-owned requirement remains; independent integration review is pending.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+## Requirement audit at claim
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+TASK, STATUS, index.ts and workspace.ts were inspected. The workspace is a blank synchronous mount and there are no module-owned tests. Metadata and the shell's equation preview are foundations, not a frequency solver. The current primary worker/coordination guides were read; the guides were unchanged after ae7daf3 except the recorded DS03 integration at v0.3.1.
+
+| Accepted requirement | Missing behavior / next action |
+|---|---|
+| Editable real rational model and unit-circle evaluation | Add a local bounded visual-expression parser and independently checked complex polynomial evaluation. |
+| Linked exact magnitude, phase, Nyquist and cursor | Add a numeric/keyboard normalized-frequency cursor with computed unit-circle and frequency plots. Clearly label phase convention and poles/zeros on the sampled contour. |
+| Normalized and physical frequency | Show rad/sample, rad/s and Hz with explicit T. Changing T holds the entered coefficients fixed; it does not re-discretize a plant. |
+| Bilinear construction and warping | Expose q=(1-Tw/2)/(1+Tw/2), transformed numerator/denominator and omega_w=(2/T)tan(Omega/2). Compare exact and warped evaluation, and distinguish an unwarped approximation. |
+| Nyquist repetition/aliasing | Show that frequencies separated by 2pi/T repeat; principal independent interval ends at pi/T. No stability proof from a finite sampled curve. |
+| Predictions, changed data, failures | Include a prediction/reveal, changed T/model/cursor, meaningful singular/zero-magnitude feedback and resource bounds. |
+| Independent tests and production browser lifecycle | Pending; no solver or browser verification claimed. |
+
+## Planned bounded domain and evidence
+
+Use real causal rational polynomials of order at most four in q=z^-1, with a bounded arithmetic grammar including actual MathLive compact fractions. Evaluate complex frequency response directly; construct W-plane polynomial coefficients by a declared bilinear substitution. Use bounded samples for illustrations; singular endpoints are gaps with explanation, not fabricated finite values. In particular, the rounded source baseline has a denominator zero at z=1, so DC requires explicit singular feedback. Derive independent z=-1 and z=j fixtures and a changed first-order fixture; preserve source rounding as input provenance rather than claiming a new source reconstruction.
+
+## Mathematical core checkpoint
+
+- Added a module-owned bounded expression grammar (`expression.ts`), adapted from DR01's private parser with independent DP03 tests and no sibling imports. Real causal rational order is limited to four in q=z^-1. Compact/mixed fractions, outer minus/grouping and explicit powers of ten are supported; ambiguous visual e/E exponent strings are rejected.
+- `frequency.ts` evaluates complex rational response on the unit circle, normalizes aliased frequency, constructs bilinear W-polynomial coefficients and evaluates warped versus unwarped responses. It retains construction scales so a roundoff-sized transformed coefficient cannot turn the source's DC pole into a fabricated finite gain.
+- Independent source-fixture oracles at z=j and z=-1 were derived by hand substitution with 40-digit Python Decimal division: G(j)≈-.03469124597099828866+.02315621326450973190j; G(-1)≈-.001464675473865594486. A first-order T=2 fixture gives H_w=(1+w)/(.5+1.5w) and G(j)=.8-.4j. Invariance tests cover fourth-order changed data, real-coefficient conjugacy, periodicity and correct warped-frequency equivalence.
+- `npm run check` passed and `node node_modules/vitest/vitest.mjs run src/modules/dp03` passed 19/19 tests under Node 24.22.1. The first local workspace now contains the visual model, prediction/reveal, linked cursor, alias experiment, sampled Bode/Nyquist/unit-circle plots and W-plane comparison. Type checking passes, but that interface is not yet unit/browser-verified and no full-tool completion is claimed. All remaining interface/verification rows above remain open.
+
+## Current work and review priority
+
+DR01's latest e/E notation correction is fully checked locally (57 module tests, 99 full tests and a fresh real-browser check) but still awaits the coordinator-owned reopening of its already submitted claim at 11be2b2. The corrected working tree and recovery patch are preserved in its original worktree/PR #1. While no action can move that frozen head, independent DP03 work is resumed here; checkpoint and return immediately when reopening becomes available. Only DP03 is actively implemented now. The current claim/worktree remain isolated from that prior PR and contain no cross-module commits.
+
+Next: build the required linked unit-circle/Bode/Nyquist/W-plane teaching interface and prediction/reveal, then finish all checks and browser evidence. No shared dependency changes requested. This is a partial, recoverable checkpoint, not a completed tool.
+
+## Priority review checkpoint
+
+DR01 was reopened by the coordinator after this first DP03 workspace slice. Its prepared correction is ready for the original branch; DP03 is checkpointed and suspended again to finalize that priority resubmission. Current DP03 `npm run check` passes. Next DP03 actions remain: interface and lifecycle regressions, project checks/build, real-browser verification and corrections, STATUS evidence, its one PR and exact submission. In particular inspect curve bounds, zero/pole gaps, log-axis cursor behavior and all mathematical labels in the real browser.
+
+## Interface regression checkpoint
+
+Added exercise-wiring and asynchronous-lifecycle tests: first-order prediction fixtures, live numeric/range cursor, undefined DC/zero phase, signed alias repetition, invalid T/notation/order, independent visits and native numeric scientific entry. `npm run check` passed; module tests now pass 29/29. A test initially compared the equivalent default numeric spellings .1 and 0.1; the assertion now checks the numeric value. The log-axis cursor no longer draws DC as a false finite log-zero point. Browser and full-project checks remain pending. Suspended here for two new coordinator DR01 edge cases (raw native-number underflow and invalid TeX parenthesis grouping); apply the same semantic guards here after that priority correction is resubmitted.
+
+## Semantic guards and first integrated checks
+
+While DR01's correction waits for its coordinator-only claim transition and the reserved integration browser slot, independent DP03 verification continued here. Native number controls now reject a nonzero mantissa that underflows to zero, preserving intentional zero exponents and representable scientific entry. Fraction parsing uses braces for TeX arguments; parentheses remain supported inside braced arguments. Optional textbook G(z)= / H(z)= labels are normalized after visual grouping. These guards and independent sign/fraction fixtures pass; no shared helper/API or dependency was changed. Figure scroll regions are keyboard-focusable.
+
+Current module tests pass 36/36. Before the final optional-label regression, full `npm test` passed 118/118 and `npm run build` passed under Node 24.22.1; the existing shared MathLive chunk-size warning remains. The workspace is implemented as an initial local slice but still needs actual browser verification and refinement, final full checks, PR creation/attachment and exact submission. DR01's requested native/TeX correction is preserved separately and takes priority whenever its claim/browser action is enabled.
+
+PR #14 is created and attached to this worker chat. The current implementation passed all 119 application tests and the production build after the final optional-label change. Its claim remains active; browser QA, plot/input refinements and final exact submission remain open. The earlier DR01 PR1 is still a separate preserved review return. No other module is included in this branch.
+
+## Current verification checkpoint — 18:20 local
+
+The preceding sections preserve checkpoint history; this section records the current state. The accepted exercise is locally implemented, but **stage remains in-progress because real-browser verification is pending**. All rows of the original audit now have code and mathematical/wiring tests; none of the pending browser checks is claimed complete.
+
+- `view.ts` now labels and clips the Nyquist window explicitly and reports when the selected point is outside it. Both Nyquist axes use equal gain-unit scale. Four plot scroll regions are keyboard-focusable, with accessible labels. The new regression brings module tests to **37/37 passed**.
+- `npm test`: **120/120 passed** on 29 October 2026 at 18:20 local. `npm run build`: **passed**, including `npm run check`; the existing shared MathLive chunk-size warning remains.
+- Core computation, independent source/changed fixtures, bounded parser, predictions, alias folding, direct/warped comparison and numerical error paths are covered. The synchronous lazy workspace has abort, independent-visit and attached mount-error recovery tests. Metadata, shared files and dependencies remain unchanged.
+- Current limits: causal real rational order ≤4 in q=z⁻¹, ascending coefficients normalized to a₀=1; T in [10⁻⁶,100] s; |ω|≤10⁵ rad/s and |ωT|≤10⁵ rad/sample; normalized coefficients ≤10⁶ and transformed coefficients ≤10¹⁶; UI sweep 241 samples (core bounded to 20–600), positive logarithmic span π·10⁻⁴ to π plus a separately reported DC sample. No automatic non-delay cancellation, time-response history or stability proof. Source rounding is preserved. At Ω=π the W value is the original rational endpoint limit, not a finite W-frequency evaluation.
+- Browser work still required: actual visual editing, fraction/power keys and fonts; baseline DC pole and changed first-order/FIR results; changed T, predictions and linked cursor; alias/zero/bounds feedback; curve labels/clipping; reset/reopen/rapid navigation; keyboard, 390 px layout and cleanup. Final exact-commit checks, ready PR and claim submission follow these checks.
+- The primary v0.3.3 shared numeric reader did not exist in this baseline. The coordinator explicitly approved the equivalent tested local native-number guard for preserved older branches and owns adapting the shared import at integration. It rejects nonzero text rounded to zero, preserves intentional zero and ordinary native scientific notation. No unowned shared file or rebase/merge is needed.
+- DR01 PR1's native-number/TeX return was resubmitted at clean `61599ef`, but a later mixed-number review reopened it. That correction is pushed at `e9beda48dde38afce34eabc4e49b5763896d5246`, with 80 module/122 full tests and type/build passing; fresh actual fraction-button adjacency QA remains open. Its separate claim/worktree are preserved. DP03's earlier checkpoint was clean before the priority switch. Current QA acquisition is deferred under the coordinator's CR02→CP03→short-integration order; no reservation held by another worker is changed.
+
+While that explicit QA order is active, added independent boundary fixtures: q⁴ at T=2 has W numerator [1,−4,6,−4,1], denominator [1,4,6,4,1], unit magnitude and phase −π/2 at Ω=π/8; its Nyquist endpoint is 1. For 1/(1+q), DC gain is .5 and both signed Nyquist endpoints are poles, including the W endpoint limit. The initial pure-delay assertion distinguished IEEE −0 from +0; it now checks their mathematical equality with the declared tolerance. At 18:30 local, module tests pass **39/39**, full `npm test` passes **122/122** and `npm run check` passes. Source code/build are unchanged since the passing production build; final production/browser checks remain open.
+
+## Mixed-number semantics checkpoint — 18:52 local
+
+After checkpointing and correcting the priority DR01 return, its only remaining action needs browser access currently deferred by the explicit coordinator queue. Independent DP03 work resumes here until that action is enabled. The same numeric/fraction ambiguity existed in this private parser: the pinned MathLive MathML of `2\frac12` contains U+2064 INVISIBLE PLUS, while implicit multiplication would return 1. DP03 now rejects numeric/fraction adjacency, transparent numeric groups and adjacent numeric factors with guidance to use + or ×. The immediately preceding factor is tracked, so variable prefixes and nested numerator/denominator expressions cannot disguise the issue. Explicit addition and multiplication, visible-parenthesis products, variable products and fraction/fraction products retain independent checks; the conventions panel explains the student alternative. No sibling/shared import was added.
+
+Current module checks pass **49/49**, `npm test` **132/132**, and `npm run build` (including `npm run check`) passes under Node 24.22.1; existing shared MathLive chunk warning only. All actual DP03 browser requirements remain open, including real mixed-number/fraction editing. The stage remains in-progress and PR14 remains draft. The private QA waiters/previews were stopped for the coordinator's reserved order; no later automatic acquisition can occur from those stopped processes. Resume DR01 targeted QA first when access is announced, then finish DP03 QA and exact submission.
+
+## Hidden grouping follow-up — 19:23 local
+
+Normal helper acquisition has resumed, but newer active holders were preserved. DR01 is pushed clean at `a553453c5252ea8004b09e300f130968e5463076` (87 module/129 full tests and build pass), awaiting its targeted browser check. While that action waits, the same independently confirmed hidden-group defect was repaired here: `q{+1}` displays q+1 but previously computed q×(+1). Standalone braces now accept only one unsigned number or variable; compound/signed hidden groups require visible parentheses. Fraction arguments and exponent positions keep their intrinsic grouping. Pinned-editor MathML and independent controls q(1+q)→−1−j and (1+q)/(1−.5q)→.4−1.2j at Ω=π/2 verify the distinction. No shared/sibling change is introduced.
+
+Current DP03 checks pass **56/56** module tests, **139/139** full application tests and production/type build, with the unchanged MathLive chunk warning. Real DP03 browser checks remain open and stage remains in-progress. DR01 targeted QA is still the priority when the shared reservation is acquired.
+
+## Escape/preset checkpoint — 19:38 local
+
+DR01's targeted real-browser pass is complete and its clean exact tested `93829d1ae269efed69b875cf122d3ec11ef43abc` is pushed, ready in PR1 and submitted. That pass confirmed a shared older-editor Escape defect from a fresh visit: Escape could leave the editor in raw notation mode so a later preset was invalid. The module-local capture cancellation was rebuilt/reloaded and verified there before release. This DP03 view now uses the same local protection with its own mount signal; a regression checks event order, keyboard dismissal and usable first-order preset calculation. No shared or sibling code is imported/edited.
+
+Current DP03 module tests pass **57/57**, full `npm test` **140/140** and production/type build passes under Node 24.22.1, with the unchanged MathLive chunk warning. Actual DP03 keyboard/preset and all other browser checks remain open. The stage is still in-progress and PR14 is draft. The DR01 tab/viewport/preview/reservation were cleaned up; new acquisition is deferred for the coordinator's already assigned DS01 integration slot, then normal access can resume. DP03 is the only active implementation context.
+
+## Real-browser pass — 29 October 2026
+
+Under an exclusive DP03 helper reservation, a new worker-owned Chromium tab used the production build on port 13518. Existing dark-theme tokens, four plots and their axis/legend labels were visually inspected.
+
+- Source Ω=.1 gave −1.380056−3.536792j. Live Ω=0 reported the direct/transformed DC singularity without finite gain; Ω=π/2 gave −.03469125+.02315621j, magnitude .04170962 and phase146.2771°, matching independent fixtures. Warped/direct residuals were roundoff-sized; the unwarped comparison differed and was explicitly approximate.
+- First-order preset, T=2 and Ω=π/2 gave .8−.4j, magnitude .8944272, phase−26.56505°, physical .7853982rad/s/.125Hz and W polynomial (1+w)/(.5+1.5w). Both entered predictions matched. ArrowRight on the range changed Ω to1.572 and updated computed plots/results. A .01 Nyquist window reported the selected point outside; restoring10 removed that warning.
+- Signed physical requests ±(π/4+π) at T=2 folded to ±π/2, with the negative signed alias giving the conjugate phase. Changing T to.1 hid old results, cleared alias state and retained .8−.4j while relabeling physical frequency15.70796rad/s/2.5Hz. The two-tap average at Ω=π reported zero, undefined phase and the infinite-W endpoint explanation.
+- Actual fraction-button editing produced 1/2→.5, rejected2½ with hidden results, and accepted explicit2+½→2.5 and2×½→1. Typed e notation was rejected; the power button entered10⁻² and produced .01. Empty/incomplete fraction drafts had useful completion feedback. Native T=1e-999 was rejected, while T=1e-2 and Ω=0e-999 remained valid.
+- The real Systems keyboard rendered. Escape hid it and a subsequent two-tap preset remained usable (gain1 at DC). Four observed WOFF2 assets were all same-origin /assets/ URLs. Console warning/error inventory was empty.
+- Reset hid output and restored T=.1, Ω=.1, half-span10 and blank predictions. Leave with the keyboard open removed the module and keyboard from the next accessibility view. Reopen restored baseline; rapid DP03→catalogue→DP04 navigation left zero DP03 roots on DP04.
+- At390×844 the document clientWidth/scrollWidth were both375px before/after reveal. The initial600px minimum made the small plane diagrams awkward to see. They now use a320px minimum while Bode views retain600px for readable axes. After rebuilding/reloading, local regions were285px with content320,320,600,600; the whole unit circle and cursor were visible. Bode ArrowRight changed scrollLeft to40px. No page-wide overflow. Viewport restored, own tab closed, preview stopped and QA released for the announced DP04→coordinator DP02 order.
+
+Build/type check passed after the responsive refinement. The preceding57/140 test counts cover the unchanged calculation/event behavior; final full checks remain required after all remaining changes.
+
+**Stage remains in-progress.** During this pass the coordinator returned DR01 for another shared-parser issue: unbraced multi-character/signed exponents were being treated as whole programming-number tokens rather than TeX's one-token exponent. This same parser must be corrected here too, with intended high-power underflow fixtures made explicitly braced and focused power-box verification. DP03 is checkpointed before that priority DR01 repair. No final exact-HEAD submission is claimed. Earlier unperformed-browser notes are superseded by the actual evidence in this section; the exponent correction and its affected recheck remain open.
+
+## Exponent-token correction checkpoint — 20:03 local
+
+The priority DR01 correction is pushed at `efff753f8d8e6e220619e40373151a83fd149974` (99 module/141 full tests and build pass), awaiting its focused browser check after the assigned QA order. The same independent correction is now applied here: only one unsigned digit can be an unbraced exponent token; a sign or multiple digits must remain in a complete power box. The pinned MathLive MathML fixture distinguishes2^12 (2¹ followed by2) from2^{12}. Explicit2^{12}=4096,2^{−2}=.25 andz^{−2} remain correct, while q^{12} reaches the separate order-four validation. Nested ambiguous forms get the same guidance. The transformed-underflow fixture now groups its intended exponents14 and12 explicitly.
+
+Current module tests pass **65/65**, full `npm test` **148/148**, and production/type build passes with the unchanged MathLive chunk warning. The full real-browser evidence above remains valid for unaffected behavior. Focused actual complete/incomplete multi-digit/signed power-box verification and final exact-HEAD checks/submission remain open, so stage stays in-progress and PR14 stays draft. No other module/shared files are included in this checkpoint.
+
+## Focused power-box browser gate — 29 October 2026
+
+After the assigned DR01 check, the exclusive DP03 reservation used a fresh owned Chromium tab on the rebuilt production preview at13518. The module sets the created MathLive field's public `smartSuperscript=false` option so positive multi-digit exponents stay in their power box. This module-local setting was explicitly approved by the coordinator, uses no shared-file changes and is disposed with the caller-owned editor.
+
+Actual power-button typing checked complete2^{12}→4096,2^{−2}→.25 andz^{−2} atΩ=π/2→−1 (unit magnitude, −180° phase). Entering2, a power-box1, ArrowRight and a baseline2 produced the required whole-power-box guidance with hidden results. A completeq^{12} reached the separate order-four limit; an empty power placeholder produced completion feedback with hidden results. Reset restored the rounded source atΩ=.1; changingΩ toπ/2 again matched−.03469125+.02315621j and the independent warped/unwarped comparison. Console warning/error inventory was empty. The owned tab was closed, no viewport override was changed, the owned preview was stopped and the helper reservation released. The coordinator was notified that ordinary IAB acquisition could resume. No Firefox/native-focus controls were used. This closes the last affected browser gate; the earlier full font/keyboard/phone/lifecycle pass remains applicable.
