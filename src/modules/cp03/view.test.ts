@@ -69,6 +69,15 @@ describe('CP03 exercise flow and ownership', () => {
     v.change(plant, String.raw`2+\frac12`); v.apply(); v.button('Reveal calculation and linked plots').click();
     expect(v.container.querySelector('[aria-label="Calculated gain and output amplitude"]')?.textContent).toContain('2.5');
   });
+  it('preserves hidden-brace display meaning and rejects wrapped mixed-number bypasses', () => {
+    const v = open(), plant = v.container.querySelector('textarea')!;
+    v.change(plant, '1{+2}'); v.apply(); v.button('Reveal calculation and linked plots').click();
+    expect(v.container.querySelector('[aria-label="Normalized plant and input, rounded coefficients"]')?.textContent).toContain('3');
+    v.change(plant, String.raw`2{\frac12}`); v.apply();
+    expect(v.container.textContent).toContain('Mixed-number adjacency is unsupported'); expect(v.container.querySelector('figure')).toBeNull();
+    v.change(plant, '(-2)^2'); v.apply(); v.button('Reveal calculation and linked plots').click();
+    expect(v.container.querySelector('[aria-label="Calculated gain and output amplitude"]')?.textContent).toContain('4');
+  });
   it('distinguishes unsettled actual data and unstable analytic evaluation', () => {
     const v = open();
     v.button('Slow transient').click(); expect(v.container.textContent).toContain('Not settled');

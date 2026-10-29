@@ -30,8 +30,29 @@ describe('CP03 bounded equation parser', () => {
     }
     expect(parsePlant(String.raw`-\frac{\frac12}{\frac34}`)).toEqual({ numerator: [-2 / 3], denominator: [1] });
   });
+  it.each([
+    ['1{+2}', 3], ['-{2+3}', 1], ['1{2}', 12], ['{1}{2}', 12], ['-{2}{3}', -23],
+    ['{2}', 2], ['-{{2}}', -2], ['{1+2}^2', 5], ['{-2}^2', -4], ['{(-2)}^2', 4],
+    ['{1}{.2}', 1.2], ['{1}+{2}', 3], ['1*{2}', 2], ['{(1+2)}*3', 9],
+  ])('preserves the visible expression rather than hidden grouping: %s', (source, expected) => {
+    expect(parsePlant(source)).toEqual({ numerator: [expected], denominator: [1] });
+  });
+  it('flattens hidden inner groups while retaining true fraction boxes and visible parentheses', () => {
+    expect(parsePlant(String.raw`\frac1{{s+2}s}`)).toEqual({ numerator: [1 / 3], denominator: [0, 1] });
+    expect(parsePlant(String.raw`\frac1{(s+2)s}`)).toEqual({ numerator: [1], denominator: [0, 2, 1] });
+    expect(parsePlant(String.raw`\frac{{1}{2}}{{s}+{1}}`)).toEqual({ numerator: [12], denominator: [1, 1] });
+    expect(parsePlant(String.raw`\frac{1}{s+{1}}`)).toEqual({ numerator: [1], denominator: [1, 1] });
+    expect(parsePlant('1/{s+2}')).toEqual({ numerator: [1, 2], denominator: [0, 1] });
+  });
+  it('preserves TeX one-token exponent boundaries and full braced powers', () => {
+    expect(parsePlant('10^23')).toEqual({ numerator: [300], denominator: [1] });
+    expect(parsePlant('10^{2}3')).toEqual({ numerator: [300], denominator: [1] });
+    expect(parsePlant('s^12/(s+1)')).toEqual({ numerator: [0, 2], denominator: [1, 1] });
+    expect(parsePlant('10^{{-2}}')).toEqual({ numerator: [0.01], denominator: [1] });
+    expect(() => parsePlant('10^{23}')).toThrow(/limit|10000/);
+  });
   it('rejects displayed mixed numbers before combining them as products', () => {
-    for (const source of [String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)/(s+1)`, String.raw`\frac1{2\frac12}`, String.raw`-\frac{2\frac{1}2}{s+1}`, String.raw`2\frac1{2}`]) {
+    for (const source of [String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)/(s+1)`, String.raw`\frac1{2\frac12}`, String.raw`-\frac{2\frac{1}2}{s+1}`, String.raw`2\frac1{2}`, String.raw`-{2}\frac12`, String.raw`2{\frac12}`, String.raw`\frac1{2{\frac12}}`]) {
       expect(() => parsePlant(source)).toThrow(/Mixed-number adjacency/);
     }
   });

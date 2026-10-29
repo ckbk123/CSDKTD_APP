@@ -1,7 +1,7 @@
 # CP03 implementation status
 
-- **Stage:** implemented
-- Accepted bounded implementation, automated checks and actual browser verification complete. Independent integration review remains separate.
+- **Stage:** in-progress
+- Reopened by the coordinator for invisible-group displayed-meaning corrections; earlier implementation/browser evidence remains historical. Corrected parser verification is in progress.
 - **Assessment:** 2026-10-29; final delivery revision; the claim records the exact tested HEAD
 - **Ownership:** `src/modules/cp03/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/cp03-sinusoidal-01a186d2`
@@ -53,9 +53,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **61/61 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **78/78 passed**, 3 files, including the reopened notation correction.
 - `npm run check`: passed.
-- `npm test`: **103/103 passed**, 9 files.
+- `npm test`: **120/120 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -94,3 +94,13 @@ The coordinator identified an off-grid pole plotting defect for 1/(s²+2); known
 An independent cancellation identity found that (s−0.13)/((s−0.13)(s+1.3)) could amplify roundoff in a long unstable canonical horizon: near t=307.692 s the previous output was 4.039 instead of the exact reduced transfer's −0.454. The explicit positive-pole-rate × time ≤20 guard preserves formal frequency results and rejects unsupported long actual traces. A twelve-case regression reduces (s−a)/((s−a)(s+b)) to 1/(s+b), checks short horizons against the independent first-order solution and rejects long horizons. No near-canceling mode is silently snapped to zero.
 
 Later recoverable checkpoints include c57f18b (off-grid pole/notch), 81b935f (visual coefficient notation), 103c284 (numeric underflow and plot focus), and 438038f (unstable horizon). The final delivery also contains the mixed-number guard and actual browser evidence. This record claims implemented, not independently verified.
+
+## Reopened invisible-group correction
+
+The coordinator returned clean submission b8108e4 for hidden TeX braces being treated as displayed parentheses or products: 1{+2} became 2 instead of the visible 3, −{2+3} became −5 instead of the visible 1, and the denominator {{s+2}s} invented (s+2)s instead of the visible s+2s. Numeric fragments and wrapped fractions also bypassed the mixed-number guard.
+
+The private notation scanner now flattens standalone invisible formatting groups before algebraic tokenization. It preserves actual fraction-box and power-argument scope, and visible parentheses. Adjacent digit fragments such as 1{2}, {1}{2} and −{2}{3} rejoin into the displayed 12, 12 and −23. Wrapped mixed numbers are rejected by the existing explicit-operation guidance. One-token TeX power boundaries are preserved too: 10^23 displays 10² followed by 3, hence 300; 10^{23} remains a full exponent and exceeds this exercise's coefficient bounds. No hidden parentheses or scalar cancellation are invented.
+
+The installed MathLive static MathML renderer was inspected independently for the coordinator's examples and one-token/full exponent distinction. New mathematical regressions cover the visible arithmetic, numeric wrappers, true fractions, nested groups, signed bases, explicit operations, and mixed-number bypasses; a view regression verifies stale results clear and visible-parenthesis recovery succeeds. Current checks: 78 module tests, 120 full-suite tests, type checking and production build pass. The prior actual-browser evidence above is historical and does not certify this new correction.
+
+Focused actual-editor feedback/output verification is still required. The coordinator currently reserved the next DS01 integration turn after CF02; CP03 will defer acquisition until that reservation sequence releases. DF02 remains checkpointed at b5147b3 while this higher-priority review return is handled. No final resubmission is claimed at this checkpoint.

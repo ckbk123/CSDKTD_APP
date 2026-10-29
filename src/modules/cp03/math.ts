@@ -30,9 +30,10 @@ function combine(a: Rational, b: Rational, op: string): Rational {
   return { n: mul(a.n, b.n), d: mul(a.d, b.d) };
 }
 
-/** MathLive may omit braces around one-token fraction arguments (\frac12).
- * Expand those TeX arguments before tokenizing decimal numbers. */
-function expandFractions(source: string): string {
+/** Preserve fraction/power argument boundaries. Standalone TeX braces are
+ * invisible: flatten them instead of inventing visible parentheses or products.
+ * This also rejoins digit fragments such as 1{2} into the displayed number 12. */
+function normalizeVisualNotation(source: string): string {
   let i = 0;
   function argument(depth: number): string {
     if (depth > 24) fail('The expression is nested too deeply.');
@@ -43,7 +44,7 @@ function expandFractions(source: string): string {
     }
     if (source.startsWith('\\frac', i)) return fraction(depth + 1);
     if (source[i] && /[0-9s]/.test(source[i])) return source[i++];
-    return fail('Complete each fraction numerator and denominator.');
+    return fail('Complete each fraction or power argument.');
   }
   function fraction(depth: number): string {
     i += 5; const numerator = argument(depth), denominator = argument(depth);
@@ -54,8 +55,11 @@ function expandFractions(source: string): string {
     let output = '';
     while (i < source.length && !(untilBrace && source[i] === '}')) {
       if (source.startsWith('\\frac', i)) output += fraction(depth + 1);
+      else if (source[i] === '^') {
+        i++; output += `^{${argument(depth + 1)}}`;
+      }
       else if (source[i] === '{') {
-        i++; output += `{${scan(true, depth + 1)}}`;
+        i++; output += scan(true, depth + 1);
         if (source[i++] !== '}') fail('Close each expression box.');
       } else output += source[i++];
     }
@@ -71,7 +75,7 @@ export function parsePlant(latex: string): Plant {
   const cleaned = latex.replace(/\\(?:left|right)\b/g, '')
     .replace(/\\(?:dfrac|tfrac)\b/g, '\\frac').replace(/\\(?:cdot|times)(?![A-Za-z])/g, '*')
     .replace(/\\[,;! ]/g, '').replace(/\s/g, '').replace(/−/g, '-').replace(/^G\(s\)=/, '');
-  const source = expandFractions(cleaned);
+  const source = normalizeVisualNotation(cleaned);
   if (/[0-9.][eE]/.test(source)) fail('Use decimal coefficients or textbook powers of ten. In a visual equation, e/E notation is algebra, not a decimal exponent.');
   const tokens = source.match(/\\frac|(?:\d+(?:\.\d*)?|\.\d+)|[s()+\-*/^{}]/g) ?? [];
   if (!tokens.length || tokens.join('') !== source) fail('Use real numbers, s, sums, products, fractions and integer powers only.');
