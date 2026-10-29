@@ -132,4 +132,3 @@ describe('DF01 sample convention, independent fixtures and certificates', () => 
     }
   });
 });
-

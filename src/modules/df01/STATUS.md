@@ -82,3 +82,12 @@ Also accepted MathLive's single-token fraction arguments (for example fraction n
 
 Owned changes: `math.ts`, `math.test.ts`, `view.ts`, `view.test.ts`, `workspace.ts`, `workspace.test.ts`, scoped `style.css` and this record. `TASK.md` and metadata unchanged. Supported scope remains stable real order1–2, proper channel, zero prehistory and sampled evidence only. Conservative numerical/near-boundary cases can remain unestablished; higher orders, arbitrary initial states and continuous intersample reconstruction are outside this declared exercise domain. The independent integration owner reviews and merges separately. Claim submission records the final tested branch SHA; retain its worktree and reservation.
 
+
+## Pull request delivery record (2026-10-29)
+
+- PR: [#16 — Implement DF01 sampled transient quality exercise](https://github.com/ckbk123/CSDKTD_APP/pull/16), targeting main; no prior PR existed for this branch. Attached to the worker chat.
+- Worker chat: `01a18701-3f40-7572-9a49-7dc0103c9161`.
+- Branch: `codex/df01-sampled-quality-01a18701`; preserved worktree: `C:/Users/baokh/.codex/worktrees/df01-sampled-quality/CSDKTD APP`.
+- Coordinator reopened the existing submitted reservation solely to complete this delivery record and trim EOF whitespace. Mathematical/UI behavior is unchanged from reviewed implementation `f77ac833d927a79723b2164fc897f19c9770c53c`; no new browser reservation was acquired.
+- PR creation through the connected GitHub integration returned403 (insufficient integration permission). Existing local Git authentication successfully created the single PR; no credential values were printed or saved.
+- The final submitted SHA includes this record; independent integration/versioning remains with the coordinator.
