@@ -1,71 +1,83 @@
 # CD01 implementation status
 
-- **Stage:** in-progress — bounded models/parser/UI implemented;68 local tests/type/build pass; prior725 combined tests pass. Substantial browser math/editor checks pass; lifecycle/narrow/final delivery remain.
+- **Stage:** implemented — accepted bounded exercise, independent mathematical fixtures, project checks and actual production-browser checks pass. Independent integration review remains pending.
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
 - **Branch:** `codex/cd01-linear-pid-01a18700`.
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cd01-linear-pid-01a18700\CSDKTD APP`.
-- **PR:** not created.
+- **PR:** [#42 — reasoned linear PID tuning and analytic gain checks](https://github.com/ckbk123/CSDKTD_APP/pull/42). Claim/PR name the exact tested final revision including this record.
 
-## Source/ownership assessment
+## Source and isolation
 
-Primary CD01 folder was clean and unclaimed; index was metadata-only, workspace blank, no local tests. Claimed atomically and created a fresh isolated worktree/branch at the current committed primary base. Locked dependencies installed with bundled Node24.22.1:109 packages,0 vulnerabilities. No shared solver/helper exists beyond equation UI and native numeric reading. Original slides were not reinspected; TASK/atlas course comparison is the accepted fixture, and independently authored checks below are not extra slide-transcription claims.
+Primary CD01 was a clean unclaimed scaffold without local tests. Claimed atomically; fresh isolated branch starts at recorded primary main, excluding prior worker branches. Locked dependencies: Node24.22.1,npm ci109 packages,0 vulnerabilities. Index remains metadata-only. Original slides were not reinspected; TASK/atlas course comparison remains the accepted fixture. Analytic/authored/SciPy checks below are independent evidence, not extra slide-transcription claims. No sibling import/shared math/package/version change, merge, deployment or primary8787 modification.
 
-Earlier contributions remain separate: CD08 PR20 resubmitted at203b985 after targeted review; DD07 PR35 submitted at899723d; CD09 PR30 is frozen/draft with an inherited spacing-argument review hold awaiting coordinator reopening. No earlier contribution is merged into this branch. Review returns take priority.
+## Requirement-to-evidence audit
 
-## Accepted requirement audit
-
-| Accepted requirement | Current assessment / action |
+| Accepted requirement | Delivered evidence |
 |---|---|
-| Requirement → controller structure | Error/overshoot/observed-window/effort requirements, P/PI/filtered PD/PID choice, DC/initial-effort prediction, structure cues and full-model requirement assessment. |
-| Gain/filter controls and individual terms | Shared visual second-order plant and monic target inputs, native gains/filter/initial data; parallel/standard conversion and separate P/I/D effort. Inactive derivatives never show0/0. |
-| Analytic coefficient matching | Typeset coefficient identities/solved gain formulas, fixed-coefficient compatibility check, optional Tf draft from target, actual desired/coefficient comparison and every mode. |
-| Actual output/effort and course comparison | Full active state model plus independent P/PI/PID comparisons, four computed plots, numeric time inspector and metric/sample tables. Filter and plant modes retained; unavailable comparisons get separate feedback without discarding selected model. |
-| Reason before each change | Draft edits apply only after a student selects a reason; eight bounded temporary trial reasons/results per visit. Course baseline is explicitly app-authored initial state. Reset/reopen clears notes; no persistence. |
-| Meaningful checks and limits | Analytic and independent SciPy fixtures, parser semantics, changed data, inactive modes, fixed-order failures and native underflow tested. Actual fonts/keyboard/horizon feedback still need browser checks. |
-| UI/lifecycle/project/browser | Shared equations/native numeric reader, scoped locally scrolling plots/tables, owned child-signal wrapper and partial-failure cleanup tests.65 local tests/type pass; project/build/browser QA pending. |
+| Requirement → structure | Editable steady-error, final-value overshoot, observed-window and effort limits; P/PI/filtered PD/PID selection; DC/initial-effort prediction; structure cues and complete model requirement assessment. |
+| Gains/filter and individual terms | Shared visual plant/target, native gain/filter/initial data, exact parallel/standard parameter conversion and separate P/I/D effort plots/table. Kp0 has honest standard-form feedback; inactive derivatives show uD0 rather than0/0. |
+| Analytic coefficient matching | Typeset identities/solved gains, fixed-coefficient compatibility, optional Tf draft from target, actual desired/coefficient comparison and all actual modes. Incompatible targets reject. |
+| Actual response and course comparison | Full active closed-state matrix, independent P/PI/PID runs with same plant/memories/reference, four computed plots, numeric inspector and metric/sample tables. Unavailable comparisons do not discard a valid selected trial. |
+| Reason before each applied change | A student selects a reason before Apply/Derive; eight temporary reasons/results per visit support refinement. Draft edits leave the previous recorded trial unchanged until applied. Initial course baseline is app-authored; reset/reopen clears notes. |
+| Independent changed/failure checks | Analytic P/PI responses, all course coefficients and independent SciPy output/effort samples; changed targets, plant scaling, unstable plant, controller memories, inactive modes, rank-free order constraints, notation/range/underflow/growth/horizon cases. |
+| Lifecycle, keyboard and narrow layout | Owned synchronous loading host/child abort signal, partial-failure resource regressions, scoped styles/shared native reader. Actual entry/fonts/keyboard/reset/reopen/rapid-navigation and390px local scrolling pass. |
 
-## Mathematical design and independent fixtures to verify
+## Mathematics and independent fixtures
 
-Bounded planned plant: real strictly proper `G(s)=b/(s²+a1*s+a0)`, with nonzero b, negative unity feedback, constant step reference, continuous seconds. No delays/hardware/nonlinearities. Controller is parallel `C=Kp+Ki/s+Kd*s/(Tf*s+1)` with explicit term activation P/PI/filtered PD/PID. Derivative is on error; the finite filtered kick and units must be shown. When Kp≠0, equivalent standard notation uses Ti=Kp/Ki and Td=Kd/Kp (inactive integral has no Ti); Kp=0 needs no fabricated standard conversion.
+Real continuous SISO `G=b/(s²+a1*s+a0)`,D0,state[y;y_dot],negative unity feedback. Numerator is a nonzero evaluated real constant; a quadratic denominator may be expanded/factored and is normalized to monic form. No plant zeros/delays/nonlinear hardware are implied. Parallel `C=Kp+Ki/s+Kd*s/(Tf*s+1)`; derivative acts on error, including the finite filtered step kick. I_dot=e and Tf*v_dot=e−v. Initial plant/I/filter states and held reference are explicit; inactive terms ignore their initial memories and add no state. Plant modes are retained even if an output factor cancels.
 
-For selected nonzero active terms, unreduced characteristic polynomials in descending powers follow directly from the loop:
+When Kp≠0, standard-form parameters are Ti=Kp/Ki (inactive integral has no Ti),Td=Kd/Kp,with the same Tf. Kp0 does not fabricate a standard conversion. Gains may be signed within bounds; stability is checked separately.
+
+Characteristic polynomials follow directly from the unreduced active loop:
 - P: s²+a1*s+(a0+b*Kp).
 - PI: s³+a1*s²+(a0+b*Kp)*s+b*Ki.
 - Filtered PD: Tf*s³+(1+a1*Tf)*s²+(a1+a0*Tf+b*Kp*Tf+b*Kd)*s+(a0+b*Kp).
 - Filtered PID: Tf*s⁴+(1+a1*Tf)*s³+(a1+a0*Tf+b*Kp*Tf+b*Kd)*s²+(a0+b*Kp+b*Ki*Tf)*s+b*Ki.
 
-At b1,a1=3,a0=2,Kp4,Ki2,Kd1,Tf.05: P polynomial s²+3s+6; PI s³+3s²+6s+2; filtered PID monic s⁴+23s³+86s²+122s+40. Stable P has y∞=2/3 for unit reference, e∞=1/3; stable PI/PID have e∞0. These equalities do not imply faster settling. All relevant controller/plant modes and actual response must be checked.
+P's next-leading monic coefficient is fixed at a1; PI's at a1; filtered PD/PID's at a1+1/Tf. Remaining coefficient equations solve gains; actual state-matrix coefficients and every mode must verify. A zero solved term can reduce actual order and cannot falsely realize an extra requested mode. Faddeev–LeVerrier coefficients of the actual2–4-state matrix independently check the loop formulas. All degree≤4 roots have normalized polynomial/Vieta verification; repeated roots can split under rounding and are labeled numerical approximations.
 
-Matching constraints: P's linear coefficient is fixed at a1; PI's quadratic coefficient is fixed at a1. With fixed Tf, filtered PD/PID next-leading monic coefficient is fixed at a1+1/Tf. Solve the remaining linear equations for gains and independently verify the resulting coefficients/modes; inconsistent targets get feedback, not plausible gains. A zero gain removes its inactive controller term/state and may reduce actual order; never hide a retained plant mode through transfer cancellation.
+At b1,a1=3,a0=2,Kp4,Ki2,Kd1,Tf.05: P polynomial[1,3,6];PI[1,3,6,2];filtered PD[1,23,86,120];filtered PID[1,23,86,122,40]. Stable P's unit-reference output tends2/3,error1/3; stable PI/PID error0. This does not imply faster transients. The P response is analytically `y=(2/3)[1−exp(−1.5t)(cos(wt)+(1.5/w)sin(wt))]`,w=sqrt15/2; u=4(1−y).
 
-Independent analytic authored fixture: b1,a1=3,a0=2,PI Kp1,Ki1 gives full characteristic (s+1)^3 while output transfer is1/(s+1)^2. From zero initial states/unit step, y=1−(1+t)exp(−t),u=2−exp(−t). This tests the full realization plus a cancelled output factor without dropping its internal mode.
+Authored PI Kp1,Ki1 gives full polynomial(s+1)^3 while output TF is1/(s+1)^2. From zero states/unit step, y=1−(1+t)exp(−t),u=2−exp(−t),I=2−(t+2)exp(−t). All three internal modes remain−1. Authored PID target(s+17)(s+2)^3 at fixed Tf.05 gives Kp8.26,Ki6.8,Kd2.187; its initial effort is52,so meeting an observed timing limit does not meet effort30.
 
-Plan: bounded degree≤4 root verification, augmented-state numerical exponential response, explicit sampled overshoot/effort and finite-window settling feedback; analytic stable DC error separate from finite-horizon measures. Resource and conditioning thresholds must be fixed/tested in code before delivery. This record is an early recovery checkpoint, not a solver success claim.
+Independent bundled NumPy2.3.5/SciPy1.18.1 used manually specified output TFs P4/[1,3,6],PI[4,2]/[1,3,6,2],PID[1.2,4.1,2]/[.05,1.15,4.3,6.1,2]. Effort numerators multiply each output numerator by[1,3,2],retaining direct feedthrough. scipy.signal.tf2ss plus scipy.linalg.expm at t0,1,5,20 yields PID output[0,.7232639601893959,.971128782713998,.9999700109233961] and effort[24,1.8964989138990447,1.9759366374534828,1.9999749340840935]. P/PI reference samples are in tests. This numerical cross-check adds no browser dependency.
 
-## Mathematical checkpoint
+## Supported bounds and approximation limits
 
-Owned `math.ts`/`numerics.ts` now implement the four structures, inactive-term/state removal, actual state-matrix characteristic check, complete degree≤4 analytic roots with normalized residual/Vieta verification, stable DC error, coefficient matching/constraints, standard-form conversion and an augmented-state step response. Final-value overshoot/window and command-tracking band are distinct, so P's nonzero tracking error is not mislabeled as a missing transient settling window. Sampled measures remain finite-horizon observations. No parser/UI exists yet; the workspace remains the untouched scaffold at this checkpoint.
+|b| from10⁻⁶ to100; |a0|,|a1|≤100; gains magnitude≤100; active Tf.001–10s; closed state/input entries≤10⁶. Root coefficients≤10¹²; degree1–4,normalized polynomial residual≤10⁻⁹,complete Vieta discrepancy≤10⁻⁸. Actual matrix/formula coefficient discrepancy≤10⁻⁹. Stability real-part tolerance10⁻⁸*max(1,mode magnitude). Multiple-root fixture tolerance up to2×10⁻⁴ reflects sensitivity; coefficient/residual checks remain separate.
 
-Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/cd01/math.test.ts` passes22 tests; `node node_modules/typescript/bin/tsc --noEmit` passes. Fixtures cover four real roots, two conjugate pairs, repeated multiplicities, zero/RHP/imaginary-axis roots, singular-matrix exponential, all course characteristic polynomials, analytic P response and cancelled-mode PI response, fixed-coefficient matching failures, changed numerator invariance, controller term contributions and range/growth/horizon failures. Repeated triple/quartic tests allow2×10⁻⁴ root error because multiple roots are sensitive; polynomial and complete coefficient residual checks remain separate.
+Visual parser: one constant-over-quadratic plant, real polynomial target degree2–4,≤600characters,160tokens,nesting12,scalar nesting8,decimal8integer/12fractional digits,coefficient magnitude≤10⁸. Signed/nested/compact fractions and ordinary literal/braced spacing are supported. e/E,mixed adjacency,hidden grouping,ambiguous or unsupported powers/0⁰,and incomplete unbraced TeX spacing arguments reject. Native numeric exponents have their separate shared-reader grammar; nonzero underflow rejects and intentional zero remains valid.
 
-Independent bundled NumPy2.3.5/SciPy1.18.1 check used manually specified output TFs P4/[1,3,6],PI[4,2]/[1,3,6,2],PID[1.2,4.1,2]/[.05,1.15,4.3,6.1,2]. Effort numerators multiply each output numerator by[1,3,2], retaining direct feedthrough. `scipy.signal.tf2ss` plus `scipy.linalg.expm` at t0,1,5,20 gives PID output[0,.7232639601893959,.971128782713998,.9999700109233961] and effort[24,1.8964989138990447,1.9759366374534828,1.9999749340840935]; independent P/PI values are recorded in tests. This is numerical reference evidence, not an added application dependency.
+Initial states/reference magnitude≤100,horizon.1–100s,2–1001samples (UI801),response magnitude≤10⁸. Exponential order≤5,30scaling steps,24Taylor terms,reduced norm≤.5,term threshold10⁻¹⁶. Coarse modal sampling is warned about. Analytic stable DC error is separate from sampled command overshoot and final-value overshoot/window. The observed2%window starts at the first sample after the last outside sample,or0 if none leave; it is unavailable when the horizon ends outside. Zero reference/final output gives undefined percentage measures,not a fabricated zero. A finite-window result does not certify permanent settling or intersample extrema.
 
-Current implemented bounds: plant |b| from10⁻⁶ to100,|a0/a1|≤100; gains magnitude≤100; active Tf.001–10s; closed state/input entries≤10⁶; monic polynomial coefficients≤10¹²; degree1–4 roots require relative normalized residual10⁻⁹ and complete Vieta check10⁻⁸. Actual matrix/formula coefficient discrepancy≤10⁻⁹. Stability uses real-part tolerance10⁻⁸ times max(1,mode magnitude). Initial states/reference magnitude≤100,horizon.1–100s,2–1001samples (default801),response≤10⁸. Exponential order≤5,30 scaling steps,24 Taylor terms,reduced norm≤.5,term threshold10⁻¹⁶. Coarse mode sampling is flagged. These bounds still need UI disclosure, parser tests and real-browser checks before delivery.
+## Checks and real-browser evidence — 29 October 2026
 
-## Guided UI/parser checkpoint
+Bundled Node24.22.1 with its executable prefixed on PATH and the installed npm CLI:
+- `node node_modules/vitest/vitest.mjs run src/modules/cd01`:68 tests pass (24math,31parser,9mocked UI,4loader).
+- `npm run check`:passes.
+- `npm test`:728 tests in30files pass.
+- `npm run build`:passes;existing MathLive large-chunk warning only.
+- `git diff --check`:passes. Final exact-HEAD checks include this delivery record; generated artifacts/dependencies stay uncommitted.
 
-Owned parser and UI now disclose these bounds and support degree≤4 real polynomial arithmetic and one constant-over-quadratic plant, signed/nested/compact numeric fractions and normalized nonmonic plant denominators. Explicit TeX spacing arguments are checked before normalization; mixed adjacency, hidden grouping, e/E, unsupported powers/0⁰, plant zeros/delays and wrong degree reject. Targets/plant are shared visual fields; all native numbers use the shared reader. Inactive controller states are omitted explicitly while every plant mode remains. Stable DC error, command overshoot/tracking band and final-value overshoot/window are distinct.
+Verified private IAB inventory identifies this chat's codexSessionId01a18700-78e9-7a80-af1b-4436e25b10ff and had no other tabs before QA. Only own production preview9001 was used; current primary guidance permits verified private contexts without a global reservation. No global lock is held. Desktop1280×720 and phone390×844 used the displayed system-dark theme; light-theme emulation was not separately performed. No unsupported Firefox route was retried.
 
-`node node_modules/vitest/vitest.mjs run src/modules/cd01` now passes65 tests (22 mathematical,31 parser,8 mocked UI,4 loader); type check passes. Tests include reason gating/notes/reset isolation, coefficient derivation, actual target/effort checks, Kp0 standard-form feedback, changed controller memories and native underflow. Mathematical/SciPy evidence above remains. Workspace uses an owned synchronous loading host and child abort signal; partial-failure listeners are aborted before recovery. Actual MathLive fonts/entry/keyboard, narrow layout, reset/navigation, combined tests/build and final PR/delivery remain pending; no implementation completion is claimed yet.
+- Baseline four modes,Ti2,Td.25,Tf.05,DC error0,initial effort24,t1 output.723264/effort1.896499 match references. Course P:error.3333333,final-value overshoot8.773022%,observed window2.45s; PI:error0/window6.075s/peak4.137828; PID:error0/window5.825s/peak24. No permanent-settling claim.
+- Actual reason gating blocks unreasoned Apply and appends the chosen reason on success. Native1e−999 rejects;0e−999 recovers with Kp0 standard-form feedback. Empty plant and active Tf.0001 reject. Zero-reference percentage window is explicitly undefined.
+- Real fraction-button entry G2/((s+1)(s+2)) yields[1,23,110,204,80]. Actual power-button target(s+1)^3 derives PI Kp=Ki1 with all3modes−1. Changed(s+2)^3 rejects fixed coefficient. Authored PID target verifies all4modes and effort52 failure. A misplaced denominator-only power was correctly rejected before entry was repaired with visible parentheses.
+- Authored unstable plant1/(s(s−1)−1),Kd4,horizon100 gives[1,19,63,62,40],selected stable modes−15.0843,−2.865647,−.5250253±.8060468j. P/PI comparisons hit10⁸ and report unavailable while preserving selected results; coarse-sampling warning is shown.
+- Changed y0=.2,y_dot0=−.3,I0=.4,v0=.1,r.5 gives effort1.2+.8+4=6. Real Systems s-key insertion changes the draft; Escape closes the keyboard and preserves math entry. Reset restores gains4/2/1/.05,one initial note,blank prediction,no plots,all keyboards closed.
+- Leaving with a keyboard open removes old fields. Fast CD01/CD08 alternation leaves no late PID DOM; reopening starts fresh. CD08 is a scaffold in this preserved main base; its separate submitted branch was not merged here. Owned lazy partial-failure tests abort a registered window resource while the parent remains active.
+- Phone client/scroll widths375/375. Plot viewport285/content500 with14px labels and ArrowRight panning; metric table307/content780 scrolls39px; numeric table307/content380 scrolls40px. Native time inspection Enter retains focus and correct t1 caption. Bundled fonts loaded,console error/warning log empty. Temporary override reset1280×720; own tab and preview9001 closed after QA.
 
-## Production-browser checkpoint
+Screenshots outside Git:
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-browser.jpg`:course baseline at t1.
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-narrow.jpg`:phone axes/local plot scrolling.
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-matching.jpg`:authored target/actual coefficient and effort checks.
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-unstable-plant.jpg`:selected stable design with unavailable simpler comparisons.
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-result.jpg`:desktop course signal comparison.
 
-Own verified private IAB inventory matched chat01a18700-78e9-7a80-af1b-4436e25b10ff and had no other tabs; own preview9001 used. Baseline actual four modes, parallel/standard parameters(Ti2,Td.25,Tf.05), DC error0, initial effort24 and sample t1 output.723264/effort1.896499 match independent fixtures. Course P has steady error.3333333, final-value overshoot8.773022%,observed2%window2.45s; PI0error/window6.075s/peak4.137828; PID0error/window5.825s/peak24. No permanent-settling claim. Real reason gating blocks unreasoned Apply and appends selected reasons on success; native nonzero underflow rejects, intentional zero recovers with honest Kp0 standard-form feedback.
+## Review boundary
 
-Actual visual fraction-button entry changed G to2/((s+1)(s+2)), yielding full monic polynomial[1,23,110,204,80]. Actual target power-button entry(s+1)^3 plus PI matching gives Kp=Ki1 and all three modes−1; changing to(s+2)^3 rejects the fixed coefficient. Authored PID target(s+17)(s+2)^3 gives Kp8.26,Ki6.8,Kd2.187,all four numerical modes and initial effort52,so the effort limit30 fails even though the observed window meets4s. Repeated roots are explicitly labeled numerically sensitive.
-
-A separately authored unstable plant entered as1/(s(s−1)−1),Kd4 with the baseline other gains,horizon100 yields[1,19,63,62,40],stable selected modes−15.0843,−2.865647,−.5250253±.8060468j. P/PI comparison growth hits10⁸ and reports unavailable without discarding selected output. Coarse-sampling warning appears. During entry an unintended denominator-only power left later terms outside the fraction; the parser correctly rejected the unsupported plant. This was repaired through visible parentheses before the successful trial. Screenshot outside Git: `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-unstable-plant.jpg`.
-
-Current local checks:68 tests (24 math,31 parser,9 mocked UI,4 loader) and type/build pass. A last comparison-failure regression and zero-start window correction followed the earlier725-project-test run; rerun the combined suite at final delivery. Keyboard/reset/reopen/fast-navigation/narrow/console evidence and final screenshots/PR/claim submission remain pending. Preview9001 and own temporary QA tab are currently active.
+No accepted exercise requirement or shared dependency remains deferred. Independent coordinator review/integration is pending; this is not `verified` status or a release. Preserve branch/worktree and reuse PR42 for corrections. Earlier contributions remain separate: CD08/PR20 resubmitted203b985;DD07/PR35 submitted899723d;CD09/PR30 frozen/draft pending coordinator reopening for the known spacing edge case. None is included in this branch.
