@@ -9,7 +9,11 @@ function figure(title: string, label: string, viewBox: string) {
   const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', label); svg.setAttribute('viewBox', viewBox);
   out.append(caption, svg); return { out, svg };
 }
-const short = (n: number) => n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 5 });
+const short = (n: number) => {
+  if (!n || (Math.abs(n) >= 1e-3 && Math.abs(n) < 1e5)) return n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 5 });
+  const [mantissa, exponent] = n.toExponential(2).split('e');
+  return `${mantissa}×10${String(Number(exponent)).replace(/[-0-9]/g, digit => '⁻⁰¹²³⁴⁵⁶⁷⁸⁹'['-0123456789'.indexOf(digit)])}`;
+};
 export function conditionPlot(model: Model, gain: number, minimum: number, maximum: number) {
   const { out, svg } = figure('Intersect every condition on the same K axis', 'Four strict Routh conditions and their intersection on a common gain axis', '0 0 480 280');
   out.className = 'c-conditions'; const x = (v: number) => 145 + 305 * (v - minimum) / (maximum - minimum);
@@ -36,8 +40,8 @@ export function conditionPlot(model: Model, gain: number, minimum: number, maxim
 }
 export function rootPlot(roots: readonly Complex[]) {
   const { out, svg } = figure('All three characteristic roots', 'Cubic roots in the complex s plane; shaded left half-plane', '0 0 360 290');
-  out.className = 'c-roots'; const extent = Math.max(1, ...roots.map(z => Math.max(Math.abs(z.re), Math.abs(z.im)) * 1.25));
-  const x = (r: number) => 180 + 140 * r / extent, y = (i: number) => 135 - 110 * i / extent;
+  out.className = 'c-roots'; const largest = Math.max(...roots.map(z => Math.max(Math.abs(z.re), Math.abs(z.im)))), extent = largest ? largest * 1.25 : 1;
+  const x = (r: number) => 180 + 130 * r / extent, y = (i: number) => 135 - 110 * i / extent;
   shape(svg, 'rect', { x: 40, y: 25, width: 140, height: 220, class: 'c-left' });
   shape(svg, 'line', { x1: 30, x2: 330, y1: 135, y2: 135, class: 'c-axis' }); shape(svg, 'line', { x1: 180, x2: 180, y1: 15, y2: 255, class: 'c-axis' });
   for (const tick of [-extent, extent]) { shape(svg, 'text', { x: x(tick), y: 157, 'text-anchor': 'middle' }, short(tick)); shape(svg, 'text', { x: 188, y: y(tick) + 5 }, short(tick)); }

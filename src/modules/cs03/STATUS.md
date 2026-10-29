@@ -1,30 +1,30 @@
 # CS03 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cs03/**` only
 - **Branch:** `codex/cs03-parameter-regions-2175`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cs03-parameter-regions-2175/CSDKTD APP`
 - **Baseline primary main:** `0c6f038e37c321169cbbac9961c3c3ebd125d25a` (v0.3.2)
-- **PR / submission:** pending actual production-browser verification; no PR created yet
+- **PR / submission:** implementation and checks complete; PR URL and exact clean submission are recorded below when created
 
 ## Scope and accepted requirements
 
 Initial inspection found immutable metadata, an empty synchronous mount and no local tests. No working module feature was replaced. The current primary coordination guides govern this preserved worktree. Source/audit anchors confirm the cubic gain exercise and W06 variation; original slides were not inspected. Extra fixtures below are independently derived, not newly attributed slide examples.
 
-The complete bounded exercise is implemented offline:
+The complete bounded exercise is implemented and checked in the production browser:
 
 | Accepted requirement | Implemented evidence | Remaining gate |
 |---|---|---|
-| Form the feedback characteristic polynomial | Editable visual D(s), native scalar g; derive P=D+Kg | Actual editor/browser check |
-| Derive the complete gain region | Exact rational affine Routh conditions, finite open/all-real/empty sets | Browser interaction |
-| Mark every inequality on one parameter axis | Four condition strips plus intersection, open equality markers and selected K | Actual desktop/phone appearance |
-| Student interval and endpoint inclusion | Two visual endpoint fields, finite/all/empty selection, open/closed controls and independent grading/reveal | Real visual fraction entry |
-| All roots at interior/exterior/boundary gains | Exact inspection gains, full numerical cubic modes, Routh table, factors, counts/residuals | Browser inspection buttons |
-| Required baseline and W06 variation | Independent 0<K<70 and 0<K<48 tests and computed changed-data presets | Browser/reset verification |
-| Lifecycle and readable input | Three caller-owned equation editors, scoped styles, cold-load status, child-signal abort/failure cleanup | Actual keyboard, fast navigation and narrow viewport |
-| Delivery | Clean pushed checkpoints and current claim | Browser evidence, one attached PR, final exact tested submission |
+| Form the feedback characteristic polynomial | Editable visual D(s), native scalar g; derive P=D+Kg | Passed actual fraction/power entry |
+| Derive the complete gain region | Exact rational affine Routh conditions, finite open/all-real/empty sets | Passed changed-data browser checks |
+| Mark every inequality on one parameter axis | Four condition strips plus intersection, open equality markers and selected K | Desktop and phone checked |
+| Student interval and endpoint inclusion | Two visual endpoint fields, finite/all/empty selection, open/closed controls and independent grading/reveal | Exact long fractions and closed-endpoint feedback passed |
+| All roots at interior/exterior/boundary gains | Exact inspection gains, full numerical cubic modes, Routh table, factors, counts/residuals | Every source boundary/interior/exterior checked |
+| Required baseline and W06 variation | Independent 0<K<70 and 0<K<48 tests and computed changed-data presets | Passed browser/reset verification |
+| Lifecycle and readable input | Three caller-owned equation editors, scoped styles, cold-load status, child-signal abort/failure cleanup | Keyboard, fast navigation and narrow viewport passed |
+| Delivery | Clean pushed checkpoints and current claim | One attached PR and final exact submission are the remaining bookkeeping |
 
 ## Mathematical domain and reasoning
 
@@ -61,7 +61,7 @@ Grading regressions reject a false1e-7-wide interval for the true width1e-18 and
 
 Workspace tests use a mocked editor only for caller state/lifecycle, not browser functionality. They verify changed data, exact fractional selection, prediction/error recovery, intentional zero/finite exponent/nonzero-underflow distinctions, fresh reopen, immediate abort and cold-load status. A partial-mount failure creates a button and document listener before throwing; both are removed/aborted immediately while the parent remains active. The wrapper owns its child signal/container, ignores late imports and provides a recoverable Reset message.
 
-Actual Node24 checks at clean source checkpoint d57b99f:
+Actual Node24 checks after the final browser-discovered root-plot correction:
 
 - `npm test -- src/modules/cs03`:63/63 passed (51math/parser,12workspace).
 - `npm run check`:passed.
@@ -69,10 +69,26 @@ Actual Node24 checks at clean source checkpoint d57b99f:
 - `npm run build`:passed; existing MathLive large-chunk warning only.
 - `git diff --check`:passed; owned files only, metadata unchanged, generated output untracked/ignored.
 
-## Browser and delivery still pending
+## Actual production-browser evidence
 
-Own production preview8825 is independent of primary8787. No CS03 real-browser claim is made yet. Required checks remain visual fraction/power entry and fonts, all three fields, keyboard/Escape/Tab/Enter, interval grading, changed data/failure recovery, reset/reopen/rapid navigation and desktop/narrow layouts. Exact labels/buttons have wrapping and the inequality diagram has its own horizontal scroll area, but CSS preparation is not browser evidence. Small numerical labels use ×10 with superscript exponents.
+The coordinator proved private IAB tab/viewport isolation with CD08, then explicitly authorized parallel private-chat QA without the old global lock. Before proceeding, this worker rechecked inventory: browser2 codexSessionId matched this chat01a186d2-2175-7122-ad9f-c01694059c6c, with no tabs. All following checks used only own background tab5 at own production preview8825. Primary8787 and other workers' tabs/resources were untouched. The obsolete release watcher88157 had already terminated without acquiring; no reservation was held or released.
 
-The coordinator-relayed human Firefox fallback is authorized. The executable exists and was launched through CUA, but concurrent identical-title native windows prevented attributable selection; no native input/focus/close action was sent and unknown windows were preserved. The coordinator subsequently reported Firefox URL-policy controls unavailable and instructed workers to stop that route. No Firefox version or module behavior is certified. This chat's read-only IAB inventory is tagged with its own session ID and has no tabs; viewport isolation remains under coordinator investigation. No IAB controls were used while another worker held QA.
+Actual in-app Chromium checks on Windows, system dark theme, desktop1280×720/1000 and phone390×844:
 
-The bounded CS03 release watcher88157 ended without acquiring after ten minutes. No watcher/reservation is held now. CD08 retains the shared IAB slot while finishing its actual plot check/isolation probe. Earlier DS04 PR#13 is frozen at submitteda0d3704 and has cleared final review for coordinator integration. Browser evidence, final stage/PR/attachment and exact clean submission are the remaining CS03 work; no merge, release or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
+- Cold load showed the working exercise without a stale Implementation pending label. Three visual fields, readable fraction/power glyphs and the Systems keyboard rendered; error/warning logs were empty.
+- Entered baseline endpoints0 and70, activated Check through Tab/Enter, and received agreement. Closed upper endpoint received strict-boundary feedback. Exact K=0 roots were0,−5,−2; K=70 roots were−7,±j3.1622777. Above K=175/2 had two numerical RHP roots; below K=−35/2 had one; midpoint35 was strictly stable.
+- W06 recomputed0<K<48 and boundary−6,±j2.8284271. Reverse polarity recomputed−70<K<0. Gain-independent D=(s+1)(s+2)(s+3),g=0 graded all real K, hid unused bounds and retained all modes−1,−2,−3. D=s³+4s+1 gave an empty set with explicit zero-pivot feedback.
+- Used real power/fraction buttons to enter s³+s²+s+1/10, nativeg=.3 and actual negative compact fraction−1/3 in the lower answer. Grading returned−1/3<K<3. Exact inspection preserved K=−1/3 with roots0,−.5±j.8660254 and K=3 with−1,±j1.
+- Actual mixed2(1/2) adjacency was rejected in BOTH D and a student endpoint, with explicit +/× guidance and no result plots. Systems-keyboard multiplication produced2×(1/2); after committing the editor draft with Enter, the shifted D=s(s+2)(s+5)−1 graded1<K<71 correctly. Escape dismissed the keyboard; an uncommitted editor draft received completion feedback instead of a solved answer.
+- Entered s³+s²/100000000+s/100000000+100 using actual fraction/power buttons and the exact long upper answer−999999999999999999/10000000000000000. It graded the interval from−100 correctly despite collapsed native endpoint conversion. Exact upper inspection retained c=1e-16 and roots−1e-8,±j1e-4. Long headings/buttons and fraction fields stayed inside the phone page.
+- Browser review found the root plot's former minimum±1 range visually compressed tiny modes. The final plot fits nonzero computed modes, retaining a finite default for all-zero modes, with short ×10/superscript tick labels. After rebuilding/reloading, the phone plot visibly separated ±j1e-4; labels and all three listed modes were readable. Coefficient/result equations and the five-row condition diagram scroll within their own areas.
+- Native K=1e-999 gave a finite-input error and zero computed SVGs;0e-999 selected0 and1e-2 selected exact1/100. Native g underflow also cleared results, intentional zero gave an all-real set, and g=1e-2 recomputed−10<K<90. Reversed/equal axis endpoints, visual e notation and an incomplete fraction produced useful distinct feedback and cleared stale results.
+- Reset with the keyboard open restored g=1,K=10,window[−10,80], finite/open answer controls and empty attempt/results; reveal returned0<K<70. Rapid CS03→CR01→CS03→CR01 navigation left zero CS03 roots, zero mathfields and no old keyboard. Reopening CS03 restored three fresh editors and the baseline. Phone keyboard and native controls remained usable; document clientWidth=scrollWidth=375.
+
+Evidence screenshots are outside Git under C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-2175-7122-ad9f-c01694059c6c/: cs03-browser.png (exact fractional inequalities), cs03-phone.png (final fitted tiny-root plot) and cs03-keyboard.png (phone editor/Systems keyboard). Screenshots were inspected and representative images displayed in the worker chat. Light theme and other browser engines were not separately tested; no all-browser or offline guarantee is claimed.
+
+Own viewport override was reset, tab5 closed, and preview process72504 on port8825 stopped. No browser reservation/waiter remains. The earlier Firefox fallback launch exposed ambiguous concurrent windows; no native page input/focus/close was sent, unknown windows were preserved, and that unsupported route was stopped after the coordinator's instruction. No Firefox module evidence is claimed.
+
+## Remaining integration work
+
+The accepted bounded exercise and required worker checks are complete. Independent coordinator review and the approved native-reader adaptation remain integration responsibilities. PR attachment/URL and exact clean checked branch submission are recorded next. No merge, version change or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
