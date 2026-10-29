@@ -25,7 +25,7 @@ Implement the complete comparison exercise for a declared physical SISO first-or
 | Visual reasoning | None | Computed common-time output/control plots, sample/reconstruction distinction, legends/visibility and interval contributions; actual browser view pending |
 | Changed data/failures | None | Changed plant/K/T/reference/initial/rate, impossible/conditioned redesign, boundary/growth/work/underflow fixtures pass |
 | Lifecycle/accessibility | Shell only | Local state/synchronous loading/guarded import/abort cleanup; five lifecycle and interface tests pass; actual keyboard/fonts/navigation/phone pending |
-| Delivery | None |69 module/509 project tests,type/build pass; actual gate/PR final evidence/exact submitted SHA pending |
+| Delivery | None |70 module/510 project tests,type/build pass; actual gate/PR final evidence/exact submitted SHA pending |
 
 ## Conventions and supported limits
 
@@ -77,3 +77,5 @@ Actual browser behavior is still unverified; no mocked-editor result is counted 
 One draft PR23 now targets main and is attached to this worker chat. It records the69 module/509 full-project/type/build checkpoint and missing actual browser gate; the claim remains active. Connected GitHub writes remain unavailable (403); the existing authenticated Git connection/REST path creates or reuses this exact branch PR without storing/printing credentials. No duplicate PR, merge, deployment or release number was created.
 
 While the named QA order is pending, a long-horizon boundary check found that subtracting two large tick times could make a nominal full T appear slightly greater than T and falsely trip the ratio30 limit. The independent zero-control fixture at T=.3,tau=.01,H=60 reproduced this. Hold duration now follows the declared min(T,H-t_k) directly, and reconstructed local time is clipped to that actual hold duration; terminal times remain common. The corrected69 module/509 full tests and type/build pass; current view about10.79kB gzip. QA remains deferred; no competing waiter was started.
+
+The coordinator's ongoing DD04 review also highlighted partial-view initialization cleanup. A local DF04 regression reproduced a resource remaining live after view.mount throws. The owned synchronous wrapper now passes a child abort scope to the view, forwards parent abort/disposal and aborts partial initialization before replacing it with recoverable Reset feedback. Parent visit state remains active on failure; resources are released once. This is an owned lifecycle correction, with prior frozen branches untouched. Current `npm test -- src/modules/df04` passes70 cases (11 math,41 parser,12 mocked interface,6 lifecycle); all510 project tests/type/build pass. Actual browser verification remains pending the named QA order.

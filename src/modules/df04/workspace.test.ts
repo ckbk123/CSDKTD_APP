@@ -26,4 +26,16 @@ describe('DF04 synchronous lazy workspace lifecycle', () => {
     viewMount.mockImplementation(() => { throw new Error('simulated unavailable editor'); }); const { container } = visit(); await vi.dynamicImportSettled();
     expect(container.textContent).toContain('Reset the example'); expect(container.querySelector('[role="status"]')).not.toBeNull();
   });
+  it('aborts partial initialization resources while keeping the visit recoverable', async () => {
+    const partialCleanup = vi.fn(); let childSignal: AbortSignal | undefined;
+    viewMount.mockImplementation(({ container, signal }: { container: HTMLElement; signal: AbortSignal }) => {
+      childSignal = signal; const partial = document.createElement('span'); partial.textContent = 'partial controls'; container.append(partial);
+      signal.addEventListener('abort', partialCleanup, { once: true });
+      throw new Error('failure after editor initialization');
+    });
+    const { container, controller, cleanup } = visit(); await vi.dynamicImportSettled();
+    expect(childSignal?.aborted).toBe(true); expect(controller.signal.aborted).toBe(false); expect(partialCleanup).toHaveBeenCalledTimes(1);
+    expect(container.textContent).toContain('Reset the example'); expect(container.textContent).not.toContain('partial controls');
+    controller.abort(); if (typeof cleanup === 'function') cleanup(); expect(partialCleanup).toHaveBeenCalledTimes(1);
+  });
 });
