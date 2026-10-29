@@ -1,5 +1,5 @@
 import { add,sub,mul,div,neg,num,rat,equal,zero,one,parseRational,type Rational } from './algebra';
-import { positiveRoots,type Polynomial } from './roots';
+import { positiveRoots,signAt,type Polynomial } from './roots';
 
 export interface Model {g:Rational;a:Rational;K:Rational;z:Rational;p:Rational}
 export interface Complex {re:number;im:number}
@@ -19,6 +19,7 @@ export function effective(m:Model):{z:Rational;p:Rational;cancelled:boolean}{
   const cancelled=!!m.p.n&&equal(m.z,m.p);return{z:cancelled?zero:m.z,p:cancelled?zero:m.p,cancelled};
 }
 export function phase(m:Model,channel:Channel,omega:number):number{
+  if(!Number.isFinite(omega)||omega<0||omega>1e6||(omega>0&&omega<1e-12))throw new Error('Choose DC or a frequency from10⁻¹² to10⁶ rad/s.');
   if(channel==='T'){const t=at(m,'T',omega);return Math.atan2(t.im,t.re)*180/Math.PI;}
   if(!omega)throw new Error(`${channel} has a pole at DC; its finite phase value is undefined there.`);
   const {z,p}=effective(m);return(-Math.PI/2-Math.atan(omega/num(m.a))+(channel==='L'?Math.atan(num(z)*omega)-Math.atan(num(p)*omega):0))*180/Math.PI;
@@ -48,7 +49,18 @@ export function equations(m:Model):Algebra{
     bandwidthEquation:[neg(d0),sub(d1,mul(rat(2n),mul(d0,z2))),d2,d3]};
 }
 export interface Crossing {omega:number;gain:number;phase:number;pm?:number;gm?:number;db?:number}
-export interface Performance {peak:number;peakOmega:number;stationary:{omega:number;gain:number}[];bandwidths:number[];bandwidth:number}
+export interface BandwidthCrossing {omega:number;direction:'down'|'up'|'touch'}
+export function bandwidthCrossings(polynomial:Polynomial):BandwidthCrossing[]{
+  const roots=positiveRoots(polynomial);
+  return roots.brackets.map((r,i)=>{
+    const left=i?div(add(roots.brackets[i-1].hi,r.lo),rat(2n)):zero;
+    const right=i<roots.count-1?div(add(r.hi,roots.brackets[i+1].lo),rat(2n)):add(r.hi,one);
+    const before=signAt(polynomial,left),after=signAt(polynomial,right);
+    if(!before||!after)throw new Error('Bandwidth crossing direction needs greater precision.');
+    return{omega:Math.sqrt(roots.values[i]),direction:before<0&&after>0?'down':before>0&&after<0?'up':'touch'};
+  });
+}
+export interface Performance {peak:number;peakOmega:number;stationary:{omega:number;gain:number}[];bandwidths:number[];bandwidthCrossings:BandwidthCrossing[];bandwidth:number}
 export interface Analysis {model:Model;algebra:Algebra;state:'stable'|'unstable'|'boundary';kv:Rational;gainCrossings:Crossing[];phaseCrossings:Crossing[];performance?:Performance;performanceIssue?:string}
 export function analyze(m:Model):Analysis{
   // Validate the pure API, too; exact input bounds do not rely on UI drafts.
@@ -67,10 +79,10 @@ export function analyze(m:Model):Analysis{
   try{
     const stationary=positiveRoots(algebra.resonanceEquation).values.map(x=>{const omega=Math.sqrt(x);return{omega,gain:abs(at(m,'T',omega))};});
     const candidates=[{omega:0,gain:1},...stationary],peak=candidates.reduce((a,b)=>b.gain>a.gain?b:a);
-    const bandwidths=positiveRoots(algebra.bandwidthEquation).values.map(Math.sqrt);
-    if(!bandwidths.length)throw new Error('No positive −3dB crossing was isolated.');
+    const crossings=bandwidthCrossings(algebra.bandwidthEquation),bandwidths=crossings.map(c=>c.omega),exit=crossings.find(c=>c.direction==='down');
+    if(!exit)throw new Error('No positive downward −3dB crossing was isolated.');
     for(const omega of bandwidths)if(Math.abs(abs(at(m,'T',omega))-Math.SQRT1_2)>1e-7)throw new Error('The bandwidth residual exceeds tolerance.');
-    result.performance={peak:peak.gain,peakOmega:peak.omega,stationary,bandwidths,bandwidth:bandwidths[0]};
+    result.performance={peak:peak.gain,peakOmega:peak.omega,stationary,bandwidths,bandwidthCrossings:crossings,bandwidth:exit.omega};
   }catch(e){result.performanceIssue=(e as Error).message+' Margins and the exact stability test remain available; performance markers are not assigned.';}
   return result;
 }

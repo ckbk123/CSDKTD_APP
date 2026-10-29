@@ -1,8 +1,14 @@
 import { describe,it,expect } from 'vitest';
-import { readModel,analyze,at,abs,phase } from './math';
+import { readModel,analyze,at,abs,phase,bandwidthCrossings } from './math';
 import { num,textRat,parseRational } from './algebra';
 const model=(values=['1','2','4','0','0'])=>readModel(values);
 describe('CF04 independent course and changed-data fixtures',()=>{
+  it('distinguishes touching the bandwidth level from leaving the DC passband',()=>{
+    const grazing=bandwidthCrossings(['-4','9','-6','1'].map(s=>parseRational(s)));
+    expect(grazing.map(r=>r.direction)).toEqual(['touch','down']);expect(grazing[0].omega).toBeCloseTo(1,10);expect(grazing[1].omega).toBeCloseTo(2,10);
+    const alternating=bandwidthCrossings(['-36','49','-14','1'].map(s=>parseRational(s)));
+    expect(alternating.map(r=>r.direction)).toEqual(['down','up','down']);
+  });
   it('recovers scalar-compensated second-order formulas independently',()=>{
     const r=analyze(model()),wc=Math.sqrt(-2+2*Math.sqrt(5));
     expect(r.state).toBe('stable');expect(r.gainCrossings).toHaveLength(1);expect(r.gainCrossings[0].omega).toBeCloseTo(wc,10);
