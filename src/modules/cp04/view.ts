@@ -35,11 +35,13 @@ function svg<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string,
   const node = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.entries(attrs).forEach(([name, value]) => node.setAttribute(name, String(value))); return node;
 }
 interface Curve { name: string; values: number[]; style: string }
-function plot(omegas: readonly number[], curves: readonly Curve[], markers: readonly { omega: number; name: string; style: string }[], cursor: number, unit: FrequencyUnit, title: string, vertical: string): HTMLElement {
+function plot(omegas: readonly number[], curves: readonly Curve[], markers: readonly { omega: number; name: string; style: string }[], cursor: number, unit: FrequencyUnit, title: string, vertical: string, nonnegative = false): HTMLElement {
   const figure = el('figure', undefined, 'bode-figure'); figure.append(el('figcaption', title));
   const image = svg('svg', { viewBox: '0 0 660 315', role: 'img', 'aria-label': title });
   const all = curves.flatMap(c => c.values); if (all.some(x => !Number.isFinite(x))) throw new Error('A plotted value exceeds numerical limits. Check the data.');
-  let low = Math.min(...all), high = Math.max(...all); if (high - low < 1e-10) { low -= 1; high += 1; } const pad = (high - low) * 0.08; low -= pad; high += pad;
+  let low = Math.min(...all), high = Math.max(...all);
+  if (high - low <= 16 * Number.EPSILON * Math.max(Math.abs(low), Math.abs(high))) { const padding = low === 0 ? 1 : Math.abs(low) * 0.1; low -= padding; high += padding; }
+  const pad = (high - low) * 0.08; low -= pad; high += pad; if (nonnegative) low = Math.max(0, low);
   const start = omegas[0], end = omegas[omegas.length - 1], x = (w: number): number => 85 + 540 * Math.log10(w / start) / Math.log10(end / start), y = (v: number): number => 250 - 200 * (v - low) / (high - low);
   const label = (tx: number, ty: number, text: string, anchor = 'middle'): void => { const node = svg('text', { x: tx, y: ty, 'text-anchor': anchor }); node.textContent = text; image.append(node); };
   image.append(svg('line', { x1: 85, y1: 45, x2: 85, y2: 255, class: 'bode-axis' }), svg('line', { x1: 85, y1: 250, x2: 630, y2: 250, class: 'bode-axis' }));
@@ -142,7 +144,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       card.append(el('p', `Your cursor construction: ${fmt(atPrediction.db)} dB and ${fmt(atPrediction.phase)}°. Phase is kept on the additive unwrapped branch.`));
       card.append(table(['Contribution', 'Magnitude [dB]', 'Phase [deg]'], [['Normalization gain', fmt(20 * Math.log10(Math.abs(normalized.gain))), model.gain < 0 ? '180' : '0'], ['Origin factor', fmt(20 * model.originPower * Math.log10(w)), fmt(90 * model.originPower)], ['Pure delay', '0', fmt(-model.delay * w * 180 / Math.PI)], ...at.contributions.map((c, i) => [`Factor ${rows[i].id} normalized`, fmt(c.db), fmt(c.phase)])])); results.append(card);
     } else results.append(el('h3', 'Your predicted asymptotes and corner markers'));
-    results.append(plot(omegas, magCurves, markers, w, unit, 'Magnitude construction', magnitude.input.value === 'db' ? 'Magnitude [dB]' : 'Magnitude [output / input ratio]'), plot(omegas, phaseCurves, markers, w, unit, 'Phase construction', 'Unwrapped phase [deg]'));
+    results.append(plot(omegas, magCurves, markers, w, unit, 'Magnitude construction', magnitude.input.value === 'db' ? 'Magnitude [dB]' : 'Magnitude [output / input ratio]', magnitude.input.value === 'linear'), plot(omegas, phaseCurves, markers, w, unit, 'Phase construction', 'Unwrapped phase [deg]'));
     results.append(el('p', 'p markers are your predictions; c markers are checked corners after reveal. Vertical accent line is the selected frequency. Exact curves are numerical evaluations; straight lines and phase transitions are approximations.'));
     last = { model, prediction, checked }; message.textContent = checked ? 'Checked construction revealed. Move the frequency cursor or select a contribution to explore.' : 'Prediction drawn. Reveal the checked construction to compare gain, corners and response.';
   }
