@@ -29,3 +29,13 @@ Continuous-time SISO realizations x'=Ax+Bu, y=Cx+Du with A 2x2, B 2x1, C 1x2, D 
 ## Evidence and remaining work
 
 Read TASK, current source, shared equation API, contribution/development/design/equation guides, atlas CS01 and source audit S7. Course slides remain outside Git; the hidden-mode, oscillator and Jordan examples are proposed verification fixtures, not newly inspected slide transcriptions. All implementation and checks remain pending. No shared dependency request is needed.
+
+## Implementation checkpoint (2026-10-29)
+
+- `math.ts`: bounded exact-rational matrix parsing; characteristic/numerator derivation; exact polynomial GCD reduction; numerical roots; exact-sign state and BIBO classification; semisimplicity/Jordan check; analytic state, modal and reduced impulse traces.
+- `workspace.ts`/`workspace.css`: four visual matrix/scalar inputs, numeric initial state and horizon, prediction/reveal, all-root table, pole plane, original/reduced view, selectable modal component, generalized Jordan mode and free/impulse plots. Per-result listeners are aborted when results are replaced; async equation loading is guarded after abort/cleanup.
+- `math.test.ts`: 33 independent cases including baseline, TASK hidden fixture and audit B variant, exact/near cancellation, simple imaginary pair, semisimple/defective zero, stable Jordan, direct channel, coordinate permutation, IVPs, impulse response and invalid/bounded data.
+- `workspace.test.ts`: 5 mocked-editor flow/lifecycle checks. These do not establish actual MathLive browser behavior.
+- Node 24.22.1: `npm run check` passed; `npm test` passed 80 tests in 8 files; `npm run build` passed. Existing MathLive chunk-size advisory remains. npm was invoked with the bundled Node executable and the installed npm CLI; no dependency changes.
+- One first test run found the Node-side MathLive export cannot initialize the interactive editor during catalogue imports. Fixed locally by loading the editor inside synchronous mount with an abort/disposal guard; all global tests now pass without shared changes.
+- **Still pending:** real-browser production checks, visual-font/keyboard validation, final mathematical review and final delivery. Stage remains in-progress.
