@@ -223,16 +223,20 @@ export function experiment(plant: Plant, w: number, amplitude: number): Experime
   const stable = roots.every(p => p.re < 0);
   const classification = stable ? 'Stable steady-state experiment' : roots.some(p => p.re > 0) ? 'Unstable model: analytic frequency evaluation only' : 'Marginal model: no guaranteed steady-state experiment';
   const d = plant.denominator, n = plant.numerator;
+  const positiveRate = Math.max(0, ...roots.map(p => p.re));
+  let dynamicOutput = false;
   let transient: (t: number) => number = () => 0;
   let bound: (t: number) => number = () => 0;
   if (d.length === 2) {
     const a = d[0], remainder = (n[0] ?? 0) - (n[1] ?? 0) * a;
+    dynamicOutput = remainder !== 0;
     const c = amplitude * w / (a * a + w * w) * remainder;
     transient = t => c === 0 ? 0 : c * Math.exp(-a * t);
     bound = t => Math.abs(c) * Math.exp(-a * t);
   } else if (d.length === 3) {
     const a0 = d[0], a1 = d[1], direct = n[2] ?? 0;
     const r0 = (n[0] ?? 0) - direct * a0, r1 = (n[1] ?? 0) - direct * a1;
+    dynamicOutput = r0 !== 0 || r1 !== 0;
     const real = a0 - w * w, imaginary = a1 * w, q = real * real + imaginary * imaginary;
     // Particular canonical state x1=A Im(exp(jwt)/D(jw)); x2=x1'.
     const c = amplitude * imaginary / q, v = -amplitude * w * real / q;
@@ -281,6 +285,7 @@ export function experiment(plant: Plant, w: number, amplitude: number): Experime
     value, stable, classification, period: 2 * Math.PI / w, particular: particularSample,
     sample(t) {
       const { input, particular } = particularSample(t);
+      if (dynamicOutput && positiveRate * t > 20) fail('The unstable time trace exceeds the numeric reliability bound (positive pole rate × time ≤20). Move the window earlier or raise ω; analytic frequency results remain available.');
       const tr = transient(t), output = particular + tr;
       if (![input, particular, tr, output].every(x => Number.isFinite(x) && Math.abs(x) <= 1e8)) fail('The response exceeds the display bound (10⁸). Shorten the start time or use a stable model.');
       return { input, particular, transient: tr, output };

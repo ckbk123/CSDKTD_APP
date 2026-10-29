@@ -53,9 +53,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **57/57 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **58/58 passed**, 3 files.
 - `npm run check`: passed.
-- `npm test`: **99/99 passed**, 9 files.
+- `npm test`: **100/100 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -94,7 +94,7 @@ The first resumed QA attempt was at approximately 16:31 Asia/Saigon on 2026-10-2
 
 The coordinator reproduced that MathLive displays `1e-2/(s+1)` as algebra involving e, while the earlier parser interpreted it as a decimal exponent. Visual input now rejects e/E literals with a concrete message and accepts `0.01/(s+1)` and textbook `10^{-2}/(s+1)` (including a visible multiplication sign). Numeric HTML controls and scientific result typesetting remain separate. Powers of the scalar 10 use a bounded integer exponent and finite/underflow checks; polynomial powers retain the −2…2 bound. The underflow and near-coincident fixtures now use supported textbook powers/products. Meaningful view/parser regressions cover rejection, equivalent accepted coefficients and standard numeric-control entry.
 
-After this repair: `npm test -- src/modules/cp03` **57/57 passed**; `npm test` **99/99 passed**; type check and production build passed. CI at the earlier documented SHA was green; the new commit will trigger another check. Real browser evidence is still pending; no reservation was acquired during the coordinator's requested scheduling holds.
+After this repair: `npm test -- src/modules/cp03` **58/58 passed**; `npm test` **100/100 passed**; type check and production build passed. CI at the earlier documented SHA was green; the new commit will trigger another check. Real browser evidence is still pending; no reservation was acquired during the coordinator's requested scheduling holds.
 
 The final notation regressions also cover `\frac{1}2`, `\frac1{2}`, outer grouping and minus placement, a negative fraction numerator and a nested numeric ratio. These preserve 1/2, −1/2 and −2/3 as independently expected. Module tests are **56/56** and the full suite **98/98**, with current type checking passing. The production implementation is unchanged by these extra fixtures. A private, cancelable, one-time filesystem-event wait now attempts the existing QA helper only after a release; it does not clear or modify another owner's reservation and adds no application files or background scheduler.
 
@@ -102,4 +102,12 @@ The final notation regressions also cover `\frac{1}2`, `\frac1{2}`, outer groupi
 
 Native numeric fields now bound raw input length to 80 characters and distinguish an intentional zero from a nonzero mantissa rounded to zero (for example `1e-999`). This is separate from the visual equation grammar and still accepts ordinary numeric exponent notation such as `1e-2`. Window-start and amplitude-marker regressions verify rejection, removal of stale markers and recovery with exact `0e-999`. Plot figures are labeled and keyboard-focusable so their local horizontal scroll regions remain usable on narrow screens. These changes stay private to CP03; no shared API was changed.
 
-`npm test -- src/modules/cp03`: **57/57 passed**. `npm test`: **99/99 passed**. Current type check and production build passed. The one-time event waiter was canceled immediately for the coordinator's DS02 integration slot, with a terminal process result, and restarted only after the explicit release notice. CP03 still has no claimed browser evidence or submitted contribution.
+`npm test -- src/modules/cp03`: **58/58 passed**. `npm test`: **100/100 passed**. Current type check and production build passed. The one-time event waiter was canceled immediately for the coordinator's DS02 integration slot, with a terminal process result, and restarted only after the explicit release notice. CP03 still has no claimed browser evidence or submitted contribution.
+
+## Unstable time-horizon reliability and approved numeric carry-forward
+
+An additional independent cancellation-identity check found that `(s−0.13)/((s−0.13)(s+1.3))`, evaluated far into the unstable canonical horizon, could amplify floating-point residue error: at t≈307.692 s the prior calculation gave 4.039 instead of the exact reduced transfer's −0.454. The accepted stable sinusoidal experiment and analytic unstable-frequency evaluation remain intact. The optional **dynamic unstable time trace** now has an explicit supported bound, max positive denominator-pole real part × t ≤20; longer traces are rejected with useful feedback while formal/frequency results remain available. This is a numerical reliability guard, not a certified error bound or stability proof. Exact algebraic-output identities have no transient and retain their valid direct response.
+
+A twelve-case regression independently reduces `(s−a)/((s−a)(s+b))` to `1/(s+b)`, compares the short-horizon zero-state sinusoid to its known first-order solution, and verifies that longer unstable canonical horizons receive the reliability error. No near-canceling mode is silently snapped to zero. Current checks: **58 module tests**, **100 full-suite tests**, type checking and production build pass.
+
+The coordinator explicitly approved an already tested equivalent local `readNumericInput` guard as carry-forward for branches predating the shared helper. CP03 retains its private checked guard; no unowned shared files, main merge or rebase were added. Integration can adapt the import with the coordinator's combined checks.

@@ -102,7 +102,7 @@ describe('CP03 exercise flow and ownership', () => {
     const v = open(); v.change(v.container.querySelector('textarea')!, '1/(s-2)'); v.apply();
     expect(v.container.textContent).toContain('Unstable model: analytic frequency evaluation only');
     expect((v.container.querySelector('input[type="checkbox"]') as HTMLInputElement).disabled).toBe(true);
-    expect(v.container.textContent).toContain('exceeds the display bound');
+    expect(v.container.textContent).toContain('exceeds the numeric reliability bound');
     v.button('Reveal calculation and linked plots').click();
     expect(v.container.querySelectorAll('figure')).toHaveLength(4);
   });

@@ -159,6 +159,18 @@ describe('CP03 independent frequency and time fixtures', () => {
     const e = experiment(parsePlant('1/(s^2-10^{-40})'), 1, 1);
     for (const t of [0, 0.2, 1, 5, 20]) expect(e.sample(t).output).toBeCloseTo(t - Math.sin(t), 12);
   });
+  it('bounds unstable time horizons before cancellation can amplify roundoff', () => {
+    // The exact canceled transfer is 1/(s+b), so zero-state output has no
+    // growing exponential. Long unstable canonical calculations are rejected.
+    for (const a of [0.13, 0.3, 0.7, 1.1]) for (const b of [0.2, 0.6, 1.3]) {
+      const e = experiment(parsePlant(`(s-${a})/((s-${a})(s+${b}))`), 1, 1);
+      const t = 12 / a;
+      const expected = (b * Math.sin(t) - Math.cos(t) + Math.exp(-b * t)) / (b * b + 1);
+      expect(e.sample(t).output).toBeCloseTo(expected, 8);
+      expect(() => e.sample(40 / a)).toThrow(/numeric reliability bound/);
+      expect(Number.isFinite(e.particular(40 / a).particular)).toBe(true);
+    }
+  });
   it('does not certify a slow transient merely because a few cycles are visible', () => {
     const e = experiment(parsePlant('1/(s+0.001)'), 1, 1);
     expect(e.tailBound(20)).toBeGreaterThan(0.9);
