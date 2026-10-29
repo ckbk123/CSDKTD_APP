@@ -81,7 +81,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   let current: { model: Transform; rows: Sample[]; zero: Sample[]; time: number; history: number[] } | undefined;
   const summary = el('div'), derivation = el('div', '', 'dr01-card'), feedback = el('p');
   const selected = numeric('Selected sample k', '0', '1'); selected.input.min = '0';
-  const selectedDetails = el('div', '', 'dr01-card'), figure = el('div'), tableHolder = el('div', '', 'dr01-table');
+  const selectedDetails = el('div', '', 'dr01-card'), figure = el('div', '', 'dr01-plot'), tableHolder = el('div', '', 'dr01-table');
   const showSelected = () => {
     if (!current) return;
     const value = selected.input.valueAsNumber;
@@ -101,6 +101,12 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     drawPlot();
   };
   listen(selected.input, 'input', showSelected);
+  // One listener survives table replacements; old rows do not accumulate signal registrations.
+  tableHolder.addEventListener('click', event => {
+    const target = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('button[data-sample]') : null;
+    if (!target || !tableHolder.contains(target)) return;
+    selected.input.value = target.dataset.sample!; showSelected();
+  }, { signal });
   function drawPlot(): void {
     if (!current) return;
     const ns = 'http://www.w3.org/2000/svg';
@@ -111,7 +117,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       if (text) child.textContent = text; svg.append(child); return child;
     };
     const all = [...current.rows, ...current.zero].map(x => x.value);
-    const lo = Math.min(0, ...all), hi = Math.max(0, ...all), span = hi - lo || 1;
+    const lo = Math.min(0, ...all), hi = Math.max(0, ...all) || (lo === 0 ? 1 : 0), span = hi - lo;
     const y = (v: number) => 210 - (v - lo) / span * 170, x = (k: number) => 65 + k * 600 / (current!.rows.length - 1);
     node('line', { x1: 65, x2: 665, y1: y(0), y2: y(0), class: 'dr01-axis' });
     node('line', { x1: 65, x2: 65, y1: 28, y2: 218, class: 'dr01-axis' });
@@ -175,7 +181,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       const thead = el('thead'); thead.append(head); const tbody = el('tbody');
       rows.forEach((row, k) => {
         const tr = el('tr'); tr.dataset.k = String(k); const cell = el('td');
-        const pick = button(String(k), () => { selected.input.value = String(k); showSelected(); }); pick.setAttribute('aria-label', `Inspect sample ${k}`); cell.append(pick);
+        const pick = el('button', String(k)); pick.type = 'button'; pick.dataset.sample = String(k); pick.setAttribute('aria-label', `Inspect sample ${k}`); cell.append(pick);
         tr.append(cell, el('td', format(k * time)), el('td', format(zero[k].value)), el('td', format(row.value))); tbody.append(tr);
       });
       table.append(thead, tbody); tableHolder.replaceChildren(table);

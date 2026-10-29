@@ -46,6 +46,8 @@ describe('DR01 exercise flow with an equation-interface mock', () => {
     visit.set('Selected sample k', '2');
     expect(visit.container.querySelector('.dr01-results')!.textContent).toContain('Memory x[1] = 0.8');
     expect(visit.container.querySelector('tr.dr01-highlight')!.getAttribute('data-k')).toBe('2');
+    visit.container.querySelector<HTMLButtonElement>('[aria-label="Inspect sample 1"]')!.click();
+    expect(visit.container.querySelector('tr.dr01-highlight')!.getAttribute('data-k')).toBe('1');
   });
   it('adds initial-history response while preserving the entered zero-history transform', () => {
     const visit = open(), original = visit.field.value; visit.set('Initial x[−1]', '2'); visit.reveal();

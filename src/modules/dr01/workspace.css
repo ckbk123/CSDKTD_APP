@@ -16,6 +16,7 @@
 [data-module="DR01"] .dr01-results { display: grid; gap: 16px; min-width: 0; }
 [data-module="DR01"] .dr01-tool [hidden] { display: none; }
 [data-module="DR01"] .dr01-table { overflow-x: auto; }
+[data-module="DR01"] .dr01-plot { min-width: 0; overflow-x: auto; }
 [data-module="DR01"] .dr01-tool table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 [data-module="DR01"] .dr01-tool th, [data-module="DR01"] .dr01-tool td { padding: 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
 [data-module="DR01"] .dr01-highlight { background: var(--tint); }
@@ -31,4 +32,5 @@
   [data-module="DR01"] .dr01-card { padding: 10px; }
   [data-module="DR01"] .dr01-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-module="DR01"] .dr01-tool svg text { font-size: 14px; }
+  [data-module="DR01"] .dr01-tool svg { min-width: 620px; }
 }
