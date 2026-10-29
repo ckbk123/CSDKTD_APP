@@ -105,7 +105,15 @@ export function parseTransform(latex: string): Transform {
     if (++depth > 24) throw new Error('Use fewer nested groups.');
     let result: Fraction;
     const token = peek();
-    if (token === '{' || token === '(') result = group();
+    if (token === '(') result = group();
+    else if (token === '{') {
+      const start = cursor;
+      result = group();
+      const inside = tokens.slice(start + 1, cursor - 1);
+      if (inside.length !== 1 || !(/^[\d.]/.test(inside[0]) || inside[0] === 'z' || inside[0] === 'q')) {
+        throw new Error('Use visible parentheses around grouped terms; braces alone do not display grouping.');
+      }
+    }
     else if (token === '\\frac') { take(); result = operation(group(), group(), '/'); }
     else if (token === 'z') { take(); result = { b: [1], a: [0, 1] }; }
     else if (token === 'q') { take(); result = { b: [0, 1], a: [1] }; }

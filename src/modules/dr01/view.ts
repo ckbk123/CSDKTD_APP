@@ -29,6 +29,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   limits.append(el('p', 'The default is the unilateral transform X₊(z) = Σ from k=0 to ∞ of x[k]z⁻ᵏ, with a causal, zero-history sequence. T only labels physical time; it does not change the transform. Initial history is separate from the entered zero-history expression X₀(z). No feedback loop is assumed. Numeric results use floating-point arithmetic, rounded to 7 significant digits.'));
   limits.append(el('p', 'In the visual equation, use decimals or ×10ⁿ for powers of ten. The letters e/E are not exponent notation there. Ordinary number controls accept standard numeric entry separately.'));
   limits.append(el('p', 'Write mixed numbers with an explicit +, such as 2 + 1/2. Put × between a number and a fraction when you intend multiplication.'));
+  limits.append(el('p', 'Use visible parentheses to group sums or products. Fraction bars and exponent positions already group their contents.'));
   root.append(limits);
   let draft: EquationDraft;
   const error = el('p', '', 'dr01-message'); error.setAttribute('role', 'status'); error.hidden = true;

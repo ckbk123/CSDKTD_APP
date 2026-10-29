@@ -103,6 +103,15 @@ describe('bounded grammar and failures', () => {
   it('checks the pinned editor meaning of numeric/fraction adjacency independently', () => {
     expect(convertLatexToMathMl(String.raw`2\frac12`)).toContain('&#x2064;');
     expect(convertLatexToMathMl(String.raw`\frac{2\frac12}{3}`)).toContain('&#x2064;');
+    expect(convertLatexToMathMl(String.raw`q{+1}`)).toContain('<mi>q</mi><mrow><mo>+</mo><mn>1</mn>');
+  });
+  it.each([String.raw`q{+1}`, String.raw`q{-1}`, String.raw`q*{1+q}`, String.raw`q{1+q}`, String.raw`{1+q}^2`, String.raw`\frac1{q{+1}}`])('rejects invisible grouping in %s', expression => {
+    expect(() => parseTransform(expression)).toThrow(/visible parentheses/);
+  });
+  it('preserves visible grouping and intrinsic fraction and exponent groups', () => {
+    expect(values('q*(1+q)')).toEqual([0, 1, 1, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`\frac{1+q}{1-0.5q}`)).toEqual([1, 1.5, .75, .375, .1875, .09375, .046875, .0234375]);
+    expect(values(String.raw`q^{2}`)).toEqual([0, 0, 1, 0, 0, 0, 0, 0]);
   });
   it.each([
     String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`-{2}\frac12`,
