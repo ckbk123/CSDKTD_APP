@@ -82,6 +82,11 @@ describe('independently derived pole-placement and reference fixtures', () => {
     // At t=.1, y≈N t²/2; no subtraction of two ~1/N steady-state terms.
     expect(response(tiny, tiny.prefilter!, [0, 0], 1, .1, 2)[1].output).toBeCloseTo(5e-17, 27);
   });
+  it('does not hide a tiny coefficient mismatch behind an absolute tolerance floor', () => {
+    // Ordinary gain subtraction here leaves det(A-BK)≈5.06e-22, not 1e-30.
+    // A rank-2 plant does not guarantee that extreme targets are numerically placeable.
+    expect(() => design({ A: [1e-6, 0, 0, -2], B: [3, 1], C: [1, 0] }, [2, 1e-30])).toThrow(/Coefficient verification lost accuracy/);
+  });
 });
 
 describe('bounded visual semantics', () => {

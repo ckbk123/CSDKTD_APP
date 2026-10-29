@@ -36,8 +36,8 @@ export function design(model: Model, desired: Vector) {
   const closed: Matrix = [A[0] - B[0] * K[0], A[1] - B[0] * K[1], A[2] - B[1] * K[0], A[3] - B[1] * K[1]];
   finite(closed, 10000, 'Closed-loop matrix entries');
   const actual = characteristic(closed);
-  const residual = Math.max(...actual.map((v, j) => Math.abs(v - desired[j]) / Math.max(1e-12, Math.abs(desired[j]))));
-  if (actual[0] <= 0 || actual[1] <= 0 || residual > 1e-9) throw new Error('Coefficient verification lost accuracy; rescale the state coordinates.');
+  const residual = Math.max(...actual.map((v, j) => Math.abs(v - desired[j]) / Math.abs(desired[j])));
+  if (actual[0] <= 0 || actual[1] <= 0 || residual > 1e-9) throw new Error('Coefficient verification lost accuracy; choose less extreme targets or rescale the model.');
   const inverseB = solve(closed, B), dcGain = -dot(C, inverseB), dcScale = Math.hypot(...C) * Math.hypot(...inverseB);
   const tracking = Math.abs(dcGain) > 1e-10 * dcScale && dcScale > 0 && Math.abs(1 / dcGain) <= 1e6;
   return { model, desired, AB, controllability, scaledDet, rank: 2, matching, rhs, K, closed, actual, residual, poles: eigenvalues(closed), dcGain,
