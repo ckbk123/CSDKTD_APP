@@ -6,7 +6,7 @@
 - **Ownership/branch:** `src/modules/cp04/**`; `codex/cp04-bode-01a18701`; claim `worker-cp04-01a18701`.
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cp04-bode-01a18701/CSDKTD APP`.
 - **Contract:** [TASK.md](TASK.md), atlas CP04, continuous source audit P1 and current primary coordination/equation guides.
-- **PR / exact delivery revision:** added below after PR creation; shared claim records the final submitted SHA.
+- **Pull request:** [#15 — CP04 factor-based Bode construction](https://github.com/ckbk123/CSDKTD_APP/pull/15). The shared claim records the final submitted SHA including this delivery record.
 
 ## Requirement-to-evidence audit
 
@@ -77,4 +77,4 @@ In-app Chromium, own tab and isolated production preview http://127.0.0.1:8842/#
 
 ## Remaining work / delivery
 
-No accepted exercise requirement remains within the supported domain. Independent technical review and integration are pending; no verified stage is claimed. Final checks, PR URL and shared-claim submission are recorded below. Preserve this worktree/branch for review corrections; no shared mathematical dependency is requested.
+No accepted exercise requirement remains within the supported domain. Independent technical review and integration are pending; no verified stage is claimed. Final checks passed; PR #15 is open and attached. The shared claim records the exact final tested-tree revision for integration. The exercise implementation checkpoint is `61022989493adaef88bea0b3365c38b9e2f536ce`; subsequent changes are this delivery record only. Preserve this worktree/branch for review corrections; no shared mathematical dependency is requested.
