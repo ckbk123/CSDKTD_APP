@@ -13,8 +13,12 @@ function svg(label: string, height = 330): SVGElement {
   return element;
 }
 export function fmt(value: number, digits = 6): string {
-  if (Math.abs(value) < 1e-12) return '0';
+  if (value === 0) return '0';
   return Number(value.toPrecision(digits)).toString();
+}
+/** Numeric output only, with explicit textbook scientific notation for MathLive. */
+export function texNumber(value: number): string {
+  return fmt(value).replace(/e([+-]?\d+)$/, (_, exponent: string) => `\\times10^{${Number(exponent)}}`);
 }
 export function complex(pole: Pole): string {
   return `${fmt(pole.real)} ${pole.imag < 0 ? '−' : '+'} ${fmt(Math.abs(pole.imag))}j`;
@@ -60,7 +64,7 @@ export function polePlanes(pole: Pole, period: number, reference: number, invers
   for (const sign of new Set([1, target.imag === 0 ? 1 : -1])) z.chart.append(cross(z.x(target.real), z.y(sign * target.imag)));
   for (const [title, chart, caption] of [
     ['s plane', s.chart, '× entered pole and conjugate · ◇ selected inverse branch. Each axis scales independently.'],
-    ['z plane', z.chart, '× mapped poles · solid circle |z|=1 · dashed circle at reference T · ray r and arc θ. Equal axis scales.'],
+    ['z plane', z.chart, '× mapped poles · solid circle |z|=1 · dashed circle at reference T · ray r and arc θ. Equal axis scales; very small radii may be unresolved at this scale.'],
   ] as const) {
     const figure = document.createElement('figure');
     const heading = document.createElement('h4'); heading.textContent = title;

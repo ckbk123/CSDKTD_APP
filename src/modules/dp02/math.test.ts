@@ -7,6 +7,7 @@ describe('DP02 pole notation', () => {
     ['0', 0, 0], ['1.2e-3+2j', 0.0012, 2],
     [String.raw`s=\left(-\frac{1}{2}+\frac{\pi}{2}\mathrm{j}\right)`, -0.5, Math.PI / 2],
     [String.raw`-2+3\times j`, -2, 3], ['-2+j(3/2)', -2, 1.5],
+    [String.raw`-1\div2+4j`, -0.5, 4], ['−1÷2+4×j', -0.5, 4],
   ])('parses %s', (input, real, imag) => expect(parsePole(input)).toEqual({ real, imag }));
   it.each(['', 's=', '1/0', 'NaN', 'Infinity', 'x+2j', 'j*j', '1/(1+j)', 'sin(2)',
     '2^3', '1..2', '2 3', '1+', '(1+2j', '1+2j)', '2=3', String.raw`\placeholder{}`, '1e999', '1'.repeat(257), '('.repeat(14) + '1' + ')'.repeat(14), Array(45).fill('1').join('+')])('rejects %s', input => {

@@ -1,7 +1,7 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
 import { aliasExperiment, inversePole, mapPole, modeSamples, parsePole, radialMovement, type Pole } from './math';
-import { complex, fmt, polePlanes, sequencePlot } from './plots';
+import { complex, fmt, polePlanes, sequencePlot, texNumber } from './plots';
 import './style.css';
 
 export const mount: ModuleMount = ({ container, signal }) => {
@@ -114,7 +114,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       message.textContent = `${correct ? 'Correct prediction.' : 'Revise your prediction.'} Radius moves ${movement === 'unchanged' ? 'neither inward nor outward' : movement}: ${fmt(previous.radius)} → ${fmt(z.radius)}.`;
       const mapping = section('3. Read the mapping');
       display(mapping, String.raw`z=e^{(\sigma+j\omega)T}=e^{\sigma T}\left(\cos(\omega T)+j\sin(\omega T)\right)`, 'Exponential mapping identity');
-      display(mapping, `r=e^{${fmt(pole.real)}(${fmt(T)})}\\approx ${fmt(z.radius)},\\quad\\theta=\\operatorname{Arg}(z)\\approx ${fmt(z.angle)}\\;\\mathrm{rad}`, 'Radius and principal angle');
+      display(mapping, `r=e^{(${texNumber(pole.real)})(${texNumber(T)})}\\approx ${texNumber(z.radius)},\\quad\\theta=\\operatorname{Arg}(z)\\approx ${texNumber(z.angle)}\\;\\mathrm{rad}`, 'Radius and principal angle');
       text(mapping, `s = ${complex(pole)} → z ≈ ${complex(z)}; the conjugate maps to its conjugate. Unwrapped ωT = ${fmt(pole.imag * T)} rad; principal θ = ${fmt(z.angle * 180 / Math.PI)}°. Radius at reference T = ${fmt(previous.radius)}.`);
       text(mapping, pole.real === 0 ? 'σ = 0 keeps r = 1 for every T.' : `The log-radius change is σ(T − Tref) = ${fmt(pole.real * (T - T0))}. Its sign determines inward or outward movement.`);
       text(mapping, z.classification === 'decay' ? 'r < 1: this mode decays, even when Re z is negative or z is complex.'

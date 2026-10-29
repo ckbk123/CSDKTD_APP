@@ -15,7 +15,8 @@ export function parsePole(latex: string): Pole {
   if (/[\d.]\s+[\d.]/.test(latex)) fail('Separate numbers with an arithmetic operator.');
   let source = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:mathrm|operatorname)\{j\}/g, 'j')
     .replace(/\\(?:,|;|!|quad|qquad| )/g, '').replace(/\\pi/g, 'π')
-    .replace(/\\(?:cdot|times)/g, '*').replace(/−/g, '-').replace(/\s/g, '');
+    .replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
+    .replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\s/g, '');
   source = source.replace(/^s=/, '');
   // Expand only structurally balanced TeX fractions; depth is bounded below.
   let passes = 0;
