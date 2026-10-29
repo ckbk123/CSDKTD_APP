@@ -123,6 +123,7 @@ export function verifyIntegral(run: Run, metric: Metric): { trapezoid: number; f
   const ruleChange = Math.abs(trapezoid - fine.totals[metric]) / (1 + Math.abs(fine.totals[metric]));
   return { trapezoid, fineSimpson: fine.totals[metric], relativeChange, ruleChange, consistent: ruleChange <= 5 * tolerance && relativeChange <= 5 * run.tolerance, intervals, tolerance };
 }
-export function ranking(a: number, b: number): 'A' | 'B' | 'tie' {
-  return Math.abs(a - b) <= 1e-8 * Math.max(1, Math.abs(a), Math.abs(b)) ? 'tie' : a < b ? 'A' : 'B';
+export function ranking(a: number, b: number, tolerance = 1e-8): 'A' | 'B' | 'tie' {
+  if (![a, b].every(v => Number.isFinite(v) && v >= 0) || !Number.isFinite(tolerance) || tolerance < 1e-8 || tolerance > 1e-2) fail('Compare finite nonnegative scores with a supported tolerance.');
+  return Math.abs(a - b) <= tolerance * (1 + Math.max(a, b)) ? 'tie' : a < b ? 'A' : 'B';
 }

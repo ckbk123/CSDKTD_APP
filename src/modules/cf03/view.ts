@@ -87,13 +87,14 @@ export const mount:ModuleMount=({container,signal})=>{
   }
   function reveal():void{
     if(!runs){status.textContent='Compute a valid comparison before revealing totals.';return;}
-    const m=metric(),r=ranking(runs.A.totals[m],runs.B.totals[m]),prediction=select('prediction').value;
+    const comparisonTolerance=Math.max(runs.A.tolerance,runs.B.tolerance);
+    const m=metric(),r=ranking(runs.A.totals[m],runs.B.totals[m],comparisonTolerance),prediction=select('prediction').value;
     feedback.textContent=prediction?`${prediction===r?'Correct.':'Check your prediction.'} ${m}: ${r==='tie'?'tie within tolerance':`${r} has the lower finite-horizon score`}.`:'Choose a prediction to compare; the checked totals are below.';
     answer.hidden=false;
     const table=document.createElement('table');table.innerHTML='<thead><tr><th>Criterion</th><th>Units</th><th>Run A</th><th>Run B</th><th>Lower score</th></tr></thead>';const body=document.createElement('tbody');
-    for(const name of metrics){const row=document.createElement('tr');const win=ranking(runs.A.totals[name],runs.B.totals[name]);for(const text of[name,unit[name],f(runs.A.totals[name]),f(runs.B.totals[name]),win]){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}body.append(row);}table.append(body);q('.cf-table').replaceChildren(table);
-    const errorRanks=metrics.slice(0,4).map(name=>`${name}: ${ranking(runs!.A.totals[name],runs!.B.totals[name])}`);
-    q('.cf-explanation').textContent=`${errorRanks.join('; ')}. Different rankings follow different weights: ISE/ITSE square the error, and ITAE/ITSE multiply it by elapsed time. Use early and late panel contributions to inspect the tradeoff. Control effort measures u² separately in U²·s; no unweighted collection of these costs defines one optimum.`;
+    for(const name of metrics){const row=document.createElement('tr');const win=ranking(runs.A.totals[name],runs.B.totals[name],comparisonTolerance);for(const text of[name,unit[name],f(runs.A.totals[name]),f(runs.B.totals[name]),win]){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}body.append(row);}table.append(body);q('.cf-table').replaceChildren(table);
+    const errorRanks=metrics.slice(0,4).map(name=>`${name}: ${ranking(runs!.A.totals[name],runs!.B.totals[name],comparisonTolerance)}`);
+    q('.cf-explanation').textContent=`${errorRanks.join('; ')}. Different rankings follow different weights: ISE/ITSE square the error, and ITAE/ITSE multiply it by elapsed time. Use early and late panel contributions to inspect the tradeoff. Control effort measures u² separately in U²·s; no unweighted collection of these costs defines one optimum. Scores within the chosen tolerance are shown as a tie; this reporting rule does not certify equal exact costs.`;
     const split=document.createElement('table'),caption=document.createElement('caption');caption.textContent=`Cost contributions split at t=${f(runs.A.horizon/2)}s (same units as the main table)`;split.append(caption);
     const head=document.createElement('thead');head.innerHTML='<tr><th>Criterion</th><th>A early</th><th>A late</th><th>B early</th><th>B late</th></tr>';split.append(head);
     const splitBody=document.createElement('tbody');
@@ -104,6 +105,7 @@ export const mount:ModuleMount=({container,signal})=>{
     split.append(splitBody);q('.cf-split').replaceChildren(split);
     const reasoning=q('.cf-reasoning');reasoning.replaceChildren();
     const equation=(latex:string,label:string)=>reasoning.append(createEquationDisplay(latex,label));
+    equation(`|J_A-J_B|\\le ${ln(comparisonTolerance)}(1+\\max(J_A,J_B))`, 'Tie reporting threshold in the stated numerical units');
     equation(`e(t)=1-y(t),\\quad u(t)=K_pe(t)+K_i\\int_0^t e(\\tau)\\,d\\tau`,'Unity negative feedback and P/PI controller');
     equation(`${m==='Effort'?'J_u':m}=\\int_0^{${ln(runs.A.horizon)}}${expression[m]}\\,dt`,'Selected finite-horizon integral');
     for(const name of['A','B']as const){const run=runs[name];equation(`G(s)=${plantLatex(run.plant)},\\quad C_${name}(s)=${controllerLatex(run.controller)}`,`Run ${name} model`);equation(`D_${name}(s)=${poly(run.stability.characteristic)}`,`Run ${name} full characteristic polynomial`);

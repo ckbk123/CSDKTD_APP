@@ -74,6 +74,10 @@ describe('CF03 independent finite-horizon fixtures', () => {
     near(panel(r,10,'IAE').cumulative,r.totals.IAE,1e-12);
     expect(()=>panel(r,11,'IAE')).toThrow(/inspection/);
     expect(ranking(1,1+1e-10)).toBe('tie');
+    expect(ranking(1,1.00001,1e-3)).toBe('tie');
+    expect(ranking(1,1.00001,1e-7)).toBe('A');
+    expect(ranking(0,1e-5,1e-3)).toBe('tie');
+    expect(()=>ranking(NaN,1)).toThrow(/finite/);
   });
   it('reports bounded input and resolution failures instead of returning plausible costs', () => {
     for(const h of [NaN,Infinity,0,.01,51]) expect(()=>simulate(base,{kp:4,ki:0},h)).toThrow(/horizon/);

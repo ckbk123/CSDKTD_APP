@@ -27,6 +27,12 @@ describe('CF03 visit state and numeric-feedback integration (mocked equations)',
   v.click('verify');expect(v.container.querySelector('.cf-verification')!.textContent).toContain('independent composite trapezoid');
   expect(v.container.querySelector('.cf-verification')!.textContent).toContain('Consistent');v.close();
  });
+ it('reports near-identical controllers as tied at the chosen comparison tolerance',()=>{
+  const v=visit();const field=v.container.querySelectorAll('textarea')[2];field.value='C(s)=4.00001';field.dispatchEvent(new Event('input'));
+  v.click('compute');v.select('prediction','tie');v.click('reveal');
+  expect(v.container.querySelector('.cf-feedback')!.textContent).toContain('Correct. IAE: tie');
+  expect(v.container.querySelector('.cf-reasoning')!.textContent).toContain('0.00001');v.close();
+ });
  it('clears old results on invalid raw horizon input and accepts normal numeric exponents',()=>{
   const v=visit();v.click('reveal');expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(false);
   v.input('horizon','1e-400');v.click('compute');

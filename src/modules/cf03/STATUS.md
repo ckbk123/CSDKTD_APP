@@ -70,3 +70,7 @@ Final parser conditioning check also rejects a nonzero normalized coefficient/co
 ## Readability checkpoint while QA is occupied
 
 Spaced model/run/bound labels consistently and kept SVGs at their 820-unit design width inside the existing local horizontal scrollers, so narrow layouts retain 12px plot labels rather than shrinking them to about8px. No document-wide sizing or shared styles changed. The native-exponent UI regression expectation was updated for the clearer common-horizon label. `npm run check`, `npm test` (473/473,23 files) and `npm run build` pass after this change; the only build warning is the existing MathLive chunk size. Real-browser evidence remains pending normal shared QA access.
+
+## Comparison-tolerance correction before browser QA
+
+Near-equal scores now use the selected refinement tolerance for the displayed comparison rule: |JA−JB|≤tol×(1+max(JA,JB)) in the declared numerical units. The prediction, table and explanatory ranks use the same rule, and its equation is revealed. A tie is explicitly a reporting rule, not certified equality of exact costs or an integral-error bound. Meaningful scalar near-equality/changed-tolerance/zero-scale fixtures and a two-near-identical-controller UI regression pass. Current local total is34 tests; `npm run check`, `npm test` (**474/474,23 files**) and `npm run build` pass. Browser QA is deferred under the coordinator's next-DD04 integration order; no CF03 browser control has yet been used.
