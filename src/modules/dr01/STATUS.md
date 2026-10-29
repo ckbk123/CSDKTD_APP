@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** in-progress (TeX exponent-token review return)
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -24,7 +24,7 @@
 
 ## Supported behavior and limits
 
-- Real SISO rational expressions in z or q=z^-1: sums, subtraction, products (including unambiguous implicit multiplication), fractions, visible parentheses and integer powers -14 through 14. Ambiguous numeric adjacency requires explicit +/×; standalone formatting braces may wrap only one unsigned number or variable. Fraction arguments and exponent positions retain intrinsic grouping. No functions, symbolic parameters, matrices, general CAS or automatic non-delay pole/zero cancellation.
+- Real SISO rational expressions in z or q=z^-1: sums, subtraction, products (including unambiguous implicit multiplication), fractions, visible parentheses and integer powers -14 through 14. Only one unsigned digit may be an unbraced exponent; signed/multi-digit exponents need a complete power box. Ambiguous numeric adjacency requires explicit +/×; standalone formatting braces may wrap only one unsigned number or variable. Fraction arguments and exponent positions retain intrinsic grouping. No functions, symbolic parameters, matrices, general CAS or automatic non-delay pole/zero cancellation.
 - After removing common q factors: numerator delay order <=14; denominator order <=2, normalized a0=1. Denominator memory is retained even with zero or canceling numerator, so specified history can activate a hidden recurrence mode.
 - Up to 600 input characters, 240 tokens, 24 group levels; intermediate degree <=48 and coefficient magnitude <=1e12. Visual numeric literals use decimals, not ambiguous e/E scientific text; typeset powers of ten are supported. Decimal literals are zero or have magnitude from 1e-12 through 1e6. Normalized coefficients have magnitude <=1e6. Numerical underflow/ill-scaled leading denominators are rejected.
 - Builders: integer delay 0-12, finite length 1-12, last FIR index <=14; gain magnitude <=1e6 and pole magnitude <=10, each zero or magnitude >=1e-12. Generated expressions preserve full floating-point coefficient precision; displayed coefficients/results round to 7 significant digits.
@@ -137,3 +137,14 @@ The coordinator reopened `93829d1` after finding another notation mismatch: TeX 
 The parser now accepts an unbraced exponent only when it is one unsigned digit, otherwise requesting the power button and a complete power box. Grouped multi-digit/signed exponents remain supported within −14..14. Independent fixtures check q^{12} as twelve zeros then a unit sample,2^{12}=4096,2^{−2}=.25,z^{−2} as a two-sample delay and an ordinary single-token2³=8. Nested fractions with ambiguous exponents are rejected too. High-power underflow/order fixtures now use explicit exponent groups so they continue checking their intended mathematics rather than failing at notation validation. The view gives concrete guidance and hides stale output for this error.
 
 At20:01 local, module tests pass **99/99**, full `npm test` **141/141**, and production/type build passes with the unchanged MathLive chunk warning. Fresh focused power-button/incomplete-power feedback and final clean exact-HEAD resubmission remain pending. Earlier completed browser evidence is preserved, not replaced by a claim that this new gate was already checked. DP03's full browser pass and responsive refinement are checkpointed clean at `ed83a36ba27ff8776717b2999a6bc87796ae1247`; its same exponent parser also needs the guard. QA is deferred for the announced DP04→coordinator DP02 order, then normal access can resume.
+
+## Final exponent and power-box browser verification
+
+The coordinator assigned CP03→DR01→DP03 after earlier slot races. DR01 acquired through the current helper after CP03 released and used a fresh worker-owned Chromium tab against production port13517.
+
+- Ordinary keys and the power button formed q¹ followed by baseline2 (exit the box with ArrowRight). Reveal produced the specific complete-power-box guidance and hid results, so the former q^12 misinterpretation was checked through the actual editor without a raw clipboard shortcut.
+- Typing12 into a new positive power box initially exposed an older shared setting: smartSuperscript=true automatically exited after the first digit. The module now configures only its own MathLive instance's public smartSuperscript=false property. The coordinator explicitly approved this owned per-instance setting; shared files remain unchanged. The setting is initialized inside mount and disposed with the existing abort/destroy lifecycle, with no global state or extra resource.
+- After rebuilding/reloading, ordinary power-button entry q^{12} produced twelve zero samples followed by1 at k=12;2^{12} produced4096 at k=0 and zeros afterward;z^{−2} produced the two-sample unit delay;2^{−2} produced.25 at k=0. The ambiguous baseline-tail control still received grouping guidance. An unfilled exponent box received completion feedback with results hidden.
+- Reset restored1,.8,.64,... . Console warning/error inventory was empty. The owned tab was closed, preview stopped and DR01 reservation released before DP03's assigned slot. No viewport override was changed during this focused pass; earlier full font/keyboard/narrow/reset/reopen/navigation evidence remains recorded above.
+
+The public-property override is the only additional editor configuration; its type-only MathLive import adds no runtime dependency. The final source passes **99/99 module tests**, **141/141 application tests**, type checking and production build (existing MathLive chunk warning). This evidence is committed with the implementation and exact clean-HEAD checks precede final push/ready-PR/submission. No accepted requirement remains open within the declared domain. Independent acceptance and the approved shared numeric-reader adaptation remain coordinator integration work.

@@ -1,4 +1,5 @@
 import type { ModuleMount } from '../../core/module';
+import type { MathfieldElement } from 'mathlive';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
 import { format, fromSequence, initialNumerator, numberLatex, parseTransform, poles, polynomial, samples, transformLatex, type Sample, type SequenceKind, type Transform } from './math';
 import './workspace.css';
@@ -39,6 +40,9 @@ export const mountView: ModuleMount = ({ container, signal }) => {
     results.hidden = true; error.hidden = false; error.textContent = 'Inputs changed. Predict again, then reveal the checked sequence.';
   };
   const equation = createEquationInput({ label: 'Zero-history transform X₀(z)', value: String.raw`\frac{z}{z-0.8}`, signal, onChange: value => { draft = value; invalidate(); } });
+  // Keep every typed exponent digit inside this exercise's power box.
+  const mathField = equation.element.querySelector<MathfieldElement>('math-field');
+  if (mathField) mathField.smartSuperscript = false;
   equation.element.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     event.preventDefault(); event.stopPropagation(); window.mathVirtualKeyboard.hide();
