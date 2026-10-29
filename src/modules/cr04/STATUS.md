@@ -4,6 +4,7 @@
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cr04/**` only
+- **Draft PR:** [#45 — Checkpoint CR04 exact diagram core; workspace unfinished](https://github.com/ckbk123/CSDKTD_APP/pull/45), attached; not ready for integration
 - **Branch:** `codex/cr04-block-diagrams-2175`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr04-block-diagrams-2175/CSDKTD APP`
 - **Starting main:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9)
