@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { convertLatexToMathMl } from 'mathlive';
 import { parseModel } from './expression';
 import { bilinear, frequencySamples, fromPhysical, principalAngle, rationalAt, unitResponse, warpedResponse, type FrequencyResult } from './frequency';
 
@@ -107,6 +108,25 @@ describe('DP03 independent frequency fixtures', () => {
 });
 
 describe('DP03 grammar and numerical boundaries', () => {
+  it('uses pinned-editor evidence for the mixed-number addition meaning', () => {
+    expect(convertLatexToMathMl(String.raw`2\frac12`)).toContain('&#x2064;');
+  });
+  it.each([
+    String.raw`2\frac12`, String.raw`-{2}\frac12`, String.raw`q*2\frac12`,
+    String.raw`\frac{2\frac12}{3}`, String.raw`\frac1{2\frac12}`,
+    String.raw`2{\frac12}`, String.raw`2{1+\frac12}`, String.raw`{2}3`,
+  ])('requires an explicit operation for ambiguous numeric adjacency %s', expression => {
+    expect(() => parseModel(expression)).toThrow(/mixed number.*\+.*×/);
+  });
+  it('computes explicit mixed-number addition and preserves genuine multiplication', () => {
+    expect(value(unitResponse(parseModel(String.raw`2+\frac12`), 1)).magnitude).toBe(2.5);
+    for (const expression of [String.raw`2\times\frac12`, String.raw`2*\frac12`, String.raw`2(\frac12)`]) {
+      expect(value(unitResponse(parseModel(expression), 1)).magnitude).toBe(1);
+    }
+    expect(value(unitResponse(parseModel(String.raw`\frac12\frac12`), 1)).magnitude).toBe(.25);
+    const delay = value(unitResponse(parseModel(String.raw`2q\frac12`), Math.PI / 2));
+    expect(delay.value.re).toBeCloseTo(0, 13); expect(delay.value.im).toBeCloseTo(-1, 13);
+  });
   it.each(['1e-2', '1E-2', 'sin(z)', 'z', '1/(1+q^5)', 'q^5', '1/(0)', String.raw`\frac1`])('rejects unsupported visual input %s', expression => {
     expect(() => parseModel(expression)).toThrow();
   });

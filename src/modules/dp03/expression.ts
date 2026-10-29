@@ -136,10 +136,19 @@ export function parseModel(latex: string): FrequencyModel {
     return atom();
   }
   function product(): Fraction {
-    let value = unary();
+    const numericFactor = (start: number, end: number) => tokens.slice(start, end)
+      .every(token => /^[\d.]/.test(token) || ['+', '-', '^', '{', '}'].includes(token));
+    let start = cursor, value = unary(), previousIsNumeric = numericFactor(start, cursor);
     while (peek() === '*' || peek() === '/' || atomStart(peek())) {
-      const op = peek() === '*' || peek() === '/' ? take() : '*';
-      value = operation(value, unary(), op);
+      const explicit = peek() === '*' || peek() === '/';
+      // A displayed mixed number uses addition, not implicit multiplication.
+      if (!explicit && previousIsNumeric && (peek() === '\\frac' || peek() === '{' || /^[\d.]/.test(peek() ?? ''))) {
+        throw new Error('A mixed number or adjacent numeric factors need an explicit sign. Insert + for addition or × for multiplication.');
+      }
+      const op = explicit ? take() : '*';
+      start = cursor;
+      const next = unary(); previousIsNumeric = numericFactor(start, cursor);
+      value = operation(value, next, op);
     }
     return value;
   }
