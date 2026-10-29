@@ -126,14 +126,20 @@ export function parsePlant(latex: string): Plant {
     depth--;
     return value;
   }
+  function beginsNumber(at: number): boolean {
+    while (tokens[at] === '+' || tokens[at] === '-') at++;
+    return /^(?:\d|\.)/.test(tokens[at] ?? '');
+  }
   function product(): Rational {
-    let value = atom();
+    let start = i;
+    let value = atom(), lastNumeric = beginsNumber(start);
     while (i < tokens.length) {
       const t = peek();
-      if (t === '*' || t === '/') { i++; value = combine(value, atom(), t); }
+      if (t === '*' || t === '/') { i++; start = i; value = combine(value, atom(), t); lastNumeric = beginsNumber(start); }
       else if (t === 's' || t === '(' || t === '{' || t === '\\frac' || /^(?:\d|\.)/.test(t ?? '')) {
+        if (t === '\\frac' && lastNumeric) fail('Mixed-number adjacency is unsupported. Use explicit + or − for addition, or × for a product between a number and a fraction.');
         if (/^(?:\d|\.)/.test(t ?? '') && /^(?:\d|\.)/.test(tokens[i - 1] ?? '')) fail('Check the decimal number; separate factors with a multiplication sign.');
-        value = combine(value, atom(), '*');
+        start = i; value = combine(value, atom(), '*'); lastNumeric = beginsNumber(start);
       }
       else break;
     }

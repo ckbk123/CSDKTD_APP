@@ -62,6 +62,13 @@ describe('CP03 exercise flow and ownership', () => {
     expect(v.field('Frequency ω').valueAsNumber).toBe(0.01);
     expect(v.container.querySelector('figure')).not.toBeNull();
   });
+  it('requires an explicit operation for mixed numbers and recovers with the displayed sum', () => {
+    const v = open(), plant = v.container.querySelector('textarea')!;
+    v.change(plant, String.raw`2\frac12/(s+1)`); v.apply();
+    expect(v.container.textContent).toContain('Mixed-number adjacency is unsupported'); expect(v.container.querySelector('figure')).toBeNull();
+    v.change(plant, String.raw`2+\frac12`); v.apply(); v.button('Reveal calculation and linked plots').click();
+    expect(v.container.querySelector('[aria-label="Calculated gain and output amplitude"]')?.textContent).toContain('2.5');
+  });
   it('distinguishes unsettled actual data and unstable analytic evaluation', () => {
     const v = open();
     v.button('Slow transient').click(); expect(v.container.textContent).toContain('Not settled');

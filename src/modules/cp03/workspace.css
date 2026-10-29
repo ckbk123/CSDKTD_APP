@@ -21,8 +21,8 @@
 [data-module="CP03"] .cp03-check input { width: 18px; height: 18px; accent-color: var(--accent); }
 [data-module="CP03"] .cp03-plot { margin: 18px 0; padding: 10px; border: 1px solid var(--line); border-radius: 8px; min-width: 0; overflow: hidden; }
 [data-module="CP03"] figcaption { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
-[data-module="CP03"] svg { width: 100%; height: auto; display: block; color: var(--text); }
-[data-module="CP03"] svg text { fill: var(--muted); font: 12px system-ui, sans-serif; }
+[data-module="CP03"] .cp03-plot > svg { width: 100%; height: auto; display: block; color: var(--text); }
+[data-module="CP03"] .cp03-plot > svg text { fill: var(--muted); font: 12px system-ui, sans-serif; }
 [data-module="CP03"] .cp03-grid { stroke: var(--line); stroke-width: 1; }
 [data-module="CP03"] .cp03-curve { fill: none; stroke-width: 2; }
 [data-module="CP03"] .cp03-output { stroke: var(--accent); }
@@ -43,5 +43,5 @@
   [data-module="CP03"] .cp03-card { padding: 13px; }
   [data-module="CP03"] .cp03-fields { grid-template-columns: 1fr; gap: 10px; }
   [data-module="CP03"] .cp03-plot { padding: 5px; overflow-x: auto; }
-  [data-module="CP03"] svg { min-width: 560px; }
+  [data-module="CP03"] .cp03-plot > svg { min-width: 560px; }
 }

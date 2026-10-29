@@ -1,38 +1,38 @@
 # CP03 implementation status
 
-- **Stage:** in-progress
-- Accepted implementation and automated checks complete; real-browser evidence pending.
-- **Assessment:** 2026-10-29; implementation revision `81b935f` plus equivalent-fraction regressions
+- **Stage:** implemented
+- Accepted bounded implementation, automated checks and actual browser verification complete. Independent integration review remains separate.
+- **Assessment:** 2026-10-29; final delivery revision; the claim records the exact tested HEAD
 - **Ownership:** `src/modules/cp03/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/cp03-sinusoidal-01a186d2`
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cp03-sinusoidal\CSDKTD APP`
-- **Pull request:** [#7](https://github.com/ckbk123/CSDKTD_APP/pull/7), draft pending final browser verification; attached to the worker chat.
+- **Pull request:** [#7](https://github.com/ckbk123/CSDKTD_APP/pull/7), attached to the worker chat; final submission reuses this PR.
 - **Baseline:** `c5d1135`; metadata/lazy loader preserved; no shared, dependency or deployment edits
 
 ## Requirement audit
 
 | Accepted requirement | Implementation | Evidence / outstanding work |
 |---|---|---|
-| Editable plant, frequency and amplitude | `view.ts` uses shared visual equation input plus numeric controls and presets; `math.ts` parses the bounded real rational grammar | Parser tests cover baseline, changed/factored/expanded data, normalization, unsupported order/functions, malformed decimals, empty/nonfinite inputs and resource bounds; real editor check pending |
-| Infer gain and phase from traces before reveal | Paired input/output peak-time markers, output-amplitude marker, numeric and plot-click placement; gain B/A and signed −ωΔt modulo one period | Independent marker fixtures cover lag, lead, amplitude ratio and whole periods; view test reaches zero error on baseline markers; real pointer/keyboard checks pending |
+| Editable plant, frequency and amplitude | `view.ts` uses shared visual equation input plus numeric controls and presets; `math.ts` parses the bounded real rational grammar | Parser tests cover baseline, changed/factored/expanded data, normalization, unsupported order/functions, malformed decimals, empty/nonfinite inputs and resource bounds; actual editor typing and fraction/power controls verified |
+| Infer gain and phase from traces before reveal | Paired input/output peak-time markers, output-amplitude marker, numeric and plot-click placement; gain B/A and signed −ωΔt modulo one period | Independent marker fixtures cover lag, lead, amplitude ratio and whole periods; view test reaches zero error on baseline markers; real pointer and keyboard checks passed |
 | Revealable calculation and mathematical reasoning | Substituted complex numerator/denominator, complex quotient, magnitude, signed radians/degrees, output amplitude and peak shift; analytic results hidden until reveal | Baseline division gives (1−3j)/10, gain 1/√10, phase −atan(3); changed frequency ω=2 gives (−1−3j)/20 and −108.4349488° |
 | Transient reveal and steady-state qualification | Analytic particular + zero-state homogeneous transient; conservative tail envelope; 1% output-amplitude threshold with absolute floor 10⁻⁹ | Partial-fraction, repeated, nearby repeated, complex-pole convolution and feedthrough fixtures; early slow transient is flagged; overly large or unresolved actual traces disabled with explanation while analytic evaluation remains available |
 | Linked Bode/Nyquist cursor | Frequency range control updates time traces, magnitude, phase and positive-frequency Nyquist cursor; already revealed plots stay visible | View test confirms all four plots update at ω=10; principal-phase discontinuities and undefined/singular samples break curves |
 | Changed-input experiment and useful failures | Editable plant/controls plus baseline, changed-frequency, slow-transient and unstable presets; edits immediately clear stale results | Tests cover improper/future-derivative explanation, singular resonance, zero/notch undefined phase, unstable/marginal denominator modes, excessive growth/time and unresolved transient sampling |
-| Per-visit state and cleanup | Synchronous `workspace.ts` mount guards a deferred browser view; all drafts/state created in the mounted view; abort controllers release view/plot listeners and shared equation editor | Tests cover aborted pending load, mounted cleanup once, already aborted mount, visible initialization failure, fresh reopen, invalidation and old-view isolation; shell/browser navigation checks pending |
-| Scoped accessible layout | `workspace.css` stays beneath `[data-module="CP03"]`; labeled numeric controls, range and select, semantic equations and plots, local plot scrolling on phones | Automated state tests pass; actual narrow viewport, light/dark, fonts and keyboard inspection pending |
-| Project checks and delivery | Module-only branch/worktree and recorded checkpoints | Module tests, full tests, type check and build pass; final browser QA, final commit/push and submitted claim still required |
+| Per-visit state and cleanup | Synchronous `workspace.ts` mount guards a deferred browser view; all drafts/state created in the mounted view; abort controllers release view/plot listeners and shared equation editor | Tests cover aborted pending load, mounted cleanup once, already aborted mount, visible initialization failure, fresh reopen, invalidation and old-view isolation; reset, reopen and rapid browser navigation passed |
+| Scoped accessible layout | `workspace.css` stays beneath `[data-module="CP03"]`; labeled numeric controls, range and select, semantic equations and plots, local plot scrolling on phones | Automated state tests and actual narrow viewport, dark-theme fonts/keyboard inspection passed; shared palette tokens retained |
+| Project checks and delivery | Module-only branch/worktree and recorded checkpoints | Module/full tests, type check, build and actual browser pass; final tested SHA recorded by submitted claim |
 
 ## Supported mathematical domain and limits
 
-- Proper real SISO rational transfer functions in s, denominator/numerator degree 0–2, expanded or factored; real numbers, fractions, sums, products, polynomial powers −2…2, textbook integer powers of 10 (−400…400 subject to finite/resource bounds), optional `G(s)=`. Ambiguous e/E coefficient literals are rejected in visual equations; HTML numeric controls retain their standard numeric semantics. MathLive one-token fraction shorthand is supported, including `\frac12`, with explicit TeX argument boundaries. No delays or other variables/functions. Parser length ≤300 characters, ≤160 tokens, nesting ≤24, intermediate degree ≤8. No symbolic pole-zero cancellation.
+- Proper real SISO rational transfer functions in s, denominator/numerator degree 0–2, expanded or factored; real numbers, fractions, sums, products, polynomial powers −2…2, textbook integer powers of 10 (−400…400 subject to finite/resource bounds), optional `G(s)=`. Ambiguous e/E coefficient literals are rejected in visual equations; HTML numeric controls retain their standard numeric semantics. MathLive one-token fraction shorthand is supported, including `\frac12`, with explicit TeX argument boundaries. Number/fraction adjacency that can display as a mixed number is rejected with explicit +/−/× guidance; signed/nested ordinary fractions remain supported. No delays or other variables/functions. Parser length ≤300 characters, ≤160 tokens, nesting ≤24, intermediate degree ≤8. No symbolic pole-zero cancellation.
 - Internal polynomial arrays use ascending powers `[constant, s, s²]`; the denominator is normalized to monic. Expanded coefficient magnitudes ≤10000; normalized ≤10⁶; leading denominator coefficient magnitude ≥10⁻⁸; denominator pole magnitudes ≤100 rad/s. Improper plants are rejected with their input-derivative meaning.
 - Open-loop continuous-time plant; no feedback or sample period. Input is A sin(ωt), with zero canonical states at t=0. A uses arbitrary input units; y uses the corresponding output units. ω=0.01–100 rad/s, A=0.01–100, window start=0–1000 s, three periods per window, total t≤3000 s.
 - Denominator modes are retained. “Stable” requires every denominator pole's real part <0; pure gain has no dynamic modes. This is conservative for canceled denominators and makes no claim about an unspecified physical hidden realization. Unstable/marginal models receive an explicit analytic-only qualification.
 - Frequency singularity test: |D(jω)|≤10⁻¹⁰ Σ|aᵢ|ωⁱ. Zero/near-zero phase test: |N(jω)|≤10⁻¹² Σ|bᵢ|ωⁱ; phase/dB are omitted there. Numeric underflow in literals, products, normalization, pole components, substitution or a nonzero output amplitude gets explicit feedback rather than a silent zero. Phase uses atan2 in [−π,π], with degrees and radians distinguished. Marker differences below 10⁻¹² are displayed as zero.
 - Analytic transient formulas cover distinct real, repeated real and conjugate poles. The tail bound uses absolute modal coefficients, conjugate amplitude envelopes and the future maximum of a repeated-pole envelope. No iteration or numerical integration is used by the tool.
-- Particular traces use 901 samples. Actual traces use at least ten samples per inverse pole magnitude and at most 12001 samples; a proved small settled tail needs only the 901-point view. Unresolved windows get explicit feedback. Values beyond 10⁸ are not drawn. Valid formal frequency results remain available when an actual trace cannot be shown.
+- Particular traces use 901 samples. Actual traces use at least ten samples per inverse pole magnitude and at most 12001 samples; a proved small settled tail needs only the 901-point view. Unresolved windows get explicit feedback. Values beyond 10⁸ are not drawn. Dynamic unstable time traces also require maximum positive pole real part × time ≤20 to limit floating-point amplification. This numeric reliability guard is not a certified error bound or proof. Exact algebraic-output identities have no transient. Valid formal frequency results remain available when an actual trace cannot be shown.
 - Bode/Nyquist use 301 logarithmic frequencies in 0.01–100 rad/s plus the selected cursor and known imaginary-axis pole/notch frequencies. Known poles break every frequency curve; numerator notches break phase and dB while Nyquist remains continuous through zero. Curves are sampled illustrations; frequency gaps and missed narrow features are not proofs. Nyquist shows positive frequencies only, with labeled independent axis scales; no Nyquist stability claim is made. Displayed numbers are rounded approximations; identities are shown separately.
 
 ## Independent mathematical verification
@@ -53,19 +53,28 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **58/58 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **61/61 passed**, 3 files.
 - `npm run check`: passed.
-- `npm test`: **100/100 passed**, 9 files.
+- `npm test`: **103/103 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
 The initial global catalogue test exposed MathLive's Node-only export at import time. Deferring the browser view until mount fixed this within the owned folder; the full suite subsequently passed. No shared configuration or tests were modified.
 
-## Browser evidence and remaining work
+## Actual browser evidence — 29 October 2026
 
-Pending. CP03 has not used another worker's tab/viewport. Reservation attempts reported DR02 busy, then DR01 busy. Its own production preview is running on port **59622**; the primary 8787 preview was untouched. Ports 8793 and 8813 were unavailable and were not taken over.
+Used a CP03-owned in-app Chromium tab against the production preview http://127.0.0.1:59622/#/module/CP03 with an exclusive successful QA reservation. Desktop screenshots were **1265×712**; the narrow viewport was **390×844**. The existing system dark theme was inspected. Light-theme colors inherit the shared Indigo/slate tokens; a separate light-theme browser pass was not performed. This is not an all-browser/OS compatibility claim.
 
-Required next checks under a successful QA reservation: baseline and changed result; actual visual equation typing and fraction/power insertion; math keyboard/fonts; empty/incomplete/unsupported data; marker numeric/pointer placement; transient and cursor linkage; reset, leave/reopen and rapid navigation; narrow width and light/dark usability; no late updates or old keyboard. Then release QA, record evidence, mark implemented, commit/push the exact tested branch, create or reuse one PR, attach it and record its URL, and submit the claim. The latest human-authorized continuous protocol then requires a new eligible module on a new worktree/branch, preserving this PR for review. Independent review remains the integration owner's later stage.
+- Revealed baseline gain 0.31623, phase −71.565°/−1.249 rad, quotient 0.1−0.3j and −10 dB cursor. Entered output peak 15.386212713552 s and B=0.316227766016838 against input peak 14.137166941154069 s: gain difference 0, phase difference about 1.85×10⁻¹¹°. Plot-click placement independently changed the input marker.
+- Changed-frequency preset gave ω=2, A=2, quotient −0.05−0.15j, gain 0.15811, output amplitude 0.31623 and phase −108.43°. ArrowRight on the range changed ω to 2.0417379 and updated all four already revealed views. Window start=0 removed the settled qualification; the transient checkbox changed the plotted series.
+- The unstable preset showed formal analytic-only labeling. Window start=30 disabled its actual trace with the positive-pole-rate/time limit explanation while retaining formal results. Singular 1/(s²+1) at ω=1, improper s²/(s+1), empty input and unfinished fraction placeholders cleared stale plots and gave specific feedback.
+- Actual selection/typing and the fraction toolbar entered 1/2; the power toolbar entered 10⁻² and computed 0.01. A signed nested fraction −(1/2)/(s+1) computed −0.25+0.25j. Compact ordinary fractions worked. Mixed 2\frac12 and signed/nested mixed variants were rejected; explicit 2+\frac12 computed 2.5 and 2×\frac12 computed 1. Visual 1e-2 was rejected with textbook-power guidance. Native frequency 1e-2 and intentional start 0e-999 were accepted; nonzero start 1e-999 was rejected.
+- Off-grid imaginary-axis pole 1/(s²+2) produced two curve segments in each frequency view. (s²+2)/(s²+2s+3) split phase/dB at its notch while keeping Nyquist continuous. The selected zero-output notch (s²+1)/(s²+2s+3) reported undefined phase/peak shift.
+- Fractions, powers, square-root result notation and math symbols rendered legibly with local fonts. The Systems keyboard displayed its control symbols. Escape/reset dismissed it; leaving with it open removed both keyboard and editor. Reset, changed-data leave/reopen and immediate repeated CP03/catalogue navigation restored ω=1, A=1, start=8 and the baseline plant, with no stale controls or late updates. No warning/error entries were captured in the tab console.
+- At 390 px, document scroll width equaled client width (**375 px**, excluding the scrollbar). Four plot regions were 277 px wide with local 570 px content. ArrowRight focused/scrolled a plot. Equation rows scrolled locally; numeric controls, symbol buttons and keyboard remained reachable. Plot SVG selectors are restricted to the owned figures so they do not affect equation graphics.
+- Local screenshots outside Git: C:\Users\baokh\.codex\control-studio-workers\cp03-browser-evidence\desktop-results.jpg, mobile-plot.jpg and mobile-editor.jpg. Restored the temporary viewport, closed only the CP03 tab and released QA. Primary port 8787 and other workers' tabs/servers were untouched.
+
+Final commands are repeated on the committed submission HEAD. The submitted claim records that exact SHA; independent review remains the integration owner's later stage.
 
 ## Provenance and checkpoints
 
@@ -76,38 +85,12 @@ The atlas CP03 entry and recorded source audit cite S05:4–11,13–14 and Ch3. 
 - `97b9110`: resumed cursor/overflow refinements; pushed as durable checkpoint.
 - `3375854`: transient-resolution, decimal-validation, complex-substitution and recoverable-load refinements; current code/check evidence above.
 
-No outstanding shared dependency request. Stage remains in-progress until browser evidence and final delivery are complete. No merge, deployment, version change or additional agent was performed.
+No outstanding implementation dependency. The coordinator approved the equivalent private native-number guard as carry-forward on this older branch; integration may adapt the shared-helper import with combined checks. No shared files were copied, main merged/rebased, package version changed, deployment performed or additional agent spawned.
 
-## Preliminary coordinator review repairs
+## Review-driven refinements
 
-The coordinator identified an off-grid imaginary-axis pole plotting defect for G(s)=1/(s²+2): two regular grid samples on opposite sides of √2 were joined across the unbounded asymptote. `frequencySweep` now inserts known singular frequencies, so all three frequency plots split there. It also inserts numerator notches so phase and dB cannot bridge an undefined value. Independent regressions check 1/(2−ω²) on both sides of √2 and assert **two distinct SVG path segments** in each affected view; a numerator-notch fixture checks separate phase/dB segments and a continuous Nyquist zero crossing. The final canonical stage remains in-progress pending actual browser evidence and delivery; the coordinator will review the submitted SHA separately.
+The coordinator identified an off-grid pole plotting defect for 1/(s²+2); known imaginary-axis poles and notches are now inserted explicitly into frequency samples, with independent SVG segment regressions and actual browser checks. Visual e/E semantics and compact one-token fraction boundaries are tested separately from native numeric exponent input. Mixed-number adjacency is rejected before multiplication can reinterpret its displayed meaning; explicit addition and multiplication remain supported.
 
-Additional numerical guards reject nonzero coefficients/values that would underflow, retain exact zero poles even beside extremely slow poles, and avoid losing nearly coincident transient modes. The module grid now constrains long equations and plots to local scrolling rather than allowing their intrinsic widths to set page width. Browser proof of the final layout is still required.
+An independent cancellation identity found that (s−0.13)/((s−0.13)(s+1.3)) could amplify roundoff in a long unstable canonical horizon: near t=307.692 s the previous output was 4.039 instead of the exact reduced transfer's −0.454. The explicit positive-pole-rate × time ≤20 guard preserves formal frequency results and rejects unsupported long actual traces. A twelve-case regression reduces (s−a)/((s−a)(s+b)) to 1/(s+b), checks short horizons against the independent first-order solution and rejects long horizons. No near-canceling mode is silently snapped to zero.
 
-## Browser-QA scheduling dependency
-
-The first resumed QA attempt was at approximately 16:31 Asia/Saigon on 2026-10-29. CP03 has not acquired or used the shared browser. While its implementation, 53 module tests, 95 project tests, type check, build and [CI run](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40855540832) are passing, successive reservations have included DR02, DR01, DS03, DP01, DP02, CS01, DS02, coordinator integration QA, and a newer DD04 contribution. At approximately 17:22, DD04 held the resource; a later attempt reported DF01 busy. No reservation has been stolen or cleared.
-
-**Coordination action needed:** allocate CP03 a dedicated next browser turn after the current holder releases, or provide an ordered QA queue. The exclusive helper has no waiting queue, and repeated new acquisitions have left this already checked implementation unable to complete its required real-browser gate. Until that turn, PR #7 stays draft, the claim stays active, and the module stays in-progress. This is an external scheduling dependency, not evidence that the exercise has passed browser validation. The worker will keep the goal active and resume its own tests as soon as the resource is available.
-
-## Visual exponent semantics review repair
-
-The coordinator reproduced that MathLive displays `1e-2/(s+1)` as algebra involving e, while the earlier parser interpreted it as a decimal exponent. Visual input now rejects e/E literals with a concrete message and accepts `0.01/(s+1)` and textbook `10^{-2}/(s+1)` (including a visible multiplication sign). Numeric HTML controls and scientific result typesetting remain separate. Powers of the scalar 10 use a bounded integer exponent and finite/underflow checks; polynomial powers retain the −2…2 bound. The underflow and near-coincident fixtures now use supported textbook powers/products. Meaningful view/parser regressions cover rejection, equivalent accepted coefficients and standard numeric-control entry.
-
-After this repair: `npm test -- src/modules/cp03` **58/58 passed**; `npm test` **100/100 passed**; type check and production build passed. CI at the earlier documented SHA was green; the new commit will trigger another check. Real browser evidence is still pending; no reservation was acquired during the coordinator's requested scheduling holds.
-
-The final notation regressions also cover `\frac{1}2`, `\frac1{2}`, outer grouping and minus placement, a negative fraction numerator and a nested numeric ratio. These preserve 1/2, −1/2 and −2/3 as independently expected. Module tests are **56/56** and the full suite **98/98**, with current type checking passing. The production implementation is unchanged by these extra fixtures. A private, cancelable, one-time filesystem-event wait now attempts the existing QA helper only after a release; it does not clear or modify another owner's reservation and adds no application files or background scheduler.
-
-## Numeric-control and keyboard-scroll follow-up
-
-Native numeric fields now bound raw input length to 80 characters and distinguish an intentional zero from a nonzero mantissa rounded to zero (for example `1e-999`). This is separate from the visual equation grammar and still accepts ordinary numeric exponent notation such as `1e-2`. Window-start and amplitude-marker regressions verify rejection, removal of stale markers and recovery with exact `0e-999`. Plot figures are labeled and keyboard-focusable so their local horizontal scroll regions remain usable on narrow screens. These changes stay private to CP03; no shared API was changed.
-
-`npm test -- src/modules/cp03`: **58/58 passed**. `npm test`: **100/100 passed**. Current type check and production build passed. The one-time event waiter was canceled immediately for the coordinator's DS02 integration slot, with a terminal process result, and restarted only after the explicit release notice. CP03 still has no claimed browser evidence or submitted contribution.
-
-## Unstable time-horizon reliability and approved numeric carry-forward
-
-An additional independent cancellation-identity check found that `(s−0.13)/((s−0.13)(s+1.3))`, evaluated far into the unstable canonical horizon, could amplify floating-point residue error: at t≈307.692 s the prior calculation gave 4.039 instead of the exact reduced transfer's −0.454. The accepted stable sinusoidal experiment and analytic unstable-frequency evaluation remain intact. The optional **dynamic unstable time trace** now has an explicit supported bound, max positive denominator-pole real part × t ≤20; longer traces are rejected with useful feedback while formal/frequency results remain available. This is a numerical reliability guard, not a certified error bound or stability proof. Exact algebraic-output identities have no transient and retain their valid direct response.
-
-A twelve-case regression independently reduces `(s−a)/((s−a)(s+b))` to `1/(s+b)`, compares the short-horizon zero-state sinusoid to its known first-order solution, and verifies that longer unstable canonical horizons receive the reliability error. No near-canceling mode is silently snapped to zero. Current checks: **58 module tests**, **100 full-suite tests**, type checking and production build pass.
-
-The coordinator explicitly approved an already tested equivalent local `readNumericInput` guard as carry-forward for branches predating the shared helper. CP03 retains its private checked guard; no unowned shared files, main merge or rebase were added. Integration can adapt the import with the coordinator's combined checks.
+Later recoverable checkpoints include c57f18b (off-grid pole/notch), 81b935f (visual coefficient notation), 103c284 (numeric underflow and plot focus), and 438038f (unstable horizon). The final delivery also contains the mixed-number guard and actual browser evidence. This record claims implemented, not independently verified.

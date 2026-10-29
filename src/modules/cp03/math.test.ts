@@ -30,6 +30,20 @@ describe('CP03 bounded equation parser', () => {
     }
     expect(parsePlant(String.raw`-\frac{\frac12}{\frac34}`)).toEqual({ numerator: [-2 / 3], denominator: [1] });
   });
+  it('rejects displayed mixed numbers before combining them as products', () => {
+    for (const source of [String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)/(s+1)`, String.raw`\frac1{2\frac12}`, String.raw`-\frac{2\frac{1}2}{s+1}`, String.raw`2\frac1{2}`]) {
+      expect(() => parsePlant(source)).toThrow(/Mixed-number adjacency/);
+    }
+  });
+  it('keeps explicit mixed-number sums and products distinct, and ordinary compact fractions valid', () => {
+    expect(parsePlant(String.raw`2+\frac12`)).toEqual({ numerator: [2.5], denominator: [1] });
+    expect(parsePlant(String.raw`2\times\frac12`)).toEqual({ numerator: [1], denominator: [1] });
+    expect(parsePlant(String.raw`-\left(2+\frac12\right)`)).toEqual({ numerator: [-2.5], denominator: [1] });
+    expect(parsePlant(String.raw`\frac1{2+\frac12}`)).toEqual({ numerator: [0.4], denominator: [1] });
+    expect(parsePlant(String.raw`\frac{2\times\frac12}{s+1}`)).toEqual({ numerator: [1], denominator: [1, 1] });
+    expect(parsePlant(String.raw`\frac12\frac12`)).toEqual({ numerator: [0.25], denominator: [1] });
+    expect(parsePlant(String.raw`s^2\frac12/(s^2+1)`)).toEqual({ numerator: [0, 0, 0.5], denominator: [1, 0, 1] });
+  });
   it.each(['', 'NaN', 'Infinity', 'exp(s)', '1/(s+)', '1/0', '\\frac{}{s}', 's^3', 's^{1.5}', '1/(s+1)^2/(s+2)', 's^2/(s+1)', '1/(s+101)', '1e999', '1/(0.000000001s+1)', '(s+1', '\\placeholder{}', '1.2.3/(s+1)', '1/(s+1..2)'])('rejects malformed or unsupported input %s', source => {
     expect(() => parsePlant(source)).toThrow();
   });
