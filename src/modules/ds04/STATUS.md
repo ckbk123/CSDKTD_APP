@@ -1,6 +1,6 @@
 # DS04 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Owned folder:** `src/modules/ds04/**`; [TASK](TASK.md)
@@ -88,3 +88,11 @@ The review pass also reproduced native numeric underflow (nonzero raw 1e-999 bec
 The targeted corrected production build passed actual Chromium checks under the DS04 reservation on preview8824. Ordinary keys and power buttons entered N=-.3z²,D=z². Exact Inspect K=10/3 displayed an identically-zero polynomial with undetermined roots and ZERO current-root crosses in the locus; nearby native K=3 restored TWO current crosses. Native1e-999 showed visible finite-K feedback and removed stale plots, while intentional0 and ordinary1e-7 computed normally. Reset/reveal restored0<K<5/2 and both baseline roots. Browser error/warning log was empty. No viewport override was introduced; the own tab was closed and QA released. Screenshot: C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d2-2175-7122-ad9f-c01694059c6c/ds04-singular-correction.png (not tracked).
 
 The same PR#13 will receive the exact corrected final SHA and retain original review history. The coordinator explicitly approved an equivalent local numeric guard for branches predating the shared helper, to be adapted at integration; this branch is preserved without rebase or unowned shared-file edits. The final correction tree contains41module/83full tests; final type/full-suite/build checks are rerun after this evidence-only commit. No returned defect remains open; independent final review/integration is pending.
+
+## Second coordinator return: mixed-number displayed meaning
+
+The exact-gain correction at6be898d passed coordinator review, but a new displayed-meaning probe found2\frac12z+1 rendered as the mixed coefficient2+1/2 while the normalized parser multiplied2*(1/2). Signed and parenthesized/nested mixed forms had the same risk. CS03 was checkpointed at7467873 and its pending QA watcher explicitly stopped before returning here. The same PR#13 and original source history are preserved.
+
+Before fraction normalization the module now inspects the existing pinned MathLive public MathML conversion for its invisible-plus marker (U+2064). A mixed number is rejected with “Insert + or × between the whole number and fraction.” This notation-only guard uses the renderer's actual mixed-number decision through signs/groups rather than flattening them or treating every adjacent fraction as ambiguous. It does not compute any coefficients, roots or gain sets; the separately bounded polynomial parser and exact rational math still perform all calculation. No dependency/shared file/API change was introduced. Explicit(2+1/2)z+1 computes coefficient5/2; explicit2×(1/2)z+1 computes1. Clear parenthesized products, brace-grouped products, adjacent ordinary fractions and outer signed ratios retain their previous meaning. Numeric literals and mixed content remain subject to the preexisting300-character limit.
+
+The pinned Node renderer probe confirmed invisible plus for direct, signed, grouped and nested mixed forms; it is diagnostic source evidence, not interactive browser evidence. Seven mixed-form rejection fixtures and explicit+/×/grouped-product coefficient oracles were added, plus a workspace stale-graph/recovery regression. npm test -- src/modules/ds04 passes50/50 (40math/parser,10workspace); npm run check passes. Stage is in-progress until targeted real fraction-button adjacency and corrected final checks/submission complete. Current QA order is CR02→CP03→coordinator; no new acquisition is attempted during that order, and this worker holds no reservation.

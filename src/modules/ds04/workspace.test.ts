@@ -67,6 +67,13 @@ describe('DS04 complete teaching workspace', () => {
     expect(root.querySelectorAll('.g-locus .g-selected')).toHaveLength(2);
     expect(root.textContent).not.toContain('P is identically zero. Its roots are undetermined');
   });
+  it('explains mixed-number notation and clears the old computed graphs', async () => {
+    const { root } = await open(); click(root, 'Check prediction and reveal');
+    edit(root.querySelector('textarea')!, String.raw`2\frac12z+1`); click(root, 'Check prediction and reveal');
+    expect(root.textContent).toContain('Insert + or × between the whole number and fraction'); expect(root.querySelectorAll('svg')).toHaveLength(0);
+    edit(root.querySelector('textarea')!, String.raw`(2+\frac12)z+1`); click(root, 'Check prediction and reveal');
+    expect(root.querySelectorAll('svg')).toHaveLength(2); expect(root.textContent).toContain(String.raw`\frac{5}{2}`);
+  });
   it('validates gain and plotting bounds without leaving an old graph visible', async () => {
     const { root } = await open(); click(root, 'Check prediction and reveal');
     edit(root.querySelector('input')!, ''); expect(root.textContent).toContain('finite K'); expect(root.querySelectorAll('svg')).toHaveLength(0);

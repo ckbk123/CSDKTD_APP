@@ -28,6 +28,19 @@ describe('DS04 bounded exact polynomial entry', () => {
     for (const text of [String.raw`-\frac12`, String.raw`\frac{-1}{2}`, String.raw`\frac1{-2}`, String.raw`-\left(\frac12\right)`, String.raw`\left(-\frac{1}2\right)`]) expect(parsePolynomial(text)[0]).toEqual(rational(-1, 2));
     expect(() => parsePolynomial(String.raw`\frac{\frac12}{3}`)).toThrow();
   });
+  it.each([
+    String.raw`2\frac12z+1`, String.raw`-2\frac12z+1`, String.raw`(2\frac12)z+1`,
+    String.raw`z+(2\frac12)(z+1)`, String.raw`\left(-2\frac{1}2\right)z+1`,
+    String.raw`2\frac{-1}{2}z+1`, String.raw`z+(2\dfrac{1}{2})^2`,
+  ])('rejects displayed mixed-number meaning before fraction expansion: %s', source => {
+    expect(() => parsePolynomial(source)).toThrow('Insert + or ×');
+  });
+  it('preserves explicit addition, explicit multiplication and unambiguous grouped products', () => {
+    expect(parsePolynomial(String.raw`(2+\frac12)z+1`).map(exactText)).toEqual(['1', '5/2', '0']);
+    for (const source of [String.raw`2\times\frac12z+1`, String.raw`2(\frac12)z+1`, String.raw`(2)\frac12z+1`, String.raw`{2}\frac12z+1`]) expect(parsePolynomial(source).map(exactText)).toEqual(['1', '1', '0']);
+    expect(parsePolynomial(String.raw`\frac12\frac12z+1`).map(exactText)).toEqual(['1', '1/4', '0']);
+    expect(parsePolynomial(String.raw`-(2+\frac12)z+1`).map(exactText)).toEqual(['1', '-5/2', '0']);
+  });
 });
 describe('DS04 complete exact gain partition', () => {
   it('derives the baseline independently from P=z²+(K-1)z+K/5', () => {
