@@ -1,11 +1,12 @@
 # CP01 implementation status
 
-- **Stage:** in-progress (full bounded workspace implemented; actual-browser verification and submission remain)
+- **Stage:** in-progress
+- **Current checkpoint:** full bounded workspace implemented; actual-browser verification and submission remain.
 - **Last assessed:** 2026-10-29
 - **Base:** primary-main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
 - **Branch/worktree:** `codex/cp01-time-response-7393`; `C:/Users/baokh/.codex/worktrees/cp01-time-response-7393/CSDKTD APP`.
-- **PR:** not yet created. Prior DS01 PR #10 accepted v0.3.6; CF02 PR #18 corrected/resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`, preserved for asynchronous review.
+- **PR:** [#24](https://github.com/ckbk123/CSDKTD_APP/pull/24), draft pending actual-browser checks. Prior DS01 PR #10 accepted v0.3.6; CF02 PR #18 corrected/resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`, preserved for asynchronous review.
 - **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md).
 
 ## Scope and source provenance
