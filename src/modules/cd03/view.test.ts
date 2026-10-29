@@ -36,6 +36,7 @@ describe('CD03 complete design flow with mocked equation UI', () => {
     const v = start(); v.click('compute'); expect(v.part('response').querySelector('svg')).not.toBeNull();
     v.field('time').value = '1e-400'; v.click('inspect'); expect(v.part('inspection').textContent).toContain('too small'); expect(v.part('response').querySelector('svg')).not.toBeNull();
     v.field('time').value = '0e-400'; v.click('inspect'); expect(v.part('inspection').textContent).toContain('y=0');
+    v.field('time').value = '1e-1'; v.click('inspect'); expect(v.part('inspection').textContent).toContain('t=0.1');
     v.field('horizon').value = '1e-400'; v.click('compute'); expect(v.part('feedback').textContent).toContain('too small'); expect(v.part('response').querySelector('svg')).toBeNull(); expect(v.part('table').textContent).toBe('');
     v.click('reset'); const f = v.container.querySelector<HTMLTextAreaElement>('textarea')!; f.value = String.raw`\frac{\placeholder{}}{s}`; f.dispatchEvent(new Event('input', { bubbles: true })); v.click('compute'); expect(v.part('feedback').textContent).toContain('Complete');
   });
