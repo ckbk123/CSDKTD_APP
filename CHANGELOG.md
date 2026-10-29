@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.6 — 29 October 2026
+
+- DS01: edit discrete poles, predict internal and channel stability, inspect geometric/Jordan sequences and real state blocks, and compare semisimple boundary modes with hidden unstable states.
+- Accept [PR #10](https://github.com/ckbk123/CSDKTD_APP/pull/10), source `c88acd370dd27f527f5478a048a6c908321f7177`, within its declared one-to-four pole-row / 24-real-state bounds. [Independent mathematical and browser review](src/modules/ds01/STATUS.md) records the distinction between bounded free motion and BIBO stability.
+- All 440 application tests, type checking and production build pass. The coordinator's native period/horizon adaptation adds four regressions; actual editor controls, changed examples, narrow keyboard scrolling and cross-module cleanup passed production checks.
+
 ## 0.3.5 — 29 October 2026
 
 - Correct visual notation in DP01, DS02 and DS03. Ambiguous mixed numbers and hidden brace arithmetic receive guidance to use explicit operations or visible parentheses. Supported ordinary fractions, powers and explicit arithmetic retain their meaning.
