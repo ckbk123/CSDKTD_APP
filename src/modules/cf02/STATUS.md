@@ -1,27 +1,47 @@
 # CF02 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29, fresh primary-main baseline `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (v0.3.3).
+- **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
+- **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
+- **Branch/worktree:** `codex/cf02-steady-state-7393`; `C:\Users\baokh\.codex\worktrees\cf02-steady-state-7393\CSDKTD APP`.
+- **PR:** not created yet. Prior DS01 PR #10 is submitted and preserved for coordinator review; corrections take priority.
 
-## Implemented and inspected
+## Audit before implementation
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Current `workspace.ts` is an empty synchronous mount; `index.ts` is the correct lazy metadata. There are no local helpers or tests. The shell equation preview is not a solver.
 
-## Remaining acceptance work
+| Accepted requirement | Existing evidence | Work to deliver |
+|---|---|---|
+| Step/ramp/parabolic limits and type/error constants | Absent | Editable bounded forward-path family; type and Kp/Kv/Ka from low-frequency powers; selected input A*t^q/q! |
+| Derive E/R before table lookup | Absent | Explicit negative-feedback signal equations and computed selected-channel numerator/denominator before interpreting constants |
+| Scalar reference/disturbance/sensor effects | Absent | Choose one excitation at a time, all others zero; disturbance at plant input and sensor noise after H; derive both comparator and physical error |
+| Nonunity H distinction | Absent | e_c=r-Hy-n versus e_t=r-y; show why reference type tables do not directly give physical tracking error when H differs from 1 |
+| Verify final-value conditions | Absent | Low-order closed-loop coefficient/Hurwitz certificate; refuse an unsupported finite-limit claim for unstable/boundary loops; distinguish polynomial error growth |
+| Compare prediction and trace | Absent | Prediction/reveal, analytical limit/growth derivation and independent time-response trace with horizon/truncation feedback |
+| Changed baseline and failure cases | Absent | Unit-step zero error and unit-ramp .5; changed gain, nonunity sensor, stable type-2 and unstable variants; parser/resource/native-number tests |
+| Visual entry and lifecycle | Scaffold only | Shared visual equation inputs/display, local drafts/parser, abort-safe deferred equation loading and cleanup |
+| Real-browser and project evidence | Absent | All required checks, actual fraction-button/sign/keyboard input, reset/reopen/rapid navigation, readable scrollable mobile plots |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Bounded model selected for the full exercise
 
-## Evidence and next action
+Use the real SISO forward path P(s)=(b1*s+b0)/[s^n*(s+a)], n=0,1,2, with a positive finite pole rate and positive constant/optional left-half-plane-zero numerator. Editable numerator and finite-pole-factor polynomials use visual entry; integrator count is explicit. Leading denominator scaling is normalized without losing gain. H is a positive constant sensor gain and the feedback sign is negative. This covers the declared baseline, types 0-2, a stable type-2 family and final-value failure variants without a general root finder.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+The selected source is reference r, plant-input disturbance d or sensor noise n, one at a time. With y=P*(e_c+d), e_c=r-H*y-n, e_t=r-y, derive the channel first. All initial states are zero. The planned response trace uses a bounded augmented real state transition (at most six states including the polynomial input), independently checked against analytic fixtures; a finite trace is not the proof of a limit. Shared native numeric controls will use the current `readNumericInput` helper; no shared API/package change is needed.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+## Independently derived fixtures to verify
+
+These are mathematical test plans, not completed tests or new slide transcriptions:
+
+- Baseline P=4/[s(s+2)], H=1: Kv=2, step error 0, unit-ramp error .5. Ramp error e(t)=.5-.5*exp(-t)*cos(sqrt(3)*t)+exp(-t)*sin(sqrt(3)*t)/(2*sqrt(3)).
+- Change numerator to 8: Kv=4 and unit-ramp error .25.
+- Baseline with H=2: comparator ramp error .25 while physical tracking error grows as .5*t+.125 (the table alone is insufficient).
+- Type-0 P=4/(s+2), H=1: unit-step error 1/3.
+- Type-2 P=4(s+1)/[s^2(s+2)], H=1: closed-loop polynomial s^3+2s^2+4s+4 is Hurwitz and unit-parabolic error is .5. Removing the zero gives an unstable loop and no certified final value.
+- Baseline unit plant-input disturbance: physical error -1; unit sensor-noise step: physical error +1, comparator error 0.
+
+Course provenance remains TASK/atlas Ch5:8-13, S07 and S03:5,13. The continuous audit independently records the baseline's 0/.5 checks. Original decks have not been newly inspected.
+
+## Current checks and remaining work
+
+The fresh worktree and unique branch are registered in the claim. Locked dependencies installed under bundled Node v24.22.1 (109 packages, zero audit vulnerabilities). Only this audit has been changed so far; implementation, numerical/parser tests, project checks, browser QA and PR delivery remain pending. No claim of implemented mathematics is made at this checkpoint.
