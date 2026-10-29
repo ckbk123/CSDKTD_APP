@@ -3,6 +3,8 @@
 - **Stage:** implemented (accepted bounded exercise and project/browser checks complete; independent review pending)
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
+- **Pull request:** [#8 — CS01 stability laboratory](https://github.com/ckbk123/CSDKTD_APP/pull/8)
+- **Worktree:** `C:/Users/baokh/.codex/worktrees/cs01-pole-stability-01a18701/CSDKTD APP`
 - **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`
 - **Ownership:** `src/modules/cs01/**`; claim `worker-cs01-01a18701`; branch `codex/cs01-pole-stability-01a18701`.
 - **Contract:** [TASK.md](TASK.md), atlas CS01, continuous source audit S7 and [stage definitions](../../../docs/PROJECT_STATUS.md).
@@ -20,7 +22,7 @@
 | Changed inputs and failures | `math.test.ts`: near cancellation, ±10⁻⁹ boundary shifts, fractions, dimension/grammar/bounds failures; module feedback clears stale results | None |
 | Visual mathematics and readable plot labels | Shared equation input/display; local scoped Indigo/slate CSS; numeric initial states/horizon; units and line patterns | Light theme not separately browser-tested; shared tokens unchanged |
 | Mount/reset/cleanup/isolation | Synchronous lazy public mount; abort/disposal guard on editor import; caller-owned drafts; per-result abort controller; no timers/observers/remote calls | None |
-| Independent fixtures and production integration | 35 pure math tests + 5 mocked-editor lifecycle/flow tests; all 82 project tests, type check and build pass | PR / claim submission pending below |
+| Independent fixtures and production integration | 35 pure math tests + 5 mocked-editor lifecycle/flow tests; all 82 project tests, type check and build pass | Integration review pending (PR #8) |
 
 ## Supported mathematical domain and limits
 
@@ -74,7 +76,7 @@ Production build inspected in the in-app Chromium browser at http://127.0.0.1:88
 - Desktop dark theme inspected at normal size and 1280x900; narrow dark theme at configured 390x844. Narrow document client/scroll width were both 375 px (scrollbar gutter), with no page-wide overflow. Figure widths were 307 px with their own 360/560 px scroll areas. Controls/matrices wrapped and remained readable. Light theme was not separately browser-tested; it uses the unchanged shared light tokens. The available browser controls expose viewport/visibility, not a color-scheme emulation switch.
 - Local screenshot: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-1ec8-7073-a23f-e744d40a5355/cs01-browser-evidence.jpg` (untracked evidence outside the repository).
 
-The accepted bounded mathematical and exercise requirements are complete. Remaining delivery steps are the final commit/push, one PR and exact claim submission. Independent technical review is deferred to integration; no verified stage is claimed.
+The accepted bounded mathematical and exercise requirements are complete. PR #8 is open for integration review; the final delivery commit is recorded in the shared claim. Independent technical review is deferred to integration; no verified stage is claimed.
 
 No shared dependency/API request is needed. No independent review has been claimed; the final worker stage will be implemented rather than verified. Checkpoints fd559dc, e614561, a42cbde and 8e8e4f5 preserve the audit and implementation. Branch checkpoints have been pushed for recovery.
 
@@ -84,6 +86,6 @@ Narrow-screen preparation keeps plot labels at a readable minimum scale with scr
 
 ## Delivery checkpoint
 
-Final verification on 2026-10-29 at approximately 17:12 ICT: module tests 40/40, project tests 82/82, `npm run check` and `npm run build` passed after the browser-tested source changes. Browser reservation was released and its tab closed. Final implementation checkpoint `52a36fa91b89ea481c86b3aca9c4f7707c05bd28` is pushed. The final status-only commit will additionally record the PR URL and exact submission metadata.
+Final verification on 2026-10-29 at approximately 17:12 ICT: module tests 40/40, project tests 82/82, `npm run check` and `npm run build` passed after the browser-tested source changes. Browser reservation was released and its tab closed. Final implementation checkpoint `52a36fa91b89ea481c86b3aca9c4f7707c05bd28` is pushed. The final status-only commit records PR #8; the shared claim records its exact final tested tree revision.
 
-PR creation through the connected GitHub integration returned HTTP 403 `Resource not accessible by integration`. No PR was created by that call. The GitHub CLI is not installed in PATH or the usual local install locations. The implementation is complete; PR creation is pending a normal browser fallback once the coordinator's reserved next QA slot is released. No app dependency or credential changes have been made.
+PR creation through the connected GitHub integration returned HTTP 403 `Resource not accessible by integration`. No PR was created by that call. The GitHub CLI is not installed in PATH or the usual local install locations. The normal browser fallback required sign-in, so its tab was closed and QA released immediately. PR #8 was then created successfully through the existing Git authentication used for the authorized push (credentials stayed in process memory, with no output or file storage). No app dependency or credential changes were made. The isolated preview was stopped after QA; primary port 8787 was untouched.
