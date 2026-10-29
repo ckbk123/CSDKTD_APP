@@ -49,6 +49,9 @@ describe('quadratic teaching flow', () => {
     const v = open(); v.click('reveal'); v.set('sweepStart', '3'); v.set('sweepEnd', '2'); v.click('sweep');
     expect(v.root.textContent).toContain('start < end');
     v.set('sweepStart', '-0.5'); v.set('sweepEnd', '3'); v.click('sweep'); expect(v.root.querySelectorAll('.jury-sample').length).toBe(162);
+    v.set('sweepStart', '1/3'); v.set('sweepEnd', '20/9'); v.click('sweep'); v.click('sweep');
+    expect(v.root.querySelector<HTMLInputElement>('input[name="sweepStart"]')!.value).toBe('1/3');
+    expect(v.root.querySelector<HTMLInputElement>('input[name="sweepEnd"]')!.value).toBe('20/9');
     v.click('clearSweep'); expect(v.root.querySelectorAll('.jury-sample').length).toBe(0);
     const field = v.root.querySelector('textarea')!;
     field.value = 'z^2+1'; field.dispatchEvent(new Event('input')); v.click('apply'); v.click('reveal');

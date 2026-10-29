@@ -20,7 +20,7 @@ function svgEl(tag: string, attrs: Record<string, string | number>, text?: strin
 export const mount: ModuleMount = ({ container, signal }) => {
   let draft: EquationDraft;
   let family: Family = parseFamily(BASELINE), selectedK = rat(1), revealed = false, dirty = false;
-  let activeCondition = 0, sweep: [number, number] | null = null;
+  let activeCondition = 0, sweep: [Rational, Rational] | null = null;
   const root = el('div'); root.className = 'jury';
   const intro = el('section');
   intro.append(el('h3', 'Derive a strict stability interval'), el('p', 'For a monic quadratic, build the mirrored rows, intersect the strict Jury inequalities, then check the roots. Predict the interval before revealing the result.'));
@@ -49,7 +49,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const current = at(f, k), points = [...current.roots];
     const sampled: Root[] = [];
     if (sweep) for (let i = 0; i <= 80; i++) {
-      const value = sweep[0] + (sweep[1] - sweep[0]) * i / 80;
+      const value = num(sweep[0]) + (num(sweep[1]) - num(sweep[0])) * i / 80;
       sampled.push(...roots(num(f.b.slope) * value + num(f.b.offset), num(f.a.slope) * value + num(f.a.offset)));
     }
     points.push(...sampled);
@@ -144,7 +144,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     plot.append(el('p', `At K = ${exact(selectedK)}: ${current.stable ? 'strictly stable — all Jury inequalities are positive.' : current.boundary ? 'on the closed stability boundary — strict stability fails. Boundary roots can give bounded or growing free responses depending on multiplicity; they do not establish BIBO stability.' : 'not strictly stable — at least one Jury inequality fails; inspect both roots.'}`));
     drawPoles(plot, family, selectedK);
     const sweepControls = el('div'); sweepControls.className = 'jury-actions';
-    labelInput(sweepControls, 'Sweep start K', 'sweepStart', sweep ? String(sweep[0]) : '-0.5'); labelInput(sweepControls, 'Sweep end K', 'sweepEnd', sweep ? String(sweep[1]) : '3');
+    labelInput(sweepControls, 'Sweep start K', 'sweepStart', sweep ? exact(sweep[0]) : '-0.5'); labelInput(sweepControls, 'Sweep end K', 'sweepEnd', sweep ? exact(sweep[1]) : '3');
     sweepControls.append(button('Show 81 sampled gains', 'sweep'), button('Clear sweep', 'clearSweep'));
     plot.append(sweepControls, el('p', 'A finite sweep illustrates motion; it cannot prove the complete stable interval. Change the constant coefficient from .2K to .1K using the worksheet button, predict again and compare the exact upper bounds.'));
     lesson.append(proof, plot);
@@ -177,8 +177,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
         const good = empty ? expected.empty : !expected.empty && matches(value('lower'), expected.lower, true) && matches(value('upper'), expected.upper, false);
         root.querySelector('[data-attempt-feedback]')!.textContent = good ? 'Correct strict interval. Each finite endpoint is excluded.' : 'Recheck the intersection of all four inequalities. A root on the unit circle is excluded.';
       } else if (action === 'sweep') {
-        const start = num(parseNumber(value('sweepStart'))), end = num(parseNumber(value('sweepEnd')));
-        if (Math.abs(start) > 10000 || Math.abs(end) > 10000 || start >= end) throw new Error('Sweep needs −10,000 ≤ start < end ≤ 10,000.');
+        const start = parseNumber(value('sweepStart')), end = parseNumber(value('sweepEnd'));
+        if (cmp(start, rat(-10000)) < 0 || cmp(end, rat(10000)) > 0 || cmp(start, end) >= 0) throw new Error('Sweep needs −10,000 ≤ start < end ≤ 10,000.');
         sweep = [start, end]; render(); feedback.textContent = '81 sampled gains shown. Use the inequalities for the full interval.';
       } else if (action === 'clearSweep') { sweep = null; render(); }
     } catch (error) { feedback.textContent = error instanceof Error ? error.message : 'Check the input.'; }

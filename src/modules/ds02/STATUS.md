@@ -44,7 +44,7 @@ Using bundled **Node 24.22.1**, npm 10.8.2 CLI, with Node 24 in PATH for child p
 
 - `npm ci`: 109 packages installed, 0 vulnerabilities; locked dependencies unchanged.
 - `npm run check`: passed.
-- `npm exec -- vitest run src/modules/ds02`: 30 tests passed in 3 files (24 math, 3 lesson-state, 3 loading/cleanup).
+- `node node_modules/vitest/vitest.mjs run src/modules/ds02`: 30 tests passed in 3 files (24 math, 3 lesson-state, 3 loading/cleanup).
 - `npm test`: 72 tests passed in 9 files on `95e667d` source.
 - `npm run build`: passed; existing >500 kB MathLive chunk warning only. Same-origin fonts emitted, no generated files committed.
 - `git diff --check`: clean after removing trailing blank lines.
@@ -55,3 +55,4 @@ Initial failures were corrected: system Node 20 was accidentally used by the fir
 ## Remaining work and dependency state
 
 Real-browser editing/calculation, reset, reopen, fast navigation/late updates, keyboard/font assets and narrow viewport remain mandatory. The shared QA reservation is actively held by another worker; DS02 has not used browser controls. No shared-helper request is needed. Do not mark implemented or submitted until actual browser evidence is recorded. Independent technical review remains for the integration owner.
+
