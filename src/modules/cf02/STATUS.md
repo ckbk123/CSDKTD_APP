@@ -45,3 +45,9 @@ Course provenance remains TASK/atlas Ch5:8-13, S07 and S03:5,13. The continuous 
 ## Current checks and remaining work
 
 The fresh worktree and unique branch are registered in the claim. Locked dependencies installed under bundled Node v24.22.1 (109 packages, zero audit vulnerabilities). Only this audit has been changed so far; implementation, numerical/parser tests, project checks, browser QA and PR delivery remain pending. No claim of implemented mathematics is made at this checkpoint.
+
+## Parser checkpoint
+
+`parser.ts` implements a bounded linear-polynomial entry prototype: decimals, s, sums/products, signed groups, constant-denominator fractions (including compact/mixed/nested numeric forms) and font wrappers from MathLive. It rejects raw e/E scientific algebra, powers/degree >1, variable denominators, empty/incomplete expressions, excessive nesting/size, nonfinite/oversized coefficients and nonzero arithmetic underflow.
+
+`node node_modules/vitest/vitest.mjs run src/modules/cf02/parser.test.ts`: 45 tests passed. `npm run check`: passed. No workspace computation or browser result is claimed. Exact coefficient cancellation must be retained before implementing limit classification; numeric roundoff must not change a numerator's zero order. Derivations and the proposed numerical trace are preserved in IMPLEMENTATION_NOTES.md. Solver, visual workspace, full mathematical fixtures, project/browser checks and PR remain unfinished.
