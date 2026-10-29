@@ -23,6 +23,24 @@ function visit() {
   return { container, controller, button, numeric };
 }
 describe('DD04 read/calculate/commit interface (mocked presentation only)', () => {
+  it('rejects e notation from the visual error list before initializing', () => {
+    const { container, button } = visit();
+    const field = container.querySelector('textarea')!; field.value = '[1e-2]'; field.dispatchEvent(new Event('input'));
+    button('derive').click();
+    expect(container.querySelector('.pid-message')!.textContent).toContain('visual field');
+    expect((container.querySelector('.pid-lesson') as HTMLElement).hidden).toBe(true);
+  });
+  it('keeps native scientific notation on controller fields', () => {
+    const { container, button, numeric } = visit();
+    numeric('kp', '1e-2'); numeric('ki', '0'); numeric('kd', '0'); button('derive').click(); button('calculate').click();
+    expect(container.querySelector('.pid-pending')!.textContent).toContain('0.01');
+    expect((container.querySelector('.pid-lesson') as HTMLElement).hidden).toBe(false);
+  });
+  it('rejects nonzero native literals that underflow', () => {
+    const { container, button, numeric } = visit(); numeric('kp', '1e-999'); button('derive').click();
+    expect(container.querySelector('.pid-message')!.textContent).toContain('too small');
+    expect((container.querySelector('.pid-lesson') as HTMLElement).hidden).toBe(true);
+  });
   it('keeps old memory unchanged until committing a checked sample', () => {
     const { container, button } = visit(); button('derive').click();
     const panel = container.querySelector('.pid-memory')!; const before = panel.textContent;

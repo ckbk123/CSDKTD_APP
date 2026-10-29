@@ -1,5 +1,15 @@
 const fail = (message: string): never => { throw new Error(message); };
 
+/** Native numeric controls have a separate grammar from visual mathematics. */
+export function parseNumericLiteral(raw: string): number {
+  const source = raw.trim();
+  if (source.length > 160 || !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(source)) fail('Enter a finite numeric value.');
+  const value = Number(source);
+  if (!Number.isFinite(value)) fail('Enter a finite numeric value.');
+  if (value === 0 && /[1-9]/.test(source.split(/[eE]/)[0])) fail('A nonzero number is too small to represent.');
+  return value || 0;
+}
+
 /** Finite real arithmetic only; accepts both grouped and compact visual fractions. */
 export function parseScalar(raw: string): number {
   if (!raw.trim()) fail('Complete each numeric sample.');
@@ -7,6 +17,7 @@ export function parseScalar(raw: string): number {
   if (/[\d.]\s+[\d.]/.test(raw)) fail('Separate samples with commas, or use an arithmetic operator.');
   let source = raw.replace(/\\(?:left|right)/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
     .replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/').replace(/\s/g, '');
+  if (/[eE]/.test(source)) fail('The visual field treats e and E as symbols. Write decimal samples here; numeric controller fields also accept scientific notation.');
   let cursor = 0;
   const fraction = (depth: number): string => { cursor += 5; return `((${argument(depth + 1)})/(${argument(depth + 1)}))`; };
   const argument = (depth: number): string => {
@@ -21,8 +32,11 @@ export function parseScalar(raw: string): number {
     if (depth > 8) fail('Use at most 8 levels of grouping.');
     let output = '';
     while (cursor < source.length && source[cursor] !== '}') {
-      if (source.startsWith('\\frac', cursor)) output += fraction(depth);
-      else if (source[cursor] === '{') { cursor++; output += `(${group(depth + 1, true)})`; }
+      if (source.startsWith('\\frac', cursor)) {
+        if (/[0-9.]$/.test(output)) fail('Write an explicit + or × before an adjacent fraction.');
+        output += fraction(depth);
+      }
+      else if (source[cursor] === '{') fail('Use visible parentheses to group this expression.');
       else output += source[cursor++];
     }
     if (closing) { if (source[cursor++] !== '}') fail('Close each fraction/group.'); }
@@ -30,7 +44,7 @@ export function parseScalar(raw: string): number {
     return output;
   };
   source = group(0, false);
-  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|[+*/()-]/g) ?? [];
+  const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|[+*/()-]/g) ?? [];
   if (!tokens.length || tokens.join('') !== source || tokens.length > 64) fail('Use real numbers, fractions and + − × ÷ only (at most 64 tokens per sample).');
   let at = 0;
   const finite = (value: number) => {
@@ -44,7 +58,7 @@ export function parseScalar(raw: string): number {
     if (token === '(') { const value = sum(depth + 1); if (tokens[at++] !== ')') fail('Close each parenthesis.'); return value; }
     if (!token || !/^[\d.]/.test(token)) fail('Complete each numeric sample.');
     const value = finite(Number(token));
-    if (value === 0 && /[1-9]/.test(token.split(/[eE]/)[0])) fail('A nonzero number is too small to represent.');
+    if (value === 0 && /[1-9]/.test(token)) fail('A nonzero number is too small to represent.');
     return value;
   };
   const product = (depth: number): number => {

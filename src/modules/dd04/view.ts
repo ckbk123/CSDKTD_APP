@@ -1,7 +1,7 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
 import { calculate, derive, initialize, type DerivativeRule, type InitialMemory, type IntegralRule, type Memory, type Model, type Step } from './math';
-import { parseErrors, parseScalar } from './input';
+import { parseErrors, parseNumericLiteral } from './input';
 import { numberText as n, numberTex as t, polynomialTex as polynomial } from './format';
 import { samplePlots } from './plots';
 import './style.css';
@@ -28,7 +28,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
         <label>Primary calculation view<select data-choice="form"><option value="position">Positional P + I + D</option><option value="incremental">Incremental Δu</option></select></label>
       </div>
       <div class="pid-errors"></div>
-      <p class="pid-help">Enter 1–40 error values for e[1], e[2], …, separated by commas. Fractions and finite real arithmetic are supported. Use the fraction button or ordinary keys; no programming notation is needed.</p>
+      <p class="pid-help">Enter 1–40 error values for e[1], e[2], …, separated by commas. Decimals, fractions, visible parentheses and finite real arithmetic are supported. Write 0.01 here; e/E exponent notation is available in the numeric controller fields. Use explicit + or × before an adjacent fraction.</p>
     </section>
     <section class="pid-card">
       <h3>2. Specify the memory before k = 1</h3>
@@ -88,7 +88,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const field = input(name);
     if (!field.value.trim() || !Number.isFinite(field.valueAsNumber)) throw new Error(`Enter a finite value for ${name}.`);
     // Validate the literal as well: native number inputs can silently underflow.
-    return parseScalar(field.value);
+    return parseNumericLiteral(field.value);
   };
   for (const field of root.querySelectorAll<HTMLInputElement>('[data-number]:not([data-number="prediction"])')) field.addEventListener('input', invalidate, { signal });
   for (const select of root.querySelectorAll<HTMLSelectElement>('[data-choice]')) select.addEventListener('change', () => { syncRules(); invalidate(); }, { signal });
