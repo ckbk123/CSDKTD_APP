@@ -75,8 +75,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
   }
   function render(): void {
     if (signal.aborted || dirty) return;
-    lesson.replaceChildren();
     const cs = conditions(family), interval = intersect(cs), current = at(family, selectedK);
+    lesson.replaceChildren();
     const inspect = el('section'); inspect.append(el('h3', '1. Inspect the coefficient rows'));
     const gain = el('div'); gain.className = 'jury-actions';
     labelInput(gain, 'Selected K (decimal or fraction)', 'gain', exact(selectedK)); gain.append(button('Inspect K', 'gain'));
@@ -153,6 +153,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   function apply(): void {
     if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error('Complete the polynomial and correct its notation before applying it.');
     const next = parseFamily(draft.latex);
+    at(next, selectedK);
     family = next; dirty = false; revealed = false; sweep = null; activeCondition = 0;
     feedback.textContent = 'Polynomial applied. Fill the reduced row and predict the interval.'; render();
   }
@@ -166,7 +167,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       } else if (action === 'gain') { const nextK = parseNumber(value('gain')); at(family, nextK); selectedK = nextK; render(); feedback.textContent = `Now inspecting K = ${exact(selectedK)}.`; }
       else if (action === 'reveal') { revealed = !revealed; render(); }
       else if (action.startsWith('condition-')) { activeCondition = Number(action.slice(10)); render(); }
-      else if (action === 'boundary') { selectedK = parseNumber(target.dataset.value!); render(); feedback.textContent = `Exact boundary K = ${exact(selectedK)} selected.`; }
+      else if (action === 'boundary') { const nextK = parseNumber(target.dataset.value!); at(family, nextK); selectedK = nextK; render(); feedback.textContent = `Exact boundary K = ${exact(selectedK)} selected.`; }
       else if (action === 'row') {
         const current = at(family, selectedK), good = cmp(parseNumber(value('row0')), current.row[0]) === 0 && cmp(parseNumber(value('row1')), current.row[1]) === 0;
         root.querySelector('[data-row-feedback]')!.textContent = good ? 'Both entries are correct.' : 'Try again: leading = 1 − a², constant = b(1 − a). Substitute the displayed a and b; fractions are accepted.';
