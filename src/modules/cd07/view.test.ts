@@ -65,6 +65,13 @@ describe('temporary exercise flow (mocked editor; not browser evidence)', () => 
     visit(); set('Zero-intercept marker t₀ (s)', '1e-999'); button('Plot response curve').click(); expect(feedback()).toContain('nonzero');
     button('Baseline model').click(); set('Predicted Kp (optional)', '1e-999'); reveal(); expect(feedback()).toContain('nonzero'); expect(button('Compare controllers').disabled).toBe(true);
   });
+  it('rejects an invalid optional numeric draft whose native value is empty', () => {
+    visit(); reveal(); button('Compare controllers').click();
+    set('Predicted Kp (optional)', '');
+    Object.defineProperty(field('Predicted Kp (optional)'), 'validity', { value: { badInput: true } });
+    button('Check prediction and reveal rule').click();
+    expect(feedback()).toContain('finite'); expect(button('Compare controllers').disabled).toBe(true); expect(document.querySelector('table')).toBeNull();
+  });
   it('clears an invalid measurement and can restore the true tangent', () => {
     visit(); set('Plateau-intercept marker t₁ (s)', '.5'); button('Plot response curve').click(); expect(document.querySelector('svg')).toBeNull();
     button('Use model tangent').click(); expect(field('Plateau-intercept marker t₁ (s)').value).toBe('2.5'); expect(document.querySelector('svg')).not.toBeNull();

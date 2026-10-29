@@ -64,8 +64,8 @@ was repeated under 24.19.0 before the recorded validation).
 
 - `npm ci`: passed under Node 24.19.0; no package/lockfile/dependency change.
 - `npm run check`: passed.
-- `npm test -- src/modules/cd07`: **125 passed in 4 files**.
-- `npm test`: **4,817 passed in 223 files**.
+- `npm test -- src/modules/cd07`: **126 passed in 4 files**, including optional native-number `badInput` regression.
+- `npm test`: **4,818 passed in 223 files** after that correction.
 - `npm run build`: passed; existing MathLive large-chunk advisory remains.
 - `python src/modules/cd07/reference-fixtures.py`: both independent fixture runs completed.
 - `git diff --check`: passed.
@@ -83,6 +83,7 @@ against a temporary local Vite preview (no deployment), dark system theme:
 - Baseline PID yields about 81.725% overshoot. Manual Kp=2.4, Ti=2 s, Td=0.25 s yields about 1.3862%, observed entry 2.3716 s and peak effort 26.4; baseline fails / manual passes the displayed finite-window requirements. Changed K=2, τ=3, L=1 and PI/P variants also computed.
 - Actual shared fraction-button entry of 1/2, incomplete numerator/denominator feedback and recovery; power-button/ordinary-key entry of 2¹ and subsequent computation; direct typing, Tab, Systems keyboard, Escape→preset→solve and keyboard dismissal.
 - Unsupported e notation was rejected with no stale plots; native `1e-999` was rejected as nonzero underflow with no stale table. Native `1e-2` and intentional `0e-999` were accepted. Short/weak-controller traces reported unresolved band entry.
+- Follow-up while validating CD02: native optional prediction `e` has an empty native value but `validity.badInput=true`. CD07 now checks that flag before deciding a prediction is intentionally blank, routes it through the shared reader and clears the checked result. Actual 1280×900 and 390×844 checks confirmed finite-number feedback, no old comparison and a disabled compare action; reset and baseline/manual refinement recovery passed. The updated build, 126 module tests and 4,818 full tests passed. The unchanged coordination helper retains its completed 32-test evidence.
 - Reset with an open math keyboard restored baseline, unchecked assumptions, PID selection, blank prediction and hidden results. Leave/reopen did the same. Three rapid cached-bundle navigation cycles left zero CD07 roots and zero math fields on the catalogue; no stale view appeared. Deferred-load/failure resource tests separately cover controlled late resolution.
 - Phone document client/scroll widths **375/375 px**, no page-wide overflow. Long equations scroll locally. Phone plot labels were enlarged and rechecked. Fractions, powers and controller equations rendered with bundled font assets; captured browser warning/error logs were empty.
 - Desktop/phone screenshots are task deliverables outside Git. No mocked-editor test is presented as browser evidence. Light theme, other browsers/OSes and forced slow-network loading were not separately exercised.

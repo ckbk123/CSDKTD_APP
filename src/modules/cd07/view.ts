@@ -90,7 +90,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       if (!confirm.checked) throw new Error('Confirm the rule assumptions first.');
       drawCurve(); const p = plant!, m = measurement(p), selected = kind.value as Kind, next = tune(p, m, selected);
       let message = 'Rule revealed. Compare the suggested controller with a manual refinement.';
-      if (prediction.value.trim()) {
+      if (prediction.value.trim() || prediction.validity.badInput) {
         const predicted = readNumericInput(prediction, 'predicted Kp');
         if (predicted < .001 || predicted > 500) throw new Error('Predicted Kp must be from 0.001 to 500.');
         message = Math.abs(predicted - next.kp) <= .02 * next.kp ? 'Prediction agrees within 2%. Now test the controller.' : `Prediction differs: your Kp = ${fmt(predicted)}, rule Kp = ${fmt(next.kp)}. Check the measured delay, slope and plant gain.`;
