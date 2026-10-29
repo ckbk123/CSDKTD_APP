@@ -86,7 +86,7 @@ A hard token limit can stop execution before a final cleanup or handoff. Periodi
 
 ## Reserve shared browser QA
 
-Compilations, mathematical unit tests and private worktree edits can run independently. Browser viewport/focus controls may be shared by local chats. Reserve browser QA before using the browser, resizing it or capturing module evidence:
+Compilations, mathematical unit tests and private worktree edits can run independently. The in-app browser and its viewport may be shared by local chats. Reserve browser QA before using that shared browser, resizing it or capturing its module evidence:
 
 ```text
 node scripts/agent-claim.mjs qa-claim --module DP02 --token <token>
@@ -99,6 +99,8 @@ node scripts/agent-claim.mjs qa-release --module DP02 --token <token>
 ```
 
 Browser reservations also have no automatic age expiry. If a chat is interrupted while holding one, the integration owner must verify that the previous work has stopped before recovery. Do not infer this from a timestamp alone.
+
+**Human-authorized Firefox fallback (29 October 2026):** if the in-app queue delays verification, open Firefox against your own worktree's production preview instead of waiting indefinitely. Use your own window/profile/tab and preserve other agents' and the user's browser state. An independent Firefox session does not require the in-app reservation; release an unused in-app reservation/waiter before switching and notify the coordinator. Separate profiles do not isolate the computer's mouse/keyboard focus: coordinate native UI actions among Firefox testers, without occupying or interrupting another in-app session. Use supported browser or native-app tools and record the actual browser and checks in STATUS; installed Firefox alone is not verification evidence. If a required control cannot be exercised, report that specific limitation and continue useful work. Firefox 159.0 was found at `C:\Program Files\Mozilla Firefox\firefox.exe` on this machine; inspect current supported controls before testing.
 
 ## One PR and exact submission per module
 
