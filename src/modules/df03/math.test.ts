@@ -34,6 +34,8 @@ describe('DF03 independent unit-circle and feedback mathematics', () => {
     const a = analyzeFrequency(createModel({ denominator: [1, 0], numerator: [1] }), .1);
     expect(a.gain.continuum).toBe(true); expect(a.gain.points).toEqual([]); expect(a.gainMargins[0].factor).toBe(1);
     expect(a.bandwidth.status).toBe('undefined'); // full pole -1 is on the disk.
+    const touch = analyzeFrequency(createModel({ denominator: [1, 0, .5], numerator: [.5, 0] }), .1);
+    expect(touch.gain.points).toHaveLength(1); expect(touch.gain.points[0].angle).toBe(Math.PI / 2); expect(touch.gain.points[0].kind).toBe('touch');
   });
   it('includes zero/Nyquist gain endpoints and signed phase margins', () => {
     const a = analyzeFrequency(createModel({ denominator: [1, -.5], numerator: [.5] }), .1);
@@ -70,6 +72,17 @@ describe('DF03 independent unit-circle and feedback mathematics', () => {
     const m = createModel({ denominator: [1, -.5], numerator: [.5] });
     expect(analyzeFrequency(m, .1).bandwidth.status).toBe('beyond'); // H=.5/z, constant magnitude.
   });
+  it('lists both bandwidth threshold intersections and selects the first downward crossing', () => {
+    // H=.5/(z²-.25): |Q|²=1.5625-c². Both endpoints have gain2/3.
+    const a = analyzeFrequency(createModel({ denominator: [1, 0, -.75], numerator: [.5] }), .1);
+    const c = Math.sqrt(1.5625 - .5625 / DROP_SQUARED);
+    expect(a.bandwidth.points).toHaveLength(2); expect(a.bandwidth.points[0].angle).toBeCloseTo(Math.acos(c), 13);
+    expect(a.bandwidth.points[1].angle).toBeCloseTo(Math.PI - Math.acos(c), 13); expect(a.bandwidth.angle).toBe(a.bandwidth.points[0].angle);
+  });
+  it('does not invent a negative-real continuum from an entirely positive real response', () => {
+    const a = analyzeFrequency(createModel({ denominator: [1, 3, 1], numerator: [1, 0] }), .1);
+    expect(a.phase.continuum).toBe(false); expect(a.phase.points).toHaveLength(0);
+  });
   it('retains all closed poles including oscillatory and repeated poles', () => {
     const complex = roots([1, -1, .5]); expect(complex).toEqual([{ re: .5, im: .5 }, { re: .5, im: -.5 }]);
     expect(roots([1, -1, .25])).toEqual([{ re: .5, im: 0 }, { re: .5, im: 0 }]);
@@ -93,6 +106,17 @@ describe('DF03 independent unit-circle and feedback mathematics', () => {
     const hidden = createModel({ denominator: [1, -2, 0], numerator: [.1, -.2] });
     expect(hidden.stability).toBe('outside'); expect(sampledResponse(hidden, .1, 10).limit).toBeNull();
     expect(() => sampledResponse(createModel({ denominator: [1, 0], numerator: [100] }), .1, 20)).toThrow('no partial');
+  });
+  it('rejects an unstable cancelled-mode roundoff leak and keeps long stable complex responses', () => {
+    // Exact unreduced transfer cancels z-2, so y[k]=(1/9)(1-.1^k).
+    // The full hidden pole2 is retained; direct recurrence roundoff must not
+    // masquerade as an actual growing zero-state response over a long horizon.
+    const m = createModel({ denominator: [1, -2.2, .4], numerator: [.1, -.2] });
+    const short = sampledResponse(m, .1, 10);
+    short.values.forEach((y, k) => expect(y).toBeCloseTo((1 - .1 ** k) / 9, 11));
+    expect(() => sampledResponse(m, .1, 100)).toThrow('Roundoff amplification');
+    const stable = createModel({ denominator: [1, -1.4, .9], numerator: [.4, 0] });
+    expect(sampledResponse(stable, .1, 2000).values.at(-1)).toBeCloseTo(4 / 9, 12);
   });
   it('changes seconds axes and response times with T while keeping the same discrete loop poles', () => {
     const m = baseline(), a = analyzeFrequency(m, .1), b = analyzeFrequency(m, .2);

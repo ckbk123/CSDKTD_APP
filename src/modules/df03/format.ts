@@ -7,7 +7,7 @@ export function number(value: number | null, digits = 8): string {
 /** Round-trip decimal for the visual parser, without programming exponents. */
 export function decimal(value: number): string {
   const text = value.toString(); if (!/[eE]/.test(text)) return text;
-  const negative = value < 0 ? '-' : '', [mantissa, exponent] = text.replace('-', '').split('e'), digits = mantissa.replace('.', '');
+  const negative = value < 0 ? '-' : '', [mantissa, exponent] = Math.abs(value).toString().split('e'), digits = mantissa.replace('.', '');
   const point = (mantissa.indexOf('.') < 0 ? mantissa.length : mantissa.indexOf('.')) + Number(exponent);
   return negative + (point <= 0 ? '0.' + '0'.repeat(-point) + digits : point >= digits.length ? digits + '0'.repeat(point - digits.length) : digits.slice(0, point) + '.' + digits.slice(point));
 }

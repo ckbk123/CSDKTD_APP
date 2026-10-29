@@ -143,6 +143,7 @@ export function analyzeFrequency(model: Model, T: number): FrequencyAnalysis {
       if (midpoint.status === 'finite' && midpoint.value!.re < 0) phase.intervals.push({ from, to,
         fromIncluded: frequency(model, from, T).status === 'finite', toIncluded: frequency(model, to, T).status === 'finite' });
     }
+    phase.continuum = phase.intervals.length > 0;
   }
   const phaseMargins = gain.points.map(p => {
     let degrees = 180 + p.value.phase!;
@@ -173,14 +174,27 @@ export function sampledResponse(model: Model, T: number, samples: number): Respo
   samplePeriod(T); bounded(samples, 10, 2000, 'Number of response intervals');
   if (!Number.isInteger(samples)) throw new Error('Use an integer number of response intervals.');
   const values = [0], order = model.closed.length - 1, padded = Array(model.closed.length - model.numerator.length).fill(0).concat(model.numerator) as number[];
+  // Bound amplification of local arithmetic using |h[l]| <= rho^l for order1,
+  // and |h[l]| <= (l+1)rho^l for order2 (sum of the two modal monomials).
+  // Inflate the computed radius for root roundoff. This conservative numerical
+  // guard rejects cancellation-driven trajectories before they look plausible.
+  const radius = Math.max(...model.poles.map(p => Math.hypot(p.re, p.im))) + Math.sqrt(ROUND) * Math.max(1, ...model.closed.map(Math.abs));
+  const weights = Array.from({ length: samples + 1 }, (_, lag) => (order === 2 ? lag + 1 : 1) * radius ** lag), localErrors = [0];
   for (let k = 1; k <= samples; k++) {
-    let value = 0;
-    for (let i = 1; i <= order; i++) value += -model.closed[i] * (values[k - i] ?? 0) + (k >= i ? padded[i] : 0);
+    let value = 0, absoluteTerms = 0;
+    for (let i = 1; i <= order; i++) {
+      const feedback = -model.closed[i] * (values[k - i] ?? 0), input = k >= i ? padded[i] : 0;
+      value += feedback + input; absoluteTerms += Math.abs(feedback) + Math.abs(input);
+    }
     if (!Number.isFinite(value) || Math.abs(value) > 1e12) throw new Error('The sampled response exceeds magnitude1e12. Reduce the horizon or change the loop; no partial response metrics are reported.');
+    localErrors.push(ROUND * absoluteTerms);
+    let errorBound = 0;
+    for (let j = 1; j <= k; j++) if (localErrors[j] !== 0) errorBound += localErrors[j] * weights[k - j];
+    if (!Number.isFinite(errorBound) || errorBound > 1e-7 * Math.max(1, Math.abs(value))) throw new Error('Roundoff amplification makes this response numerically unresolved. Reduce the horizon or separate nearly cancelling modes; no partial response metrics are reported.');
     values.push(value);
   }
   const dc = frequency({ numerator: model.numerator, denominator: model.closed }, 0, T);
-  const limit = model.stability === 'inside' && dc.status === 'finite' ? dc.value!.re : null;
+  const limit = model.stability === 'inside' && (dc.status === 'finite' || dc.status === 'zero') ? dc.value!.re : null;
   let overshoot: number | null = null, rise: number | null = null, settlingCandidate: number | null = null;
   if (limit !== null && limit !== 0) {
     const relative = values.map(y => y / limit), ten = relative.findIndex(y => y >= .1), ninety = relative.findIndex(y => y >= .9);
