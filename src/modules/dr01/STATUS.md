@@ -45,8 +45,8 @@ Course context read: atlas DR01, discrete source audit DR1 and E09's finite-sequ
 Run in this isolated worktree with Node 24.22.1 (explicit bundled runtime and npm CLI; runtime directory on PATH):
 
 - `npm run check`: passed.
-- `node node_modules/vitest/vitest.mjs run src/modules/dr01`: 57/57 tests passed across three files.
-- `npm test`: 99/99 tests passed across nine files.
+- `node node_modules/vitest/vitest.mjs run src/modules/dr01`: 58/58 tests passed across three files.
+- `npm test`: 100/100 tests passed across nine files.
 - `npm run build`: passed, including its TypeScript check. The pre-existing shared MathLive chunk-size warning remains; all 20 WOFF2 font assets are emitted locally.
 - `git diff --check`: passed. All tracked changes are confined to this module folder.
 
@@ -79,3 +79,5 @@ PR: https://github.com/ckbk123/CSDKTD_APP/pull/1 (same preserved branch and work
 ## Visual scientific-notation review return
 
 After the compact-fraction submission at 11be2b2, the coordinator independently showed that MathLive displays typed 1e-2 as a mathematical expression with the letter e, while the parser silently interpreted it as .01. The visual lexer now rejects e/E exponent literals with a concrete instruction to use a decimal or textbook ×10ⁿ. Numeric HTML controls retain their legitimate scientific entry; typeset numerical outputs still use ×10ⁿ. Underflow regression inputs now use equivalent supported decimal products, preserving the distinction between representable 10^-312 and normalization below floating-point range. Additional independent regressions cover ambiguous e/E forms, supported powers of ten and numeric-control behavior. Current module tests: 57/57; full application tests: 99/99. A new exclusive QA session on the rebuilt production preview passed: ordinary typing of 1e-2 and 1E-2 produced the specific visual-notation error with results hidden; the power button built 10^-2 and computed .01,0,0; a numeric T entry of 1e-2 kept valid sample times 0,.01,.02. At a 390x844 override, clientWidth and scrollWidth were both 375; reset hid results and console warnings/errors were empty. The viewport was restored, tab closed, preview stopped and QA released. The coordinator reopened the same claim after the prepared correction and browser evidence were preserved. This correction is committed on the same PR #1 branch and original worktree; no rebase or replacement contribution is used. The earlier frozen 11be2b2 is not claimed to contain this later correction. New module DP03 was checkpointed at 504d7d9 (mathematical core plus first workspace) and suspended before this enabled priority resubmission; no DP03 implementation is underway concurrently. Its interface verification remains incomplete. Resume it after this corrected PR is resubmitted.
+
+Semantic-gate completion: four equivalent negative fraction forms (outer minus, grouped outer minus, negative numerator and negative denominator) are independently checked against the sequence -.5,0,0,... . The updated source guide was read without rebasing this branch. Final module/application totals are 58/100 tests.

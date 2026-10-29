@@ -19,6 +19,11 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
     expect(parseTransform(String.raw`\frac1\frac23`)).toEqual({ b: [1.5], a: [1] });
     expect(() => parseTransform(String.raw`\frac1`)).toThrow(/fraction/);
   });
+  it('preserves unary minus inside or outside grouped and mixed fractions', () => {
+    for (const expression of [String.raw`-\frac12`, String.raw`\frac{-1}2`, String.raw`-\left(\frac12\right)`, String.raw`\frac{1}{-2}`]) {
+      expect(values(expression)).toEqual([-.5, 0, 0, 0, 0, 0, 0, 0]);
+    }
+  });
   it('computes changed sign, gain, and a two-sample delay', () => {
     expect(values('2z^{-2}/(1+.5z^{-1})')).toEqual([0, 0, 2, -1, .5, -.25, .125, -.0625]);
   });
