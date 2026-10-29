@@ -35,6 +35,8 @@ function svgNode<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<str
 }
 function plane(modes: readonly Mode[], selected: number): HTMLElement {
   const figure = el('figure');
+  const viewport = el('div', undefined, 'ds-plot-scroll');
+  viewport.tabIndex = 0; viewport.setAttribute('role', 'region'); viewport.setAttribute('aria-label', 'Z-plane plot; scroll horizontally if needed');
   const svg = svgNode('svg', { viewBox: '0 0 400 340', role: 'img', 'aria-label': 'All eigenvalues in the z plane, with the unit circle' });
   const x = (v: number) => 200 + v * 64, y = (v: number) => 162 - v * 64;
   svg.append(svgNode('line', { x1: 36, y1: 162, x2: 364, y2: 162, stroke: 'var(--line)' }), svgNode('line', { x1: 200, y1: 22, x2: 200, y2: 302, stroke: 'var(--line)' }), svgNode('circle', { cx: 200, cy: 162, r: 64, fill: 'none', stroke: 'var(--muted)', 'stroke-dasharray': '4 4' }));
@@ -52,12 +54,14 @@ function plane(modes: readonly Mode[], selected: number): HTMLElement {
       svg.append(svgNode('text', { x: cx + 9, y: cy - 10 }, String(index + 1)));
     }
   });
-  figure.append(svg, el('figcaption', '× eigenvalue; row number identifies the pole. A dashed ring marks an output-hidden mode. Complex rows include both conjugates.'));
+  viewport.append(svg); figure.append(viewport, el('figcaption', '× eigenvalue; row number identifies the pole. A dashed ring marks an output-hidden mode. Complex rows include both conjugates.'));
   return figure;
 }
 function sequence(mode: Mode, period: number, horizon: number): HTMLElement {
   const data = samples(mode, period, horizon), figure = el('figure');
-  const svg = svgNode('svg', { viewBox: '0 0 480 340', role: 'img', 'aria-label': 'Free response: first coordinate as stems, state norm as a dashed line' });
+  const viewport = el('div', undefined, 'ds-plot-scroll');
+  viewport.tabIndex = 0; viewport.setAttribute('role', 'region'); viewport.setAttribute('aria-label', 'Free-response plot; scroll horizontally if needed');
+  const svg = svgNode('svg', { class: 'ds-sequence', viewBox: '0 0 480 340', role: 'img', 'aria-label': 'Free response: first coordinate as stems, state norm as a dashed line' });
   const minimum = Math.min(0, ...data.map(s => s.first)), maximum = Math.max(1, ...data.map(s => s.norm));
   const bottom = minimum < 0 ? minimum * 1.1 : -.08 * maximum, top = maximum * 1.1;
   const x = (k: number) => 65 + k / horizon * 385, y = (v: number) => 290 - (v - bottom) / (top - bottom) * 245;
@@ -67,7 +71,7 @@ function sequence(mode: Mode, period: number, horizon: number): HTMLElement {
   svg.append(svgNode('text', { x: 72, y: 22 }, 'State amplitude / norm (unit initial norm)'), svgNode('text', { x: 290, y: 330 }, 'k (samples); t = kT seconds'));
   for (const s of data) svg.append(svgNode('line', { x1: x(s.k), y1: y(0), x2: x(s.k), y2: y(s.first), stroke: 'var(--accent)', 'stroke-width': 1.5 }), svgNode('circle', { cx: x(s.k), cy: y(s.first), r: 2.4, fill: 'var(--accent)' }));
   svg.append(svgNode('polyline', { points: data.map(s => `${x(s.k)},${y(s.norm)}`).join(' '), fill: 'none', stroke: 'var(--text)', 'stroke-dasharray': '5 4', 'stroke-width': 2 }));
-  figure.append(svg, el('figcaption', 'Indigo stems: first real state coordinate. Dashed line: full state norm of one representative block. These are free-response samples, with input zero; a finite plot alone does not prove stability.'));
+  viewport.append(svg); figure.append(viewport, el('figcaption', 'Indigo stems: first real state coordinate. Dashed line: full state norm of one representative block. These are free-response samples, with input zero; a finite plot alone does not prove stability.'));
   return figure;
 }
 

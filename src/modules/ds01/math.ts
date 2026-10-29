@@ -16,6 +16,10 @@ export function parsePole(latex: string): Complex {
   if (!latex.trim()) throw new Error('Enter a pole, such as −0.8 or 0.6 + 0.8j.');
   if (latex.length > 200) throw new Error('Use a short numeric pole (at most 200 characters).');
   let source = latex.replace(/\\(?:left|right)/g, '')
+    // Pasted numeric text can retain an upright font inside a fraction. Font
+    // commands are removable only around a numeric literal, never arbitrary algebra.
+    .replace(/\\(?:mathrm|mathit|mathbf|mathsf|mathtt|text)\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}/g, '$1')
+    .replace(/\\mathrm([0-9])/g, '$1')
     .replace(/\\(?:mathrm|operatorname)\{([ij])\}/g, '$1')
     .replace(/\\(?:,|;|!|quad|qquad)|\s/g, '')
     .replace(/\\(?:cdot|times)/g, '*').replace(/−/g, '-');

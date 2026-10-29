@@ -12,8 +12,11 @@ describe('bounded visual complex-pole grammar', () => {
     [String.raw`\frac35+\frac45j`, .6, .8],
     [String.raw`-\left(\frac12\right)`, -.5, 0], [String.raw`\left(-\frac12\right)`, -.5, 0],
     ['-(0.6+0.8j)', -.6, -.8], ['-(-(.8))', .8, 0], ['((((.8))))', .8, 0], ['-(j)', 0, -1],
+    [String.raw`\frac{\mathrm{1}}{2}`, .5, 0], [String.raw`-\frac{\mathrm{1}}{\mathrm{2}}`, -.5, 0],
+    [String.raw`\mathrm1`, 1, 0], [String.raw`\mathrm{0.6}+\mathrm{0.8}j`, .6, .8],
   ])('parses %s', (text, re, im) => expect(parsePole(text)).toEqual({ re, im }));
   it.each(['', '()', '-()', '(())', '(((((.8)))))', '-(.6)+.8j', 'NaN', 'Infinity', '3', '2+2j', 'z^2', '0.8^k', '0.2+0.3', 'j+j', '1/2', 'sin(1)', '1+', '+', String.raw`\frac{1}{0}`, String.raw`\frac10`, String.raw`\frac123`, String.raw`\frac{1}{\frac12}`, String.raw`\placeholder{}`, '1e-2', '1E-2', '1**j', '0.5jtrash', '0.8*', 'x'.repeat(201)])('rejects %s', text => expect(() => parsePole(text)).toThrow());
+  it.each([String.raw`\mathrm{1e-2}`, String.raw`\text{1e2}`])('rejects algebra inside a numeric font wrapper: %s', text => expect(() => parsePole(text)).toThrow());
 });
 
 describe('independent modal fixtures', () => {

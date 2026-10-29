@@ -1,69 +1,73 @@
 # DS01 implementation status
 
-- **Stage:** in-progress (browser verification pending)
-- **Assessed:** 2026-10-29; starting revision `c5d1135`; working implementation checkpoints `70f0889`, `b94d22c`
-- **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`)
-- **Branch/worktree:** `codex/ds01-unit-circle-7b29f0e3`; `C:\Users\baokh\.codex\worktrees\ds01-unit-circle\CSDKTD APP`
-- **PR:** [#10](https://github.com/ckbk123/CSDKTD_APP/pull/10), draft while browser evidence is pending; attached to this worker chat.
-- **Ownership:** `src/modules/ds01/**`; [accepted contract](TASK.md)
-- **Review:** no independent technical review claimed; integration owner reviews the submitted branch.
+- **Stage:** implemented
+- **Assessed:** 2026-10-29, against [TASK.md](TASK.md); starting revision `c5d1135`.
+- **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
+- **Owned scope:** `src/modules/ds01/**`; metadata, shell, shared APIs and dependencies preserved.
+- **Branch/worktree:** `codex/ds01-unit-circle-7b29f0e3`; `C:\Users\baokh\.codex\worktrees\ds01-unit-circle\CSDKTD APP`.
+- **PR:** [#10](https://github.com/ckbk123/CSDKTD_APP/pull/10), attached to this chat. Exact delivery SHA and reservation state are recorded by the shared claim helper and PR head.
+- **Review:** independent coordinator review/integration pending; no `verified` stage is claimed.
 
-## Requirement audit
+## Requirement-to-evidence audit
 
-The starting workspace was an empty synchronous mount and had no module tests. Metadata and the shell equation preview were preserved. This record supersedes the original scaffold assessment.
+The starting workspace was empty and had no module tests. The accepted exercise is now implemented for the bounded model below.
 
-| Accepted requirement | Current implementation and evidence | Remaining action |
-|---|---|---|
-| Editable/selectable poles and z^k modes | `workspace.ts`: per-row visual equation fields, selected-mode radio, T and sample-horizon controls; computed unit-circle and free-response plots | Real-browser editing/keyboard checks |
-| Compare .8, -.8, 1 and -1 | `math.ts` radius/angle, exact Jordan power identity evaluated numerically; `math.test.ts` independently derived geometric and alternating samples | Browser check baseline/changed inputs |
-| Strict disk stability versus bounded free response | Internal verdict distinguishes decay, bounded nondecay, unbounded growth and near-boundary uncertainty; BIBO verdict is a separate zero-state channel question | Browser result inspection |
-| Repeated boundary modes | Two independent copies versus length-2/3 Jordan chains; binomial factors, explicit real matrices, sample table and polynomial-growth explanation | Browser comparison |
-| Eigenvalues versus reduced TF, including hidden modes | Constructed parallel real SISO realization: full A retains all blocks, a hidden block has C=0; visible G(z) omits that block; separate internal/BIBO verdicts | Browser hidden-mode experiment |
-| Attempt, intermediate steps, reveal, variation | Prediction selector, reveal button, computed radii/angles, J^k identity, state-block inspection and eight experiments; changed inputs hide stale results | Browser usability check |
-| Bounded validation and useful failures | Local tested complex-literal parser; finite numbers, size/radius/T/horizon bounds, distinct/conjugate-row rules, no eval/CAS; uncertainty near unit circle | Browser empty/unsupported-input feedback |
-| Lifecycle and module isolation | Synchronous mount, deferred browser-only equation import with abort/disposal guard; input and row-listener cleanup; six mocked wiring tests | Actual reset/reopen/fast navigation/font checks |
-| Scoped style and responsive controls | Only selectors beneath `[data-module="DS01"]`; shared Indigo/slate tokens, labelled numeric/keyboard controls, table/equation scroll containers | Narrow/light/dark browser checks |
-| Project integration and submission | Owned files only; check, tests and build pass at `b94d22c`; claim records worktree/branch/checkpoint | Finish QA, final checks/commit, push branch, submit claim |
+| TASK requirement | Implementation and evidence |
+|---|---|
+| Selectable poles and computed z^k modes | `workspace.ts`: visual complex-pole fields, structure and output-visibility controls, selected-mode radio, T/horizon inputs, linked pole/sequence plots and sample table. Real browser edited and calculated changed poles. |
+| Compare .8, -.8, 1, -1 | `math.test.ts`: independently derived geometric/alternating samples and radius classifications. Browser baseline (-.8) samples were 1,-.8,.64,-.512,.4096; +/-1 remained bounded without decay. |
+| Strict disk versus boundary/BIBO stability | Separate internal-state and zero-state channel verdicts. Boundary simple/independent modes are bounded but their visible channel is not BIBO stable. Near-circle uncertain data do not receive a strict verdict. Browser checked all cases. |
+| Repeated boundary modes | Explicit two independent simple copies versus Jordan chains of length 2/3. Computed binomial growth, full block norm, real matrices and derivation. Browser confirmed independent +1 bounded, Jordan +1/-1 unbounded. |
+| Eigenvalues versus reduced TF; retain hidden modes | Constructed parallel real SISO realization. Hidden blocks have C=0 while A retains their eigenvalues. Computed G(z) omits only those output-hidden terms. Browser hidden 1.2 experiment: internal growth, BIBO-stable visible channel. |
+| Prediction, intermediate steps, reveal and variation | Prediction selector, reveal feedback, radii/angles, exact Jordan identity, matrix inspection, computed plots, sample table and eight experiments. Input changes discard stale results. Browser prediction and changed-data checks passed. |
+| Supported grammar, finite bounds and useful failures | Independently tested local parser, finite numeric checks, radius/row/T/horizon bounds, repetition/conjugacy rules, conservative boundary guard. Actual fraction-button and grouped-sign input accepted; empty/incomplete, unsupported power/scientific algebra, duplicate rows and empty T produced feedback. |
+| Lifecycle and isolation | Synchronous mount; browser equation import guarded by a caller-owned lifetime; abort/disposal/failure cleanup. Eight mocked wiring tests and real reset/reopen, keyboard dismissal, rapid DS01/catalogue/DS02 navigation with no old controls on DS02. |
+| Scoped design, keyboard and narrow layout | Shared Indigo/slate variables, scoped CSS, labelled controls. Scrollable plots have readable minimum widths, named focusable regions and native arrow-key panning. At 390px viewport, document width was 375px; equations, matrices, tables and plots scrolled internally. |
+| Project checks and delivery | 92 module tests, all 134 project tests, type check and production build passed. PR #10 preserves the owned diff; final SHA is submitted through the claim protocol after final push/checks. |
 
 ## Supported mathematics and conventions
 
-- One to four distinct pole rows. A nonreal row automatically represents its conjugate pair. Pole literals are decimals or fractions with decimal numerator/denominator, optionally a real plus imaginary part using j or i; compact/mixed-brace visual fractions and up to four enclosing parenthesis groups with outer signs are supported. Nested fractions are unsupported. No variables, functions, mode powers, general polynomial input, arbitrary matrices or eigensolver are offered.
-- Each row is a simple block, two independent simple copies, or one Jordan chain of length 2 or 3. Repetition is explicit; duplicate/conjugate rows closer than 1e-10 are rejected. Up to 24 real states, pole radius at most 2, T in [0.001,10] seconds, and last integer sample k in [4,80]. All computation is bounded and local.
-- Discrete convention: x[k+1]=Ax[k]+Bu[k], y[k]=Cx[k], D=0. A is block diagonal. Real rows use J_m(p)=pI+N with unit superdiagonal; conjugate rows use real 2x2 rotation blocks and identity superdiagonals. B selects each block's last real coordinate, C its first; hidden blocks have C=0. Independent copies both receive the same scalar input and contribute to the same scalar output. No feedback topology is assumed.
-- The reduced zero-state transfer is the sum of 1/(z-p)^m terms; independent copies multiply the contribution by 2. A complex block contributes half the sum of conjugate terms. Distinct rows cannot cancel each other's poles. This is a constructed realization with explicit hidden blocks, not arbitrary TF cancellation or a general minimal-realization tool.
-- Free-response plots use u=0 and unit initial state in the last coordinate of one representative block (last real coordinate of a conjugate pair). The first real coordinate and full block norm are computed from the binomial Jordan identity. Repeated independent blocks have identical qualitative behavior. State amplitudes are dimensionless; t=kT in seconds, pole angle in rad/sample. Changing T preserves the fixed-z sequence.
-- Strict inside poles imply asymptotic decay, including defective blocks with possible initial growth. Boundary semisimple modes permit bounded nondecay; defective boundary blocks permit unbounded growth. The channel is BIBO stable only when its uncancelled poles are strictly inside. A zero channel is BIBO stable even if hidden states are unstable.
-- IEEE-754 numerical evaluation is labelled separately from the exact Jordan identity. Boundary equality is checked exactly for the retained finite decimal pole parts using integer arithmetic, so a radius merely rounded to 1 does not certify a boundary. Other radii within 1e-9 of 1 produce an uncertified verdict. Fraction inputs are rounded numerically before that check; the tool does not recover an exact input ratio. Plots are finite sampled illustrations; verdicts use modal structure, not finite-horizon growth alone.
+- One to four distinct pole rows. A nonreal row represents its conjugate pair. Input is a decimal or a fraction of decimal numbers, optionally a real plus imaginary part using j/i. Compact and mixed-brace fractions, purely numeric font wrappers from real MathLive entry, and up to four enclosing parenthesis groups with outer unary signs are supported. Nested fractions, functions, variables, powers and programming scientific literals are rejected. HTML numeric T/horizon controls have their separate native number grammar.
+- Each row is simple, two independent simple copies, or one Jordan chain of length 2/3. Duplicate/conjugate rows within 1e-10 are rejected; repetition belongs in the structure control. At most 24 real states, pole radius <=2, T in [0.001,10] seconds, and last integer sample k in [4,80]. Direct formulas bound all work; there is no iterative convergence claim.
+- State convention: x[k+1]=Ax[k]+Bu[k], y[k]=Cx[k], D=0. A is block diagonal. Real blocks use J_m(p)=pI+N with unit superdiagonal. Complex blocks use real 2x2 rotation blocks with identity superdiagonals. B selects the last real coordinate and C the first; hiding a block sets its C row to zero. Independent copies share the same scalar input/output. No feedback loop is assumed.
+- G(z) is the sum of 1/(z-p)^m contributions, doubled for independent copies. A conjugate block contributes half the sum of its conjugate terms. Distinct rows cannot cancel one another's poles. This is a constructed realization, not arbitrary matrix eigenanalysis, polynomial root finding, symbolic cancellation or a general minimal-realization tool.
+- Free plots use u=0 and unit initial state in the last coordinate of one representative block (the last pair's real coordinate for a complex row). They show the first real coordinate and full block norm from the binomial Jordan identity. State amplitudes are dimensionless; t=kT in seconds and angle in rad/sample. Changing T preserves the fixed-z sequence.
+- Strictly inside poles imply asymptotic decay, including defective blocks with possible initial growth. Semisimple boundary modes permit bounded nondecay; boundary Jordan chains permit growth. A visible uncancelled boundary/outside pole fails BIBO stability. G=0 is BIBO stable even if hidden states grow.
+- Boundary equality is checked for the retained finite decimal pole parts using integer arithmetic, avoiding a false boundary from a rounded `hypot`. Other radii within 1e-9 of 1 remain uncertified. Fractions are first rounded numerically; exact input-ratio recovery is not claimed. A zero pole has undefined angle and its Jordan block is nilpotent. Exact identities, numerical evaluation and finite sampled plots are labelled separately; a finite plot is not the stability proof.
 
 ## Independent fixtures and provenance
 
-`math.test.ts` checks the baseline (-.8)^k = [1,-.8,.64,-.512,.4096], simple/independent +/-1 bounded modes, J_2(1)^k e_2=[k,1], J_3(-1)^k e_3 with first samples [0,0,1,-3,6] and norm sqrt(53) at k=4, a stable defective .8 mode, nilpotent zero blocks, and the 0.6+0.8j rotation [1,.6,-.28,-.936,-.8432]. It checks hidden 1.2 and hidden defective boundary blocks, period invariance, near-circle uncertainty and invalid data. Independently stepped real matrices verify Markov coefficients C A^(k-1) B and complex-chain state coordinates/norms. Assertions use explicit expected values with 1e-12 to 1e-13 absolute precision on these small fixtures, plus finite-value checks at the maximum supported horizon.
+`math.test.ts` checks (-.8)^k = [1,-.8,.64,-.512,.4096]; simple/independent +/-1; J_2(1)^k e_2=[k,1]; J_3(-1) first coordinates [0,0,1,-3,6] and norm sqrt(53) at k=4; a defective stable .8 mode; nilpotent zero blocks; and the .6+.8j rotation [1,.6,-.28,-.936,-.8432]. Independently stepped real matrices verify Markov coefficients C A^(k-1) B and complex-chain coordinates/norms. Tests also cover hidden unstable modes, time-label invariance, near-circle rounding, maximum finite computation and invalid inputs. Small fixtures use 1e-12/1e-13 absolute precision; the maximum-size fixture uses an appropriate relative scale and finite-value assertions.
 
-These fixtures are independently derived examples, not new claims of transcribing course slides. TASK/atlas anchors Ch8:4-13 and S13:4 are preserved. The source audit's inspected material supports course provenance; original decks were not newly inspected in this worker run.
+These are independently derived fixtures, not new slide transcriptions. TASK/atlas Ch8:4-13 and S13:4 anchors are preserved. Original decks were not newly inspected during this contribution.
 
-## Verification log
+## Actual verification
 
-Toolchain: bundled Node v24.22.1, invoking npm's CLI with that Node (system npm.cmd otherwise selects Node 20). Locked dependencies installed inside this worktree only; no dependency changes.
+Toolchain: bundled Node v24.22.1 with npm CLI invoked under that Node; locked dependencies installed only inside this worktree. The initial system npm selected Node 20 and warned; it was rerun cleanly under Node 24. No package changes.
 
-- Initial `npm ci` via system npm warned about Node 20; rerun with Node 24 completed cleanly, 109 packages, zero audit vulnerabilities.
-- `npm run check`: passed.
-- `node node_modules/vitest/vitest.mjs run src/modules/ds01`: 63 tests passed before the final maximum-bound fixture (57 mathematical, 6 UI/lifecycle).
-- The first `npm test` exposed a catalogue-import failure from MathLive's Node export (98 passed, 1 failed). Fixed locally by deferring the equation import until synchronous mount, guarding late import results. No shared files/test configuration changed.
-- Resumed run on `b94d22c`: `npm test` passed all 105 tests in 8 files; `npm run check` passed; `npm run build` passed. Vite emits the existing MathLive >500 kB chunk warning. No deployment.
-- `workspace.test.ts` verifies result invalidation, changed and hidden-mode experiments, errors, add/remove rows, fresh-visit reset and immediate abort/disposal. The equation layer is mocked in these tests; they are not browser/font/keyboard evidence.
-- `git diff --check`: passed at checkpoints.
-- Browser QA was reserved by DP02 before the pause and DR02 on resumption. This worker has not controlled their tabs or viewport. Browser evidence remains pending.
+Final checks on the delivered implementation tree:
 
-## Remaining work
+- `node node_modules/vitest/vitest.mjs run src/modules/ds01`: **92 passed** (84 math/parser, 8 mocked UI/lifecycle).
+- `npm run check`: **passed**.
+- `npm test`: **134 passed in 8 files**.
+- `npm run build`: **passed**; existing MathLive >500kB chunk warning remains. All 20 bundled font assets are emitted locally.
+- `git diff --check`: **passed**. Only DS01 source/tests/styles/STATUS changed.
+- PR CI passed at checkpoint `0fd02d4` ([run](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40858625901/job/123395888986)); later final-head CI is available on PR #10.
 
-Complete reserved real-browser verification of the production build, repair any issues within DS01, record exact evidence, rerun affected/final checks, mark implemented only after acceptance, commit/push the unique branch and submit the claim. No unresolved shared dependency request. Independent review and integration remain the integration owner's later responsibility.
-- Resumed acceptance review fixed the undefined angle of a zero pole (no atan2(0,0) claim), preserved its tested nilpotent behavior, increased displayed precision around the radius guard, and clarified that each row contributes to one scalar output. Latest targeted run: 65 tests passed (58 math, 7 mocked UI/lifecycle), and production build/type check passed. Full suite before the zero-angle UI regression test passed 106 tests. Browser QA passed from DR02 to DR01 before this worker acquired it; no competing browser actions were taken.
+Real browser: in-app Chromium, production preview on private port 8796, system dark theme, 1280x720 and 390x844. Shared QA was reserved, the temporary viewport reset to 1280x720, the owned tab closed, and the reservation released.
 
-- Further mathematical review strengthened boundary handling: `hypot(1,1e-10)` rounds to 1 but must not produce a bounded boundary verdict. An exact comparison of the retained decimal parts now distinguishes such uncertain data from decimal Pythagorean pairs. Regression fixtures include 1+1e-10j, rounded sqrt(1/2) pairs, and .28-.96j (7-24-25 triangle). Targeted module tests: 66 passed; type check/build passed. This remains an in-progress checkpoint until actual browser evidence is complete.
-- Mount-failure regression: editor initialization errors now abort the partial exercise, remove incomplete controls and retain a visible reset/retry message. A dedicated exercise lifetime forwards the shell abort and is also aborted on disposal/failure. Targeted module tests now pass 67 tests (59 math, 8 mocked UI/lifecycle); build/type check pass. QA is still pending behind active workers.
-- Updated human/coordinator steering requests one PR per completed module before continuing to another module. No DS01 PR existed when searched. Added numeric fraction-token support for MathLive shorthand (`\frac12`, mixed braced/unbraced atoms) with positive/negative, complex and invalid/zero-denominator fixtures. Latest targeted run: 73 module tests passed; type check/build passed. Real-browser serialization remains to be inspected in the reserved slot.
-- Final pre-browser project run at the current implementation: `npm run check` passed and `npm test` passed all 115 tests in 8 files. `git diff --check` passed. The entire contribution diff remains inside `src/modules/ds01/**`. QA acquisition is deferred for the coordinator's reserved integration slot after CS01; no competing attempt will run until its release notice.
+- Baseline prediction matched; selecting pole 2 showed independently expected alternating samples. All seven nonbaseline experiments returned the required internal/BIBO distinction. Complex real matrices and the six-state Jordan case rendered correctly.
+- Ordinary keys and the fraction button produced -1/2 and samples [1,-.5,.25,-.125,.0625]. A pasted numerator produced actual copied MathLive serialization `\frac{\mathrm{1}}{2}`; the initial unsupported-wrapper defect was repaired and the same real button flow then computed +.5 correctly. Pure numeric wrappers are accepted while algebra inside them remains rejected.
+- Physical-key grouped input `-(0.8)` yielded radius .8 and angle pi. Changed T=.2 and k=4 yielded the same samples at times [0,.2,.4,.6,.8]. Empty T, empty/incomplete fields, a power inserted by the power button, and physical-key `1e-2` produced useful feedback. A near-circle 1.0000000001 pole remained uncertified; zero showed undefined angle. Add disabled at four rows and duplicate-row feedback worked.
+- Systems keyboard inserted j, giving [1,0,-1,0,1] with unit norm. Escape dismissed it without navigation. Reset while it was open restored the baseline and dismissed it; leaving to the catalogue also dismissed it. Tab moved from the visual field to the fraction button.
+- Reset and reopen restored .8/-.8, T=.1, k=20 and unrevealed state. Rapid DS01/catalogue/DS02 navigation left zero DS01 controls and no keyboard on DS02. Reopening DS01 then produced the baseline verdict/radii again.
+- Narrow testing exposed undersized SVG labels. The repair keeps plot widths at 400/480px inside named keyboard-focusable scroll regions, with captions outside the panning area. At 390px, document width measured 375px; plot regions were 277px wide with internal scroll widths 400/480px, and ArrowRight changed scrollLeft. Long equations, the six-state matrix and tables stayed inside their own scroll areas. Viewport was reset afterwards.
+- Fractions, powers, j/Greek symbols and matrices had readable glyphs. Font status was loaded; the final browser console had **no warnings/errors**. Network-resource tracing and a separate light-theme/other-browser pass were not performed; no all-browser claim is made.
 
-- Draft PR #10 was created through the existing GitHub Git authentication after the connected integration returned HTTP 403 for PR creation. Exact-branch searches and API queries found no prior PR. It remains draft and the claim remains active until browser verification; no implementation/submission success is claimed.
+## Checkpoint repairs and delivery
 
-- PR #10 GitHub CI check passed at 0fd02d4 (https://github.com/ckbk123/CSDKTD_APP/actions/runs/40858625901/job/123395888986). Following the current primary equation-input semantics guide, added signed enclosing-group handling and rejected empty groups (the old parser could read () as zero). Scientific algebra strings remain unsupported rather than being read as programming numbers. Expanded checks: 86 module tests and 128 total tests in 8 files passed; type check/build and diff check passed. Browser evidence remains pending shared QA.
+The initial full suite found a browser-only MathLive import at catalogue-inspection time (98 passed, 1 failed). Deferring that import fixed it without shared changes. Subsequent regressions cover visible mount-error recovery, disposal before a late import, undefined zero angle, rounded-circle uncertainty, compact fraction tokens, grouped signs/empty groups and numeric font wrappers. Browser-driven repairs were rechecked in the actual production build.
+
+PR creation through the connected integration returned HTTP 403. The existing Git authentication created the single draft PR #10, which was attached and updated in place. It is prepared for final review after the checks above; no duplicate PR, version bump, merge, deployment, shared dependency change or primary-preview change was made.
+
+No accepted exercise requirement remains within this declared domain. Independent technical review and integration are the coordinator's next actions. The claim/branch/worktree are preserved for corrections; the worker continues the authorized contribution loop after exact-SHA submission.
