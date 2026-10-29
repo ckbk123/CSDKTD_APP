@@ -78,4 +78,10 @@ describe('DR01 exercise flow with an equation-interface mock', () => {
     expect(second.rows().slice(0, 3).map(row => row[3])).toEqual(['1', '0.8', '0.64']);
     expect(second.field.value).toBe(String.raw`\frac{z}{z-0.8}`);
   });
+  it('retains legitimate scientific entry in ordinary numeric controls', () => {
+    const visit = open(); visit.set('Sample period T (s)', '1e-2'); visit.reveal();
+    expect(visit.rows()[1]).toEqual(['1', '0.01', '0.8', '0.8']);
+    visit.set('Gain c', '1e-2'); visit.click('Build transform'); visit.reveal();
+    expect(visit.rows()[0]).toEqual(['0', '0', '0.01', '0.01']);
+  });
 });

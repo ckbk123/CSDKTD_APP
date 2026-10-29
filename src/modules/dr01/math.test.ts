@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fromSequence, initialNumerator, parseTransform, poles, samples, transformLatex, validateTransform } from './math';
+import { fromSequence, initialNumerator, numberLatex, parseTransform, poles, samples, transformLatex, validateTransform } from './math';
 
 const values = (expression: string, history = [0, 0], count = 8) => samples(parseTransform(expression), history, count).map(x => x.value);
 describe('DR01 transform parsing and independent inverse fixtures', () => {
@@ -87,7 +87,7 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
 });
 
 describe('bounded grammar and failures', () => {
-  it.each(['', 'NaN', 'Infinity', 'sin(z)', String.raw`\sqrt{z}`, 's+1', '1/(0)', '1/(z-z)', '1+', '(z+1', String.raw`\frac{}{z}`, 'z^{1.5}', 'z^{15}', 'z^{-15}', '1/(1+q+q^2+q^3)', 'q^14+q^14*q', '1e99', '1e-999', '1e-13', '1/(1e-11+q)', '\\placeholder{}'])('rejects %s', expr => {
+  it.each(['', 'NaN', 'Infinity', 'sin(z)', String.raw`\sqrt{z}`, 's+1', '1/(0)', '1/(z-z)', '1+', '(z+1', String.raw`\frac{}{z}`, 'z^{1.5}', 'z^{15}', 'z^{-15}', '1/(1+q+q^2+q^3)', 'q^14+q^14*q', '1000001', '0.' + '0'.repeat(323) + '1', '0.0000000000001', '1/(0.00000000001+q)', '\\placeholder{}'])('rejects %s', expr => {
     expect(() => parseTransform(expr)).toThrow();
   });
   it.each(['z', 'z^2/(z-.8)', '1/q'])('explains future-sample forms: %s', expr => {
@@ -105,8 +105,16 @@ describe('bounded grammar and failures', () => {
     // The numerator is about 10^-312 (representable), then division by 10^12
     // gives about 10^-324, below the smallest positive floating-point number.
     expect(1e-312).toBeGreaterThan(0);
-    expect(() => parseTransform('(1e-12)^14*(1e-12)^12/(1e6)^2')).toThrow(/underflow during normalization/);
-    expect(() => parseTransform('1/((1e6)^2+(1e-12)^14*(1e-12)^12*q)')).toThrow(/underflow during normalization/);
+    expect(() => parseTransform('(0.000000000001)^14*(0.000000000001)^12/(1000000)^2')).toThrow(/underflow during normalization/);
+    expect(() => parseTransform('1/((1000000)^2+(0.000000000001)^14*(0.000000000001)^12*q)')).toThrow(/underflow during normalization/);
+  });
+  it.each(['1e-2', '1E-2', '.5e+1', '1e2z'])('rejects ambiguous visual scientific notation %s', expression => {
+    expect(() => parseTransform(expression)).toThrow(/e\/E scientific notation/);
+  });
+  it('accepts visibly typeset powers of ten and keeps result formatting explicit', () => {
+    expect(values(String.raw`1\times10^{-2}`)).toEqual([.01, 0, 0, 0, 0, 0, 0, 0]);
+    expect(numberLatex(.0000001)).toBe(String.raw`1\times10^{-7}`);
+    expect(values(numberLatex(.0000001))).toEqual([.0000001, 0, 0, 0, 0, 0, 0, 0]);
   });
   it('rejects out-of-range and fractional builder values', () => {
     expect(() => fromSequence('sum', 1, .8, 12, 12)).toThrow(/Length/);

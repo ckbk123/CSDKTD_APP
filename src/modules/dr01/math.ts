@@ -82,7 +82,8 @@ export function parseTransform(latex: string): Transform {
   let pos = 0;
   while (pos < source.length) {
     if (/\s/.test(source[pos])) { pos++; continue; }
-    const match = /^(?:\\frac|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|[zq+\-*/^(){}])/.exec(source.slice(pos));
+    if (/^[eE]/.test(source.slice(pos))) throw new Error('The visual editor displays e/E as a letter. Use a decimal or a typeset power of ten (×10ⁿ) instead of e/E scientific notation.');
+    const match = /^(?:\\frac|(?:\d+(?:\.\d*)?|\.\d+)|[zq+\-*/^(){}])/.exec(source.slice(pos));
     if (!match) throw new Error('Use real numbers, z, integer powers, fractions, products and sums only.');
     tokens.push(match[0]); pos += match[0].length;
   }
@@ -109,7 +110,7 @@ export function parseTransform(latex: string): Transform {
     else if (token === 'q') { take(); result = { b: [0, 1], a: [1] }; }
     else if (token && /^[\d.]/.test(token)) {
       take(); const n = Number(token);
-      if (!Number.isFinite(n) || Math.abs(n) > MAX_COEFFICIENT || (n !== 0 && Math.abs(n) < 1e-12) || (n === 0 && /[1-9]/.test(token.split(/[eE]/)[0]))) throw new Error('Numbers must be zero or finite with magnitude between 10⁻¹² and 1,000,000.');
+      if (!Number.isFinite(n) || Math.abs(n) > MAX_COEFFICIENT || (n !== 0 && Math.abs(n) < 1e-12) || (n === 0 && /[1-9]/.test(token))) throw new Error('Numbers must be zero or finite with magnitude between 10⁻¹² and 1,000,000.');
       result = scalar(n);
     } else throw new Error('Complete each term with a number, z or a fraction.');
     if (peek() === '^') {
