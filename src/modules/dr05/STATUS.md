@@ -68,6 +68,8 @@ The focused regressions and complete automated checks pass below. Actual-browser
 
 The coordinator relayed the human-authorized Firefox fallback after extended IAB waiting. Installed Firefox 159.0 was verified and a new dedicated window (791364) was opened, separate from the three pre-existing Firefox windows. Binding that new window was blocked by the desktop tool: URL-policy enforcement is not yet supported for this Windows browser, and Computer Use was stopped for the turn. No Firefox page interaction or module evidence was obtained; no existing window/tab or IAB viewport was used. The new blank window remains because the stop precludes further native input. No IAB reservation or acquisition waiter is owned. Resume focused browser checks through a supported surface when the named queue permits.
 
+A later IAB acquisition waiter incorrectly checked only helper ok instead of acquired. CD08 won the resource race, but the waiter reported acquisition and this worker ran its private tab, temporarily setting/resetting the shared viewport. The release helper exposed the mistake with NOT_QA_OWNER. This worker closed its tab and stopped browser actions without touching CD08's claim/tab. The observed corrected behavior is not counted as the required reserved final browser pass; repeat it after verifying acquired=true and the actual DR05 holder. The waiter must check acquisition/holder, not merely successful helper execution. This is a coordination failure, not a mathematical test failure.
+
 ## Automated verification
 
 Executed in this isolated worktree using Node 24.22.1/npm 10.8.2 (explicit bundled Node invoking npm CLI):
