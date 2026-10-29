@@ -5,8 +5,8 @@
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
 - **Branch/worktree:** codex/dr03-delay-states-f802; C:\Users\baokh\.codex\worktrees\dr03-delay-states-f802\CSDKTD APP.
 - **Contract/ownership:** [TASK.md](TASK.md); only src/modules/dr03/** changed. index.ts remains immutable metadata with its lazy loader.
-- **Pull request:** creation pending; final delivery record will include its one URL.
-- **Preview:** private production preview on port8894. Browser tab8 closed and temporary viewport reset after verification; no global browser-QA claim/waiter owned.
+- **Pull request:** [PR #34](https://github.com/ckbk123/CSDKTD_APP/pull/34), open for independent integration review and attached to this chat.
+- **Preview:** private production preview on port 8894 stopped. Browser tab 8 closed and temporary viewport reset after verification; no global browser-QA claim/waiter owned.
 
 ## Requirement-to-evidence audit
 
@@ -75,5 +75,5 @@ Browser findings corrected locally: SVG image grouping initially hid its interac
 - npm run check:passed; npm run build:passed including type check. Existing bundled-MathLive large-chunk advisory only.
 - git diff --check:passed. No dependency, shared API, shell, routing, package/version, deployment or sibling-module change. No source deck, generated dist or node_modules is committed.
 - Current primary AGENTS, START_HERE, AUTONOMOUS_WORKERS and COORDINATION were read at selection; CONTRIBUTING, DEVELOPMENT, DESIGN, EQUATION_INPUT, atlas and functional scope also read. Discrete audit DR5 cites CH7:30–42,50–51; S12:6–11; S15:7–8. Audit DR3 supplies the mechanical ZOH bridge. Original external decks were not newly inspected. Independent fixtures are not presented as inspected course diagrams.
-- Recovery history: early audit08d6859, parser e49b41c, pure mathematics7489d32 and interactive a595b2f checkpoints were pushed and recorded before final browser corrections. The claim will record the exact clean final tested HEAD including its PR URL. Earlier DP01 is integrated; DR05 PR11 and CR06 PR17 remain preserved/frozen for coordinator review.
+- Recovery history: early audit 08d6859, parser e49b41c, pure mathematics 7489d32 and interactive a595b2f checkpoints were pushed and recorded before final browser corrections 2af2e33. This delivery record includes PR #34; the claim records the exact clean final tested HEAD. Earlier DP01 is integrated; DR05 PR #11 and CR06 PR #17 remain preserved/frozen for coordinator review.
 - Remaining module implementation work: none within the declared accepted bounded domain. Independent integration review and coordinator-owned release/versioning remain pending; this worker does not merge, deploy, rebase a submitted branch or claim review acceptance.
