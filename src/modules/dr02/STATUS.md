@@ -1,7 +1,7 @@
 # DR02 implementation status
 
-- **Stage:** in-progress
-- **Remaining delivery gate:** explicit coordinator disposition for adapting this preserved branch's tested local native-number reader to the shared API. Worker browser checks are complete, including actual signed visual 1/2 entry; independent coordinator review is still pending.
+- **Stage:** implemented
+- **Integration action:** the coordinator explicitly approved the tested local native-number reader and owns adapting all native controls to the shared API before acceptance. Worker exercise/browser checks are complete; independent coordinator review is pending.
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
@@ -140,7 +140,7 @@ Local equation fonts report loaded and KaTeX_Main available. Captured applicatio
 
 Final executable checks after the Escape repair: **86 module tests in4files**, **128 project tests in10files**, `npm run check` (also run by build), `npm run build` and `git diff --check` pass. The usual MathLive chunk-size warning remains. Stage stays in-progress only until the coordinator explicitly dispositions the tested equivalent native reader on this older baseline; the requested integration adaptation and the independent review remain visible rather than being silently assumed. All accepted functional exercise and worker browser checks above are complete.
 
-## Blocked delivery handoff
+## Temporary blocked delivery handoff (resolved below)
 
 The same native-reader disposition has remained unresolved across consecutive goal turns. Revalidation confirms that this preserved worktree has no src/shared/numeric-input.ts, current primary EQUATION_INPUT.md explicitly requires a coordinator disposition for carrying an equivalent local reader into functional submission, the coordinator's recorded carry-forward approval names other contributions, and no DR02 approval appears in its current messages or PR5 discussion. The checked implementation and all actual-browser evidence are complete; there is no further required exercise change this worker can make within its ownership to resolve that external disposition.
 
@@ -149,3 +149,11 @@ The same native-reader disposition has remained unresolved across consecutive go
 Required coordinator action: explicitly approve carrying this tested local native reader forward and own adapting it to readNumericInput during integration (or assign the necessary alternative), then reopen the same preserved claim/branch/worktree. The worker can then record that disposition, mark implemented, submit the exact final clean/pushed HEAD through the current primary helper and resume CR03. Do not release/reclaim or replace this reservation. The independent integration review remains separate.
 
 CR03 remains clean/pushed and reserved at9546b57f5f3ea545485b2b7ed4c5cec04143a717 in its own worktree/PR21. A private read-only audit has identified a standalone formatting-brace parser repair to make on its resumption; its source was not edited during the DR02 return. CR02 remains separately submitted at8faeb86640e29d02323fc2c8d5d978a22e82193a/PR12. No QA reservation, acquisition waiter or temporary IAB tab remains. Existing private preview processes and all worktrees/evidence are preserved for review; primary8787 and all budgets are unchanged.
+
+## Coordinator disposition and final resubmission
+
+On 29 October the human explicitly authorized direct communication with the coordinator. The worker sent the checked revision, browser evidence and precise dependency request. Coordinator chat `01a182f7-8bce-7fb3-b79d-2ef1b1cfe8dd` then explicitly approved carrying DR02's independently tested equivalent local native-number reader in this preserved pre-helper branch. The coordinator owns adapting every native control to `readNumericInput` during integration, with focused zero/exponent/underflow regressions and a combined browser gate before acceptance. No shared-file copy, rebase or main merge is required. The same claim was reopened from handoff at `1bca042`, preserving its owner, token, branch, worktree and history.
+
+The coordinator acknowledged the actual signed 1/2 and power-box browser evidence and instructed the worker to canonicalize Stage as `implemented`, record this disposition, check and submit the exact clean pushed HEAD in the existing PR #5, then resume CR03. Final independent source review still applies; no `verified` stage or accepted release is claimed here. The coordinator also owns the shared Escape fix in its next main integration; the tested local capture repair remains valid in this older branch.
+
+This final delivery change is documentation only. Executable code and tests remain those checked at `f77bc16`: 86 module tests, 128 project tests, type/build/diff, successful CI and all recorded private-IAB checks. The final exact submission SHA is recorded by the current primary claim helper after the delivery recheck, commit and push. All accepted bounded exercise requirements and worker verification are complete. The former native-reader disposition block is resolved; the shared adaptation is an assigned integration action.
