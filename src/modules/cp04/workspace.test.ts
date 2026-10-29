@@ -44,14 +44,15 @@ describe('CP04 construction and lifecycle', () => {
     for (let i = 0; i < 5; i++) button(container, 'Add a factor').click(); expect(button(container, 'Add a factor').disabled).toBe(true); expect(container.querySelectorAll('.bode-factor')).toHaveLength(6); controller.abort();
   });
   it('reports a cursor outside the displayed horizon and clears stale results', async () => {
-    const { container, controller, reveal } = await open(); reveal(); update(labeled(container, 'Cursor frequency [rad/s]'), '1000'); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.textContent).toContain('inside the displayed frequency range'); controller.abort();
+    const { container, controller, reveal } = await open(); reveal(); update(labeled(container, 'Cursor frequency [rad/s]'), '1000'); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.textContent).toContain('inside the displayed frequency range');
+    update(labeled(container, 'Cursor frequency [rad/s]'), '1e-9999'); reveal(); expect(container.querySelector('.bode-verdict')).toBeNull(); expect(container.textContent).toContain('Frequency must be from'); controller.abort();
   });
   it('keeps a tiny but varying linear response visible instead of flattening it by an absolute axis tolerance', async () => {
     const { container, controller, reveal } = await open(); update(labeled(container, 'Raw gain K'), '.000001');
     for (const id of [1, 2]) { update(labeled(container, `Factor ${id} coefficient a₀`), '1000000'); update(labeled(container, `Factor ${id} coefficient a₁`), '1000000'); }
     update(labeled(container, 'Your normalization gain magnitude |Kₙ|'), '1e-18'); update(labeled(container, 'Magnitude unit'), 'linear', 'change'); reveal();
     const points = container.querySelector('polyline.bode-exact-line')!.getAttribute('points')!.split(' ').map(point => Number(point.split(',')[1]));
-    expect(Math.max(...points) - Math.min(...points)).toBeGreaterThan(100); controller.abort();
+    expect(Math.max(...points) - Math.min(...points)).toBeGreaterThan(100); expect(container.textContent).toContain('×10⁻¹⁸'); controller.abort();
   });
   it('cleans up, reopens at baseline and ignores late imports', async () => {
     const first = await open(); update(labeled(first.container, 'Example'), 'quadratic', 'change'); first.reveal(); expect(first.container.querySelectorAll('.bode-factor')).toHaveLength(1); first.controller.abort(); if (typeof first.cleanup === 'function') first.cleanup(); expect(first.container.children.length).toBe(0);

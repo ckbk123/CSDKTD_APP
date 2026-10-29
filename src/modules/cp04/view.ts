@@ -17,7 +17,14 @@ function numeric(label: string, value: number, min: number, max: number) {
 function finite(input: HTMLInputElement, label: string): number {
   const value = input.valueAsNumber; if (!input.value.trim() || !Number.isFinite(value)) throw new Error(`${label}: enter a finite number.`); return value;
 }
-const fmt = (x: number, digits = 7): string => x === Infinity ? '∞' : x === 0 ? '0' : Math.abs(x) < 0.0001 || Math.abs(x) >= 10000 ? x.toExponential(3) : Number(x.toPrecision(digits)).toString();
+function fmt(x: number, digits = 7): string {
+  if (x === Infinity) return '∞';
+  if (x === 0) return '0';
+  if (Math.abs(x) >= 0.0001 && Math.abs(x) < 10000) return Number(x.toPrecision(digits)).toString();
+  const [mantissa, exponent] = x.toExponential(3).split('e');
+  const powers: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+  return `${Number(mantissa)}×10${String(Number(exponent)).split('').map(c => powers[c]).join('')}`;
+}
 const tex = (x: number): string => Number(x.toPrecision(12)).toString().replace(/e([+-]?\d+)/, '\\times10^{$1}');
 function polynomial(f: Factor): string { return `${tex(f.a0)}${f.a1 < 0 ? '-' : '+'}${tex(Math.abs(f.a1))}s${f.kind === 'second' ? `+${tex(f.a2)}s^2` : ''}`; }
 function expression(model: Model, normalized: boolean): string {
