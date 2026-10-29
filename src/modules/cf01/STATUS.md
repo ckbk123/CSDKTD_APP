@@ -49,3 +49,9 @@ Remaining: bounded visual parser; target-requirement derivation and regions; ref
 ## Review-priority suspension
 
 CF03 PR22 was reopened by the coordinator for a confirmed raw unbraced parenthesized-power defect. CF01's response core and six passing fixtures are checkpointed and pushed; its reservation/worktree remain intact. Implementation is suspended here while that same-branch CF03 correction is made and reverified. The coordinator explicitly owns the older CF03 loader child-signal adaptation during integration. CF01 will resume from this checkpoint after resubmission.
+
+## Resumed after CF03 correction
+
+CF03's raw parenthesized-power correction was production-browser checked and resubmitted in the same PR22 at6758759fd095d77297ed3911f45d9c845a59bb97, with38 local/478 application tests and type/build passing. Its older loader/native integration adaptations remain coordinator-owned. CF01 implementation now resumes from the preserved response core; its six independent fixtures and remaining measurement/UI/browser requirements above are unchanged.
+
+Next mathematical slice: locate response extrema/crossings on a bounded refined analytic grid, measure the selected rise convention and overshoot/peak, and require the future modal envelope before establishing settling. A short horizon must yield not established. Cross-check the baseline's about4.039s settling and exact critical/triple response fixtures independently. UI, parser and full production verification remain pending.
