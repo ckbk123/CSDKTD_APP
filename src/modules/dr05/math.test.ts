@@ -176,6 +176,9 @@ describe('DR05 visual expression grammar', () => {
     expect(parseModel('\\frac1\\frac12/(s+1)').b).toEqual([0, 2]);
     expect(parseModel('2(\\frac12)/(s+1)').b).toEqual([0, 1]);
   });
+  it.each(['1/{s+1}', '{s+1}/(s+2)', '{2+3}s/(s+1)', 's{-1}/(s+1)', '(s+1){-1}/(s+2)'])('rejects invisible grouping rather than changing visible precedence %s', s => {
+    expect(() => parseModel(s)).toThrow(/visible parentheses|explicit \+.*×/);
+  });
   it('bounds input length and rejects nonzero underflow before constructing a plant', () => {
     expect(() => parseModel('s'.repeat(513))).toThrow(/512/);
     const tiny = '0.' + '0'.repeat(400) + '1';

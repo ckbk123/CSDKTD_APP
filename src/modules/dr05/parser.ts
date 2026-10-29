@@ -66,9 +66,10 @@ function plain(latex: string): string {
         if (lastNumeric) mixed();
         value += fraction(); lastNumeric = false;
       } else if (s[pos] === '{') {
-        if (lastNumeric) mixed();
-        const content = group(); value += '(' + content + ')';
-        lastNumeric = /^\(*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\)*$/.test(content);
+        if (lastNumeric || /[s)]$/.test(value)) mixed();
+        const content = group(), numeric = /^\(*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\)*$/.test(content);
+        if (!numeric && !value.endsWith('^')) fail('Use visible parentheses instead of invisible brace grouping. Fraction arguments keep their normal grouping.');
+        value += '(' + content + ')'; lastNumeric = numeric;
       }
       else if (s[pos] === '}') fail('Remove the unmatched closing brace.');
       else { const token = s[pos++]; value += token; lastNumeric = /[0-9.]/.test(token); }
