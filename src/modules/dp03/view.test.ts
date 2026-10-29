@@ -79,4 +79,15 @@ describe('DP03 linked exercise flow', () => {
     const second = open(); expect(second.visible()).toBe(false); expect(Number(second.field('Sample period T (s)').value)).toBe(.1);
     expect(second.container.querySelector('textarea')!.value).toContain('1.741');
   });
+  it.each(['Sample period T (s)', 'Normalized Ω (rad/sample)', 'Requested physical ω (rad/s)', 'Nyquist half-span (gain units)'])('rejects raw nonzero native underflow in %s', label => {
+    const visit = open(); visit.reveal(); visit.set(label, '1e-999');
+    if (label === 'Requested physical ω (rad/s)') visit.button('Map physical frequency'); else visit.reveal();
+    expect(visit.visible()).toBe(false); expect(visit.container.querySelector('.dp03-message')!.textContent).toContain('nonzero but too small');
+  });
+  it('preserves intentional zero mantissas in numeric frequency controls', () => {
+    const visit = open(); visit.button('First-order variation'); visit.set('Normalized Ω (rad/sample)', '0e-999'); visit.reveal();
+    expect(visit.visible()).toBe(true); expect(visit.container.textContent).toContain('|G|≈2');
+    visit.set('Requested physical ω (rad/s)', '-0e-999'); visit.button('Map physical frequency');
+    expect(visit.visible()).toBe(true); expect(visit.container.textContent).toContain('Signed alias evaluation at Ω=0');
+  });
 });

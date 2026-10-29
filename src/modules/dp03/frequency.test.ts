@@ -92,6 +92,17 @@ describe('DP03 grammar and numerical boundaries', () => {
     expect(parseModel(String.raw`-\left(\frac12\right)`)).toEqual({ b: [-.5], a: [1] });
     expect(value(unitResponse(parseModel(String.raw`\frac1{1-\frac12z^{-1}}`), Math.PI / 2)).value.re).toBeCloseTo(.8, 14);
   });
+  it('accepts the optional textbook G(z) label after visual grouping normalization', () => {
+    expect(parseModel(String.raw`G\left(z\right)=\frac1{1-\frac12z^{-1}}`)).toEqual({ b: [1], a: [1, -.5] });
+  });
+  it('preserves TeX fraction grouping without interpreting parentheses as braces', () => {
+    expect(() => parseModel(String.raw`\frac(1)(2)`)).toThrow(/Parentheses/);
+    expect(() => parseModel(String.raw`\frac1(2)`)).toThrow(/Parentheses/);
+    for (const expression of [String.raw`-\frac12`, String.raw`\frac{-1}2`, String.raw`-\left(\frac{(1)}{(2)}\right)`]) {
+      expect(value(unitResponse(parseModel(expression), 1)).value.re).toBe(-.5);
+    }
+    expect(value(unitResponse(parseModel(String.raw`\frac{\frac12}{(2)}`), 1)).value.re).toBe(.25);
+  });
   it('retains canceled denominator factors at a singular contour point', () => {
     expect(unitResponse(parseModel('(1-q)/(1-q)'), 0).kind).toBe('pole');
   });

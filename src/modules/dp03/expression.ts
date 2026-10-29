@@ -47,8 +47,8 @@ function expandFractions(source: string, depth = 0): string {
   function argument(): string {
     while (/\s/.test(source[cursor] ?? '') && cursor < source.length) cursor++;
     const open = source[cursor];
-    if (open === '{' || open === '(') {
-      const close = open === '{' ? '}' : ')', start = ++cursor;
+    if (open === '{') {
+      const close = '}', start = ++cursor;
       let level = 1;
       while (cursor < source.length && level) {
         if (source[cursor] === open) level++;
@@ -59,6 +59,7 @@ function expandFractions(source: string, depth = 0): string {
       const content = source.slice(start, cursor++);
       return expandFractions(content, depth + 1);
     }
+    if (open === '(') throw new Error('Parentheses must be inside a complete numerator or denominator. Use the fraction button to group its arguments.');
     if (source.startsWith('\\frac', cursor)) { cursor += 5; return fraction(); }
     if (open && /^[0-9zq]$/.test(open)) { cursor++; return open; }
     throw new Error('Complete both fraction arguments; group multi-character terms inside the fraction.');
@@ -75,8 +76,8 @@ function expandFractions(source: string, depth = 0): string {
 export function parseModel(latex: string): FrequencyModel {
   if (!latex.trim()) throw new Error('Enter a transform or build one from a sequence.');
   if (latex.length > 600) throw new Error('Use an expression of at most 600 characters.');
-  const source = expandFractions(latex.replace(/^\s*[XH]\s*\(\s*z\s*\)\s*=\s*/, '')
-    .replace(/\\(?:left|right|displaystyle|textstyle)\b/g, '')
+  const source = expandFractions(latex.replace(/\\(?:left|right|displaystyle|textstyle)\b/g, '')
+    .replace(/^\s*[GH]\s*\(\s*z\s*\)\s*=\s*/, '')
     .replace(/\\(?:cdot|times)/g, '*').replace(/\\(?:dfrac|tfrac)/g, '\\frac')
     .replace(/\\[,;! ]/g, '').replace(/−/g, '-'));
   const tokens: string[] = [];

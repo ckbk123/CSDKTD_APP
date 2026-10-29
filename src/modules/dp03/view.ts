@@ -19,6 +19,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   };
   const read = (input: HTMLInputElement, label: string) => {
     if (!input.value.trim() || !Number.isFinite(input.valueAsNumber)) throw new Error(`Enter a finite ${label}.`);
+    if (input.valueAsNumber === 0 && /[1-9]/.test(input.value.trim().split(/[eE]/)[0])) throw new Error(`${label} is nonzero but too small for numeric entry. Use zero intentionally or a representable nonzero number.`);
     return input.valueAsNumber;
   };
   let draft: EquationDraft, current: { model: FrequencyModel; transformed: WarpedModel; points: Sweep; period: number } | undefined;
@@ -105,7 +106,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       const node = document.createElementNS(ns, tag); for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value)); if (text) node.textContent = text; parent.append(node); return node;
     };
     const card = (title: string, picture: SVGSVGElement, note: string) => {
-      const node = el('div', '', 'dp03-card'); node.append(el('h3', title)); const scroll = el('div', '', 'dp03-scroll'); scroll.append(picture); node.append(scroll, el('p', note)); return node;
+      const node = el('div', '', 'dp03-card'); node.append(el('h3', title)); const scroll = el('div', '', 'dp03-scroll'); scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', `${title} plot. Use arrow keys to scroll on narrow screens.`); scroll.append(picture); node.append(scroll, el('p', note)); return node;
     };
     const plane = svg('Unit circle: real and imaginary z axes, selected positive-frequency point.', 320, 280);
     shape(plane, 'line', { x1: 30, y1: 140, x2: 290, y2: 140, class: 'dp03-axis' }); shape(plane, 'line', { x1: 160, y1: 25, x2: 160, y2: 255, class: 'dp03-axis' });
