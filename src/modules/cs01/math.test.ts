@@ -11,6 +11,9 @@ describe('bounded exact state-space entry', () => {
     expect(textRat(parseScalar('-\\frac{1}{3}'))).toBe('-1/3');
     expect(textRat(parseScalar('\\frac{-0.5}{2}'))).toBe('-1/4');
     expect(num(parseScalar('1/8'))).toBe(0.125);
+    expect(textRat(parseScalar('\\frac12'))).toBe('1/2');
+    expect(textRat(parseScalar('-\\frac1{20}'))).toBe('-1/20');
+    expect(textRat(parseScalar('\\frac{12}3'))).toBe('4');
   });
   it('accepts MathLive matrix delimiters and a label', () => {
     expect(parseMatrix('A=\\left[\\begin{matrix}0&1\\\\-2&-3\\end{matrix}\\right]', 2, 2, 'A')[1].map(num)).toEqual([-2, -3]);

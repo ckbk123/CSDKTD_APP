@@ -63,3 +63,5 @@ The first global run exposed MathLive's Node server export during catalogue entr
 Not yet performed. Shared browser QA was busy (DR01, then DS03), so this worker has not used viewport/tab controls. Production preview is isolated at http://127.0.0.1:8841; primary checkout and port 8787 are untouched. Pending: actual equation entry/font/keyboard, changed/error inputs, classification and plots, reset/leave/reopen/rapid navigation, dark/light and narrow viewport, then release QA, record exact evidence, commit/push final branch and submit the claim.
 
 No shared dependency/API request is needed. No independent review has been claimed; the final worker stage will be implemented rather than verified. Checkpoints fd559dc, e614561, a42cbde and 8e8e4f5 preserve the audit and implementation. Branch checkpoints have been pushed for recovery.
+
+Input review also added MathLive's compact fraction serialization (single-digit unbraced arguments such as fraction 1/2) and mixed braced/unbraced forms. They use the same exact bounded rational validation and pass the local tests. Browser checks remain pending until the shared QA resource is released.

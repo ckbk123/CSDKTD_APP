@@ -35,11 +35,13 @@ function decimal(source: string): Rational {
 export function parseScalar(source: string): Rational {
   const s = source.replace(/\s|\\[,;!]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac');
   if (!s || s.length > 90) throw new Error('Enter one bounded real number.');
-  const fraction = /^([+-]?)\\frac\{([^{}]+)\}\{([^{}]+)\}$/.exec(s);
+  // MathLive may serialize single-digit fraction arguments without braces.
+  const fraction = /^([+-]?)\\frac(\{[^{}]+\}|\d)(\{[^{}]+\}|\d)$/.exec(s);
   const slash = /^([+-]?(?:\d+(?:\.\d*)?|\.\d+))\/([+-]?(?:\d+(?:\.\d*)?|\.\d+))$/.exec(s);
   let value: Rational;
   if (fraction) {
-    value = div(decimal(fraction[2]), decimal(fraction[3]));
+    const argument = (value: string): string => value.startsWith('{') ? value.slice(1, -1) : value;
+    value = div(decimal(argument(fraction[2])), decimal(argument(fraction[3])));
     if (fraction[1] === '-') value = neg(value);
   } else if (slash) value = div(decimal(slash[1]), decimal(slash[2]));
   else value = decimal(s);
