@@ -1,27 +1,45 @@
 # CD01 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress — source/ownership audit and independent design derivation complete; implementation and verification pending.
+- **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
+- **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
+- **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
+- **Branch:** `codex/cd01-linear-pid-01a18700`.
+- **Worktree:** `C:\Users\baokh\.codex\worktrees\cd01-linear-pid-01a18700\CSDKTD APP`.
+- **PR:** not created.
 
-## Implemented and inspected
+## Source/ownership assessment
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Primary CD01 folder was clean and unclaimed; index was metadata-only, workspace blank, no local tests. Claimed atomically and created a fresh isolated worktree/branch at the current committed primary base. Locked dependencies installed with bundled Node24.22.1:109 packages,0 vulnerabilities. No shared solver/helper exists beyond equation UI and native numeric reading. Original slides were not reinspected; TASK/atlas course comparison is the accepted fixture, and independently authored checks below are not extra slide-transcription claims.
 
-## Remaining acceptance work
+Earlier contributions remain separate: CD08 PR20 resubmitted at203b985 after targeted review; DD07 PR35 submitted at899723d; CD09 PR30 is frozen/draft with an inherited spacing-argument review hold awaiting coordinator reopening. No earlier contribution is merged into this branch. Review returns take priority.
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Accepted requirement audit
 
-## Evidence and next action
+| Accepted requirement | Current assessment / action |
+|---|---|
+| Requirement → controller structure | Missing. Declare error/transient/effort requirements, choose P/PI/filtered PD/PID, predict the action needed and assess the actual model. |
+| Gain/filter controls and individual terms | Missing. Editable bounded second-order plant, gains/filter, parallel/standard conversion and proportional/integral/filtered derivative effort contributions. |
+| Analytic coefficient matching | Missing. Derive chosen structure's characteristic coefficients, expose fixed-order constraints, solve gains from an appropriate desired polynomial and verify every actual mode. |
+| Actual output/effort and course comparison | Missing. Compute full active plant/controller realization, compare course P4/PI4+2/s/filtered PID4+2/s+s/(.05s+1), changes and complete poles. Preserve filter and full plant modes. |
+| Reason before each change | Missing. Draft edits apply only after a reason is chosen/recorded; keep bounded temporary per-visit trial notes and a before/after comparison. No persistence. |
+| Meaningful checks and limits | Missing. Independent baseline coefficients, analytic responses and changed/failure fixtures; bounded parsers/numerics and clear nonconvergence/horizon feedback. |
+| UI/lifecycle/project/browser | Missing. Shared equations/native numeric reader, scoped readable local-scroll plots, owned child-signal loading/recovery and actual reset/navigation/editor/phone checks. |
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+## Mathematical design and independent fixtures to verify
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Bounded planned plant: real strictly proper `G(s)=b/(s²+a1*s+a0)`, with nonzero b, negative unity feedback, constant step reference, continuous seconds. No delays/hardware/nonlinearities. Controller is parallel `C=Kp+Ki/s+Kd*s/(Tf*s+1)` with explicit term activation P/PI/filtered PD/PID. Derivative is on error; the finite filtered kick and units must be shown. When Kp≠0, equivalent standard notation uses Ti=Kp/Ki and Td=Kd/Kp (inactive integral has no Ti); Kp=0 needs no fabricated standard conversion.
+
+For selected nonzero active terms, unreduced characteristic polynomials in descending powers follow directly from the loop:
+- P: s²+a1*s+(a0+b*Kp).
+- PI: s³+a1*s²+(a0+b*Kp)*s+b*Ki.
+- Filtered PD: Tf*s³+(1+a1*Tf)*s²+(a1+a0*Tf+b*Kp*Tf+b*Kd)*s+(a0+b*Kp).
+- Filtered PID: Tf*s⁴+(1+a1*Tf)*s³+(a1+a0*Tf+b*Kp*Tf+b*Kd)*s²+(a0+b*Kp+b*Ki*Tf)*s+b*Ki.
+
+At b1,a1=3,a0=2,Kp4,Ki2,Kd1,Tf.05: P polynomial s²+3s+6; PI s³+3s²+6s+2; filtered PID monic s⁴+23s³+86s²+122s+40. Stable P has y∞=2/3 for unit reference, e∞=1/3; stable PI/PID have e∞0. These equalities do not imply faster settling. All relevant controller/plant modes and actual response must be checked.
+
+Matching constraints: P's linear coefficient is fixed at a1; PI's quadratic coefficient is fixed at a1. With fixed Tf, filtered PD/PID next-leading monic coefficient is fixed at a1+1/Tf. Solve the remaining linear equations for gains and independently verify the resulting coefficients/modes; inconsistent targets get feedback, not plausible gains. A zero gain removes its inactive controller term/state and may reduce actual order; never hide a retained plant mode through transfer cancellation.
+
+Independent analytic authored fixture: b1,a1=3,a0=2,PI Kp1,Ki1 gives full characteristic (s+1)^3 while output transfer is1/(s+1)^2. From zero initial states/unit step, y=1−(1+t)exp(−t),u=2−exp(−t). This tests the full realization plus a cancelled output factor without dropping its internal mode.
+
+Plan: bounded degree≤4 root verification, augmented-state numerical exponential response, explicit sampled overshoot/effort and finite-window settling feedback; analytic stable DC error separate from finite-horizon measures. Resource and conditioning thresholds must be fixed/tested in code before delivery. This record is an early recovery checkpoint, not a solver success claim.
