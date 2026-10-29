@@ -164,6 +164,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
     labPlot.replaceChildren(stemPlot([{ name: 'Mode A (solid)', values: modalSamples(r, a * Math.PI / 180, 32) }, { name: 'Mode B (dashed)', values: modalSamples(r, b * Math.PI / 180, 32), secondary: true }], 1, false, false));
     labText.textContent = `Solid filled: A, θ = ${format(a)}°. Dashed open: B, θ = ${format(b)}°. Both have radius ${format(r)}: ${r < 1 ? 'decaying envelope' : r > 1 ? 'growing envelope' : 'constant single-mode envelope'}. This comparison is normalized to initial modal amplitude 1 and is separate from the transfer-function experiment.`;
   };
+  [radius, thetaA, thetaB].forEach(c => listen(c, 'input', () => {
+    labPlot.replaceChildren(); labText.textContent = 'Comparison inputs changed. Select Compare modes to draw the new samples.';
+  }));
   lab.append(button('Compare modes', compare), labPlot, labText,
     el('p', 'Try 45° and 90° at r = 0.8, then compare 0° with 180°. Sample period is a physical model parameter, never plot resolution. Changing T leaves fixed discrete step/impulse/free samples unchanged, but changes the physical ramp values A kT and time labels.', 'dp-small'));
   root.append(el('p', 'Bounds: 4–200 samples; T = 0.0001–100 s; entered numbers ≤ 10⁶; normalized coefficients ≤ 10⁶; amplitude/history ≤ 10⁴; response magnitude ≤ 10¹⁰. Denominator leading magnitude ≥ 10⁻⁸. The parser accepts at most 512 characters, 20 nested groups and intermediate degree 6. Unsupported forms and excessive responses stop with feedback.', 'dp-small'));

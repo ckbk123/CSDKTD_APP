@@ -66,7 +66,8 @@ describe('DP01 student flow with an equation API stub', () => {
     change(control(root, 'y[−1]'), '2'); click(root, 'Reveal computed sequence');
     expect(root.querySelector('tbody tr td:last-child')!.textContent).toBe('1.6');
     change(control(root, 'Inspect sample k'), '999'); expect(root.textContent).toContain('Choose a sample index');
-    change(control(root, 'Comparison radius r'), '2'); click(root, 'Compare modes'); expect(root.textContent).toContain('Use radius 0–1.5');
+    change(control(root, 'Comparison radius r'), '2'); expect(root.textContent).toContain('Comparison inputs changed.');
+    click(root, 'Compare modes'); expect(root.textContent).toContain('Use radius 0–1.5');
   });
   it('reopen starts at the baseline and cleanup removes all owned content', () => {
     const first = open(); click(first, 'Mode −0.8'); controller.abort(); dispose?.();
