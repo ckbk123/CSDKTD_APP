@@ -1,13 +1,13 @@
 # DF02 implementation status
 
-- **Stage:** in-progress
-- **Assessment:** 2026-10-29; bounded exercise and actual browser checks implemented; a reproduced shared Escape/editor-mode dependency and final delivery remain.
+- **Stage:** implemented
+- **Assessment:** 2026-10-29; accepted bounded exercise implemented and checked. Independent integration review remains, with the shared Escape repair explicitly assigned to the coordinator below.
 - **Contract:** [TASK.md](TASK.md); ownership `src/modules/df02/**`.
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`; owner `worker-df02-01a186d2-12d1`.
 - **Branch:** `codex/df02-tracking-error-01a186d2`.
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\df02-tracking-error-01a186d2\CSDKTD APP`.
 - **Claimed base:** `ecf398eb8dc32376e994a458e3bff3b666ce118a`, primary main at claim time, package 0.3.4. This contribution does not stack the separate CP03 branch.
-- **PR:** not created at this checkpoint; create/reuse one after browser evidence, record and attach its URL before exact final submission.
+- **PR:** [#28](https://github.com/ckbk123/CSDKTD_APP/pull/28), attached. Reuse this PR/branch for corrections; the shared claim binds the exact tested submission HEAD.
 
 ## Requirement audit
 
@@ -21,7 +21,7 @@
 | Prediction and changed experiment | Outcome prediction and optional finite estimate before reveal; editable data and five presets; model edits clear old results | View tests cover predictions, changed normalization, h=2, type-two case, unstable loop and recovery |
 | Lifecycle and scope | Synchronous owned loading node; guarded deferred view and owned child abort signal; early abort forwarding before editor allocation | Loading/success/partial-failure/rapid-abort/cleanup tests; actual reset/reopen/navigation pass |
 | Readability and accessibility | Scoped Indigo/slate styles, visible axis units, semantic equations, numeric and range alternatives, focusable local scrolling | Actual font, toolbar, keyboard, desktop and 390×844 inspection; local plots/equations scroll with ArrowRight; no page overflow |
-| Checks and delivery | Module-only isolated branch; no dependency/global/version/deployment changes | 88 module tests in 342 passing full tests; type/build pass; shared dependency disposition and final PR/submission remain |
+| Checks and delivery | Module-only isolated branch and attached PR; no dependency/global/version/deployment changes | 88 module tests in 342 passing full tests; type/build pass; exact submitted HEAD recorded by claim; upstream shared Escape repair/acceptance assigned to coordinator |
 
 ## Supported mathematical domain
 
@@ -61,18 +61,18 @@ View tests mock the shared equation component only to check owned state, typeset
 
 ## Actual browser evidence and dependency
 
-Private IAB inventory confirmed `metadata.codexSessionId=01a186d2-12d1-77e3-a08c-f9c72e0f3867` and an empty owned tab inventory before opening tab 3 against this worktree's production preview on port 59623. Desktop 1265×712 and narrow 390×844 were inspected. The initial full flow used 68d1576; subsequent lifecycle corrections require rebuilt-page confirmation before final submission.
+Private IAB inventory confirmed `metadata.codexSessionId=01a186d2-12d1-77e3-a08c-f9c72e0f3867` and an empty owned tab inventory before opening tab 3 against this worktree's production preview on port 59623. Desktop1265×712 and narrow390×844 were inspected. The initial full flow used68d1576. After the a5984ad lifecycle corrections, the rebuilt page was reloaded: its owned loading node appeared without the scaffold fallback, presets/reset and rapid leave/reopen restored a fresh baseline and one editor, and the certified baseline limit1 was revealed again with a clean console.
 
 - Baseline ramp displayed k80: r=8, y=7.00022, both errors .999782; prediction 1 agrees with the certified limit. Sample-index ramp gives limit 10; T=.2 gives physical limit 2 and target-100 conversions 20/500. Baseline step gives zero limit; physical parabola shows e~k/10 and k80 error7.05021.
 - h=2 gives k80 comparator .5 and tracking4.25: tracking grows as k/20, comparator certifies .5. Type-two physical parabola certifies1/4, sequence parabola25; exact two-factor cancellation and strict Schur conditions typeset correctly. Static1/2 gives direct step output1/3/error2/3. The unstable feedback example stops before k46 and withholds its formal1/5 candidate; canceled unstable external modes also withhold certification. Singular algebraic feedback gives useful feedback and no stale stems.
 - T=1e-2 works; T=1e-999 and N10.5 are rejected. N1000 computes1001 positions and draws113 regular positions; any sample is inspectable. Numeric k123 plus range ArrowRight selects124; nonzero-underflow k preserves124 and intentional0e-999 selects0. Invalid prediction underflow prevents reveal, blank estimate remains optional, and intentional zero prediction agrees for L2,h.5 with r=y and comparator=r/2.
 - Actual MathLive fixtures preserve 1{+2}=3, joined digits1{2}=12, explicit addition/multiplication of fractions, visible2(1/2)=1, hidden denominator groups and one-token10^23=300. Mixed adjacency, braced10^{23}, visual e/E, improper L and zero denominator give errors without stale results. The actual fraction toolbar was activated with Enter after typing1; keyboard2 then Tab produced compact fraction1/2. The power toolbar plus keyboard−2 produced10^{-2}. Fonts and fraction/power/Systems symbols were visually legible.
 - Shell reset and rapid leave/reopen restore baseline and hide the answer. Leaving with the math keyboard open removes all math-fields and visible keyboard controls. At390×844 the document client/scroll widths both remain375; plot client277/scroll570 and equation client279/scroll545 support focus plus ArrowRight scrolling. Axis labels/units and form labels were visually inspected. Only the existing dark theme was exercised; no Firefox evidence is claimed.
-- **Open shared dependency:** opening the keyboard then Escape closes the keyboard but MathLive's default Escape switches the field to LaTeX mode before the shared helper's bubbling handler. The next preset then displays raw TeX and `getValue('latex')` is empty. Reproduced twice; Reset recovers. MathLive's local default binding confirms the cause. Reported to the authorized coordinator with a proposed capture-phase Escape interception; no shared file was edited by this module worker. Do not treat the Escape-close-only observation as proof of subsequent visual editing. Final repair/adaptation disposition and retest remain mandatory.
+- **Assigned integration dependency:** opening the keyboard then Escape closes the keyboard but MathLive's default Escape switches the field to LaTeX mode before the shared helper's bubbling handler. The next preset then displays raw TeX and `getValue('latex')` is empty. Reproduced twice; Reset recovers. MathLive's local default binding confirms the cause. The coordinator independently reproduced this in CF02 and explicitly owns the shared capture-phase Escape repair, preserving other keys/abort handling. The coordinator approved this preserved DF02 baseline's implemented submission without copying shared source, merging or rebasing, and must check DF02 Escape→preset in combined current main before accepting integration. This worker does not claim that sequence passes on this older baseline. CP03 will inherit the same shared repair during integration; no sibling-module correction was requested.
 
-Private evidence: `C:\Users\baokh\.codex\control-studio-workers\df02-browser-evidence\browser-results.json`, desktop-stems.jpg, desktop-limit.jpg, mobile-editor.jpg, mobile-stems.jpg and mobile-derivation.jpg. The recorded30 checks plus11 notation fixtures include the outstanding Escape dependency explicitly; they do not represent an all-green final gate. Console warnings/errors were empty at the recorded inspection. The viewport override was restored; the owned temporary tab remains available for the dependency retest. No global QA reservation/waiter is held. Only demonstrably private IAB controls were used.
+Private evidence: `C:\Users\baokh\.codex\control-studio-workers\df02-browser-evidence\browser-results.json`, desktop-stems.jpg, desktop-limit.jpg, desktop-baseline-limit.jpg, mobile-editor.jpg, mobile-stems.jpg and mobile-derivation.jpg. The recorded31 checks plus11 notation fixtures explicitly include the known shared Escape issue and its assigned disposition; this is not an all-green claim for the old shared baseline. Console warnings/errors were empty at both recorded inspections. The viewport override was restored, the owned tab closed and the tab inventory was empty afterward. No global QA reservation/waiter is held. Only demonstrably private IAB controls were used.
 
-After resolving the dependency, update this audit/stage, close the owned tab, create/reuse and attach one PR, record its URL, commit/test the final exact HEAD, push/verify it and submit the clean worktree with the current primary helper. Independent integration review is later; no merge, deployment or version change is authorized.
+The coordinator's explicit disposition permits final module delivery while the assigned upstream repair proceeds. Final exact-HEAD module/type/full/build checks, remote-head verification and clean-claim submission bind this contribution; any returned correction uses this same PR/worktree. Independent review and the combined-main Escape/preset gate remain the integration owner's responsibility. No merge, deployment or version change is included. The a5984ad checkpoint also passed [GitHub CI](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40898072559).
 
 ## Provenance and checkpoints
 
