@@ -49,6 +49,11 @@ describe('Mason and original signal equations', () => {
     equivalent(analyze(net).transfer, String.raw`\frac1{s^2+6s+6}`);
     net.target = 'x'; equivalent(analyze(net).transfer, String.raw`\frac{s+2}{s^2+6s+6}`);
   });
+  it('uses a changed quadratic gain entered with real fraction/power controls', () => {
+    // y=G2(G1(r-y)-2y), G1=1/(s+1)^2 => denominator (s+1)^2(s+4)+1.
+    const d = baseline(); d.branches[1].value = String.raw`\frac{1}{s^2+2s+1}`;
+    expect(coefficients(analyze(parsed(d)).transfer)).toEqual({ numerator: ['1'], denominator: ['5', '9', '6', '1'] });
+  });
   it('includes all pair and triple terms with distinct path cofactors', () => {
     // a=1+a/2=>2; b=a+b/3=>3; c=b+c/4=>4; y=c+2=6.
     // Delta=(1-1/2)(1-1/3)(1-1/4)=1/4; direct path cofactor=1/4.

@@ -4,7 +4,7 @@ vi.mock('../../shared/equations/input', () => ({
   createEquationInput: ({ label, value, signal, onChange }: { label: string; value: string; signal: AbortSignal; onChange: (d: { latex: string }) => void }) => {
     const element = document.createElement('div'), field = document.createElement('textarea'); field.setAttribute('aria-label', label); field.value = value; element.append(field);
     field.addEventListener('input', () => onChange({ latex: field.value }), { signal });
-    return { element, getValue: () => ({ latex: field.value }), destroy: () => element.remove() };
+    return { element, getValue: () => ({ latex: field.value, empty: !field.value, hasPlaceholders: field.value.includes('placeholder'), syntaxIssues: [] }), destroy: () => element.remove() };
   },
 }));
 import { mount } from './view';
@@ -48,6 +48,11 @@ describe('CR05 exercise flow with mocked equation view', () => {
   it('shows all disjoint triple products and distinct cofactors in the proposed fixture', () => {
     const v = start(); v.click('disjoint'); reveal(v);
     expect(v.part('determinants').textContent).toContain('3-loop terms: subtract'); expect(v.part('determinants').textContent).toContain('No loop touches this path'); expect(v.part('numeric').textContent).toContain('Mason = 6');
+  });
+  it('distinguishes incomplete boxes and preserves the diagram when exact equations are singular', () => {
+    const v = start(); const set = (id: string, value: string) => { const field = v.container.querySelector<HTMLTextAreaElement>(`[aria-label="${id} signed gain"]`)!; field.value = value; field.dispatchEvent(new Event('input', { bubbles: true })); };
+    set('b2', String.raw`\frac{\placeholder{}}{1}`); v.click('apply'); expect(v.part('feedback').textContent).toContain('Complete the fraction');
+    v.click('disjoint'); set('b6', '1'); v.click('apply'); v.click('enumerate'); expect(v.part('feedback').textContent).toContain('singular'); expect(v.part('result').textContent).toBe(''); expect(v.part('graph').querySelector('svg')).not.toBeNull();
   });
   it('releases the visit and reopens with fresh baseline state', () => {
     const v = start(); v.click('disjoint'); reveal(v); v.parent.abort(); v.cleanup?.(); expect(v.container.childElementCount).toBe(0);

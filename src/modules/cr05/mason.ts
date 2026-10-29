@@ -91,6 +91,7 @@ export function analyze(net: Net, maxVisits = 10000): Analysis {
     }
   };
   combine(0, [], [], constant(1n));
+  sets.sort((a, b) => a.loops.length - b.loops.length || a.loops.join(',').localeCompare(b.loops.join(','), 'en'));
   const delta = determinant(sets, w);
   if (isZero(delta)) throw new Error('Δ is identically zero. The signal equations are singular; there is no unique general transfer.');
   const eligibleSets = paths.map(path => sets.filter(set => !set.nodes.some(n => path.nodes.includes(n))));

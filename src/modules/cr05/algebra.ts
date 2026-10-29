@@ -66,7 +66,10 @@ export function div(a: Gain, b: Gain, w: Work): Gain {
 }
 function integerForm(g: Gain): [bigint[], bigint[]] {
   let lcm = 1n;
-  for (const c of [...g.n, ...g.d]) lcm = lcm / gcd(lcm, c.d) * c.d;
+  for (const c of [...g.n, ...g.d]) {
+    lcm = lcm / gcd(lcm, c.d) * c.d;
+    if (lcm.toString(2).length > 4096) throw new Error('The exact result is too large to display. Simplify the branch gains.');
+  }
   let n = g.n.map(c => c.n * (lcm / c.d)), d = g.d.map(c => c.n * (lcm / c.d));
   let factor = 0n; for (const c of [...n, ...d]) factor = gcd(factor, c);
   n = n.map(c => c / factor); d = d.map(c => c / factor); return [n, d];
@@ -81,7 +84,9 @@ function pLatex(p: bigint[]): string {
   return terms.join('') || '0';
 }
 export function latex(g: Gain): string {
-  const [n, d] = integerForm(g); return d.length === 1 && d[0] === 1n ? pLatex(n) : `\\frac{${pLatex(n)}}{${pLatex(d)}}`;
+  const [n, d] = integerForm(g), result = d.length === 1 && d[0] === 1n ? pLatex(n) : `\\frac{${pLatex(n)}}{${pLatex(d)}}`;
+  if (result.length > 8192) throw new Error('The exact equation is too large to display. Simplify the branch gains.');
+  return result;
 }
 export function same(a: Gain, b: Gain, w: Work) { return isZero(sub(a, b, w)); }
 export function coefficients(g: Gain) { const [n, d] = integerForm(g); return { numerator: n.map(String), denominator: d.map(String) }; }

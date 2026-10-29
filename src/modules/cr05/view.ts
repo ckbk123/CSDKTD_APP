@@ -26,6 +26,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
     <div class="cr05-row"><label>Predict forward paths<select data-control="path-count"><option value="">Choose</option><option>0</option><option>1</option><option>2</option><option value="3">3 or more</option></select></label><label>Predict elementary loops<select data-control="loop-count"><option value="">Choose</option><option>0</option><option>1</option><option>2</option><option value="3">3 or more</option></select></label><button type="button" data-action="enumerate">Reveal enumeration</button></div><p data-part="prediction" role="status"></p><div data-part="enumeration" class="cr05-list"></div></section>
   <section><h2>3. Build determinants, then simplify</h2><p>A non-touching set has no shared signal nodes. The empty product contributes 1; single-loop terms subtract, pairs add and triples subtract. A path cofactor uses only sets that avoid every node on that path.</p><button type="button" data-action="determinants">Build Δ and path cofactors</button><div data-part="determinants"></div><button type="button" data-action="result">Simplify and check original equations</button><div data-part="result"></div>
     <div class="cr05-row"><label>Evaluation σ (s⁻¹)<input data-control="sigma" aria-label="Evaluation real part" type="number" step="any" value="0"></label><label>Evaluation ω (rad/s)<input data-control="omega" aria-label="Evaluation imaginary part" type="number" step="any" value="0"></label><button type="button" data-action="numeric">Check at s = σ + jω</button></div><p data-part="numeric" role="status"></p><p class="cr05-muted">Formal rational identities use exact decimal arithmetic with polynomial cancellation; no stability conclusion follows from a reduced transfer. Original node equations are independently eliminated before exact comparison. The numeric point check uses branch gains before network cancellation and reports singular/poorly conditioned points. |s| ≤100; pivot threshold 10⁻¹¹, scaled residual ≤10⁻⁹ and transfer disagreement ≤10⁻⁸. Exact work is capped at 200,000 coefficient operations, 2048-bit integers, intermediate degree 64; enumeration at 10,000 visits, 128 paths/loops and 256 non-touching sets. Limits give feedback, never a partial answer.</p></section>`;
+  const scope = root.querySelector<HTMLElement>('section:last-child > p.cr05-muted')!;
+  const limits = document.createElement('details'); limits.append(text('summary', 'Calculation scope and limits')); scope.replaceWith(limits); limits.append(scope);
   container.append(root);
   const part = (name: string) => root.querySelector<HTMLElement>(`[data-part="${name}"]`)!;
   const control = <T extends HTMLInputElement | HTMLSelectElement>(name: string) => root.querySelector<T>(`[data-control="${name}"]`)!;
@@ -71,6 +73,13 @@ export const mount: ModuleMount = ({ container, signal }) => {
   function apply() {
     clearAnswers(); clearTraces();
     if (control<HTMLInputElement>('nodes').value.split(',').map(n => n.trim()).join(',') !== draft.nodes.join(',')) throw new Error('Update the edited signal list before applying the graph.');
+    inputs.forEach((input, i) => {
+      const value = input.getValue(), name = draft.branches[i].id;
+      if (value.empty) throw new Error(`Enter a signed gain for ${name}.`);
+      if (value.hasPlaceholders) throw new Error(`Complete the fraction or power boxes in ${name}.`);
+      if (value.syntaxIssues?.length) throw new Error(`Check the equation notation in ${name}.`);
+      draft.branches[i].value = value.latex;
+    });
     net = parsed(draft); validate(net);
     part('source-note').textContent = `${draft.label}. ${draft.note}`;
     part('signals').replaceChildren(); part('trace-buttons').replaceChildren();
@@ -86,7 +95,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   }
   function needNet(): Net { if (!net) throw new Error('Apply a valid graph first.'); return net; }
   function enumerate() {
-    analysis = analyze(needNet()); built = false; revealed = false;
+    clearAnswers(); analysis = analyze(needNet()); built = false; revealed = false;
     for (const id of ['determinants', 'result', 'numeric']) part(id).replaceChildren();
     const host = part('enumeration'); host.replaceChildren();
     const counts = [['path-count', analysis.paths.length, 'paths'], ['loop-count', analysis.loops.length, 'loops']] as const;
@@ -177,7 +186,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
       else if (action === 'result') result();
       else if (action === 'numeric') checkPoint();
     } catch (error) {
-      if (['apply', 'enumerate'].includes(action ?? '')) { invalidate(); }
+      if (action === 'apply') invalidate();
+      else if (action === 'enumerate') clearAnswers();
+      else if (action === 'determinants') { built = false; revealed = false; for (const id of ['determinants', 'result', 'numeric']) part(id).replaceChildren(); }
+      else if (action === 'result') { revealed = false; for (const id of ['result', 'numeric']) part(id).replaceChildren(); }
       feedback.textContent = (error as Error).message;
     }
   }, { signal });
