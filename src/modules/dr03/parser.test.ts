@@ -3,6 +3,15 @@ import { parseModel } from './parser';
 import { ONE, add, compare, div, fromDecimal, fromNumber, mul, neg, rational, sub, toNumber } from './rational';
 
 describe('DR03 bounded rational coefficients', () => {
+  it('rounds halfway binary values to even and preserves representable subnormals', () => {
+    const scale = 1n << 53n;
+    expect(toNumber(rational(scale + 1n, scale))).toBe(1);
+    expect(toNumber(rational(scale + 3n, scale))).toBe(1 + 2 ** -51);
+    expect(toNumber(fromNumber(Number.MIN_VALUE), Number.MIN_VALUE)).toBe(Number.MIN_VALUE);
+    expect(() => toNumber(rational(1n, 1n << 1075n), Number.MIN_VALUE)).toThrow(/range/);
+    expect(toNumber(rational(3n, 1n << 1075n), Number.MIN_VALUE)).toBe(2 * Number.MIN_VALUE);
+    for (const value of [.1, .3, 1.2345678901234567, 1e-300, 1e300, -2.718281828459045]) expect(toNumber(fromNumber(value))).toBe(value);
+  });
   it('reduces signs and fractions and computes independent exact identities', () => {
     expect(rational(-6n, -8n)).toEqual({ n: 3n, d: 4n });
     const half = rational(1n, 2n), third = rational(1n, 3n);

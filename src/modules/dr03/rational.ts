@@ -46,9 +46,19 @@ export function fromNumber(value: number): Q {
 
 export function toNumber(value: Q, minimum = 1e-300, maximum = 1e300): number {
   if (!value.n) return 0;
-  const n = abs(value.n), ns = Math.max(0, bits(n) - 60), ds = Math.max(0, bits(value.d) - 60);
-  const ratio = Number(n >> BigInt(ns)) / Number(value.d >> BigInt(ds)), exponent = ns - ds;
-  const converted = exponent < -1022 ? ratio * 2 ** -1022 * 2 ** (exponent + 1022) : ratio * 2 ** exponent;
+  const n = abs(value.n), d = value.d;
+  let exponent = bits(n) - bits(d);
+  if (exponent >= 0 ? n < (d << BigInt(exponent)) : (n << BigInt(-exponent)) < d) exponent--;
+  if (exponent > 1023) return fail();
+  // Round the integer significand once, including subnormal values and
+  // halfway ties. A leading-bit ratio can introduce an extra rounding error.
+  const scale = Math.max(-1074, exponent - 52);
+  const numerator = scale < 0 ? n << BigInt(-scale) : n;
+  const denominator = scale >= 0 ? d << BigInt(scale) : d;
+  let significand = numerator / denominator;
+  const twiceRemainder = 2n * (numerator % denominator);
+  if (twiceRemainder > denominator || (twiceRemainder === denominator && (significand & 1n))) significand++;
+  const converted = Number(significand) * 2 ** scale;
   if (!Number.isFinite(converted) || converted < minimum || converted > maximum || converted === 0) return fail();
   return value.n < 0n ? -converted : converted;
 }
