@@ -38,6 +38,17 @@ describe('CF03 visit state and numeric-feedback integration (mocked equations)',
   expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(false);
   expect(v.container.querySelector('.cf-reasoning')!.textContent).toContain('Selected finite-horizon integral: ITSE=');v.close();
  });
+ it('rejects ambiguous power atoms and clears prior results while retaining proper powers',()=>{
+  const v=visit();v.click('reveal');const fields=v.container.querySelectorAll('textarea');
+  const equation=(index:number,value:string)=>{fields[index].value=value;fields[index].dispatchEvent(new Event('input'));v.click('compute');};
+  equation(1,'2^(2)');
+  expect(v.container.querySelector('.cf-status')!.textContent).toContain('power box');
+  expect(v.container.querySelector('svg')).toBeNull();expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(true);
+  equation(1,'2^{2}');expect(v.container.querySelector('.cf-status')!.textContent).toContain('Computed A');
+  equation(0,String.raw`\frac{1}{s^(2)+s+1}`);
+  expect(v.container.querySelector('.cf-status')!.textContent).toContain('power box');expect(v.container.querySelector('svg')).toBeNull();
+  equation(0,String.raw`\frac{1}{s^{2}+s+1}`);expect(v.container.querySelector('.cf-status')!.textContent).toContain('Computed A');v.close();
+ });
  it('clears old results on invalid raw horizon input and accepts normal numeric exponents',()=>{
   const v=visit();v.click('reveal');expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(false);
   v.input('horizon','1e-400');v.click('compute');

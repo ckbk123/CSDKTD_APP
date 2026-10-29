@@ -30,6 +30,16 @@ describe('CF03 displayed mathematical meaning', () => {
     expect(()=>parseController('4+2/s')).toThrow(/visible parentheses/);
     expect(()=>parseController('2/(s+1)')).toThrow(/proportional/);
   });
+  it('rejects raw unbraced parenthesized exponent atoms before brace normalization', () => {
+    for (const source of ['2^(2)', '-2^(2)', String.raw`2^\left(2\right)`]) expect(() => parseController(source)).toThrow(/power box/);
+    for (const source of [String.raw`\frac{1}{s^(2)+s+1}`, String.raw`\frac{1}{s^\left(2\right)+s+1}`]) expect(() => parsePlant(source)).toThrow(/power box/);
+  });
+  it('retains true braced and one-token powers throughout the bounded grammar', () => {
+    for (const [source, expected] of [['2^0', 1], ['2^{0}', 1], ['2^1', 2], ['2^{1}', 2], ['2^2', 4], ['2^{2}', 4]] as const) expect(parseController(source)).toEqual({kp:expected,ki:0});
+    expect(parseController('2^{2}(2)')).toEqual({kp:8,ki:0});
+    expect(parsePlant(String.raw`\frac{1}{s^{2}+s+1}`)).toEqual({g:1,a:[1,1,1]});
+    expect(parsePlant(String.raw`\frac{1}{s^2+s+1}`)).toEqual({g:1,a:[1,1,1]});
+  });
   it('bounds coefficient size and rejects raw nonzero decimal underflow', () => {
     expect(()=>parseController('1001')).toThrow(/1000/);
     expect(()=>parsePlant('1/(0.00000000001s+1)')).toThrow(/leading/);

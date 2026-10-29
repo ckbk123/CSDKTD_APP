@@ -123,6 +123,9 @@ function rational(latex: string, name: 'G' | 'C'): { top: number[]; bottom: numb
   let s = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:,|;|!|quad|enspace)/g, '')
     .replace(/\\(?:cdot|times)/g, '*').replace(/\s/g, '').replace(/−/g, '-');
   s = s.replace(new RegExp(`^${name}\\(s\\)=`), '');
+  // Reject raw TeX exponent atoms before braces() introduces its own grouping.
+  // In 2^(2), only the opening parenthesis is the exponent, not the number2.
+  if (/\^\(/.test(s)) fail('Use the visual power box with the whole exponent inside it; supported powers are 0, 1 or 2.');
   let sign = 1;
   for (let i = 0; i < 32; i++) {
     const unwrapped = unwrap(s);
