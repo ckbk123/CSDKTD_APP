@@ -114,6 +114,16 @@ describe('DR05 visual expression grammar', () => {
     expect(parseModel(String.raw`G\left(s\right)=\frac{\frac12}{s+\frac12}`)).toEqual({ a: [1, 0.5], b: [0, 0.5] });
     expect(parseModel(String.raw`\frac{s^2+2s+1}{(s+1)(s+2)}`)).toEqual({ a: [1, 3, 2], b: [1, 2, 1] });
   });
+  it('preserves compact/mixed fraction arguments, outer grouping and unary signs', () => {
+    for (const coefficient of [String.raw`\frac12`, String.raw`\frac{1}2`, String.raw`\frac1{2}`, String.raw`\frac{1}{2}`]) {
+      expect(parseModel(`${coefficient}/(s+${coefficient})`)).toEqual({ a: [1, 0.5], b: [0, 0.5] });
+    }
+    for (const expression of [String.raw`-\frac{\frac12}{s+\frac12}`, String.raw`\frac{-\frac12}{s+\frac12}`, String.raw`-\left(\frac{\frac12}{s+\frac12}\right)`]) {
+      const model = parseModel(expression);
+      expect(model).toEqual({ a: [1, 0.5], b: [0, -0.5] });
+      expect(run(realize(model), base).samples[1].y).toBeCloseTo(Math.expm1(-0.05), 13);
+    }
+  });
   it.each(['', 'G(z)=1/(z+1)', '\\sin(s)', 'NaN', '(1e-2)/(s+1)', '1e3/(s+1)', '1/(s+)', '1/(s-s)', '1/(s^3+1)', 's^2/(s+1)', '1/(0.000000001s+1)', '1000001/(s+1)', '1/(s+1))'])('rejects malformed/unsupported %s', s => expect(() => parseModel(s)).toThrow());
   it('bounds input length and rejects nonzero underflow before constructing a plant', () => {
     expect(() => parseModel('s'.repeat(513))).toThrow(/512/);
