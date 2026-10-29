@@ -36,7 +36,8 @@ export function locusPlot(model: Model, options: PlotOptions): HTMLElement {
   if (options.segments) for (const segment of realSegments(model).filter(value => value.onLocus)) plane.append(svg('line', { x1: x(segment.left ?? -range), x2: x(segment.right ?? range), y1: 180, y2: 180, class: 'rl-segment' }));
   if (options.asymptotes) {
     const construction = asymptotes(model);
-    for (const angle of construction.angles) plane.append(svg('line', { x1: x(construction.centroid), y1: 180, x2: x(construction.centroid + 10 * range * Math.cos(angle)), y2: y(10 * range * Math.sin(angle)), class: 'rl-asymptote' }));
+    const rayLength = Math.abs(construction.centroid) + 4 * range;
+    for (const angle of construction.angles) plane.append(svg('line', { x1: x(construction.centroid), y1: 180, x2: x(construction.centroid + rayLength * Math.cos(angle)), y2: y(rayLength * Math.sin(angle)), class: 'rl-asymptote' }));
   }
   if (options.branches && options.showBranches) options.branches.forEach((branch, index) => plane.append(svg('path', { d: branch.map((point, at) => `${at ? 'L' : 'M'}${x(point.re)},${y(point.im)}`).join(''), class: index ? 'rl-branch rl-secondary' : 'rl-branch' })));
   const openPoles = poles(model), openZero = zero(model);
@@ -64,7 +65,8 @@ export function locusPlot(model: Model, options: PlotOptions): HTMLElement {
   for (const tick of [-range, 0, range]) chart.append(svg('text', { x: 50 + x(tick), y: 411, 'text-anchor': 'middle' }, numberText(tick)), svg('text', { x: 43, y: 34 + y(tick), 'text-anchor': 'end' }, numberText(tick)));
   chart.append(svg('text', { x: 410, y: 434, 'text-anchor': 'end' }, 'Re z (normalized)'), svg('text', { x: 50, y: 18 }, 'Im z (normalized)'));
   const outside = options.selected?.roots.filter(point => Math.abs(point.re) > range || Math.abs(point.im) > range).length ?? 0;
-  const caption = `× open poles; ○ finite zero; diamonds selected roots; ring last tested point; squares positive-gain break candidates. Unit circle always shown. View ±${numberText(range)}, equal scales; ${outside} selected roots outside this view remain in the table. ${options.branches ? 'Polyline branches are finite computed gain samples, not a proof of an entire stability interval.' : 'Predict the real-axis segments before revealing the branches.'}${options.candidate ? ` Last plotted point: ${complexText(options.candidate)}.` : ''}`;
+  const openOutside = [...openPoles, ...(openZero ? [openZero] : [])].filter(point => Math.abs(point.re) > range || Math.abs(point.im) > range).length;
+  const caption = `× open poles; ○ finite zero; diamonds selected roots; ring last tested point; squares positive-gain break candidates. Unit circle always shown. View ±${numberText(range)}, equal scales; ${openOutside} open-loop markers are outside the view and their coordinates remain listed above. ${outside} selected roots outside this view remain in the table. ${options.branches ? 'Polyline branches are finite computed gain samples, not a proof of an entire stability interval.' : 'Predict the real-axis segments before revealing the branches.'}${options.candidate ? ` Last plotted point: ${complexText(options.candidate)}.` : ''}`;
   return figure('z-plane construction', chart, caption);
 }
 
