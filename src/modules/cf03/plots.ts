@@ -38,7 +38,7 @@ export function responsePlot(A: Run,B: Run,time: number): SVGSVGElement {
   return svg;
 }
 export function costPlot(run: Run,time: number,metric: Metric,name: string): SVGSVGElement {
-  const selected=panel(run,time,metric),{svg,add}=canvas(270,`${metric} integrand for run${name}. Horizontal time in seconds; vertical density in${densityUnit[metric]}. Shading illustrates accumulation through the selected Simpson panel; it is a linear sample illustration, not exact quadrature area.`);
+  const selected=panel(run,time,metric),{svg,add}=canvas(270,`${metric} integrand for run ${name}. Horizontal time in seconds; vertical density in ${densityUnit[metric]}. Shading illustrates accumulation through the selected Simpson panel; it is a linear sample illustration, not exact quadrature area.`);
   const max=Math.max(1e-12,...run.samples.map(s=>density(s,metric))),X=(t:number)=>65+690*t/run.horizon,Y=(v:number)=>205-165*v/max;
   for(let i=0;i<=4;i++){
     const y=205-165*i/4;add('line',{x1:65,x2:755,y1:y,y2:y,class:'cf-grid'});

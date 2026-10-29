@@ -11,7 +11,7 @@
 [data-module="CF03"] .cf-status,[data-module="CF03"] .cf-feedback,[data-module="CF03"] .cf-inspection,[data-module="CF03"] .cf-verification { border-left:3px solid var(--accent);padding-left:10px; }
 [data-module="CF03"] .cf-feedback:empty,[data-module="CF03"] .cf-verification:empty { display:none; }
 [data-module="CF03"] .cf-plot,[data-module="CF03"] .cf-table,[data-module="CF03"] .equation-display { max-width:100%;overflow-x:auto;min-width:0; }
-[data-module="CF03"] .cf-plot svg { display:block;width:100%;min-width:560px;height:auto;color:var(--text); }
+[data-module="CF03"] .cf-plot svg { display:block;width:100%;min-width:820px;height:auto;color:var(--text); }
 [data-module="CF03"] .cf-plot text { fill:currentColor;font:12px sans-serif; }
 [data-module="CF03"] .cf-grid { stroke:var(--line);stroke-width:1; }
 [data-module="CF03"] .cf-line { fill:none;stroke-width:2; }

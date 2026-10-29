@@ -66,3 +66,7 @@ Final parser conditioning check also rejects a nonzero normalized coefficient/co
 ## Draft PR / pending browser gate
 
 [PR22 — Implement CF03 error criteria and control effort comparison](https://github.com/ckbk123/CSDKTD_APP/pull/22) is attached to this worker chat as a **draft**. No existing PR for this branch was found before creation. It accurately reports 33 local/473 application tests and browser QA pending; the active claim is not a completed submission. Connected GitHub write permission was unavailable (403), so existing local Git authentication created the draft without displaying or saving credentials. The same PR will be updated and marked ready after the browser gate. Earlier DF01 PR16 remains preserved separately.
+
+## Readability checkpoint while QA is occupied
+
+Spaced model/run/bound labels consistently and kept SVGs at their 820-unit design width inside the existing local horizontal scrollers, so narrow layouts retain 12px plot labels rather than shrinking them to about8px. No document-wide sizing or shared styles changed. The native-exponent UI regression expectation was updated for the clearer common-horizon label. `npm run check`, `npm test` (473/473,23 files) and `npm run build` pass after this change; the only build warning is the existing MathLive chunk size. Real-browser evidence remains pending normal shared QA access.

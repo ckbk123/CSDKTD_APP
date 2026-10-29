@@ -33,7 +33,7 @@ describe('CF03 visit state and numeric-feedback integration (mocked equations)',
   expect(v.container.querySelector('.cf-status')!.textContent).toContain('nonzero but too small');
   expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(true);
   expect(v.container.querySelector('svg')).toBeNull();
-  v.input('horizon','1e1');v.click('compute');expect(v.container.querySelector('.cf-status')!.textContent).toContain('both over0…10s');v.close();
+  v.input('horizon','1e1');v.click('compute');expect(v.container.querySelector('.cf-status')!.textContent).toContain('both over 0…10 s');v.close();
  });
  it('preserves a valid inspection plot when a candidate time underflows, and accepts genuine zero',()=>{
   const v=visit(),old=v.container.querySelector('.cf-response')!.innerHTML;
