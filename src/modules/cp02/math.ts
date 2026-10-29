@@ -27,9 +27,13 @@ export function inspect(model: Model): Analysis {
     zero: finiteZero, kind: poles.some(p => p.im !== 0) ? 'conjugate' : poles[0].multiplicity === 2 ? 'repeated' : 'real', internal, bibo };
 }
 export interface Term { readonly name: string; readonly coefficient: number; readonly rate: number; readonly frequency: number; readonly power: number; readonly wave: 'cos' | 'sin' }
-export interface StepSolution { readonly terms: readonly Term[]; readonly form: 'zero' | 'first' | 'conjugate' | 'real' | 'single-zero' | 'repeated' | 'double-zero'; readonly values: readonly number[] }
+interface ModalTerms { readonly terms: readonly Term[]; readonly form: 'zero' | 'first' | 'conjugate' | 'real' | 'single-zero' | 'repeated' | 'double-zero'; readonly values: readonly number[] }
+export interface StepSolution extends ModalTerms { readonly coefficients: readonly [number, number, number, number] }
 const term = (name: string, coefficient: number, rate = 0, frequency = 0, power = 0, wave: Term['wave'] = 'cos'): Term => ({ name, coefficient, rate, frequency, power, wave });
 export function decompose(model: Model): StepSolution {
+  return { ...decomposeModes(model), coefficients: [num(model.a1), num(model.a0), num(model.b1), num(model.b0)] };
+}
+function decomposeModes(model: Model): ModalTerms {
   const a = inspect(model), denominator = a.reducedDenominator, numerator = a.reducedNumerator;
   if (denominator.length === 1) return { form: 'zero', values: [], terms: [] };
   const b0 = num(numerator[0]), b1 = numerator[1] ? num(numerator[1]) : 0;
@@ -69,6 +73,17 @@ export function termAt(t: number, value: Term): number {
 }
 export function stepAt(solution: StepSolution, t: number): number {
   time(t, solution.terms.map(value => value.rate)); const v = solution.values;
+  const [a1, a0, b1, b0] = solution.coefficients;
+  if (t * Math.max(1, Math.abs(a1), Math.sqrt(Math.abs(a0))) < 0.05) {
+    // Local ODE series: y(0)=0, y′(0)=b1, y″(0)=b0−a1*b1,
+    // y⁽ⁿ⁾=−a1*y⁽ⁿ⁻¹⁾−a0*y⁽ⁿ⁻²⁾. Avoid subtracting nearly equal residues.
+    let previous = b1 * t, before = 0, value = previous;
+    for (let n = 2; n <= 24; n++) {
+      const current = n === 2 ? (b0 - a1 * b1) * t * t / 2 : -a1 * t * previous / n - a0 * t * t * before / (n * (n - 1));
+      value += current; before = previous; previous = current;
+    }
+    return value;
+  }
   switch (solution.form) {
     case 'zero': return 0;
     case 'first': return v[0] === 0 ? v[1] * t : v[1] / v[0] * Math.expm1(v[0] * t);

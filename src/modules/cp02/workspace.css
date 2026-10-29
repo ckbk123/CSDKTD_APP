@@ -18,16 +18,16 @@
 [data-module="CP02"] .modes-overview:empty, [data-module="CP02"] .modes-results:empty { display: none; }
 [data-module="CP02"] .modes-stability { font-weight: 600; }
 [data-module="CP02"] .modes-plane-scroll, [data-module="CP02"] .modes-plot-scroll, [data-module="CP02"] .modes-table-scroll { max-width: 100%; overflow: auto; }
-[data-module="CP02"] .modes-plane-scroll > svg { width: 100%; min-width: 420px; display: block; touch-action: none; }
+[data-module="CP02"] .modes-plane-scroll > svg { width: 100%; min-width: 420px; display: block; }
 [data-module="CP02"] .modes-plot { margin: 0; min-width: 0; }
 [data-module="CP02"] .modes-plot figcaption { font-weight: 600; margin-bottom: 10px; }
 [data-module="CP02"] .modes-plot-scroll > svg { display: block; width: 100%; min-width: 650px; }
 [data-module="CP02"] svg text { fill: var(--muted); font: 12px system-ui, sans-serif; }
 [data-module="CP02"] .modes-grid { stroke: var(--line); stroke-width: 1; }
 [data-module="CP02"] .modes-axis { stroke: var(--muted); stroke-width: 1.3; }
-[data-module="CP02"] .modes-pole { stroke: var(--accent-strong); stroke-width: 2.5; cursor: grab; }
+[data-module="CP02"] .modes-pole { stroke: var(--accent-strong); stroke-width: 2.5; cursor: grab; touch-action: none; }
 [data-module="CP02"] .modes-hit { fill: transparent; stroke: none; }
-[data-module="CP02"] .modes-zero { fill: var(--surface); stroke: var(--text); stroke-width: 2.5; cursor: grab; }
+[data-module="CP02"] .modes-zero { fill: var(--surface); stroke: var(--text); stroke-width: 2.5; cursor: grab; touch-action: none; }
 [data-module="CP02"] .modes-ghost { opacity: .55; pointer-events: none; }
 [data-module="CP02"] .modes-full-line { stroke: var(--accent-strong); stroke-width: 2.7; }
 [data-module="CP02"] .modes-component { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 4; }

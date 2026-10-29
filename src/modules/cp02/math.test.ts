@@ -66,6 +66,12 @@ describe('independent step formulas and numerical decomposition', () => {
     for (const t of [0, 0.1, 1, 5]) expect(stepAt(s, t)).toBeCloseTo(1 - (1 + t) * Math.exp(-t), 13);
     expect(s.terms.find(t => t.power === 1)?.coefficient).toBe(-1);
   });
+  it('retains the initial curvature for a short time with two close real poles', () => {
+    const s = decompose(model('2.000001', '1.000001')), t = 1e-10;
+    // y(0)=y′(0)=0, y″(0)=1, y‴(0)=−2.000001; omitted t⁴ term <10⁻⁴⁰.
+    const expected = t * t / 2 - 2.000001 * t ** 3 / 6;
+    expect(Math.abs(stepAt(s, t) / expected - 1)).toBeLessThan(1e-12);
+  });
   it('supports one and two origin poles, including exact origin cancellation', () => {
     const single = decompose(model('1', '0')), double = decompose(model('0', '0')), canceled = decompose(model('0', '0', '1', '0'));
     for (const t of [0, 0.1, 1, 5]) { expect(stepAt(single, t)).toBeCloseTo(t - 1 + Math.exp(-t), 13); expect(stepAt(double, t)).toBe(t * t / 2); expect(stepAt(canceled, t)).toBe(t); }
