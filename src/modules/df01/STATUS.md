@@ -38,3 +38,10 @@ Implementation, mathematical tests, actual browser checks, final project checks 
 - Node 24.22.1 and locked dependencies installed in this worktree. An initial `npm ci` used the machine default Node 20 and printed engine warnings; it was repeated successfully under Node 24 via explicit npm CLI invocation. No dependency files changed.
 - `npm run check` passed. A first full `npm test` exposed MathLive's Node SSR export when importing the workspace; moving browser initialization into the visit-owned lazy view resolved it without shared changes. Full `npm test` now passes **8 files / 71 tests**. Production build passed before this lazy-view adjustment; rerun required for final evidence.
 - Browser QA reservation was busy (DR01); no browser surface has been accessed. Browser verification and final delivery remain pending; stage stays in-progress.
+
+## Boundary-review checkpoint
+
+- Added a true temporary-entry fixture: `(z²−z+1.64)/(z²+.64)` has y[2]=1 but y[3]=1.64. A short in-band suffix does not establish settling.
+- A sample within the roundoff margin of the band boundary now leaves the earliest settling index unestablished; it is never silently skipped in favor of a later index. Added an independent `r=sqrt(.05)` fixture with its k=2 error exactly 5%.
+- Small nonzero residuals remain visible; scientific coefficients typeset as powers of ten.
+- Added UI transition tests for model-error invalidation, time recomputation and fresh reopening. Current local suite: **3 files / 33 tests**. Full suite before the final scientific-number formatting adjustment: **9 files / 74 tests**, type check and build passed. Final checks/browser evidence remain pending.

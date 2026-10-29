@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analyze, parseTransfer } from './math';
+import { analyze, format, latexNumber, parseTransfer } from './math';
 const run = (s: string, N = 60, T = 0.1, band = 0.02) => analyze(parseTransfer(s), T, N, band);
 describe('DF01 bounded visual transfer reader', () => {
   it('reads visual fractions, optional name, powers, products and leading normalization', () => {
@@ -14,6 +14,11 @@ describe('DF01 bounded visual transfer reader', () => {
     expect(() => parseTransfer('z^2/(z-.5)')).toThrow(/future input/);
     expect(() => parseTransfer('1/(0.00000000001z-.1)')).toThrow(/too small/);
     expect(() => parseTransfer('1000001/(z-.5)')).toThrow(/1,000,000/);
+  });
+  it('retains small nonzero residuals and typesets scientific numbers as powers of ten', () => {
+    expect(format(1e-15)).toBe('1e-15');
+    expect(latexNumber(1e-7)).toBe(String.raw`1\times 10^{-7}`);
+    expect(run('2e-7/(z-.8)').finalValue).toBeCloseTo(1e-6, 15);
   });
 });
 describe('DF01 sample convention, independent fixtures and certificates', () => {
@@ -83,10 +88,18 @@ describe('DF01 sample convention, independent fixtures and certificates', () => 
   it('insufficient horizon and slow/oscillatory modes never use the final time as settling', () => {
     expect(run('.2/(z-.8)', 10).settling).toBeNull();
     expect(run('.001/(z-.999)', 500).settling).toBeNull();
-    // First entry is k=2, but k=4 exits again. A short in-band suffix is insufficient.
-    const r = run('1.64/(z^2+.64)', 2, .1, .05);
+    // k=2 is exactly at the final value, but k=3 exits. An in-band last sample is insufficient.
+    const r = run('(z^2-z+1.64)/(z^2+.64)', 2, .1, .05);
+    expect(r.samples[2]).toBeCloseTo(r.finalValue, 13);
+    expect(run('(z^2-z+1.64)/(z^2+.64)', 10).samples[3]).toBeCloseTo(1.64, 13);
     expect(r.settling).toBeNull();
     expect(r.tailBound!).toBeGreaterThan(r.bandWidth);
+  });
+  it('does not label a later sample as first when a band-boundary index is numerically uncertain', () => {
+    // y[k]=1-r^k, r=sqrt(.05): k=2 is exactly on the inclusive 5% band.
+    // Floating arithmetic cannot certify the earliest index here.
+    const pole = Math.sqrt(.05);
+    expect(run(`${1 - pole}/(z-${pole})`, 40, .1, .05).settling).toBeNull();
   });
   it('hidden unstable poles are retained, and boundary/zero-final models are rejected', () => {
     expect(() => run('(z-2)/((z-2)(z-.5))')).toThrow(/Every denominator pole/);

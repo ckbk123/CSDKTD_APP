@@ -14,7 +14,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
     loading.remove();
     dispose = view.mount({ container, signal }) || undefined;
   }).catch(() => {
-    if (!closed && !signal.aborted) loading.textContent = 'The exercise could not load. Reset the tool to retry.';
+    if (!closed && !signal.aborted) {
+      loading.textContent = 'The exercise could not load. Reset the tool to retry.';
+      container.append(loading);
+    }
   });
   return () => { closed = true; dispose?.(); dispose = undefined; loading.remove(); };
 };

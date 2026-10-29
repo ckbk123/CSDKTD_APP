@@ -194,8 +194,11 @@ export function analyze(tf: Transfer, T: number, N: number, band: number): Resul
   let settling: number | null = null;
   if (bound !== null && bound + slack <= bandWidth) {
     let lastOutside = -1;
-    samples.forEach((y, k) => { if (Math.abs(y - finalValue) + slack > bandWidth) lastOutside = k; });
-    if (lastOutside < N) settling = lastOutside + 1;
+    samples.forEach((y, k) => { if (Math.abs(y - finalValue) > bandWidth + slack) lastOutside = k; });
+    // A numerically ambiguous boundary cannot justify skipping a potentially
+    // earlier valid index and reporting the following sample as the first.
+    const uncertain = samples.slice(lastOutside + 1).some(y => Math.abs(Math.abs(y - finalValue) - bandWidth) <= slack);
+    if (lastOutside < N && !uncertain) settling = lastOutside + 1;
   }
   let peak = 0;
   samples.forEach((y, k) => { if (y / finalValue > samples[peak] / finalValue + 1e-12) peak = k; });
@@ -204,12 +207,13 @@ export function analyze(tf: Transfer, T: number, N: number, band: number): Resul
   return { a, b, A, B, C, D, samples, stateSamples, residual, finalValue, radius, bandWidth,
     tailBound: bound, settling, peak, overshoot, peakEstablished, T, N, band };
 }
-export const format = (v: number): string => Math.abs(v) < 1e-12 ? '0' : Number(v.toPrecision(7)).toString();
+export const format = (v: number): string => Number(v.toPrecision(7)).toString();
+export const latexNumber = (v: number): string => format(v).replace(/e([+-]?\d+)$/, (_, power: string) => `\\times 10^{${Number(power)}}`);
 export function polynomialLatex(values: number[], variable: string): string {
   return values.map((v, i) => {
     const power = values.length - 1 - i;
     if (v === 0) return '';
-    const magnitude = Math.abs(v) === 1 && power > 0 ? '' : format(Math.abs(v));
+    const magnitude = Math.abs(v) === 1 && power > 0 ? '' : latexNumber(Math.abs(v));
     return `${v < 0 ? '-' : '+'}${magnitude}${power ? variable : ''}${power > 1 ? `^{${power}}` : ''}`;
   }).filter(Boolean).join('').replace(/^\+/, '') || '0';
 }

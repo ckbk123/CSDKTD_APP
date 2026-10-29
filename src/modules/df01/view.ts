@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { analyze, format as f, parseTransfer, polynomialLatex, type Result } from './math';
+import { analyze, format as f, latexNumber as ln, parseTransfer, polynomialLatex, type Result } from './math';
 import './style.css';
 
 const svgNS = 'http://www.w3.org/2000/svg';
@@ -54,7 +54,7 @@ function graph(r: Result, selected: number, reveal: boolean): SVGSVGElement {
   make('text', { x: 432, y: 311, 'text-anchor': 'middle' }, `Stems: discrete samples · dashed: final value · shaded: ${r.band * 100}% band`);
   return svg;
 }
-const matrix = (rows: number[][]) => `\\begin{bmatrix}${rows.map(row => row.map(f).join('&')).join('\\\\')}\\end{bmatrix}`;
+const matrix = (rows: number[][]) => `\\begin{bmatrix}${rows.map(row => row.map(ln).join('&')).join('\\\\')}\\end{bmatrix}`;
 
 export const mount: ModuleMount = ({ container, signal }) => {
   const root = document.createElement('div'); root.className = 'df-tool';
@@ -152,19 +152,19 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const p = (text: string) => { const el = document.createElement('p'); el.textContent = text; summary.append(el); };
     p(`Final value G(1) = ${f(r.finalValue)}; band [${f(r.finalValue - r.bandWidth)}, ${f(r.finalValue + r.bandWidth)}]. Largest plotted sample: k = ${r.peak}, t = ${f(r.peak * r.T)} s, y = ${f(r.samples[r.peak])}. Observed overshoot in the final-value direction = ${f(r.overshoot)}%.`);
     p(r.peakEstablished ? 'The tail bound also establishes this directional sampled peak globally (earliest occurrence shown).'
-      : 'This is the largest plotted sample. A finite global peak is not established; a monotone response can approach its final value without attaining it.');
-    p(r.settling === null ? `Settling: not established by N = ${r.N}. Extend the horizon; the final plotted sample is not a settling-time answer.`
+      : 'This is the largest plotted sample (ties within 10⁻¹² of the final-value scale use the earliest index). A finite global peak is not established; a monotone response can approach its final value without attaining it.');
+    p(r.settling === null ? `Settling: not established by N = ${r.N}. Extend the horizon. If a sample lies within the numerical margin of the band boundary, the first index remains uncertain; the final plotted sample is not a settling-time answer.`
       : `First settling sample kₛ = ${r.settling}; tₛ = kₛT = ${r.settling} × ${f(r.T)} = ${f(r.settling * r.T)} s. The band includes its boundary; a small roundoff margin is reserved.`);
     p(`All unplotted errors are bounded ${r.tailBound === null ? 'by no established contraction within the work limit' : `by ${f(r.tailBound)}`}; band half-width = ${f(r.bandWidth)}. Maximum denominator-pole radius = ${f(r.radius)}. State/recurrence maximum difference = ${f(r.residual)}.`);
     const reasoning = get('.df-reasoning'); reasoning.replaceChildren();
     const equation = (latex: string, label: string) => reasoning.append(createEquationDisplay(latex, label));
     equation(`G(z)=\\frac{${polynomialLatex(r.b, 'z')}}{${polynomialLatex(r.a, 'z')}}`, 'Normalized transfer function, descending powers');
-    const terms = (coeff: number[], symbol: string, start: number) => coeff.slice(start).map((v, j) => `${j ? '+' : ''}(${f(v)})${symbol}[k${j + start ? `-${j + start}` : ''}]`).join('');
-    equation(`y[k]=${terms(r.b, 'u', 0)}${r.a.slice(1).map((v, i) => `-(${f(v)})y[k-${i + 1}]`).join('')}`, 'Output recurrence from denominator times output equals numerator times input');
+    const terms = (coeff: number[], symbol: string, start: number) => coeff.slice(start).map((v, j) => `${j ? '+' : ''}(${ln(v)})${symbol}[k${j + start ? `-${j + start}` : ''}]`).join('');
+    equation(`y[k]=${terms(r.b, 'u', 0)}${r.a.slice(1).map((v, i) => `-(${ln(v)})y[k-${i + 1}]`).join('')}`, 'Output recurrence from denominator times output equals numerator times input');
     equation(`x[k+1]=${matrix(r.A)}x[k]+${matrix(r.B.map(v => [v]))}u[k]`, 'Controllable state update');
-    equation(`y[k]=${matrix([r.C])}x[k]+(${f(r.D)})u[k],\\quad x[0]=0`, 'Output is read before state update');
-    equation(`y_\\infty=G(1)=\\frac{${f(r.b.reduce((s, v) => s + v, 0))}}{${f(r.a.reduce((s, v) => s + v, 0))}}=${f(r.finalValue)}`, 'Final value from stable unit-step transfer');
-    equation(`|y[k]-y_\\infty|\\le ${f(r.bandWidth)}\\quad\\text{for every } k\\ge k_s,\\qquad t_s=k_sT`, 'Settling convention');
+    equation(`y[k]=${matrix([r.C])}x[k]+(${ln(r.D)})u[k],\\quad x[0]=0`, 'Output is read before state update');
+    equation(`y_\\infty=G(1)=\\frac{${ln(r.b.reduce((s, v) => s + v, 0))}}{${ln(r.a.reduce((s, v) => s + v, 0))}}\\approx ${ln(r.finalValue)}`, 'Final value from stable unit-step transfer');
+    equation(`|y[k]-y_\\infty|\\le ${ln(r.bandWidth)}\\quad\\text{for every } k\\ge k_s,\\qquad t_s=k_sT`, 'Settling convention');
     const note = document.createElement('p'); note.textContent = 'Coefficients above are in descending powers of z. The recurrence and state realization are stepped independently with identical zero prehistory; x stores the internal delay values. Output y[k] is read first, then all state entries update together. Stable unreduced poles justify the final-value limit. A sampled maximum does not establish a continuous peak.';
     reasoning.append(note); inspect();
   }
