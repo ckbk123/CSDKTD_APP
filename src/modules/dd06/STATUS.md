@@ -1,7 +1,7 @@
 # DD06 implementation status
 
 - **Stage:** in-progress
-- **Assessment:** 2026-10-29; pure numerical solver and numeric matrix parser implemented/tested. The student interface, full project/browser verification and submission remain unfinished.
+- **Assessment:** 2026-10-29; bounded solver/parser and student interface implemented with passing automated checks. Actual browser verification, final delivery and independent review remain.
 - **Contract:** [TASK.md](TASK.md); ownership `src/modules/dd06/**`.
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`; owner `worker-dd06-01a186d2-12d1`.
 - **Branch:** `codex/dd06-state-feedback-01a186d2`.
@@ -11,7 +11,7 @@
 
 ## Existing behavior and requirement audit
 
-Initial inspection found metadata and an empty synchronous workspace with no local helpers/tests. `math.ts` and `input.ts` now implement the bounded local calculations/parsing with tests. `workspace.ts` is still the original empty mount; no working DD06 student interface or browser result is claimed yet. The shell banner remains a preview.
+Initial inspection found metadata and an empty workspace with no local helpers/tests. The module now has a pure solver/parser, scoped student view/plots, an owned deferred mount and local tests. Browser behavior is not yet claimed checked. The shell banner remains a preview separate from these actual exercise inputs.
 
 | Accepted requirement | Current evidence | Implementation/verification still required |
 |---|---|---|
@@ -25,6 +25,14 @@ Initial inspection found metadata and an empty synchronous workspace with no loc
 | Prediction and reasoning | None | Attempt before answer, intermediate controllability/matching/tracking steps, reveal and changed-data presets |
 | Lifecycle/accessibility | Empty mount only | Owned loading/child abort/partial-failure recovery; scoped design, keyboard controls, reset/reopen/rapid navigation, real fonts/editor/narrow checks |
 | Delivery | Atomic claim and isolated branch/worktree registered | Independent fixtures, module/type/full/build and browser checks, updated STATUS, one pushed/attached PR and exact clean submission |
+
+### Interface checkpoint
+
+`view.ts`, `plots.ts` and scoped `workspace.css` now provide actual A/B/C shared visual editors, T/target/initial-state/reference/horizon controls, six changed-data presets, a controllability/tracking prediction and optional Nd estimate before reveal. The checked view displays W/rank, coefficient identities and matching matrix/RHS, Kd, desired/actual coefficient table, full Acl/poles/unit-circle map, Schur values, conditional reference multiplier/equilibrium and sampled output/effort/state stems. Linked integer/range inspection covers all computed samples; drawing is bounded. Unavailable tracking does not hide valid feedback; a nonzero reference is rejected while an explicit zero-reference regulator remains possible.
+
+The mount owns synchronous loading content, a child abort signal and visible recovery. The view registers cleanup before allocating any editor, so a partial editor failure can be aborted safely. Tests check stale imports, explicit disposal, failure resources with the parent still active, all three editor lifetimes and fresh reopening. Native numeric fields use the shared reader, including estimate and inspector validation; invalid points preserve the prior valid selection. Inactive target-mode fields are not read.
+
+Owned tests mock interactive editor behavior and check generated mathematics/DOM state. A MathLive static MathML check additionally confirms both numerical model matrices retain their two rows; it is not browser evidence. The baseline/repeated/changed/unstable/deficient/zero-DC/numeric-failure/lifecycle flows pass locally. Actual fonts, editing, keyboard, reset, fast navigation and narrow layout still require real-browser checks.
 
 ## Intended bounded model and checks
 
@@ -48,4 +56,6 @@ Existing shared equation/numeric APIs suffice; no shared math/package changes ar
 
 Read TASK/atlas, current primary AGENTS/START_HERE/AUTONOMOUS_WORKERS/COORDINATION and project/contribution/development/design/equation guides. The recorded discrete audit DD5 cites CH9:34–48, S15:4,7–11 and W15; it distinguishes the common-mechanical fixture from deeper problems37/41 whose diagram matrices need final reconstruction. This worker did not newly inspect original decks. Do not assert a reconstructed original answer for those variants.
 
-`npm ci` passed here (109 packages, no vulnerabilities reported); no dependency files changed. `npm test -- src/modules/dd06` passed67 tests in2 files; `npm run check` passed. Full project tests/build and real-browser verification remain pending the interface. The initial audit checkpoint58fbf3f is pushed. CP03 PR#7 and DF02 PR#28 remain preserved submissions; review returns take priority after checkpointing this module.
+`npm ci` passed here (109 packages, no vulnerabilities reported); no dependency files changed. `npm test -- src/modules/dd06` passed **84 tests in4 files**. `npm run check` passed. `npm test` passed **744 tests in30 files** on this preserved0.3.9 base. `npm run build` passed; the existing MathLive chunk-size advisory remains (805.31kB/221.50kB gzip). Actual browser verification and final PR/submission remain pending.
+
+Checkpoints58fbf3f (audit) and30f26f5 (math/parser,67 tests) are pushed. CP03 PR#7 and DF02 PR#28 remain preserved submissions; review returns take priority after checkpointing this module.
