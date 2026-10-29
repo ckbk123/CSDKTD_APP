@@ -41,6 +41,7 @@ describe('reasoned linear controller teaching flow',()=>{
     const v=open();v.choose('kind','PI');mocks.editors[1].setValue('(s+2)^3');v.choose('reason','matching');v.action('derive').click();expect(v.root.textContent).toContain('leaves it fixed');expect(v.root.querySelectorAll('ol li')).toHaveLength(1);
     v.action('target').click();v.action('derive').click();expect(Number(v.input('kp').value)).toBeCloseTo(1,10);expect(Number(v.input('ki').value)).toBeCloseTo(1,10);
     v.choose('kind','PID');mocks.editors[1].setValue('(s+20)(s+2)^3');v.action('setFilter').click();expect(Number(v.input('tf').value)).toBeCloseTo(1/23,12);expect(v.root.textContent).toContain('Filter draft set');
+    v.choose('kind','PI');expect(v.root.querySelector('[aria-label="Coefficient-matching identities for the selected structure"]')?.textContent).toContain('d_2');v.action('baseline').click();expect(v.root.querySelector('[aria-label="Coefficient-matching identities for the selected structure"]')?.textContent).toContain('d_3');
   });
   it('keeps inactive terms and Kp=0 standard notation honest',()=>{
     const v=open();v.choose('kind','PI');v.set('ki','0');v.choose('reason','structure');v.action('apply').click();v.action('reveal').click();expect(v.root.textContent).toContain('active P');expect(v.root.textContent).toContain('All 2 actual modes');expect(v.root.querySelector('[aria-label="Individual active controller contributions"]')?.textContent).toContain('u_D=0');

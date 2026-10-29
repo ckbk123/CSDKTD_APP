@@ -70,6 +70,7 @@ Verified private IAB inventory identifies this chat's codexSessionId01a18700-78e
 - Changed y0=.2,y_dot0=−.3,I0=.4,v0=.1,r.5 gives effort1.2+.8+4=6. Real Systems s-key insertion changes the draft; Escape closes the keyboard and preserves math entry. Reset restores gains4/2/1/.05,one initial note,blank prediction,no plots,all keyboards closed.
 - Leaving with a keyboard open removes old fields. Fast CD01/CD08 alternation leaves no late PID DOM; reopening starts fresh. CD08 is a scaffold in this preserved main base; its separate submitted branch was not merged here. Owned lazy partial-failure tests abort a registered window resource while the parent remains active.
 - Phone client/scroll widths375/375. Plot viewport285/content500 with14px labels and ArrowRight panning; metric table307/content780 scrolls39px; numeric table307/content380 scrolls40px. Native time inspection Enter retains focus and correct t1 caption. Bundled fonts loaded,console error/warning log empty. Temporary override reset1280×720; own tab and preview9001 closed after QA.
+- Final reset-explanation regression: selecting PI then loading course data now refreshes the coefficient identities to PID together with the structure control. The focused actual-browser check showed d₂=a₁ changing to d₃=a₁+1/Tf; console remained clear. Evidence: `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-reset-matching.jpg`.
 
 Screenshots outside Git:
 - `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18700-78e9-7a80-af1b-4436e25b10ff\cd01-browser.jpg`:course baseline at t1.
@@ -81,3 +82,5 @@ Screenshots outside Git:
 ## Review boundary
 
 No accepted exercise requirement or shared dependency remains deferred. Independent coordinator review/integration is pending; this is not `verified` status or a release. Preserve branch/worktree and reuse PR42 for corrections. Earlier contributions remain separate: CD08/PR20 resubmitted203b985;DD07/PR35 submitted899723d;CD09/PR30 frozen/draft pending coordinator reopening for the known spacing edge case. None is included in this branch.
+
+The human stop-after-current amendment was relayed by the coordinator and verified against the direct request in that chat. Finish this contribution and stop; no further module is claimed after CD01. Preserve earlier submissions and the CD09 review hold for later coordinated work. All own temporary QA tabs/previews are closed and no obsolete own global QA reservation is held. No backlog-wide completion or independent acceptance is claimed.
