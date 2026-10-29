@@ -49,7 +49,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     let low = Math.min(0, ...series), high = Math.max(0, ...series); if (high === low) { low -= 1; high += 1; }
     const padding = (high - low) * .1; low -= padding; high += padding;
     const duration = raw.at(-1)!.t, X = (t: number) => 48 + 425 * t / duration, Y = (y: number) => 185 - 155 * (y - low) / (high - low);
-    const svg = svgNode('svg', { viewBox: '0 0 500 225', role: 'img', 'aria-label': `${label}; t from 0 to ${duration} seconds. ${corrected ? 'Solid: calculated prefilter; dashed: N=1.' : 'Dashed: N=1 only; no reliable static prefilter exists.'} Values are available in the sample table.` });
+    const svg = svgNode('svg', { viewBox: '0 0 500 225', role: 'img', 'aria-label': `${label}; t from 0 to ${duration} seconds. ${corrected ? 'Solid: calculated prefilter; dashed: N=1.' : 'Dashed: N=1 only; no supported static prefilter is available.'} Values are available in the sample table.` });
     svg.append(svgNode('line', { x1: 48, y1: 185, x2: 478, y2: 185, class: 'feedback-axis' }), svgNode('line', { x1: 48, y1: 25, x2: 48, y2: 185, class: 'feedback-axis' }), svgNode('text', { x: 43, y: 30, 'text-anchor': 'end' }, format(high)), svgNode('text', { x: 43, y: 185, 'text-anchor': 'end' }, format(low)), svgNode('text', { x: 48, y: 204 }, '0'), svgNode('text', { x: 465, y: 204 }, format(duration)), svgNode('text', { x: 235, y: 222 }, 'Time t (s)'));
     const path = (samples: Sample[], className: string) => svgNode('path', { d: samples.map((s, i) => `${i ? 'L' : 'M'}${X(s.t).toFixed(3)},${Y(select(s)).toFixed(3)}`).join(' '), class: className });
     if (label.startsWith('Output')) svg.append(svgNode('line', { x1: 48, x2: 473, y1: Y(heldReference), y2: Y(heldReference), class: 'feedback-reference' }));
@@ -69,7 +69,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const attempt = node('section'); attempt.append(node('h3', '2. Predict the feedback and tracking gains'));
     const row = node('div'); row.className = 'feedback-controls';
     numeric(row, 'Your k₁', 'k1', attempts.k1); numeric(row, 'Your k₂', 'k2', attempts.k2); numeric(row, 'Your N', 'n', attempts.n);
-    const noLabel = node('label', 'No static prefilter '), none = node('input'); none.type = 'checkbox'; none.name = 'none'; none.checked = attempts.none; noLabel.append(none); row.append(noLabel);
+    const noLabel = node('label', 'No supported static prefilter '), none = node('input'); none.type = 'checkbox'; none.name = 'none'; none.checked = attempts.none; noLabel.append(none); row.append(noLabel);
     attempt.append(row, button('Check my gains', 'check'), button(revealed ? 'Hide checked derivation' : 'Reveal checked derivation', 'reveal'));
     const attemptMessage = node('p'); attemptMessage.dataset.attemptFeedback = ''; attemptMessage.setAttribute('role', 'status'); attempt.append(attemptMessage); view.append(rankStep, attempt);
     if (revealed) {

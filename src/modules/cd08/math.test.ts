@@ -59,6 +59,12 @@ describe('independently derived pole-placement and reference fixtures', () => {
     const result = design({ ...BASE, C: [0, 1] }, [6, 8]); close(result.K, [6, 3]); expect(result.dcGain).toBeCloseTo(0, 13); expect(result.prefilter).toBeNull();
     expect(response(result, 1, [0, 0], 1, 4, 21).at(-1)!.output).toBeLessThan(.001);
   });
+  it('retains feedback when the required prefilter exceeds the declared gain bound', () => {
+    const result = design({ ...BASE, C: [1e-8, 0] }, [6, 8]);
+    close(result.K, [6, 3]); expect(result.dcGain).toBeCloseTo(1.25e-9, 20);
+    // The mathematical N=8e8 exists; this is outside supported gain, not a zero DC channel.
+    expect(1 / result.dcGain).toBeCloseTo(8e8, 3); expect(result.prefilter).toBeNull(); expect(result.trackingNote).toContain('gain exceeds');
+  });
   it('rejects rank-deficient, near-rank-deficient and nonfinite models', () => {
     expect(() => design({ ...BASE, B: [0, 0] }, [6, 8])).toThrow(/rank/);
     expect(() => design({ A: [-1, 0, 0, -2], B: [1, 0], C: [1, 1] }, [6, 8])).toThrow(/rank/);
