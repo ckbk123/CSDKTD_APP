@@ -5,7 +5,7 @@
 - **Base:** fresh primary-main `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
 - **Branch/worktree:** `codex/ds05-discrete-nyquist-7393`; `C:/Users/baokh/.codex/worktrees/ds05-discrete-nyquist-7393/CSDKTD APP`.
-- **PR:** creation pending; this delivery record will receive its single PR URL before exact submission.
+- **PR:** [#33](https://github.com/ckbk123/CSDKTD_APP/pull/33), this module's single attached contribution.
 - **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md).
 - **Earlier contributions:** DS01 PR #10 accepted v0.3.6; CF02 PR #18 resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`; CP01 PR #24 corrected/resubmitted at `cfaccb5be0e7477a423b34d3d98d41c17094b78e`. Preserve prior worktrees/claims for asynchronous review; returned corrections take priority.
 
@@ -104,4 +104,4 @@ Screenshots outside Git, in `C:/Users/baokh/.codex/visualizations/2026/10/29/01a
 
 Setup/audit `96031c6` followed the atomic claim and fresh worktree. Core prototype `3550f6b` was preserved before prioritizing CP01's returned numerical defect. After CP01's corrected exact resubmission, root/winding checkpoint `ede12e0` passed118 local /778 full tests. Full workspace checkpoint `c0646fc` passed150 local /810 full tests before the final visual density/axis refinements. All references are historical checkpoint evidence, not a substitute for the final exact submitted source.
 
-The full accepted bounded exercise is implemented and verified as recorded above. Independent coordinator review/integration remains. Create/attach this module's single PR, record its URL, commit/push the delivery record and submit only its clean exact tested HEAD via the current primary helper. Preserve the branch/worktree for same-PR corrections; no release/version/main/deployment change is authorized to this worker. No shared-helper dependency remains.
+The full accepted bounded exercise is implemented and verified as recorded above. PR #33 is created and attached; its exact final source is recorded by the submitted claim and PR head after the delivery record is committed. Independent coordinator review/integration remains. Submit only the clean exact tested HEAD via the current primary helper, and preserve the branch/worktree for same-PR corrections. No release/version/main/deployment change is authorized to this worker. No shared-helper dependency remains.
