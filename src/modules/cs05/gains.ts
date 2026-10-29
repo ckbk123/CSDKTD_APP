@@ -114,7 +114,9 @@ export function numericRoots(input: readonly number[]): Root[] {
   } else {
     const a = p[2], b = p[1] - a * a / 3, c = 2 * a * a * a / 27 - a * p[1] / 3 + p[0], delta = c * c / 4 + b * b * b / 27;
     if (delta >= 0) {
-      const u = Math.cbrt(-c / 2 + Math.sqrt(delta)), v = u ? -b / (3 * u) : Math.cbrt(-c / 2 - Math.sqrt(delta)), sum = u + v, difference = Math.sqrt(3) * (u - v) / 2;
+      // Choose the larger Cardano radical, avoiding subtraction of nearly equal
+      // terms when the depressed linear coefficient approaches zero.
+      const u = Math.cbrt(-c / 2 - (c < 0 ? -1 : 1) * Math.sqrt(delta)), v = u ? -b / (3 * u) : 0, sum = u + v, difference = Math.sqrt(3) * (u - v) / 2;
       raw = [{ re: sum - a / 3, im: 0 }, { re: -sum / 2 - a / 3, im: difference }, { re: -sum / 2 - a / 3, im: -difference }];
     } else {
       const r = 2 * Math.sqrt(-b / 3), angle = Math.acos(Math.max(-1, Math.min(1, -c / (2 * Math.sqrt(-(b * b * b) / 27))))) / 3;

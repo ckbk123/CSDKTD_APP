@@ -65,7 +65,7 @@ describe('CS05 complete exercise wiring with presentation mocked only', () => {
   });
   it('uses the shared native reader for optional count predictions too', () => {
     const t = open(); t.change('Your number of stable intervals', '1e-999'); t.reveal(); expect(t.container.textContent).toContain('nonzero but too small');
-    t.change('Your number of stable intervals', '0e-999'); t.reveal(); expect(t.container.textContent).toContain('There are 1 stable intervals'); t.close();
+    t.change('Your number of stable intervals', '0e-999'); t.reveal(); expect(t.container.textContent).toContain('There is 1 stable interval'); t.close();
   });
   it('rejects unsupported model degrees and clears previous derived output', () => {
     const t = open(); t.reveal(); t.change('Fixed numerator N(s)', 's^3'); t.reveal(); expect(t.container.textContent).toContain('strictly lower numerator degree'); expect(t.container.querySelector<HTMLElement>('.cs05-output')!.hidden).toBe(true); t.close();

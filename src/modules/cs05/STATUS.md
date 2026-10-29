@@ -1,6 +1,6 @@
 # CS05 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary main v0.3.9)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
@@ -45,3 +45,34 @@ Type checks and34 local math/lifecycle tests pass. Exercise wiring tests, broade
 54 module math/view/lifecycle tests pass, including the exact irrational endpoint retained across repeated reveals; manual/range editing clears endpoint identity, and changing the model resets a stale computed endpoint. Independent predictions, multiple intervals, full root lists, baseline70 boundary, shared native underflow/normal scientific controls, fine range cursor, stale-output errors and independent visits are covered. The prior parser checks remain independent of the mocked presentation layer. Production type/build and full application checks were run before the upcoming browser pass; exact results are in the command output and final evidence will follow the actual browser work.
 
 All real CS05 browser gates remain open: actual model/gain editing, source/changed/multiple/irrational endpoint results, plot labels/range/cursor, fonts/fraction/power/keyboard, errors, reset/reopen/fast navigation and phone layout. Stage remains in-progress. CR01 loader return is pending coordinator reopening; submitted history remains untouched.
+
+## Delivery assessment — 22:09 local, 29 October 2026
+
+The full accepted bounded exercise is implemented and checked. Earlier audit/checkpoint pending items are superseded here. Stage is implemented; independent integration review remains pending. This contribution changes only CS05 files and preserves its v0.3.9 baseline, metadata, shared helpers and unrelated submissions.
+
+| Accepted requirement | Delivered evidence |
+|---|---|
+| Complete set of stable nonnegative gains | Exact normalized degree1–3 Routh/Hurwitz inequalities, rational/surd endpoint comparison, exact interior sign tests and all resulting intervals, including multiple components, allowed zero, empty set and unbounded tails. A finite sweep is never the proof. |
+| Boundary derivation | Complete D+KN, coefficient inequalities/Routh first column, cubic s=jω equations, exact endpoint controls and zero-condition explanations. An exact irrational selection remains exact across repeated reveals. |
+| Locus branches and every root | 241 verified numerical samples with all-root permutation matching, finite range0.001–10,000, equal-scale root axes, full selected list/residuals and explicit numerical failure gaps. No selected branch hides other unstable roots. |
+| Interval strip and student attempt | Shaded clipped strip with open/closed endpoints, optional selected-gain/count/tail predictions, numeric/range/equation controls and changed N/D presets. Complete exact intervals remain visible beyond the plotted range. |
+| Limits, failure and isolation | Bounded rational visual parser and native controls, exact algebra distinct from approximate roots, useful invalid/underflow/degree/conditioning feedback; child-signal guarded workspace including partial failures, late returned disposers and cleanup exceptions. |
+| Verification | Independent S06/CS03-contract and W06 fixtures, two-component rational/irrational cases and root identities; local/project checks and actual production editing/font/keyboard/phone/navigation evidence below. |
+
+Supported domain: real rational fixed N(s),D(s), denominator degree1–3 with lower-degree numerator, negative unity feedback and scalar K≥0; normalize by D’s leading coefficient and retain every D+KN mode without cancellation. Input bounds and units are visible in the conventions panel. Primitive integer height≤10,000; normalized magnitudes≤10⁶;60-digit exact arithmetic;64 exact bisections; gain endpoints≤10¹². Manual K≤10,000; computed endpoint controls preserve exact surds. Root residual threshold10⁻⁹ and monic-coefficient reconstruction threshold10⁻⁷ are numerical checks, not a root-coordinate error bound. Near-coincident/overlarge exact work gets feedback. The source decks were not newly inspected; source-audit anchors and independent proposed variations remain distinguishable.
+
+After the browser refinement, `node node_modules/vitest/vitest.mjs run src/modules/cs05 --reporter dot` passed55/55. `npm run check`, `npm test -- --reporter dot`715/715, and `npm run build -- --logLevel warn` passed under Node24.22.1/Vite8.3.5. The existing shared MathLive chunk-size warning remains. `git diff --check` passed. Final exact clean-HEAD checks and its pushed PR delivery record follow; no main merge, version/dependency change or deployment.
+
+## Actual production-browser evidence
+
+The fresh owned in-app Chromium tab used only this worktree's production preview at13520. Inventory confirmed codexSessionId01a186d1-e192-7e11-a9da-294fb7ec7b78, matching this chat. Current primary guides/coordinator authorize parallel private IAB QA after isolation verification; no foreign tab/reservation/native-focus control was touched.
+
+- Baseline gave the complete exact0<K<70, Routh conditions7>0,10>0,K>0,70−K>0 and all three roots atK=20:−5.8775564,−.56122178±1.7572151j. Gain/count/tail predictions matched. Endpoint70 retained its exact identity, excluded strict stability, showed−7 and±3.1622777j and the ω=sqrt(a₁) boundary derivation. Endpoint0 showed−5,−2,0 and was excluded. TypedK=80 showed the two RHP roots .081552661±3.3409115j and the third−7.1631053; the exact determinant was negative.
+- The two-range variation gave(1/3,1) union(3,infinity). With maximum5 andK=.5 it showed−1,−.25±.96824584j and both shaded stable pieces. ArrowRight on the native range changed the exact gain to101/200 and updated every root/marker. The irrational variation gave(1/6,2−sqrt8/2) union(2+sqrt8/2,infinity); selecting the first irrational boundary showed the determinant exactly zero and roots−1.5857864,±1.2592801j. Pressing Reveal again preserved that exact endpoint instead of parsing a rounded decimal or discarding its identity. The changed cubic gave0<K<48.
+- A curve sample initially failed its numerical checks near a vanishing depressed linear coefficient. The Cardano branch now chooses the larger radical and derives the other from their product, avoiding cancellation. Independent regression atK=2 uses P=(s+1)³+9 and real root−1−cbrt9. After rebuilding and fully reloading, all241 samples of the two-range maximum5 case verified with no reported gaps; the checked .5 roots and range-key update still matched. Baseline and phone checks also used that rebuilt code.
+- Native plot maximum1e-999 was rejected;1e2 worked. Optional count1e-999 was rejected while exact intervals stayed visible; intentional0e-999 remained valid. Actual numerator fraction-button entry1/2 changed the complete interval to0<K<140. Actual power-button2^{12} produced N=4096 and0<K<35/2048;2^{−2} produced N=1/4 and0<K<280. An exponent1 followed by an outside-box2, displayed2½, empty/incomplete numerator and equal-degree numerator received useful guidance with hidden stale results.
+- The real Systems keyboard rendered. Clicking its actual1 key restored N=1; Escape hid it and the baseline/changed presets remained usable. Three observed WOFF2 assets were same-origin /assets/ URLs. Browser console warning/error inventories were empty.
+- At390×844, document client/scroll widths were both375px before/after reveal and with conventions open. Both plot regions were283px with340px content; ArrowRight scrolled the root plane40px. The strip, branch patterns/selected crosses, axes/units, equations and root table were visually inspected. No page-wide overflow.
+- Leaving with the keyboard open removed all old module roots and the keyboard. Reopen restored baseline. Reset after changed gain/range/prediction restored K20, range100, blank count, no predictions and hidden output; reveal again gave0<K<70 and K20. Rapid CS05→catalogue→CS05→CS04 navigation left zero CS05 roots. The private viewport override was reset, own tab closed and own preview stopped.
+
+No worker-owned acceptance item or shared dependency remains. The complete gain proof is bounded to the declared degree/domain, and the finite numerical locus remains an illustration. Independent integration review is pending. A separate CR01 loader edge was reported for coordinator reopening; that frozen contribution was not edited from this branch.

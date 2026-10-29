@@ -79,6 +79,12 @@ describe('CS05 independent numerical roots and branch assignment', () => {
     expect(matchRoots(a, b)).toEqual([b[2], b[1], b[0]]);
     const samples = locus(baseline().model, 100, 61); expect(samples).toHaveLength(61); expect(samples.every(s => s.roots?.length === 3)).toBe(true);
   });
+  it('keeps the changed cubic well-conditioned around a vanishing depressed linear coefficient', () => {
+    // AtK=2: P=(s+1)^3+9, so the real root is-1-cbrt9.
+    const exact = numericRoots([10, 3, 3, 1]); expect(exact.some(z => Math.abs(z.re + 1 + Math.cbrt(9)) < 1e-12 && z.im === 0)).toBe(true);
+    const model = solveRegions(parse('s^2+s+6'), parse('s^3+s^2+s-2')).model;
+    expect(locus(model, 5).filter(sample => sample.error)).toEqual([]);
+  });
 });
 
 describe('CS05 visual parser semantics carried forward with independent checks', () => {
