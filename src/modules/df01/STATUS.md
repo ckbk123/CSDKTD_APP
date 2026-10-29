@@ -1,6 +1,6 @@
 # DF01 implementation status
 
-- **Stage:** in-progress (review correction; focused browser check pending)
+- **Stage:** implemented (hidden-brace correction checked; coordinator native-number adaptation pending before acceptance)
 - **Assessed:** 2026-10-29; base `c5d1135`, tested implementation `717adda`; earlier checkpoints `a798749`, `309dbc8`
 - **Ownership:** `src/modules/df01/**`; acceptance: [TASK.md](TASK.md)
 
@@ -56,7 +56,7 @@ Toolchain: **Node 24.22.1**, npm 10.8.2, locked dependencies inside this worktre
 
 ## Remaining work and delivery
 
-The accepted bounded exercise is implemented and checked. No required implementation work or shared dependency requests remain. Independent integration review is still separate; no final verified-stage review is claimed. Branch `codex/df01-sampled-quality-01a18701`; final evidence commit and submission follow these checks. No merge, deployment, version/dependency changes or added agents.
+The accepted bounded exercise is implemented and checked. The hidden-brace correction is complete. Native-number adaptation is separately assigned to the coordinator before acceptance; see the latest disposition below. Independent integration review is still separate; no final verified-stage review is claimed. Branch `codex/df01-sampled-quality-01a18701`; final evidence commit and submission follow these checks. No merge, deployment, version/dependency changes or added agents.
 
 ## Preliminary review correction (2026-10-29)
 
@@ -96,6 +96,18 @@ Owned changes: `math.ts`, `math.test.ts`, `view.ts`, `view.test.ts`, `workspace.
 
 Coordinator reopened PR16's same reservation and branch after finding that standalone TeX braces were being turned into invented visible parentheses. The reported numerator `1{+2}` and `{z+2}z` cases are now rejected with guidance to use visible parentheses. True fraction arguments remain consumed by the fraction reader; power arguments remain limited to0,1,2; unsigned numeric wrappers are removed without inventing multiplication (`1{2}` stays the displayed12). Nontrivial standalone groups, including nested/signed placements, reject. Numeric wrapper nesting is bounded at16; malformed adjacent decimal points reject.
 
-Added 10 regression checks covering both failures, nested/denominator/signed/grouped variants, numeric wrappers/concatenation, compact fractions, power arguments, and distinct visible-addition/parenthesis controls. Current local total44 tests; full suite86 tests, type check and production build pass. Build warning unchanged. Focused actual-entry rejection/control check remains pending while DR02 holds browser QA.
+Added 10 regression checks covering both failures, nested/denominator/signed/grouped variants, numeric wrappers/concatenation, compact fractions, power arguments, and distinct visible-addition/parenthesis controls. Current local total44 tests; full suite86 tests, type check and production build pass. Build warning unchanged. Focused actual-entry rejection/control checks subsequently passed, as recorded below.
 
 Coordinator disposition: period, horizon, inspector and prediction native-number controls will be adapted to current shared `readNumericInput` by the coordinator during integration, including raw nonzero numeric underflow such as1e-400. This older branch does not import/copy the unowned shared helper, rebase or merge main. That adaptation and its combined tests are required before coordinator acceptance; this record does not claim it has already happened.
+
+### Focused correction browser evidence (2026-10-29, 19:16–19:18 Asia/Saigon)
+
+Held DF01 QA via current primary helper. Used a new dedicated hidden Chromium tab on production preview8811 with the corrected parser; no viewport override was applied. Pasted the actual notation payload into the real MathLive field through its native paste action, not a mocked editor or DOM assignment:
+
+- `\frac{1{+2}}{z-.8}` rendered visible numerator1+2, then Plot response showed “Use visible parentheses ( ) to group polynomial terms. Hidden brace groups are not supported.” No response was computed.
+- `\frac{{z+2}z}{z^2+.25}` rendered numerator z+2z and received the same rejection, without inventing a z² direct term.
+- Explicit `\frac{1+2}{z-.8}` computed normalized numerator3 and final15, with k_s=18; explicit `\frac{(z+2)z}{z^2+.25}` retained the visible grouping and independently stepped y[0]=1 in both routes.
+- Shell Reset example restored the baseline, final1 and k_s=18. Console returned no errors/warnings. Temporary tab closed and QA released; primary preview8787 remained untouched.
+- Screenshot: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/df01-hidden-braces.jpg` (outside Git).
+
+Correction verification: 44 module tests /86 application tests, `npm run check`, `npm run build`, and `git diff --check` pass; unchanged MathLive size warning. The latest same-PR submission includes this evidence. Native-number API adaptation remains coordinator-owned and pending before acceptance, as explicitly assigned above; it is not claimed complete in this worker tree.
