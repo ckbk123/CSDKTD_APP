@@ -25,3 +25,9 @@ Up to four distinct real poles or conjugate pairs, each simple, repeated indepen
 ## Verification and remaining work
 
 Implementation, independent fixtures and actual browser verification are pending. Original decks were not re-inspected; TASK/atlas source anchors Ch8:4–13 and S13:4 remain course provenance, while new fixtures will be explicitly independent examples.
+
+## Working checkpoint
+
+- Private `math.ts` now computes radii, classifications, bounded Jordan/conjugate modes and explicit real state blocks. `workspace.ts` implements visual inputs, editable structures/channel visibility, predictions/reveal, linked plots, sample tables and preset experiments.
+- `npm run check`: passed. `node node_modules/vitest/vitest.mjs run src/modules/ds01/math.test.ts`: 57 tests passed, including independently derived modal samples and real-matrix Markov coefficients.
+- Still pending: complete project tests/build, real-browser evidence and final acceptance assessment. Stage remains in-progress.
