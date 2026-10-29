@@ -69,6 +69,8 @@ Early checkpoints: audit `05a13bd`, implementation `3a9331d` (pushed before inte
 
 ## Coordinator review correction (29 October 2026)
 
+**Exact tested code revision:** `aa4ef27cc82f07ac25e3bdc45d07077e4b9e6650`. The following documentation-only commit records that SHA; it does not change executable code or tests.
+
 The coordinator reported 2,880 independent first-order/history comparisons passing on submitted revision `3209ab1cfc24b0b42e018f029ab516800ba58e8a`, and identified a loader recovery defect: `loading.remove()` detached the message before `view.mount`, so a thrown mount left its catch message invisible. `workspace.ts` now replaces partial content with the recovery paragraph and gives it `role="alert"`, only if the visit is still active. Existing disposal/abort guards continue to suppress late imports and error messages.
 
 Regression coverage explicitly forces an active view mount to append partial content and throw, checks that only the connected recovery alert remains, forces abort during a failed mount, verifies active import rejection feedback, verifies import rejection after navigation stays empty, and retains the late-successful-import-after-abort check. The normal equation view and mathematics are unchanged. No new browser reservation/session was needed for this forced error-path regression; the prior production browser evidence remains as recorded above, and no QA reservation is held by this worker.
