@@ -12,7 +12,7 @@ describe('DR05 exact held-input conversion', () => {
     expect(result.exact.B[0]).toBeCloseTo(-Math.expm1(-0.1), 14);
     result.samples.forEach(r => expect(r.y).toBeCloseTo(1 - Math.exp(-r.t), 13));
     expect(result.samples[1].y).toBeCloseTo(0.09516258196404043, 14);
-    const tf = transfer(plant, result.exact);
+    const tf = transfer(plant, result.exact, base.T);
     expect(tf.b[0]).toBe(0); expect(tf.b[1]).toBeCloseTo(0.09516258196404043, 14);
     expect(tf.a[1]).toBeCloseTo(-0.9048374180359595, 14);
   });
@@ -30,13 +30,13 @@ describe('DR05 exact held-input conversion', () => {
     const plant = source('1/s^2'), result = run(plant, { ...base, initial: [0, 0] });
     near(result.exact.A, [[1, 0.1], [0, 1]]); near(result.exact.B.map(v => [v]), [[0.005], [0.1]]);
     result.samples.forEach(r => expect(r.y).toBeCloseTo(r.t ** 2 / 2, 13));
-    const tf = transfer(plant, result.exact); near([tf.a], [[1, -2, 1]]); near([tf.b], [[0, 0.005, 0.005]]);
+    const tf = transfer(plant, result.exact, base.T); near([tf.a], [[1, -2, 1]]); near([tf.b], [[0, 0.005, 0.005]]);
   });
   it('checks the separately declared delayed 5/s² source path', () => {
     const plant = source('5/s^2');
     const result = run(plant, { ...base, T: 0.2, delay: 1, initial: [0, 0], count: 5 });
     near([result.samples.map(r => r.y)], [[0, 0, 0.1, 0.4, 0.9]]);
-    const tf = transfer(plant, result.exact); near([tf.a], [[1, -2, 1]]); near([tf.b], [[0, 0.1, 0.1]]);
+    const tf = transfer(plant, result.exact, 0.2); near([tf.a], [[1, -2, 1]]); near([tf.b], [[0, 0.1, 0.1]]);
   });
   it('checks oscillator rotation and input integral using sine/cosine identities', () => {
     const T = 0.3, plant = source('1/(s^2+1)');
@@ -70,6 +70,26 @@ describe('DR05 exact held-input conversion', () => {
     const result = run(source('1/s'), { ...base, input: 'ramp' });
     result.samples.forEach(r => expect(r.y).toBeCloseTo(0.1 ** 2 * r.k * (r.k - 1) / 2, 13));
     result.segments[2].forEach(p => expect(p.y).toBeCloseTo(0.01 + 0.2 * (p.t - 0.2), 13));
+  });
+  it('retains sound state samples but rejects an ill-conditioned scalar conversion', () => {
+    const plant = source('1/((s-60)(s+0.01))');
+    const result = run(plant, { ...base, T: 1, count: 4, density: 16, amplitude: 1e-70, initial: [0, 0] });
+    // Partial fractions independently integrate the two continuous modes.
+    for (const row of result.samples.slice(1)) {
+      const expected = 1e-70 * (Math.expm1(60 * row.t) / 60 - Math.expm1(-.01 * row.t) / -.01) / 60.01;
+      expect(Math.abs(row.y / expected - 1)).toBeLessThan(1e-11);
+    }
+    // The true pole product is exp(60)*exp(-.01)=exp(59.99),
+    // about 1.130644226e26, not the catastrophic determinant of rounded Ad.
+    expect(Math.exp(59.99) / 1.130644226e26).toBeCloseTo(1, 9);
+    expect(() => transfer(plant, result.exact, 1)).toThrow(/Scalar transfer and recurrence unavailable/);
+  });
+  it('recovers reliable scalar coefficients when the same source uses a smaller T', () => {
+    const plant = source('1/((s-60)(s+0.01))'), T = .1, d = exactInterval(plant, T), tf = transfer(plant, d, T);
+    const p = Math.exp(60 * T), q = Math.exp(-.01 * T), h1 = Math.expm1(60 * T) / 60, h2 = Math.expm1(-.01 * T) / -.01;
+    // ZOH modal geometric sequences give these coefficients independently.
+    const expectedA = [1, -p - q, p * q], expectedB = [0, (h1 - h2) / 60.01, (p * h2 - q * h1) / 60.01];
+    [tf.a, tf.b].forEach((values, i) => values.forEach((v, j) => expect(Math.abs(v - [expectedA, expectedB][i][j])).toBeLessThan(1e-11 * Math.max(1, Math.abs(v)))));
   });
 });
 

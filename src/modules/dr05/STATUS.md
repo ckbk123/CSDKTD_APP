@@ -1,6 +1,6 @@
 # DR05 implementation status
 
-- **Stage:** implemented; independent integration review remains separate.
+- **Stage:** in-progress; reopened for the scalar-conditioning correction below.
 - **Assessed:** 2026-10-29; base `8696261267b7620bfc101ce2b5f13772bfaa529a`. This record accompanies the tested implementation; the claim names the final commit.
 - **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
 - **Branch/worktree:** `codex/dr05-zoh-f802`, `C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP`
@@ -70,3 +70,11 @@ One immediate preset/reveal after changing the automated viewport reported an un
 No accepted bounded exercise requirement is deferred. Independent coordinator review/integration is pending; stage is implemented, not verified. No package/shell/routing/deployment/sibling edits.
 
 This branch predates main v0.3.3's shared readNumericInput(input,label). Its tested equivalent local native-number guard is an approved carry-forward per coordinator instruction2026-10-29; coordinator may adapt the import during checked integration. No unowned shared file or rebase/merge was added for this rollout.
+
+## Coordinator review return: scalar numerical conditioning
+
+Review of source0872a8f found a real defect: for G(s)=1/((s−60)(s+.01)),T=1,count4,density16,amplitude1e-70,zero initial state, the accepted augmented norm is about61.59 and state outputs stay bounded. Computing det(Ad) and scalar numerator by subtracting huge rounded products loses the slow mode, even when the state simulation remains sound. This returned contribution is in-progress until corrected checks/browser evidence are complete; the prior implemented assessment does not certify this case.
+
+The correction explicitly bounds scalar conversion separately. Coefficient sums reject cancellation amplification≥10⁸, nonfinite products and nonzero-product underflow. The two-state determinant is independently checked against det(exp(AT))=exp(tr(A)T), with relative residual≤10⁻⁹. Unreliable scalar TF/recurrence are omitted with an explanation and smaller-T suggestion; source/Ad/Bd, state recurrence, trajectories, prediction, inspection and tables remain available. This is a conservative conditioning gate, not a general condition-number certificate; a nominal zero coefficient obtained by cancellation may also be unavailable. No extra claim is made that scalar coefficient extraction is reliable throughout the state-simulation domain.
+
+New independent regression integrates partial-fraction modes60 and−.01, verifies bounded state samples and rejects the bogus scalar conversion; the true discrete pole product exp(59.99)≈1.130644226e26 is documented. A changed T=.1 verifies both denominator/numerator against independent modal-geometric ZOH coefficients and restores the scalar view. A public-equation-API view regression verifies that scalar equations are absent while four state samples/state recurrence survive, and that changing T restores the TF. npm test -- src/modules/dr05 passes59 tests; check/build pass. Full final checks and actual production-browser feedback inspection remain pending. CR06 is preserved at cec8996/PR17 and suspended while this priority correction is active.

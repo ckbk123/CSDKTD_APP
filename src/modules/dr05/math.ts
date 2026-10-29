@@ -137,12 +137,30 @@ export function run(source: Source, e: Experiment): Result {
     maxError: comparison ? Math.max(...rows.map((r, k) => Math.abs(r.y - comparison![k].y))) : undefined };
 }
 
-export function transfer(source: Source, d: Discrete): Model {
-  if (d.A.length === 1) return { a: [1, -d.A[0][0]], b: [source.D, dot(source.C, d.B) - source.D * d.A[0][0]] };
+/** Scalar coefficients require more conditioning than a state simulation.
+ * Reject cancellation amplification >10^8 and verify det(exp(AT))=exp(tr(A)T).
+ * Failure affects this optional representation, never a valid state result. */
+export function transfer(source: Source, d: Discrete, T: number): Model {
+  const unavailable = (): never => fail('Scalar transfer and recurrence unavailable: coefficient cancellation or determinant residual exceeds the supported numerical conditioning. The sampled state model and trajectory remain available. Reduce T, or continue with the sampled state recurrence.');
+  const product = (...values: number[]): number => {
+    const value = values.reduce((a, b) => a * b, 1);
+    if (!Number.isFinite(value) || (value === 0 && values.every(v => v !== 0))) unavailable();
+    return value;
+  };
+  const sum = (values: number[]): number => {
+    const value = values.reduce((a, b) => a + b, 0), size = values.reduce((a, b) => a + Math.abs(b), 0);
+    if (!Number.isFinite(value) || !Number.isFinite(size) || (size > 0 && Math.abs(value) <= 1e-8 * size)) unavailable();
+    return value;
+  };
+  if (!Number.isFinite(T) || T <= 0) unavailable();
+  if (d.A.length === 1) return { a: [1, -d.A[0][0]], b: [source.D, sum([product(source.C[0], d.B[0]), -product(source.D, d.A[0][0])])] };
   const [[a, b], [c, f]] = d.A, [v, w] = d.B;
-  const tr = a + f, det = a * f - b * c;
-  return { a: [1, -tr, det], b: [source.D, dot(source.C, d.B) - source.D * tr,
-    source.C[0] * (-f * v + b * w) + source.C[1] * (c * v - a * w) + source.D * det] };
+  const tr = sum([a, f]), det = sum([product(a, f), -product(b, c)]);
+  const identityDet = Math.exp((source.A[0][0] + source.A[1][1]) * T);
+  if (!Number.isFinite(identityDet) || identityDet === 0 || Math.abs(det / identityDet - 1) > 1e-9) unavailable();
+  return { a: [1, -tr, det], b: [source.D,
+    sum([product(source.C[0], v), product(source.C[1], w), -product(source.D, tr)]),
+    sum([-product(source.C[0], f, v), product(source.C[0], b, w), product(source.C[1], c, v), -product(source.C[1], a, w), product(source.D, det)])] };
 }
 export const fmt = (x: number): string => x === 0 ? '0' : Number(x.toPrecision(7)).toString();
 export const tex = (x: number): string => fmt(x).replace(/e([+-]?\d+)/, '\\times10^{$1}');

@@ -95,7 +95,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const model = parseModel(draft.latex); source = realize(model);
       experiment = { T: read(T), count: read(count), density: read(density), delay: read(delay), amplitude: read(amplitude), initial: source.A.length === 1 ? [read(x1)] : [read(x1), read(x2)], input: input.value as Experiment['input'], method: method.value as Method };
       result = run(source, experiment);
-      const d = result.exact, tf = transfer(source, d), n = source.A.length;
+      const d = result.exact, n = source.A.length;
+      let tf: ReturnType<typeof transfer> | undefined, scalarWarning = '';
+      try { tf = transfer(source, d, experiment.T); }
+      catch (error) { scalarWarning = error instanceof Error ? error.message : 'Scalar transfer and recurrence unavailable for this numerical conditioning. The sampled state model remains available.'; }
       const augmented = source.A.map((row, i) => [...row, source!.B[i]]).concat([Array(n + 1).fill(0) as number[]]);
       const actual = result.samples[1].y, guess = prediction.valueAsNumber;
       feedback.textContent = `${prediction.value && Number.isFinite(guess) ? (Math.abs(guess - actual) <= 1e-5 * Math.max(1, Math.abs(actual)) ? 'Prediction matched within tolerance. ' : 'Compare your prediction with the state update. ') : ''}First sample y[1] = ${fmt(actual)}. ${result.maxError === undefined ? '' : `Maximum sampled output difference on this horizon: ${fmt(result.maxError)}.`} ${result.warning}`;
@@ -106,8 +109,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
         createEquationDisplay(`A_d=e^{AT}=${matrixTex(d.A)},\\quad B_d=\\int_0^T e^{A\\tau}B\\,d\\tau=${matrixTex(d.B.map(v => [v]))}`, 'Exact ZOH identity with numerical matrices'),
         element('p', 'The identities are exact for this hold; the displayed matrices are numerical evaluations. The augmented construction works when A is singular. It does not divide by A.'),
         createEquationDisplay(`x[k+1]=A_dx[k]+B_du[k-${experiment.delay}],\\quad y[k]=Cx[k]+Du[k-${experiment.delay}]`, 'Sampled state recurrence'),
-        createEquationDisplay(`G_d(z)=z^{-${experiment.delay}}\\left(D+C(zI-A_d)^{-1}B_d\\right)=z^{-${experiment.delay}}\\frac{${polyTex(tf.b, 'z')}}{${polyTex(tf.a, 'z')}}`, 'Zero-state pulse transfer function'),
-        createEquationDisplay(recurrence(tf, experiment.delay), 'Zero-state scalar recurrence'),
+        ...(tf ? [createEquationDisplay(`G_d(z)=z^{-${experiment.delay}}\\left(D+C(zI-A_d)^{-1}B_d\\right)=z^{-${experiment.delay}}\\frac{${polyTex(tf.b, 'z')}}{${polyTex(tf.a, 'z')}}`, 'Zero-state pulse transfer function'),
+          createEquationDisplay(recurrence(tf, experiment.delay), 'Zero-state scalar recurrence')]
+          : [element('p', scalarWarning, 'zoh-notice')]),
         element('p', 'Coefficient order is descending powers of z; recurrence terms are successive delays. The scalar transfer recurrence uses zero state/history; selected initial state is propagated separately in the state model. Initial output samples are determined by that state and the held input.', 'zoh-small'));
       const methodName = method.options[method.selectedIndex].text;
       equations.append(element('h4', `${methodName} comparison`));
@@ -130,6 +134,6 @@ export const mount: ModuleMount = ({ container, signal }) => {
       notice.textContent = error instanceof Error ? error.message : 'Check the plant and experiment values.';
     }
   }
-  root.append(element('p', 'Bounds: real proper plant order 1–2; 4–120 sample instants; T=0.0001–10 s; integer delay 0–12; drawing subdivisions 2–16; amplitude/initial-state magnitude ≤10⁴; output magnitude ≤10¹⁰ and state magnitude ≤10¹². Augmented interval matrix infinity norm ≤64; at most 64 exponential-series terms and 7 squarings. Parser: 512 characters, 20 nested groups, intermediate degree ≤6, entered/normalized coefficient magnitude ≤10⁶, leading denominator magnitude ≥10⁻⁸. Displays use 7 significant digits; calculation uses floating-point precision.', 'zoh-small'));
+  root.append(element('p', 'Bounds: real proper plant order 1–2; 4–120 sample instants; T=0.0001–10 s; integer delay 0–12; drawing subdivisions 2–16; amplitude/initial-state magnitude ≤10⁴; output magnitude ≤10¹⁰ and state magnitude ≤10¹². Augmented interval matrix infinity norm ≤64; at most 64 exponential-series terms and 7 squarings. Scalar coefficients require cancellation amplification below 10⁸ and determinant identity relative residual ≤10⁻⁹; otherwise only the state representation is shown. Parser: 512 characters, 20 nested groups, intermediate degree ≤6, entered/normalized coefficient magnitude ≤10⁶, leading denominator magnitude ≥10⁻⁸. Displays use 7 significant digits; calculation uses floating-point precision.', 'zoh-small'));
   return () => { plant.destroy(); root.remove(); };
 };

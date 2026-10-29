@@ -65,4 +65,18 @@ describe('DR05 teaching flow with the equation API stub', () => {
     const root = open(); click(root, 'Delayed 5/s²'); controller.abort(); if (typeof cleanup === 'function') cleanup(); expect(root.children.length).toBe(0);
     const next = open(); click(next, 'Reveal sampled model'); expect(control(next, 'Input delay m (whole samples)').value).toBe('0'); expect(outputValues(next)[1]).toBe('0.09516258');
   });
+  it('omits unreliable scalar equations while retaining the state model and trajectory', () => {
+    const root = open(), field = root.querySelector<HTMLInputElement>('[aria-label="Continuous rational plant"]')!;
+    change(field, '1/((s-60)(s+.01))'); change(control(root, 'Sample period T (s)'), '1');
+    change(control(root, 'Number of sample instants'), '4'); change(control(root, 'Drawing subdivisions per interval'), '16');
+    change(control(root, 'Amplitude A (ramp: units/s)'), '1e-70'); click(root, 'Reveal sampled model');
+    expect(root.textContent).toContain('Scalar transfer and recurrence unavailable');
+    expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')).toBeNull();
+    expect(root.querySelector('[aria-label="Zero-state scalar recurrence"]')).toBeNull();
+    expect(root.querySelector('[aria-label="Sampled state recurrence"]')).not.toBeNull();
+    expect(outputValues(root)).toHaveLength(4); expect(Number(outputValues(root)[3])).toBeGreaterThan(1e4);
+    change(control(root, 'Sample period T (s)'), '.1'); click(root, 'Reveal sampled model');
+    expect(root.textContent).not.toContain('Scalar transfer and recurrence unavailable');
+    expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')).not.toBeNull();
+  });
 });
