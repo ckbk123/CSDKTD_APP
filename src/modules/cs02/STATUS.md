@@ -47,3 +47,9 @@ The recorded continuous audit S1–S4 was inspected. Ch4:20–24 anchors the two
 ## Current evidence and remaining work
 
 Only the audit/ownership setup is delivered at this checkpoint. No algorithm, student interface, mathematical test or browser functionality is yet claimed. All implementation/verification rows above remain open. Use own private in-app browser after verifying this chat's codexSessionId under the updated primary guide; no global lock is required for that isolated path. No browser/preview is currently open or reserved. No Firefox retries, merges, version changes or deployment are authorized here. Keep later checkpoints and this record honest; prior submitted worktrees remain intact for review returns.
+
+## Exact algebra checkpoint
+
+Private algebra.ts now provides immutable rational coefficients, ascending polynomial arithmetic/division/GCD, reduced rational functions of symbolic epsilon, exact one-sided limit signs, Sturm counts and imaginary-axis/symmetric-root multiplicities. No numeric epsilon is substituted. Exact components are currently bounded to4096bits and symbolic polynomial degree32; division/GCD/Sturm/multiplicity loops also enforce decreasing-degree bounds. These private helpers do not import siblings or add a shared backend.
+
+Independent algebra.test.ts checks signed fractions/native exponent values, a separately expanded factor identity, epsilon limit6−10/epsilon→−infinity, positive/negative approaches to zero,27changed factored real-root triples, origin/repeated imaginary factors, symmetric real pairs and complex quartets.8/8module tests and npm run check pass. The fresh unchanged v0.3.9 baseline also passed npm test660/660 across26files after locked installation. Routh table construction, Hurwitz minors, parser/student interface and browser delivery remain open; stage stays in-progress. No CS02 preview or browser tab is open.
