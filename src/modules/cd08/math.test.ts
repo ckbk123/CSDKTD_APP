@@ -49,6 +49,12 @@ describe('independently derived pole-placement and reference fixtures', () => {
     const x = response(a, 8, [.2, -.3], 1, 3, 31), y = response(b, 8, [.4, -.9], 1, 3, 31);
     y.forEach((p, i) => { close(p.state, [2 * x[i].state[0], 3 * x[i].state[1]], 9); expect(p.output).toBeCloseTo(x[i].output, 10); expect(p.effort).toBeCloseTo(x[i].effort, 9); });
   });
+  it('places poles for a noncanonical unstable plant with an independently solved gain', () => {
+    // Matching equations: k1-k2=9, 6k1-4k2=-7. Steady x=[-3,2], u=-1 gives Ax+Bu=0 and Cx=1.
+    const result = design({ A: [1, 2, 3, 4], B: [1, -1], C: [1, 2] }, [4, 5]);
+    close(result.K, [-21.5, -30.5]); close(result.closed, [22.5, 32.5, -18.5, -26.5]); close(result.actual, [4, 5]);
+    expect(result.prefilter).toBeCloseTo(2.5, 12); expect(result.dcGain).toBeCloseTo(.4, 12); close(result.poles[0], [-2, 1]);
+  });
   it('keeps a valid K when no static unity tracking prefilter exists', () => {
     const result = design({ ...BASE, C: [0, 1] }, [6, 8]); close(result.K, [6, 3]); expect(result.dcGain).toBeCloseTo(0, 13); expect(result.prefilter).toBeNull();
     expect(response(result, 1, [0, 0], 1, 4, 21).at(-1)!.output).toBeLessThan(.001);
