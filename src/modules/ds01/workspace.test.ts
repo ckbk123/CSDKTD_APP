@@ -60,6 +60,12 @@ describe('DS01 teaching flow and isolation', () => {
     field.value = '.8'; root.querySelector<HTMLInputElement>('input[type="number"]')!.value = '';
     button(root, 'Reveal and check').click(); expect(root.querySelector('[role="status"]')!.textContent).toContain('Sample period');
   });
+  it('does not assign a phase to a zero pole', async () => {
+    const { root } = await open(); root.querySelector('textarea')!.value = '0'; button(root, 'Reveal and check').click();
+    expect(root.querySelector('.ds-results')!.textContent).toContain('Undefined at zero');
+    expect(root.querySelector('.ds-results')!.textContent).toContain('A zero pole has no defined angle');
+    expect(root.querySelector('.ds-results')!.textContent).not.toContain('atan2');
+  });
   it('restores baseline state on a fresh visit and supports removing/replacing rows', async () => {
     const first = await open(); experiment(first.root, 'jordan3'); first.abort.abort(); first.cleanup();
     const second = await open(); expect(Array.from(second.root.querySelectorAll('textarea')).map(f => f.value)).toEqual(['0.8', '-0.8']);

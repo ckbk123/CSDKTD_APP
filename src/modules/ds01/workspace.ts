@@ -131,7 +131,7 @@ const mountExercise = ({ container, signal }: Parameters<ModuleMount>[0], { crea
     const input = createEquationInput({ label: `Pole ${index + 1} (a + bj)`, value, signal, onChange: draft => { rows[index].draft = draft; invalidate(); } });
     const options = el('div', undefined, 'ds-row-options'), structureLabel = el('label', `Structure for pole ${index + 1}`), structure = el('select');
     for (const [id, text] of structures) structure.append(new Option(text, id)); structure.value = structureValue; structureLabel.append(structure);
-    const visibleLabel = el('label', undefined, 'ds-inline'), visible = el('input'); visible.type = 'checkbox'; visible.checked = visibleValue; visibleLabel.append(visible, document.createTextNode(`Visible in input/output channel ${index + 1}`));
+    const visibleLabel = el('label', undefined, 'ds-inline'), visible = el('input'); visible.type = 'checkbox'; visible.checked = visibleValue; visibleLabel.append(visible, document.createTextNode(`Pole ${index + 1} contributes to the output`));
     const radioLabel = el('label', undefined, 'ds-inline'), radio = el('input'); radio.type = 'radio'; radio.name = 'ds01-selected-pole'; radio.checked = index === selected; radioLabel.append(radio, document.createTextNode(`Inspect pole ${index + 1}`));
     options.append(structureLabel, visibleLabel, radioLabel); wrapper.append(input.element, options); rowsHost.append(wrapper);
     const destroy = () => { listeners.abort(); signal.removeEventListener('abort', destroy); input.destroy(); wrapper.remove(); };
@@ -165,13 +165,14 @@ const mountExercise = ({ container, signal }: Parameters<ModuleMount>[0], { crea
       for (const text of ['Pole row', 'Radius |z|', 'Angle (rad/sample)', 'Disk location', 'Output']) head.append(el('th', text));
       const thead = el('thead'); thead.append(head); const tbody = el('tbody');
       modes.forEach((item, index) => { const tr = el('tr', undefined, index === selected ? 'ds-selected' : '');
-        for (const text of [String(index + 1), number(radius(item.pole)), number(Math.atan2(item.pole.im, item.pole.re)), locationText[locate(item.pole)], item.visible ? 'Visible' : 'Hidden']) tr.append(el('td', text)); tbody.append(tr); });
+        for (const text of [String(index + 1), number(radius(item.pole)), radius(item.pole) === 0 ? 'Undefined at zero' : number(Math.atan2(item.pole.im, item.pole.re)), locationText[locate(item.pole)], item.visible ? 'Visible' : 'Hidden']) tr.append(el('td', text)); tbody.append(tr); });
       table.append(thead, tbody); scroll.append(table); summary.append(scroll, el('p', 'Numerical guard: radii within 10⁻⁹ of 1, but not equal to 1 at working precision, are reported as uncertified. Exact boundary examples use ±1 or the 0.6 ± 0.8j pair. These are numerical calculations, not symbolic certificates.', 'ds-muted'));
       const plots = el('section', undefined, 'ds-card'); plots.append(el('h2', `3. Inspect pole ${selected + 1}`));
       const grid = el('div', undefined, 'ds-plots'); grid.append(plane(modes, selected), sequence(mode, period, horizon)); plots.append(grid);
       const reasoning = el('section', undefined, 'ds-card'); reasoning.append(el('h2', '4. Read the modal argument'));
       reasoning.append(createEquationDisplay(`p=${poleTex(mode.pole)},\\quad r=\\sqrt{(${tex(mode.pole.re)})^2+(${tex(mode.pole.im)})^2}=${tex(r)}`, 'Selected pole and radius'));
-      reasoning.append(createEquationDisplay(`\\theta=\\operatorname{atan2}(${tex(mode.pole.im)},${tex(mode.pole.re)})=${tex(Math.atan2(mode.pole.im, mode.pole.re))},\\quad p^k=r^k e^{\\mathrm{j}k\\theta}`, 'Radius controls decay and angle controls oscillation'));
+      if (r === 0) reasoning.append(el('p', `A zero pole has no defined angle. Its simple mode is 1 at k = 0 and zero thereafter. A length-${m} zero Jordan block is nilpotent: every state is zero after ${m} samples.`));
+      else reasoning.append(createEquationDisplay(`\\theta=\\operatorname{atan2}(${tex(mode.pole.im)},${tex(mode.pole.re)})=${tex(Math.atan2(mode.pole.im, mode.pole.re))},\\quad p^k=r^k e^{\\mathrm{j}k\\theta}`, 'Radius controls decay and angle controls oscillation'));
       reasoning.append(el('p', 'Angle is measured in radians per sample; t = kT seconds. A negative real pole alternates sign. Complex pairs rotate while their radius controls the envelope. Changing T changes the time labels, not the sequence for a fixed z pole.'));
       reasoning.append(createEquationDisplay(`J_m(p)=pI+N,\\quad J_m(p)^k e_m=\\sum_{\\ell=0}^{\\min(k,m-1)}\\binom{k}{\\ell}p^{k-\\ell}e_{m-\\ell}`, 'Jordan power with unit superdiagonal'));
       reasoning.append(createEquationDisplay(`m=${m},\\quad x_1[k]=${m === 1 ? '\\operatorname{Re}(p^k)' : `\\binom{k}{${m - 1}}\\operatorname{Re}(p^{k-${m - 1}}),\\ k\\ge ${m - 1}`}`, 'Selected first-coordinate free response'));
