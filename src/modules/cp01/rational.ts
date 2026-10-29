@@ -39,6 +39,13 @@ export function decimal(text: string, nativeExponent = false): Rational {
 /** Conversion for a separately labelled numerical trace; never used to test exact zero. */
 export function toNumber(value: Rational, allowUnderflow = false): number {
   if (!value.n) return 0;
+  const ordinaryNumerator = Number(value.n), ordinaryDenominator = Number(value.d);
+  if (Number.isFinite(ordinaryNumerator) && Number.isFinite(ordinaryDenominator)) {
+    const ordinary = ordinaryNumerator / ordinaryDenominator;
+    if (!Number.isFinite(ordinary)) throw new Error('A coefficient is outside the finite numerical range. Rescale it.');
+    if (!allowUnderflow && ordinary === 0) throw new Error('A nonzero coefficient is too small to represent numerically. Rescale it.');
+    return ordinary;
+  }
   const numerator = abs(value.n).toString(), denominator = value.d.toString();
   const mantissa = Number('0.' + numerator.slice(0, 17)) / Number('0.' + denominator.slice(0, 17));
   const result = Number(`${value.n < 0n ? -mantissa : mantissa}e${numerator.length - denominator.length}`);

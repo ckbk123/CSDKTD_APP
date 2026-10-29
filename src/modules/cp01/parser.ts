@@ -64,7 +64,12 @@ export function parsePolynomial(latex: string): Rational[] {
   }
   function power(): Rational[] {
     const base = primary(); if (source[position] !== '^') return base;
-    position++; const exponent = argument();
+    position++;
+    const braced = source[position] === '{';
+    const groupingMessage = 'Use the power boxes to group the whole exponent. Adjacent digits, decimal points or a leading sign need explicit grouping.';
+    if (!braced && /[+\-.]/.test(source[position] ?? '')) throw new Error(groupingMessage);
+    const exponent = argument();
+    if (!braced && /[\d.]/.test(source[position] ?? '')) throw new Error(groupingMessage);
     if (exponent.length !== 1 || exponent[0].d !== 1n || exponent[0].n < 0n || exponent[0].n > 2n) throw new Error('Polynomial powers must be the integers 0, 1 or 2.');
     if (!exponent[0].n && base.every(value => !value.n)) throw new Error('Zero to the zeroth power is not supported.');
     return exponent[0].n === 0n ? [ONE] : exponent[0].n === 1n ? base : productOf(base, base);
@@ -74,16 +79,20 @@ export function parsePolynomial(latex: string): Rational[] {
     const result = power(); return negative ? scale(result, neg(ONE)) : result;
   }
   function product(): Rational[] {
-    let value = unary();
+    const first = position;
+    let value = unary(), lastFactor = source.slice(first, position);
+    // A power is a complete displayed factor, not a mixed-number integer.
+    const numericFactor = (text: string): boolean => !text.includes('^') && !text.replace(/\\[a-zA-Z]+/g, '').includes('s');
     while (position < source.length) {
-      if (source[position] === '*') { position++; value = productOf(value, unary()); }
+      if (source[position] === '*') { position++; const start = position; value = productOf(value, unary()); lastFactor = source.slice(start, position); }
       else if (/[\d.s(\\{]/.test(source[position])) {
         const start = position, next = unary();
-        if ((value.length === 1 && next.length === 1 && source[start] !== '(')
-          || (value.length === 1 && /\\(?:dfrac|tfrac|frac)(?![A-Za-z])/.test(source.slice(start, position)))) {
+        const nextFactor = source.slice(start, position);
+        if ((numericFactor(lastFactor) && numericFactor(nextFactor) && source[start] !== '(')
+          || (numericFactor(lastFactor) && /\\(?:dfrac|tfrac|frac)(?![A-Za-z])/.test(nextFactor))) {
           throw new Error('Numeric/fraction adjacency can mean joined digits or a mixed number. Insert + for addition or × for multiplication.');
         }
-        value = productOf(value, next);
+        value = productOf(value, next); lastFactor = nextFactor;
       } else break;
     }
     return value;

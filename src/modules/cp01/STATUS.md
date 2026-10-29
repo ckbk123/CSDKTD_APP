@@ -1,11 +1,11 @@
 # CP01 implementation status
 
-- **Stage:** in-progress (local polynomial/scalar prototype; response solver not yet implemented)
+- **Stage:** in-progress (tested numerical/model core; analytic display and interactive workspace remain)
 - **Last assessed:** 2026-10-29
 - **Assessed code baseline:** fresh primary-main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5)
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a`, host local.
 - **Branch/worktree:** `codex/cp01-time-response-7393`; `C:\Users\baokh\.codex\worktrees\cp01-time-response-7393\CSDKTD APP`.
-- **PR:** not created yet. DS01 PR #10 and CF02 PR #18 are submitted/preserved for asynchronous review; correction requests take priority.
+- **PR:** not created yet. DS01 PR #10 was accepted as v0.3.6. CF02 PR #18 is corrected/resubmitted at `c7ab0f85a0dcb2eb074fe87826b6116145d214bd`; its worktree/history remain preserved for asynchronous review. Further correction requests take priority.
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
 - **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
 
@@ -80,3 +80,28 @@ Added private bounded rational arithmetic and a degree-at-most-two visual polyno
 The coordinator reopened CF02 PR #18 for a confirmed lexical mixed-number bypass (`s2` followed by 1/2). CP01's new prototype uses the same accumulated-constant guard and must receive the corrected lexical rule and regression coverage when resumed. Preserve this checkpoint/reservation, suspend CP01 implementation and repair CF02 in its preserved worktree/PR first. The current browser order is DP03→DP04→coordinator DP02; do not acquire another QA slot until its release notice. No CP01 preview/QA resource is held.
 
 The proposed general proper order-1/2 realization, response basis and pulse handling are preserved in IMPLEMENTATION_NOTES.md. Full accepted TASK and this requirement audit remain the contract; no scope has been dropped.
+
+## Resumed mathematical-core checkpoint
+
+CF02's priority correction passed focused actual-editor checks and final-head CI, then was resubmitted on the same PR before resuming CP01. The CP01 parser now uses the corrected lexical-factor rule, preserves fractions after supported powers, and rejects ambiguous bare multi-character/signed exponent syntax with power-box guidance. Pinned MathLive MathML independently checks the mixed-number and exponent distinctions. Current primary guidance also requires a synchronous owned loading node for deferred views; the upcoming workspace must follow it.
+
+Implemented locally:
+
+- `parser.ts` / `rational.ts`: exact bounded polynomial/scalar arithmetic, visible grouping, degree 0–2 powers, true fraction-argument scope, numeric style wrappers, mixed-number/joined-digit rejection, finite coefficient limits and nonzero-underflow feedback. Ordinary finite rational conversion uses direct number ratios; very large finite ratios retain the bounded leading-digit fallback.
+- `model.ts`: proper real order-1/2 models; exact leading-scale normalization and biproper long division; retained phase-variable realization; direct-path extraction; exact discriminant and denominator-mode categories; initial-state coordinate mapping; Laplace initial-condition numerator. Negative leading scales are normalized correctly rather than changing the transfer gain.
+- `response.ts`: separate zero-input/zero-state/total trajectories, step/ramp/free/ideal-impulse/finite-pulse modes, ideal input/output impulse **areas** separate from regular curves, one-sided endpoint values, a cursor evaluator independent of plot interpolation, and bounded numerical trace propagation. Pulse propagation hits its end exactly, preserves continuous dynamic states across the direct jump, and propagates the postpulse state rather than subtracting two large step states.
+
+Supported core limits now tested: normalized |a0|≤100, |a1|≤20 (quadratic coefficient), strict-remainder |b0|/|b1|≤50, parallel/effective direct gain magnitudes≤10, normalized coefficient rational denominators≤10^9; first/second denominator order, proper numerator only. Initial phase states and amplitude/area are −10–10. Pulse width .001–10 s; horizon .1–60 s. The realization is w'+a0*w=u or w''+a1*w'+a0*w=u, y=b0*w+b1*w'+d*u. These phase states are not silently reinterpreted as external output initial derivatives.
+
+The numerical engine uses at most four augmented states, a scaling/Taylor transition bounded to 24 scalings / 32 terms, 600–20,000 base intervals plus pulse/event points (at most 20,024 plotted points), finite caches capped at 128 transitions each and a 10^10 state/component cap. It reports truncation, sample-budget limits and a horizon ending before the pulse ends. Exact arithmetic decides model identities; trajectories are floating-point approximations.
+
+Checks under bundled Node v24.22.1:
+
+- `node node_modules/vitest/vitest.mjs run src/modules/cp01`: **134 tests pass** (86 grammar, 21 model, 22 response/transition, 5 rational).
+- `npm run check`: passes.
+- Preliminary `npm test`: **478 tests / 21 files pass**.
+- Preliminary `npm run build`: passes, including type check; existing MathLive large-chunk advisory only. Since the workspace is still blank, this is project compatibility evidence, **not** CP01 browser/UI certification.
+
+Independent response oracles include the baseline inverse Laplace step/ramp/impulse and y(1); changed poles/gain; nonzero initial-state superposition; first-order direct jumps and output delta area; linear and biproper numerators; repeated real and underdamped/undamped modes; first/double integrators; a retained cancelled mode; growing-response truncation; finite pulse formulas/one-sided endpoints and convergence to the proper impulse response; known diagonal/rotation/nilpotent matrix exponentials. Centered-coordinate outputs are checked against the independent free-response formula, not only against another implementation path.
+
+**Remaining accepted work:** computed analytic/modal terms and their tests, the full shared-equation workspace, prediction/reveal, input/output/free/forced plots, representation views and preserved initial-state controls, numeric/keyboard time cursor, student-visible domain/errors/impulse interpretation, lifecycle/UI tests, final full checks and actual-browser QA, then the module's PR/exact submission. No working CP01 interface or browser result is claimed. The current temporary QA order is coordinator DD04→CP03→DR01→DP03 before ordinary acquisition; no CP01 preview/reservation is held.
