@@ -28,7 +28,7 @@ function scalarInner(text: string, depth: number): number {
   if ((text[0] === '(' && text.endsWith(')')) || (text[0] === '{' && text.endsWith('}'))) return scalarInner(text.slice(1, -1), depth + 1);
   if (text.startsWith('\\frac') || text.startsWith('\\dfrac')) {
     const [value, end] = fraction(text, 0, depth);
-    if (end !== text.length) throw new Error('Use an explicit operation; numeric/fraction adjacency is not supported.');
+    if (end !== text.length) throw new Error('Enter one evaluated number or numeric fraction; scalar arithmetic and adjacent numeric parts are unsupported here.');
     return value;
   }
   if (!/^(?:\d{1,8}(?:\.\d{0,12})?|\.\d{1,12})$/.test(text)) throw new Error('Use a decimal or a signed numeric fraction. Use visible parentheses, not hidden grouping or mixed-number adjacency. Symbols and scientific e notation are unsupported.');
