@@ -69,6 +69,13 @@ describe('independent modal fixtures', () => {
     }
     expect(locate({ re: 1.001, im: 0 })).toBe('outside');
   });
+  it('does not mistake a radius rounded to 1 for an exact boundary', () => {
+    expect(Math.hypot(1, 1e-10)).toBe(1);
+    expect(locate({ re: 1, im: 1e-10 })).toBe('near-boundary');
+    expect(locate({ re: Math.SQRT1_2, im: Math.SQRT1_2 })).toBe('near-boundary');
+    // 7²+24²=25²: exact decimal parts .28 and .96 lie on the circle.
+    expect(locate({ re: .28, im: -.96 })).toBe('boundary');
+  });
   it('period changes physical timestamps, not z^k', () => {
     const a = samples(mode(-.8), .1, 4), b = samples(mode(-.8), .5, 4);
     expect(a.map(s => s.first)).toEqual(b.map(s => s.first));

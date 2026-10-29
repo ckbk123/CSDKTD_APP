@@ -9,7 +9,7 @@ const structures: readonly [Structure, string][] = [
 ];
 const verdicts = { decays: 'All free responses decay to zero', bounded: 'All free responses bounded; some do not decay', grows: 'Some free responses grow without bound', uncertain: 'Too close to the unit circle to certify' } as const;
 const biboText = { stable: 'BIBO stable', unstable: 'Not BIBO stable', uncertain: 'BIBO stability not certified' } as const;
-const locationText = { inside: 'Inside', outside: 'Outside', boundary: 'On circle at working precision', 'near-boundary': 'Within rounding band' } as const;
+const locationText = { inside: 'Inside', outside: 'Outside', boundary: 'On circle for decimal pole data', 'near-boundary': 'Within rounding band' } as const;
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node;
@@ -166,7 +166,7 @@ const mountExercise = ({ container, signal }: Parameters<ModuleMount>[0], { crea
       const thead = el('thead'); thead.append(head); const tbody = el('tbody');
       modes.forEach((item, index) => { const tr = el('tr', undefined, index === selected ? 'ds-selected' : '');
         for (const text of [String(index + 1), number(radius(item.pole)), radius(item.pole) === 0 ? 'Undefined at zero' : number(Math.atan2(item.pole.im, item.pole.re)), locationText[locate(item.pole)], item.visible ? 'Visible' : 'Hidden']) tr.append(el('td', text)); tbody.append(tr); });
-      table.append(thead, tbody); scroll.append(table); summary.append(scroll, el('p', 'Numerical guard: radii within 10⁻⁹ of 1, but not equal to 1 at working precision, are reported as uncertified. Exact boundary examples use ±1 or the 0.6 ± 0.8j pair. These are numerical calculations, not symbolic certificates.', 'ds-muted'));
+      table.append(thead, tbody); scroll.append(table); summary.append(scroll, el('p', 'Numerical guard: a radius rounded to 1 alone does not establish a boundary pole. Boundary equality is checked using the retained decimal pole parts; other radii within 10⁻⁹ of 1 are uncertified. Fraction inputs are first rounded numerically. Boundary examples include ±1 and 0.6 ± 0.8j.', 'ds-muted'));
       const plots = el('section', undefined, 'ds-card'); plots.append(el('h2', `3. Inspect pole ${selected + 1}`));
       const grid = el('div', undefined, 'ds-plots'); grid.append(plane(modes, selected), sequence(mode, period, horizon)); plots.append(grid);
       const reasoning = el('section', undefined, 'ds-card'); reasoning.append(el('h2', '4. Read the modal argument'));

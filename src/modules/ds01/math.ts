@@ -67,10 +67,25 @@ export function chainLength(structure: Structure): number {
 }
 export function copies(structure: Structure): number { return structure === 'independent' ? 2 : 1; }
 export function radius(pole: Complex): number { return Math.hypot(pole.re, pole.im); }
+/** Compare the finite decimal values retained after numeric parsing exactly.
+ * Math.hypot(1, 1e-10) rounds to 1, but that alone must not certify a boundary.
+ * Fractions have already been rounded to doubles; uncertain near-circle cases
+ * remain uncertain rather than claiming exact recovery of the original ratio.
+ */
+function decimalCircle(pole: Complex): boolean {
+  function ratio(value: number): readonly [bigint, bigint] {
+    const [mantissa, exponent = '0'] = Math.abs(value).toString().split('e');
+    const [integer, fraction = ''] = mantissa.split('.');
+    const scale = fraction.length - Number(exponent);
+    const numerator = BigInt(integer + fraction);
+    return scale < 0 ? [numerator * 10n ** BigInt(-scale), 1n] : [numerator, 10n ** BigInt(scale)];
+  }
+  const [a, b] = ratio(pole.re), [c, d] = ratio(pole.im);
+  return a * a * d * d + c * c * b * b === b * b * d * d;
+}
 export function locate(pole: Complex): Location {
   const r = radius(pole);
-  if (r === 1) return 'boundary';
-  if (Math.abs(r - 1) <= RADIUS_TOLERANCE) return 'near-boundary';
+  if (Math.abs(r - 1) <= RADIUS_TOLERANCE) return decimalCircle(pole) ? 'boundary' : 'near-boundary';
   return r < 1 ? 'inside' : 'outside';
 }
 
