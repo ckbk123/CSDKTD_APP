@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-const mock = vi.hoisted(() => ({ mount: vi.fn(() => vi.fn()) }));
+import type { ModuleMount } from '../../core/module';
+const mock = vi.hoisted(() => ({ mount: vi.fn<ModuleMount>(() => vi.fn()) }));
 vi.mock('./view', () => ({ mount: mock.mount }));
 import { mount } from './workspace';
 
@@ -30,6 +31,30 @@ describe('DF02 deferred view lifecycle', () => {
     const container = document.createElement('section'), controller = new AbortController(); const dispose = mount({ container, signal: controller.signal });
     await vi.waitFor(() => expect(container.querySelector('[role="alert"]')?.textContent).toContain('Reset the example'));
     expect(container.textContent).not.toContain('Loading'); controller.abort(); if (typeof dispose === 'function') dispose();
+    expect(container.childElementCount).toBe(0);
+  });
+  it('aborts resources registered by a partially failed view while its parent visit remains active', async () => {
+    let childSignal: AbortSignal | undefined;
+    const resource = vi.fn(), stopped = vi.fn();
+    mock.mount.mockImplementationOnce(({ container, signal }) => {
+      childSignal = signal;
+      window.addEventListener('df02-failed-view-probe', resource, { signal });
+      signal.addEventListener('abort', stopped, { once: true });
+      container.append(document.createElement('math-field'));
+      throw new Error('failed after allocating a resource');
+    });
+    const container = document.createElement('section'), controller = new AbortController();
+    const dispose = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(container.querySelector('[role="alert"]')).not.toBeNull());
+    expect(controller.signal.aborted).toBe(false);
+    expect(childSignal).not.toBe(controller.signal);
+    expect(childSignal?.aborted).toBe(true);
+    expect(stopped).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('math-field')).toBeNull();
+    window.dispatchEvent(new Event('df02-failed-view-probe'));
+    expect(resource).not.toHaveBeenCalled();
+    if (typeof dispose === 'function') dispose();
+    controller.abort(); expect(stopped).toHaveBeenCalledTimes(1);
     expect(container.childElementCount).toBe(0);
   });
   it('does nothing for an already aborted visit', () => {

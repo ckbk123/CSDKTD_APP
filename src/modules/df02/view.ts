@@ -44,6 +44,9 @@ const referenceName = (reference: Reference, basis: Basis) => reference === 'ste
 export const mount: ModuleMount = ({ container, signal }) => {
   if (signal.aborted) return;
   const lifetime = new AbortController(); let viewController: AbortController | undefined, disposed = false;
+  // Forward abort before constructing an editor that can allocate and then fail.
+  const forwardAbort = () => lifetime.abort();
+  signal.addEventListener('abort', forwardAbort, { once: true });
   const root = node('div', '', 'df02-tool'), form = node('form', '', 'df02-card'), view = node('div', '', 'df02-view'); form.noValidate = true;
   root.append(node('p', 'Compare a ramp in sample index with a ramp in physical time. Inspect the error stems, make a prediction, then derive the limit and check the conditions that justify it.', 'df02-intro'));
   form.append(node('h3', '1. Define the reference loop'));
@@ -208,7 +211,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
   }
   function cleanup(): void {
     if (disposed) return; disposed = true;
-    signal.removeEventListener('abort', cleanup); viewController?.abort(); lifetime.abort(); editor.destroy(); root.remove();
+    signal.removeEventListener('abort', cleanup); signal.removeEventListener('abort', forwardAbort);
+    viewController?.abort(); lifetime.abort(); editor.destroy(); root.remove();
   }
   form.addEventListener('submit', event => { event.preventDefault(); render(); }, { signal: lifetime.signal });
   signal.addEventListener('abort', cleanup, { once: true }); render(); return cleanup;

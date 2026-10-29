@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationDraft, EquationInputOptions } from '../../shared/equations/input';
+import * as equations from '../../shared/equations/input';
 
 // Module-owned state/feedback tests. Actual MathLive, fonts and keyboard require
 // the separately recorded real-browser pass.
@@ -34,6 +35,22 @@ function open() {
 }
 
 describe('DF02 student flow, data validation and per-visit ownership', () => {
+  it('forwards abort to resources allocated by an editor that throws before returning', () => {
+    const resource = vi.fn(); let editorSignal: AbortSignal | undefined;
+    const helper = vi.spyOn(equations, 'createEquationInput').mockImplementationOnce(options => {
+      editorSignal = options.signal;
+      window.addEventListener('df02-editor-failure-probe', resource, { signal: options.signal });
+      throw new Error('editor initialization failed');
+    });
+    const controller = new AbortController(), container = document.createElement('section');
+    try {
+      expect(() => mount({ container, signal: controller.signal })).toThrow('editor initialization failed');
+      expect(controller.signal.aborted).toBe(false);
+      controller.abort(); expect(editorSignal?.aborted).toBe(true);
+      window.dispatchEvent(new Event('df02-editor-failure-probe'));
+      expect(resource).not.toHaveBeenCalled();
+    } finally { controller.abort(); helper.mockRestore(); }
+  });
   it('shows real samples before the answer and derives the physical-ramp error independently', () => {
     const v = open();
     expect(v.container.querySelectorAll('figure')).toHaveLength(2);

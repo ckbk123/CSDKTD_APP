@@ -1,7 +1,7 @@
 # DF02 implementation status
 
 - **Stage:** in-progress
-- **Assessment:** 2026-10-29; bounded mathematics and student interface implemented; actual browser verification and final delivery remain.
+- **Assessment:** 2026-10-29; bounded exercise and actual browser checks implemented; a reproduced shared Escape/editor-mode dependency and final delivery remain.
 - **Contract:** [TASK.md](TASK.md); ownership `src/modules/df02/**`.
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`; owner `worker-df02-01a186d2-12d1`.
 - **Branch:** `codex/df02-tracking-error-01a186d2`.
@@ -13,20 +13,20 @@
 
 | Accepted requirement | Delivered behavior | Evidence / remaining work |
 |---|---|---|
-| Editable loop, period and reference | Shared visual L(z) input; native T/h/N controls; step, ramp, parabola; physical-time versus sample-index normalization | Exact parser and view regressions; actual editor check pending |
+| Editable loop, period and reference | Shared visual L(z) input; native T/h/N controls; step, ramp, parabola; physical-time versus sample-index normalization | Exact parser/view regressions and actual MathLive entry; shared Escape-to-raw-mode issue reported below |
 | Derive E(z) with sensor gain | Negative feedback e_c=r−hy, y=L e_c; output, comparator and actual tracking channels shown separately, with e_t=(1−1/h)r+e_c/h | Independent nonunit-sensor formulas and state-flow tests |
 | Type and constants | Exact z=1 multiplicities; Kp, sequence/physical Kv and Ka; source target 100 converted in both normalizations | Baseline, changed T, type 0/1/2 and nonunit cases; no unverified source convention frozen |
 | Limit factors and assumptions | Exact factored final-value expression, highlighted factor counts, monic coefficient mapping and low-order Schur conditions | Finite, polynomial-growth and retained-loop-not-certified outcomes tested independently |
 | Reference/output/error stems | Two computed stem views, sample cursor and numeric inspection of r/y/both errors; bounded drawing retains all computed samples for inspection | Geometric-series fixtures, direct-feedthrough initial sample, sampling/growth bounds, SVG finite-value checks |
 | Prediction and changed experiment | Outcome prediction and optional finite estimate before reveal; editable data and five presets; model edits clear old results | View tests cover predictions, changed normalization, h=2, type-two case, unstable loop and recovery |
-| Lifecycle and scope | Synchronous owned loading node; guarded deferred view; all draft/state inside mount; abort/disposal remove editor and listeners | Loading/success/failure/rapid-abort/cleanup tests; actual reset/reopen/navigation pending |
-| Readability and accessibility | Scoped Indigo/slate styles, visible axis units, semantic equations, numeric and range alternatives, focusable local scrolling | Automated structure checks pass; actual font/keyboard/narrow inspection pending |
-| Checks and delivery | Module-only isolated branch; no dependency/global/version/deployment changes | 86 module tests, 340 full tests, type/build pass; browser, final commit/PR/push/exact submitted claim still required |
+| Lifecycle and scope | Synchronous owned loading node; guarded deferred view and owned child abort signal; early abort forwarding before editor allocation | Loading/success/partial-failure/rapid-abort/cleanup tests; actual reset/reopen/navigation pass |
+| Readability and accessibility | Scoped Indigo/slate styles, visible axis units, semantic equations, numeric and range alternatives, focusable local scrolling | Actual font, toolbar, keyboard, desktop and 390×844 inspection; local plots/equations scroll with ArrowRight; no page overflow |
+| Checks and delivery | Module-only isolated branch; no dependency/global/version/deployment changes | 88 module tests in 342 passing full tests; type/build pass; shared dependency disposition and final PR/submission remain |
 
 ## Supported mathematical domain
 
 - Proper real rational polynomials in z through degree two, expanded or factored. Decimal/fraction coefficients, sums, products, visible parentheses, polynomial powers −2…2 and integer powers −12…12 of the number 10. Optional L(z), G(z) or F(z) prefix. Other variables/functions, symbolic parameters and improper future-input models are rejected.
-- MathLive compact one-token fraction and power arguments preserve TeX scope. Standalone invisible formatting groups flatten to the displayed expression; adjacent digit fragments join into their visible number. Signed/nested ordinary fractions and explicit parentheses work. Number/fraction mixed adjacency requires explicit +/−/×. Visual e/E literals and ambiguous separated numeric terms are rejected; native numeric exponents retain their normal numeric meaning.
+- MathLive compact one-token fraction and power arguments preserve TeX scope. Standalone invisible formatting groups flatten to the displayed expression; adjacent digit fragments join into their visible number. Signed/nested ordinary fractions and visible parentheses work: 2(1/2) is explicitly grouped multiplication, while direct/invisibly wrapped mixed-number adjacency requires +/−/×. Visual e/E literals and ambiguous separated numeric terms are rejected; native numeric exponents retain their normal numeric meaning.
 - Input length ≤300, ≤160 tokens, nesting ≤20, intermediate polynomial degree ≤8, decimal mantissas ≤24 digits and reduced exact fraction integers ≤2048 bits (bounded 4096-bit arithmetic intermediates). Expanded coefficients ≤10000; nonzero monic-normalized coefficients between 10⁻¹² and 10⁶. Internal polynomial arrays ascend from constant to z². Native controls use the shared number reader with 80-character bounds; T/h retain exact entered decimal fractions with bounded scaling.
 - Continuous-valued real SISO signals sampled at T=0.001–10 s, h=0.01–10 dimensionless, N integer 10–1000. All pre-k=0 history is zero. r/y use compatible arbitrary units. References are r[k]=1, k or kT, and k²/2 or (kT)²/2. Physical ramp rate is 1 unit/s and physical parabolic acceleration 1 unit/s². The entered discrete L stays fixed when T changes; no underlying continuous plant or hold is inferred.
 - With L=N/D and negative feedback, C=D+hN, Y/R=N/C, E_c/R=D/C and E_t/R=(D+(h−1)N)/C. Direct feedthrough is solved simultaneously. A zero instantaneous feedback coefficient is rejected, as are normalized closed-loop coefficients beyond 10⁶.
@@ -52,23 +52,30 @@
 Own worktree, bundled Node 24.22.1 and npm 10.8.2:
 
 - `npm ci`: passed, 109 packages; no dependency changes or reported vulnerabilities.
-- `npm test -- src/modules/df02`: **86/86**, 3 files passed.
+- `npm test -- src/modules/df02`: **88/88**, 3 files passed.
 - `npm run check`: passed.
-- `npm test`: **340/340**, 20 files passed on this preserved 0.3.4 baseline.
+- `npm test`: **342/342**, 20 files passed on this preserved 0.3.4 baseline, including 88 DF02 tests.
 - `npm run build`: passed, including type checking. Existing MathLive size advisory remains (about 221.5 kB gzip); no package/configuration change was made to suppress it.
 
 View tests mock the shared equation component only to check owned state, typesetting-string construction, feedback and lifecycle. They are not browser/font/keyboard evidence.
 
-## Remaining browser and delivery work
+## Actual browser evidence and dependency
 
-No DF02 real-browser evidence is claimed yet. Inspect the actual production build for baseline/changed references and periods, step/ramp/parabola, both sensor-error channels, hidden-group/mixed/exponent entry, real fraction/power buttons, optional prediction, numeric underflow/intentional zero, sample cursor, reset/reopen/rapid navigation, cleanup, fonts and a narrow viewport. Record actual browser/context dimensions and any unperformed checks.
+Private IAB inventory confirmed `metadata.codexSessionId=01a186d2-12d1-77e3-a08c-f9c72e0f3867` and an empty owned tab inventory before opening tab 3 against this worktree's production preview on port 59623. Desktop 1265×712 and narrow 390×844 were inspected. The initial full flow used 68d1576; subsequent lifecycle corrections require rebuilt-page confirmation before final submission.
 
-The coordinator's later human-authorized policy permits private per-chat IAB testing in parallel only after browser inventory confirms this chat's codexSessionId. Check that isolation before opening a test tab; use only this worktree's preview and owned tabs, restore the own viewport and close temporary tabs. Any genuinely shared/native-focus surface remains coordinated. No Firefox test or unsupported Firefox launch is claimed; the reported Firefox URL-policy limitation is respected. No global QA reservation or waiter is currently held by this worker.
+- Baseline ramp displayed k80: r=8, y=7.00022, both errors .999782; prediction 1 agrees with the certified limit. Sample-index ramp gives limit 10; T=.2 gives physical limit 2 and target-100 conversions 20/500. Baseline step gives zero limit; physical parabola shows e~k/10 and k80 error7.05021.
+- h=2 gives k80 comparator .5 and tracking4.25: tracking grows as k/20, comparator certifies .5. Type-two physical parabola certifies1/4, sequence parabola25; exact two-factor cancellation and strict Schur conditions typeset correctly. Static1/2 gives direct step output1/3/error2/3. The unstable feedback example stops before k46 and withholds its formal1/5 candidate; canceled unstable external modes also withhold certification. Singular algebraic feedback gives useful feedback and no stale stems.
+- T=1e-2 works; T=1e-999 and N10.5 are rejected. N1000 computes1001 positions and draws113 regular positions; any sample is inspectable. Numeric k123 plus range ArrowRight selects124; nonzero-underflow k preserves124 and intentional0e-999 selects0. Invalid prediction underflow prevents reveal, blank estimate remains optional, and intentional zero prediction agrees for L2,h.5 with r=y and comparator=r/2.
+- Actual MathLive fixtures preserve 1{+2}=3, joined digits1{2}=12, explicit addition/multiplication of fractions, visible2(1/2)=1, hidden denominator groups and one-token10^23=300. Mixed adjacency, braced10^{23}, visual e/E, improper L and zero denominator give errors without stale results. The actual fraction toolbar was activated with Enter after typing1; keyboard2 then Tab produced compact fraction1/2. The power toolbar plus keyboard−2 produced10^{-2}. Fonts and fraction/power/Systems symbols were visually legible.
+- Shell reset and rapid leave/reopen restore baseline and hide the answer. Leaving with the math keyboard open removes all math-fields and visible keyboard controls. At390×844 the document client/scroll widths both remain375; plot client277/scroll570 and equation client279/scroll545 support focus plus ArrowRight scrolling. Axis labels/units and form labels were visually inspected. Only the existing dark theme was exercised; no Firefox evidence is claimed.
+- **Open shared dependency:** opening the keyboard then Escape closes the keyboard but MathLive's default Escape switches the field to LaTeX mode before the shared helper's bubbling handler. The next preset then displays raw TeX and `getValue('latex')` is empty. Reproduced twice; Reset recovers. MathLive's local default binding confirms the cause. Reported to the authorized coordinator with a proposed capture-phase Escape interception; no shared file was edited by this module worker. Do not treat the Escape-close-only observation as proof of subsequent visual editing. Final repair/adaptation disposition and retest remain mandatory.
 
-After actual QA and repairs, update this audit and stage, create/reuse and attach one PR, record its URL, commit and test the final exact HEAD, push/verify it, and submit the clean worktree with the current primary helper. Independent integration review is a later stage. Do not merge, deploy or change versions.
+Private evidence: `C:\Users\baokh\.codex\control-studio-workers\df02-browser-evidence\browser-results.json`, desktop-stems.jpg, desktop-limit.jpg, mobile-editor.jpg, mobile-stems.jpg and mobile-derivation.jpg. The recorded30 checks plus11 notation fixtures include the outstanding Escape dependency explicitly; they do not represent an all-green final gate. Console warnings/errors were empty at the recorded inspection. The viewport override was restored; the owned temporary tab remains available for the dependency retest. No global QA reservation/waiter is held. Only demonstrably private IAB controls were used.
+
+After resolving the dependency, update this audit/stage, close the owned tab, create/reuse and attach one PR, record its URL, commit/test the final exact HEAD, push/verify it and submit the clean worktree with the current primary helper. Independent integration review is later; no merge, deployment or version change is authorized.
 
 ## Provenance and checkpoints
 
 The TASK/atlas and recorded `docs/research/DISCRETE_EXERCISE_AUDIT.md` DF2 cite CH8:45–62 and CH9:21–22/E12. This worker did not newly inspect the original slide decks. The source target Kv*=100 retains its unresolved source normalization; all numeric verification examples above were independently derived or proposed for implementation checks.
 
-20f60f4 recorded the initial audit; b5147b3 preserved the math prototype when CP03 was reopened. CP03's returned notation correction was completed and resubmitted separately at 3a8f79e in PR #7 before DF02 resumed. This parser now independently carries the same displayed-meaning protections without importing a sibling module. All source changes remain inside DF02. No shared API/dependency change is currently required; no additional agent, main merge, version bump or deployment was performed.
+20f60f4 recorded the initial audit; b5147b3 preserved the math prototype when CP03 was reopened. CP03's returned notation correction was completed and resubmitted separately at3a8f79e in PR#7 before DF02 resumed. 68d1576 checkpointed the complete DF02 exercise before browser verification. This parser independently carries the same displayed-meaning protections without importing a sibling module. All source changes remain inside DF02. The shared Escape dependency is explicitly coordinated above. No additional agent, main merge, version bump or deployment was performed.

@@ -33,6 +33,8 @@ describe('bounded exact visual rational grammar', () => {
     expect(parseForward('2\\times\\frac12').numerator).toEqual([q(1)]);
     expect(values('z^2\\frac12/(z^2+1)')).toEqual({ n: [0, 0, 0.5], d: [1, 0, 1] });
     expect(parseForward('\\frac12\\frac12').numerator).toEqual([q(1, 4)]);
+    // Visible parentheses state multiplication; invisible formatting alone does not.
+    expect(parseForward('2\\left(\\frac12\\right)').numerator).toEqual([q(1)]);
   });
   it.each([['1{+2}', 3], ['-{2+3}', 1], ['1{2}', 12], ['{1}{2}', 12], ['-{2}{3}', -23], ['{2}', 2], ['{-2}^2', -4], ['{(-2)}^2', 4], ['{1+2}^2', 5]])('preserves displayed arithmetic across invisible formatting: %s', (source, expected) => {
     expect(parseForward(source).numerator).toEqual([q(expected)]);
