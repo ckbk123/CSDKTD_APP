@@ -41,6 +41,8 @@ TASK/atlas cites Ch8:41–44,46–62 and S13. `docs/research/DISCRETE_EXERCISE_A
 - `npm test -- src/modules/dp01/math.test.ts`: 40/40 pass. `npm run check`: pass (bundled Node v24.22.1; npm 10.8.2; locked dependencies installed inside this worktree).
 - Full suite/build and real-browser checks are still pending. Stage remains in-progress.
 
+Second checkpoint: browser-only view is imported after synchronous mount, with abort/disposal guards and lifecycle tests. `view.test.ts` exercises reveal, changed amplitude/history, negative/conjugate/repeated modes, errors, comparison and reopen using a public equation API stub; it is not browser-editor evidence. Added analytic impulse modal tails (including feedthrough, delay and repeated roots), scientific notation in typeset output, and readable horizontally scrollable narrow plots. `npm test -- src/modules/dp01`: 48/48 pass; `npm run check` passes. Full suite previously passed 84/84 after the import fix; rerun final suite/build after the latest edits. Browser reservation is currently held by another worker; no browser controls have been used.
+
 ## Remaining acceptance work (at initial audit)
 
 - [ ] Working exercise inputs, declared supported domain and mathematical validation.

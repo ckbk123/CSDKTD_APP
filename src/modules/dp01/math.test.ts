@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { classify, freeDecomposition, modalSamples, parseModel, poles, simulate, type Experiment } from './math';
+import { classify, freeDecomposition, impulseDecomposition, modalSamples, parseModel, poles, simulate, type Experiment } from './math';
 
 const baseline = String.raw`G(z)=\frac{0.2}{z-0.8}`;
 const experiment: Experiment = { T: 0.1, count: 20, amplitude: 1, history: [0, 0], input: 'step' };
@@ -73,6 +73,19 @@ describe('DP01 sequences checked against closed forms', () => {
     const r = modalSamples(0.8, Math.PI / 2, 5);
     expect(r[2]).toBeCloseTo(-0.64, 12);
     expect(modalSamples(0.8, 0, 5)[2]).toBeCloseTo(0.64, 12);
+  });
+  it('decomposes independent real, conjugate, repeated and zero-pole histories', () => {
+    const equation = (s: string, history: [number, number]) => {
+      const m = parseModel(s); return freeDecomposition(m, simulate(m, { ...experiment, input: 'free', history }));
+    };
+    // Histories chosen from f[k]=2(0.5)^k+3(−0.5)^k, so f[−1]=−2 and f[−2]=20.
+    expect(equation('1/(z^2-0.25)', [-2, 20])).toBe('y_{free}[k]=(3)(-0.5)^{k}+(2)(0.5)^{k}');
+    expect(equation('1/(z^2+0.64)', [0, -1.5625])).toContain('(1)\\cos(1.5708k)');
+    expect(equation('1/(z-1)^2', [1, 0])).toBe('y_{free}[k]=[(2)+(1)k](1)^{k}');
+    expect(equation('1/z^2', [1, 2])).toBe('y_{free}[k]=0');
+    expect(impulseDecomposition(parseModel(baseline))).toBe('h[0]=0;\\quad h[k]=(0.2)(0.8)^{(k-1)}\\quad(k\\geq1)');
+    expect(impulseDecomposition(parseModel('1/z^2'))).toContain('(1)\\delta[(k-2)]');
+    expect(impulseDecomposition(parseModel('1/(z-0.5)^2'))).toContain('[(1)+(1)(k-2)](0.5)^{(k-2)}');
   });
   it.each([
     { T: 0 }, { T: Infinity }, { T: 101 }, { count: 201 }, { count: 3 }, { count: 5.5 },

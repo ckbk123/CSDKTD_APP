@@ -164,32 +164,42 @@ export function simulate(model: Model, e: Experiment): Sample[] {
   return rows;
 }
 
-export const format = (x: number): string => Math.abs(x) < 1e-12 ? '0' : Number(x.toPrecision(6)).toString();
-const num = (x: number): string => `(${format(x)})`;
+export const format = (x: number): string => x === 0 ? '0' : Number(x.toPrecision(6)).toString();
+export const tex = (x: number): string => format(x).replace(/e([+-]?\d+)/, '\\times10^{$1}');
+const num = (x: number): string => `(${tex(x)})`;
 
 /** Decomposition of the zero-input response for k>=0. Forced response is
  * computed independently by recurrence, not by an ill-conditioned residue sum. */
 export function freeDecomposition(model: Model, rows: Sample[]): string {
+  return `y_{free}[k]=${modalFormula(model, rows[0].free, rows[1].free, 'k')}`;
+}
+
+function modalFormula(model: Model, f0: number, f1: number, index: string): string {
   const p = poles(model);
-  const f0 = rows[0].free;
-  const f1 = rows[1].free;
-  if (p.length === 1) return `y_{free}[k]=${num(f0)}${num(p[0].re)}^k`;
+  if (p.length === 1) return `${num(f0)}${num(p[0].re)}^{${index}}`;
   if (p[0].im !== 0) {
     const r = Math.hypot(p[0].re, p[0].im);
     const theta = Math.atan2(p[0].im, p[0].re);
     const c = (f1 / r - f0 * Math.cos(theta)) / Math.sin(theta);
-    return `y_{free}[k]=${num(r)}^k[${num(f0)}\\cos(${format(theta)}k)+${num(c)}\\sin(${format(theta)}k)]`;
+    return `${num(r)}^{${index}}[${num(f0)}\\cos(${tex(theta)}${index})+${num(c)}\\sin(${tex(theta)}${index})]`;
   }
   const x = p[0].re, y = p[1].re;
   if (x === y) {
-    if (x === 0) return 'y_{free}[k]=0\\quad(k\\geq0)';
-    return `y_{free}[k]=[${num(f0)}+${num(f1 / x - f0)}k]${num(x)}^k`;
+    if (x === 0) return f0 === 0 && f1 === 0 ? '0' : `${num(f0)}\\delta[${index}]+${num(f1)}\\delta[${index}-1]`;
+    return `[${num(f0)}+${num(f1 / x - f0)}${index}]${num(x)}^{${index}}`;
   }
   if (Math.abs(x - y) < 1e-7 * Math.max(1, Math.abs(x), Math.abs(y))) {
     return '\\text{Nearly coincident poles: use the displayed recurrence for the free response.}';
   }
   const c = (f1 - y * f0) / (x - y);
-  return `y_{free}[k]=${num(c)}${num(x)}^k+${num(f0 - c)}${num(y)}^k`;
+  return `${num(c)}${num(x)}^{${index}}+${num(f0 - c)}${num(y)}^{${index}}`;
+}
+
+export function impulseDecomposition(model: Model): string {
+  const n = model.a.length - 1;
+  const h = simulate(model, { T: 1, count: 4, amplitude: 1, history: [0, 0], input: 'impulse' });
+  const prefix = h.slice(0, n).map(r => `h[${r.k}]=${tex(r.y)}`).join(',\\quad ');
+  return `${prefix};\\quad h[k]=${modalFormula(model, h[n].y, h[n + 1].y, `(k-${n})`)}\\quad(k\\geq${n})`;
 }
 
 export function recurrence(model: Model): string {

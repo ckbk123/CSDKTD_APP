@@ -10,8 +10,8 @@
 [data-module="DP01"] input:disabled { opacity: 0.6; }
 [data-module="DP01"] .dp-small { font-size: 12px; color: var(--muted); }
 [data-module="DP01"] .dp-notice { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--tint); }
-[data-module="DP01"] .dp-plot { min-width: 0; border: 1px solid var(--line); border-radius: 9px; margin: 12px 0; }
-[data-module="DP01"] svg { width: 100%; height: auto; display: block; overflow: visible; }
+[data-module="DP01"] .dp-plot { min-width: 0; overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; margin: 12px 0; }
+[data-module="DP01"] svg { width: 100%; min-width: 560px; height: auto; display: block; }
 [data-module="DP01"] svg text { fill: var(--muted); font-size: 12px; }
 [data-module="DP01"] .dp-grid { stroke: var(--line); stroke-width: 0.8; }
 [data-module="DP01"] .dp-axis { stroke: var(--muted); stroke-width: 1; }
