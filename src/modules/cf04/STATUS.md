@@ -1,49 +1,73 @@
 # CF04 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355` (local)
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cf04-frequency-specs-01a18701\CSDKTD APP`
 - **Branch:** `codex/cf04-frequency-specs-01a18701`
-- **Claim baseline:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary v0.3.9)
-- **Contract:** [TASK.md](TASK.md), read in full; no implementation/browser verification claimed yet.
+- **Baseline:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary v0.3.9)
+- **Contract:** [TASK.md](TASK.md). Independent coordinator review/integration remains.
 
-## Requirement-to-evidence audit
+## Delivered requirement evidence
 
-At claim, index.ts was metadata-only and workspace.ts was blank, with no module tests. The shared example banner is a separate preview. Preserve metadata and all unrelated files.
+The claimed folder had metadata and a blank mount, with no module tests. The manifest/index and TASK remain unchanged. Only this module is changed; the shell's equation preview stays separate from its working inputs.
 
-| Accepted requirement | Missing work / planned evidence |
+| Accepted requirement | Implementation and checks |
 |---|---|
-| Editable mathematical data and revealable exercise | Bounded G(s)=g/[s(s+a)], C(s)=K(1+τz s)/(1+τp s); visual scalar coefficients, channel/frequency predictions and feedback |
-| Bode/Nyquist cursor and selectable crossings | Explicit G,L,T selection, frequency cursor and marker selection; physical rad/s units, phase and magnitude constructions on computed curves |
-| All relevant margin crossings, infinite/undefined distinction | Complete bounded crossover equations, root-count/isolation and numerical residuals; proper scalar/lead/lag family, no sampled-search completeness claims; singular/DC cases clear |
-| Closed-loop resonance/bandwidth markers | Stable closed-loop channel only; enumerate all relevant stationary and −3dB crossings, explain DC-relative bandwidth, compare against open-loop specifications |
-| Course C0/C1 variation, Kv invariant | C0=4, C1=4(1+.7071067812s)/(1+.3535533906s), PM≈51.827→64.471deg and Kv=2; independent analytic fixtures |
-| Scope, lifecycle, failure and browser checks | Stateless local math; shared visual equation API and native-number reader; owned child-signal failure cleanup tests; project and real private-browser checks |
+| Editable data, predictions and checked reveal | Five visual scalar fields for G=g/[s(s+a)] and C=K(1+τz s)/(1+τp s); channel/Kv predictions, reveal, changed data and temporary held comparison |
+| Bode/Nyquist cursor and selectable crossings | G/L/T selector; gain/phase Bode and equal-axis Nyquist views; linked numeric/Bode-click cursor; crossing/peak selector and fit-window action; explicit rad/s, degrees and dB |
+| All relevant crossings; margin construction; infinite/undefined distinctions | Exact rational positive-root counts for the bounded gain equation; analytic negative-real condition; all isolated L crossings, PM and GM constructions; infinite GM distinguished from DC singularity, numerical failure and unavailable stable performance |
+| Closed-loop resonance/bandwidth markers | Full closed-loop polynomial and exact Routh check; stable T stationary candidates/global peak, all −3.0103dB contacts and their up/down/touch direction; first downward exit from the DC passband defines bandwidth |
+| Course C0/C1 comparison and Kv | Documented lead preset; held comparison shows PM51.827292→64.471221deg, Kv2 unchanged, T peak1.1547005→1 and bandwidth2.5440393→3.1942249rad/s |
+| Validation/lifecycle/project/browser evidence | Bounded parser/math, shared native reader, resource-then-throw child-signal cleanup, result-listener disposal, full test/type/build checks and private production-browser QA below |
 
-Source provenance: TASK/atlas and repository audits were inspected; original decks outside Git were not. The explicit C1 coefficients are recorded in the atlas CD05 check and are rounded course values, not newly claimed exact irrational coefficients. Proposed lag/degeneracy cases will be labeled independently derived fixtures.
+## Mathematical domain, limits and conventions
 
-Planned scope retains the full accepted frequency exercise within a real proper first-order compensator and an integrating second-order plant. Positive bounded g,a,K; nonnegative bounded time constants, with static compensation allowed. Algebraic crossing/root methods must distinguish complete counts from ill-conditioned approximations. Default/reset stays the course C0 fixture. Shared libraries, shell, dependencies, version and deployment are outside this contribution. No shared math service exists beyond README; local private helpers can support this bounded contract without a dependency request.
+Real SISO negative unity feedback, normalized scalar signals. Plant g,a and controller K are0.001–100; τz,τp are0 or0.001–100 seconds. A positive τz requires positive τp (proper compensation). g has s^-2, a has s^-1, K is dimensionless. Supports the integrating second-order plant and a constant/first-order lead or lag compensator; no arbitrary-order, negative-gain or RHP-zero claim. Exact equal compensator factors reduce to constant gain for the scalar frequency channel; no unspecified physical hidden state is inferred.
 
-## Setup and next action
+Scalar grammar: one number or simple numeric fraction,12 decimal places,24 digits,100 normalized/512 raw characters, at most8 outer groups/signs, reduced denominator≤10^18. Compact/mixed-brace fraction-button notation and signed/parenthesized numeric wrappers work. Mixed numbers, sums/products/powers/functions, e/E symbols, nested fractions, hidden arithmetic groups and explicit spacing tokens are rejected. ASCII TeX whitespace alone may be ignored; blank argument tokens are never discarded to expose new arguments. Delimiter sizing is removed only beside visible parentheses. This conservative local rejection is independent of the coordinator's future shared TeX guard, unavailable at the recorded baseline.
 
-Atomic own claim and fresh managed worktree at exact primary baseline; unique branch recorded in the claim/private ledger. Locked dependencies installed with bundled Node24. Next: derive/test complete bounded crossover, closed-loop and resonance/bandwidth mathematics, then implement the student flow and verify the actual browser. This early checkpoint is recoverable planning, not completion.
+Polynomial coefficients are ascending internally and displayed descending. Exact rational algebra forms gain/phase, stability and |T|² equations. Root isolation supports degree≤3: remove repeated factors, count distinct positive roots by an exact Sturm sequence, then isolate within relative10^-12 (floor10^-24 in x=ω²),220 steps/depth and1500 work items. Marker separations≤relative10^-10, insufficient isolation or scaled residual>10^-8 produce explicit precision feedback. Transfer crossing residual tolerance10^-7. DC roots and contacts are separate. No sampled frequency sweep is used as a completeness proof.
 
-## Mathematical checkpoint (29 October 2026, 15:56UTC)
+Frequency evaluation is DC or10^-12–10^6rad/s; visual cursor/window uses DC or10^-9–10^6rad/s. Computed markers must be evaluable within those declared numerical bounds; otherwise feedback rejects the calculation or withholds the affected performance markers. Nyquist half-width0.25–1000. The curves join241 logarithmic samples plus computed specification/cursor points. They are finite-range illustrations, clipped locally, with gaps at supported singularities and principal-phase wrapping; no contour winding count is asserted. Large-loop T uses1−1/(1+L), while small-loop evaluation avoids cancellation of a tiny T.
 
-Private `algebra.ts`, `roots.ts`, `math.ts` and local tests now implement the bounded frequency calculations. Exact rational Sturm sequences first remove repeated factors, then count/isolate all distinct positive roots of degree≤3 equations. DC roots are separate. Isolation has220-step/depth and1500-work bounds; distinct numerical markers closer than relative10^-10 or insufficient residual/precision receive explicit errors. Curve samples do not establish crossing completeness. The scalar grammar now permits12 decimal places, preserving the atlas C1 coefficients; reduced denominators remain≤10^18 and numeric magnitudes≤100.
+Positive coefficients plus the exact quadratic/cubic Routh determinant classify the complete supported closed-loop polynomial. Stable resonance/bandwidth are withheld for boundary/unstable cases or near-pole numerical conditioning (denominator threshold10^-12 relative to loop scale). Kv=gK/a is an algebraic limit; steady ramp-error interpretation requires a stable closed loop. PM=180° plus L's continuous positive-frequency phase. Infinite GM means the supported family has no finite negative-real crossing; G/L DC remain undefined. Bandwidth is the first downward crossing of |T|=1/sqrt2 relative to T(0)=1; all touches and additional crossings remain visible.
 
-The backend derives gain/phase equations, exact closed-loop Routh classification, Kv, all stationary points and −3dB candidates, and G/L/T frequency values. Stable performance markers are withheld for unstable/boundary models and near-pole conditioning. Exact static compensator cancellation is distinguished from near equality. Baseline PM51.82729237deg, resonance sqrt2 with peak2/sqrt3, bandwidth sqrt(2+2sqrt5), lead PM64.47122063deg atω2, sameKv2, and independent finite-GM lag stable/boundary/unstable fixtures pass.
+## Independent fixtures and exact checks
 
-Checks: `node node_modules/vitest/vitest.mjs run src/modules/cf04`36 tests pass; `npm run check`passes. These are private math checks only. The workspace remains a scaffold: student inputs/plots/cursors/attempt/reveal, lifecycle/flow checks, full project test/build and actual browser QA still remain. This checkpoint does not mark the accepted exercise implemented.
+- C0: q4,a2 gives unity ω=sqrt(−2+2sqrt5)=1.5723028rad/s, PM51.82729237deg, infinite GM; T=4/(s²+2s+4), ωr=sqrt2, Mr=2/sqrt3, ωB=sqrt(2+2sqrt5).
+- Recorded C1: K4,τz=.7071067812,τp=.3535533906 gives unity ω≈2 and PM64.47122063deg, same Kv2. These are the atlas's rounded course values, not claimed exact irrational parameters.
+- Independent changed g2,a3,K5 second-order formulas; fraction g1/2 gives Kv1, DC maximum1 and bandwidthsqrt2. Proposed lag g=a=1,τz0,τp1 has negative-real crossingω1 and GM2/K: K1 stable, K2 boundary and K3 unstable. Exact fractions immediately above/below2 preserve the Routh sign; near-singular stable performance is withheld.
+- Exact-root fixtures include( x−1)(x−2)(x−3), repeated( x−1)^2(x−2), negative scaling, rational/small/close roots, zero roots and continua. Independently expanded bandwidth equations distinguish a touch followed by a downward exit and a down/up/down sequence.
+- Extreme-scale fixtures preserve T's nonzero tiny phase for large L and tiny T for small L. Parser regressions reject blank-spacing fraction arguments (for example frac followed by a spacing token), mixed numbers, ambiguous powers and unsupported symbols.
 
-## Exercise implementation checkpoint (16:07UTC)
+Commands run in the isolated worktree using bundled Node24:
 
-The owned view now has five actual visual scalar fields, course/proposed presets, channel/Kv predictions and reveal, rational model/stability equations, all L margin rows and constructions, stable T peak and all bandwidth contacts with direction, held comparison, G/L/T selection, computed marker selection and linked numeric/clickable Bode/Nyquist cursor. Curves use241 logarithmic samples plus specification/cursor points; exact root isolation determines specifications. Nyquist has equal axis scales, unit circle/−1 reference for L, separate negative-frequency and held styles, clipping/gaps at supported singularities, and no formal winding claim. Native bounds/underflow feedback uses the shared reader; result listeners are aborted on replacement. Scoped grid/local scroll containers and synchronous child-signal lazy mount are in place.
+- `node node_modules/vitest/vitest.mjs run src/modules/cf04`:58 passing tests (44 math/root/parser,8 exercise-flow,6 lifecycle).
+- `npm test`:718 tests/30 files pass, final run16:22UTC29 October2026.
+- `npm run check`:pass. `npm run build`:pass, including its type check; final build16:22UTC. Existing MathLive chunk-size advisory only.
+- `git diff --check`:pass. No shared files, dependencies, metadata, package version, deployment or other modules changed.
 
-Updated checks:51 module tests pass (37 math/root/parser,8 exercise flow,6 deferred lifecycle including partial resource-then-throw cleanup). `npm test`711 tests/30 files pass; `npm run check`, `npm run build` and `git diff --check`pass. Existing MathLive chunk advisory only. Browser QA still remains; mock-editor flow tests are not browser evidence. Current stage stays in-progress until real equation/keyboard/fonts, changing data, reset/navigation, pointer cursor and narrow-screen checks pass. No PR or final submission yet.
+Lifecycle tests verify synchronous loading, no late mount, already-aborted visits, recovery feedback, disposal without parent abort and exactly-once cleanup. A view registers a child-signal document listener then throws while its parent stays active: the child immediately aborts, the listener is released and failed DOM is replaced. Result controls release obsolete listeners before rerender. Mock-editor flow tests are separate from browser evidence.
 
-## Browser-driven corrections / notation hardening (16:22UTC)
+## Real production-browser checks
 
-Corrected the displayed unity polynomial to include an operator before a negative parenthesized coefficient; added an actual display regression. Corrected pointer mapping for the SVG's centered letterbox when max-height limits its width; independent wide-box click regression and actual approximately10rad/s click pass. Large-loop T now uses1−1/(1+L) while small-loop T retains direct division, preserving tiny phase/magnitude; independent extreme scale fixtures pass.
+**ChatGPT in-app browser**, private inventory codexSessionId matching this worker; own port8845,1280×900 and390×844 settings, system dark theme, approximately16:08–16:24UTC29 October2026. Engine/version was not exposed; no Firefox/all-browser claim. Light-theme token inheritance was not separately tested. No global QA lock was needed for this verified private context.
 
-The coordinator's ongoing argument-token audit exposed a shared class of blank-spacing argument bugs. This module's bounded scalar parser now rejects explicit spacing commands before normalization, retains non-ASCII blank tokens for rejection, and strips delimiter sizing only beside visible parentheses. Six regressions include frac-spacing-token forms that must not become1/2. Existing visual compact/mixed-brace numeric fractions remain supported. This older-base branch does not copy an unowned shared helper; its local conservative rejection suffices for the declared scalar grammar. Current52+6=58 local tests and718 full application tests, type/build/diff checks pass at16:22UTC. Final browser regression on this last parser change and delivery documentation remain.
+- Initial5 MathLive fields, no curves before Reveal. Correct channel/Kv predictions check; baseline tables, rational equations, margin construction, peak/bandwidth and all3 plots render. Course held comparison reproduces the values above. Original and new curves use different styles; unit circle/−1 reference and linked point are visible.
+- Specification selection picks L unity, T resonance and T bandwidth, updates the channel and linked cursor. The baseline resonance readout is T=.66666667−j.94280904, magnitude1.1547005; bandwidth reads.70710678/−3.0103dB. Actual desktop Bode click at the inspected geometry selects approximately10.0365rad/s and updates the linked readout. Fit-window expands around computed specifications. G/L DC report a pole; T DC is1 at0deg.
+- Actual fraction-button/keys g1/2 parses and changes Kv to1/DC maximum/bandwidthsqrt2. Actual long fraction1000000000000000001/1000000000000000000 parses/reveals and typesets its exact Kv without widening the phone page. Both were rechecked after the final spacing-token hardening. Empty field and incomplete fraction receive completion feedback; typed1e−2 and keyboard-constructed2½ are rejected without stale results.
+- Proposed stable lag gives PM21.38639deg, phase crossing1rad/s, GM2/6.0205999dB. Boundary lag withholds stable performance and T atω1 reports singularity; unstable lag likewise has no stable resonance/bandwidth claim.
+- Native1e−999 cursor rejects nonzero underflow and clears curves;0e−999 works as genuine DC, and1e−2 readsω=.01. Inverted/equal windows and radius.1 receive useful range errors. Cursor and window bounds remain independent of the exact specification calculation.
+- Real Systems math keyboard is readable; Escape closes it and stays CF04. Tab from the frequency cursor reaches window minimum. Reset while keyboard open restores5 fields/no curves/courseC0; leaving while keyboard open removes all5 fields and old root. Three fast CF04/CF05 pairs ending CF05 leave0 fields/0 old roots; reopen fresh5/no curves. Final reset also removes held state.
+- Phone client=scroll=375px. Plots281/720 and tables281/380 scroll locally; focused plot ArrowRight keys pan (observed scrollLeft80 of439). Long equations remain local; final desktop has no formula vertical overflow, no NaN/Infinity path data, and document1265/1265. Fractions/superscripts/formulas and local stylesheet assets render correctly. Console warn/error logs are empty. All own tabs closed, viewport reset, own preview stopped; primary8787 untouched.
+
+Proof images outside Git:
+
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18701-1ec8-7073-a23f-e744d40a5355\cf04-browser-evidence.jpg`
+- `C:\Users\baokh\.codex\visualizations\2026\10\29\01a18701-1ec8-7073-a23f-e744d40a5355\cf04-narrow-evidence.jpg`
+
+## Provenance and delivery
+
+TASK, atlas, continuous/discrete exercise audits and recorded S09/Ch5 anchors were inspected; original decks outside Git were not. C1's explicit coefficients are recorded in the atlas CD05 check and agree independently with CF04's stated margin. Lag/threshold/root-count fixtures are proposed mathematical checks. No unseen course diagram or external solver is claimed inspected.
+
+Tested application-source revision: `09d1125c78cfde2c0f67a982a2fcce3b01e9083a`. Later delivery changes are STATUS only. The exact clean full submitted commit and PR URL will be recorded at submission. Full accepted exercise is implemented within the declared domain; independent review/integration remains. No shared helper/package request is required for this contribution. Preserve this branch/worktree and reuse its PR for any corrections; primary main/version/deployment are coordinator-owned.
