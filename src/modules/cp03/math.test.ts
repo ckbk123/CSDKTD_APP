@@ -21,6 +21,15 @@ describe('CP03 bounded equation parser', () => {
     expect(parsePlant(String.raw`\frac123`)).toEqual({ numerator: [1.5], denominator: [1] });
     expect(() => parsePlant(String.raw`\frac1`)).toThrow(/fraction/);
   });
+  it('preserves mixed bracing, nested ratios and outer grouping/minus signs', () => {
+    for (const source of [String.raw`\frac12`, String.raw`\frac{1}2`, String.raw`\frac1{2}`]) {
+      expect(parsePlant(source)).toEqual({ numerator: [0.5], denominator: [1] });
+    }
+    for (const source of [String.raw`-\frac12`, String.raw`\frac{-1}2`, String.raw`-\left(\frac12\right)`, String.raw`\left(-\frac1{2}\right)`]) {
+      expect(parsePlant(source)).toEqual({ numerator: [-0.5], denominator: [1] });
+    }
+    expect(parsePlant(String.raw`-\frac{\frac12}{\frac34}`)).toEqual({ numerator: [-2 / 3], denominator: [1] });
+  });
   it.each(['', 'NaN', 'Infinity', 'exp(s)', '1/(s+)', '1/0', '\\frac{}{s}', 's^3', 's^{1.5}', '1/(s+1)^2/(s+2)', 's^2/(s+1)', '1/(s+101)', '1e999', '1/(0.000000001s+1)', '(s+1', '\\placeholder{}', '1.2.3/(s+1)', '1/(s+1..2)'])('rejects malformed or unsupported input %s', source => {
     expect(() => parsePlant(source)).toThrow();
   });

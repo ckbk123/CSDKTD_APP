@@ -2,7 +2,7 @@
 
 - **Stage:** in-progress
 - Accepted implementation and automated checks complete; real-browser evidence pending.
-- **Assessment:** 2026-10-29; implementation revision `3375854`
+- **Assessment:** 2026-10-29; implementation revision `81b935f` plus equivalent-fraction regressions
 - **Ownership:** `src/modules/cp03/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/cp03-sinusoidal-01a186d2`
 - **Worker chat:** `01a186d2-12d1-77e3-a08c-f9c72e0f3867`
@@ -53,9 +53,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **55/55 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **56/56 passed**, 3 files.
 - `npm run check`: passed.
-- `npm test`: **97/97 passed**, 9 files.
+- `npm test`: **98/98 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -94,4 +94,6 @@ The first resumed QA attempt was at approximately 16:31 Asia/Saigon on 2026-10-2
 
 The coordinator reproduced that MathLive displays `1e-2/(s+1)` as algebra involving e, while the earlier parser interpreted it as a decimal exponent. Visual input now rejects e/E literals with a concrete message and accepts `0.01/(s+1)` and textbook `10^{-2}/(s+1)` (including a visible multiplication sign). Numeric HTML controls and scientific result typesetting remain separate. Powers of the scalar 10 use a bounded integer exponent and finite/underflow checks; polynomial powers retain the −2…2 bound. The underflow and near-coincident fixtures now use supported textbook powers/products. Meaningful view/parser regressions cover rejection, equivalent accepted coefficients and standard numeric-control entry.
 
-After this repair: `npm test -- src/modules/cp03` **55/55 passed**; `npm test` **97/97 passed**; type check and production build passed. CI at the earlier documented SHA was green; the new commit will trigger another check. Real browser evidence is still pending; no reservation was acquired during the coordinator's requested scheduling holds.
+After this repair: `npm test -- src/modules/cp03` **56/56 passed**; `npm test` **98/98 passed**; type check and production build passed. CI at the earlier documented SHA was green; the new commit will trigger another check. Real browser evidence is still pending; no reservation was acquired during the coordinator's requested scheduling holds.
+
+The final notation regressions also cover `\frac{1}2`, `\frac1{2}`, outer grouping and minus placement, a negative fraction numerator and a nested numeric ratio. These preserve 1/2, −1/2 and −2/3 as independently expected. Module tests are **56/56** and the full suite **98/98**, with current type checking passing. The production implementation is unchanged by these extra fixtures. A private, cancelable, one-time filesystem-event wait now attempts the existing QA helper only after a release; it does not clear or modify another owner's reservation and adds no application files or background scheduler.
