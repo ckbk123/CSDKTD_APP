@@ -45,3 +45,7 @@ Current limits: positive g from10⁻⁹ to1000, ωn0.05–20rad/s, ζ0.02–3, o
 Six response tests pass: independent baseline damped sinusoid and derivative; critical/triple repeated factors; changed overdamped pair with positive DC gain5; added distinct pole formula; LHP cancellation/RHP inverse response; future-envelope/slow-pole and finite/range/conditioning failures. The module test command was node node_modules/vitest/vitest.mjs run src/modules/cf01/response.test.ts (6/6); TypeScript tsc --noEmit passes. Full suite/build/browser checks have not yet been run for this partial tool.
 
 Remaining: bounded visual parser; target-requirement derivation and regions; refined response sampling/crossing/peak/rise/settling measurement and insufficient-horizon gate; full student UI/plots/attempt/reveal; full lifecycle and browser verification. The workspace is still blank; this checkpoint is not an implemented contribution or completed exercise.
+
+## Review-priority suspension
+
+CF03 PR22 was reopened by the coordinator for a confirmed raw unbraced parenthesized-power defect. CF01's response core and six passing fixtures are checkpointed and pushed; its reservation/worktree remain intact. Implementation is suspended here while that same-branch CF03 correction is made and reverified. The coordinator explicitly owns the older CF03 loader child-signal adaptation during integration. CF01 will resume from this checkpoint after resubmission.
