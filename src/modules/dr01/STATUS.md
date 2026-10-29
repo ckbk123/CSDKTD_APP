@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress (mixed-number notation review return)
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -102,3 +102,11 @@ An exclusive helper reservation and a fresh worker-owned in-app Chromium tab on 
 - Reset restored baseline and zero histories. Reveal at a 390×844 override produced 1,.8,.64,...; document clientWidth and scrollWidth both equaled 375 px. Console warning/error inventory was empty. The viewport was reset, owned tab closed, preview stopped and QA released. No other worker tab or primary preview was changed.
 
 No accepted module requirement remains open within the declared domain. This final evidence update accompanies the correction and is rechecked at its own exact HEAD before the same PR/claim is resubmitted. Independent final acceptance and the approved shared-reader adaptation remain the coordinator's integration work.
+
+## Mixed-number notation review return
+
+At submitted `61599ef`, the coordinator found that `2\frac12` was silently multiplied to 1 although the pinned editor's MathML contains U+2064 INVISIBLE PLUS (mixed-number addition). Signed/grouped numbers and adjacency inside a fraction could also be misread. The same claim is reopened. DP03 is preserved clean at `8ff11d4` in PR14; its QA watcher and preview were stopped before switching, and no foreign reservation was altered.
+
+The bounded parser now rejects a numeric factor immediately followed by a fraction (including transparent brace groups), asking for explicit + or ×. It tracks the immediately preceding factor so a variable/product prefix cannot hide the ambiguity. The check runs recursively inside numerator/denominator groups. Explicit +, *, ×, ·, visibly parenthesized multiplication, ordinary variable products and fraction/fraction products remain supported and independently tested. A pinned-MathLive MathML fixture establishes the displayed addition meaning independently of the solver; a view regression checks useful feedback and hidden stale output. The conventions panel gives a student-facing alternative.
+
+At 18:44 local, module checks pass **77/77**, full `npm test` passes **119/119** and `npm run build` (including type checking) passes with the unchanged shared MathLive chunk warning. Real fraction-button adjacency verification and final exact-HEAD resubmission remain pending. This is a correction checkpoint, not a new completed submission or independent acceptance.

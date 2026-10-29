@@ -135,10 +135,25 @@ export function parseTransform(latex: string): Transform {
     return atom();
   }
   function product(): Fraction {
-    let value = unary();
+    const numericFactor = (start: number, end: number) => tokens.slice(start, end)
+      .every(token => /^[\d.]/.test(token) || ['+', '-', '^', '{', '}'].includes(token));
+    const fractionAhead = () => {
+      let next = cursor;
+      while (tokens[next] === '{') next++;
+      return tokens[next] === '\\frac';
+    };
+    let start = cursor, value = unary(), previousIsNumeric = numericFactor(start, cursor);
     while (peek() === '*' || peek() === '/' || atomStart(peek())) {
-      const op = peek() === '*' || peek() === '/' ? take() : '*';
-      value = operation(value, unary(), op);
+      const explicit = peek() === '*' || peek() === '/';
+      // MathLive can display this adjacency as a mixed-number sum (U+2064),
+      // including inside a fraction. Do not reinterpret it as a product.
+      if (!explicit && previousIsNumeric && fractionAhead()) {
+        throw new Error('A number next to a fraction can mean a mixed number. Insert + for addition or × for multiplication.');
+      }
+      const op = explicit ? take() : '*';
+      start = cursor;
+      const next = unary(); previousIsNumeric = numericFactor(start, cursor);
+      value = operation(value, next, op);
     }
     return value;
   }

@@ -28,6 +28,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   limits.append(el('summary', 'Conventions and supported inputs'), el('p', 'Real rational expressions in z, or q = z⁻¹. Sums, products, fractions and integer powers are supported. After removing common delay factors: denominator order ≤ 2, numerator delay order ≤ 14; 4–64 samples. No automatic pole/zero cancellation. Coefficients have magnitude ≤ 10⁶; displayed samples ≤ 10¹².'));
   limits.append(el('p', 'The default is the unilateral transform X₊(z) = Σ from k=0 to ∞ of x[k]z⁻ᵏ, with a causal, zero-history sequence. T only labels physical time; it does not change the transform. Initial history is separate from the entered zero-history expression X₀(z). No feedback loop is assumed. Numeric results use floating-point arithmetic, rounded to 7 significant digits.'));
   limits.append(el('p', 'In the visual equation, use decimals or ×10ⁿ for powers of ten. The letters e/E are not exponent notation there. Ordinary number controls accept standard numeric entry separately.'));
+  limits.append(el('p', 'Write mixed numbers with an explicit +, such as 2 + 1/2. Put × between a number and a fraction when you intend multiplication.'));
   root.append(limits);
   let draft: EquationDraft;
   const error = el('p', '', 'dr01-message'); error.setAttribute('role', 'status'); error.hidden = true;

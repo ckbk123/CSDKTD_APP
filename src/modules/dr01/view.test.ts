@@ -78,6 +78,14 @@ describe('DR01 exercise flow with an equation-interface mock', () => {
     expect(second.rows().slice(0, 3).map(row => row[3])).toEqual(['1', '0.8', '0.64']);
     expect(second.field.value).toBe(String.raw`\frac{z}{z-0.8}`);
   });
+  it('hides old results for mixed-number adjacency and accepts an explicit operation', () => {
+    const visit = open(); visit.reveal();
+    visit.field.value = String.raw`2\frac12`; visit.field.dispatchEvent(new Event('input')); visit.reveal();
+    expect(visit.container.querySelector('.dr01-results')!.hasAttribute('hidden')).toBe(true);
+    expect(visit.container.querySelector('.dr01-message')!.textContent).toContain('Insert + for addition or × for multiplication');
+    visit.field.value = String.raw`2+\frac12`; visit.field.dispatchEvent(new Event('input')); visit.reveal();
+    expect(visit.rows()[0]).toEqual(['0', '0', '2.5', '2.5']);
+  });
   it('retains legitimate scientific entry in ordinary numeric controls', () => {
     const visit = open(); visit.set('Sample period T (s)', '1e-2'); visit.reveal();
     expect(visit.rows()[1]).toEqual(['1', '0.01', '0.8', '0.8']);

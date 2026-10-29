@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { convertLatexToMathMl } from 'mathlive';
 import { fromSequence, initialNumerator, numberLatex, parseTransform, poles, samples, transformLatex, validateTransform } from './math';
 
 const values = (expression: string, history = [0, 0], count = 8) => samples(parseTransform(expression), history, count).map(x => x.value);
@@ -99,6 +100,28 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
 });
 
 describe('bounded grammar and failures', () => {
+  it('checks the pinned editor meaning of numeric/fraction adjacency independently', () => {
+    expect(convertLatexToMathMl(String.raw`2\frac12`)).toContain('&#x2064;');
+    expect(convertLatexToMathMl(String.raw`\frac{2\frac12}{3}`)).toContain('&#x2064;');
+  });
+  it.each([
+    String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`-{2}\frac12`,
+    String.raw`2\,\frac{1}{2}`, String.raw`2{\frac12}`, String.raw`2{{\frac12}}`,
+    String.raw`q*2\frac12`, String.raw`q/2\frac12`,
+    String.raw`\frac{2\frac12}{3}`, String.raw`\frac{1}{2\frac12}`,
+  ])('rejects ambiguous mixed-number adjacency %s with explicit-operation guidance', expression => {
+    expect(() => parseTransform(expression)).toThrow(/mixed number.*\+.*×/);
+  });
+  it('preserves explicit addition/products and unambiguous grouped or variable products', () => {
+    expect(values(String.raw`2+\frac12`)).toEqual([2.5, 0, 0, 0, 0, 0, 0, 0]);
+    for (const expression of [String.raw`2*\frac12`, String.raw`2\times\frac12`, String.raw`2\cdot\frac12`, String.raw`2(\frac12)`]) {
+      expect(values(expression)).toEqual([1, 0, 0, 0, 0, 0, 0, 0]);
+    }
+    expect(values(String.raw`-{2}\times\frac12`)).toEqual([-1, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`2q\frac12`)).toEqual([0, 1, 0, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`\frac12\frac12`)).toEqual([.25, 0, 0, 0, 0, 0, 0, 0]);
+    expect(values(String.raw`\frac{2+\frac12}{3}`)[0]).toBeCloseTo(5 / 6, 14);
+  });
   it.each(['', 'NaN', 'Infinity', 'sin(z)', String.raw`\sqrt{z}`, 's+1', '1/(0)', '1/(z-z)', '1+', '(z+1', String.raw`\frac{}{z}`, 'z^{1.5}', 'z^{15}', 'z^{-15}', '1/(1+q+q^2+q^3)', 'q^14+q^14*q', '1000001', '0.' + '0'.repeat(323) + '1', '0.0000000000001', '1/(0.00000000001+q)', '\\placeholder{}'])('rejects %s', expr => {
     expect(() => parseTransform(expr)).toThrow();
   });
