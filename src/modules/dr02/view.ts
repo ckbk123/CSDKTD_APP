@@ -58,7 +58,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     ['Future-input example', String.raw`G(z)=\frac{z^2+1}{z+1}`],
   ];
   for (const [label, value] of presets) modelActions.append(button(label, () => { equation.setValue(value); draft = equation.getValue(); apply(); }));
-  modelSection.append(equation.element, modelActions, el('p', 'Supported: one fraction of real polynomials in z, sums, products, parentheses and integer powers −6…6; at most six delays after normalization. Enter decimal coefficients such as 0.01. The editor treats e/E as symbols, so e/E numeric input is unsupported. Unknown parameters and functions are unsupported. Coefficients are ordered by increasing delay: a₀, a₁, … and b₀, b₁, ….', 'muted'), derived);
+  modelSection.append(equation.element, modelActions, el('p', 'Supported: one fraction of real polynomials in z, sums, products, visible parentheses and integer powers −6…6; at most six delays after normalization. Keep the whole signed exponent inside its power box. Separate a following numeric factor with ×. Enter decimal coefficients such as 0.01. The editor treats e/E as symbols, so e/E numeric input is unsupported. Unknown parameters and functions are unsupported. Coefficients are ordered by increasing delay: a₀, a₁, … and b₀, b₁, ….', 'muted'), derived);
   function renderForms(): void {
     const f = forms(model);
     derived.replaceChildren(createEquationDisplay(f.z, 'Transfer function in z'), createEquationDisplay(f.delay, 'Transfer function in unit delays'),
