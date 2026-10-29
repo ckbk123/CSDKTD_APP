@@ -69,7 +69,7 @@ was repeated under 24.19.0 before the recorded validation).
 - `npm run build`: passed; existing MathLive large-chunk advisory remains.
 - `python src/modules/cd07/reference-fixtures.py`: both independent fixture runs completed.
 - `git diff --check`: passed.
-- `npm run test:agents`: **incomplete**. Manually stopped after 320.8 s; buffered output showed 12 cases passed, then the test-file interruption was reported as a failure. No helper assertion failure was observed before interruption; this is not a 32-test pass. No coordination helper was modified. The full coordination suite remains a delivery gate for the upstream Linux CI run.
+- `npm run test:agents`: **32 passed, 0 failed**, full rerun completed in 511.1 s under Node 24.19.0. The earlier attempt was manually stopped after 320.8 s/12 passing cases; that interruption was not a pass and is superseded by this completed rerun. No coordination helper was modified.
 
 The first full run exposed eager browser-editor loading in the catalogue test;
 the owned deferred wrapper fixed it. The first PID refinement run rejected an
@@ -92,12 +92,13 @@ against a temporary local Vite preview (no deployment), dark system theme:
 No known accepted response-curve exercise requirement remains unimplemented.
 Maintainer independent technical review is still required before a `verified`
 stage. Upstream CI for this fork reports `action_required` (maintainer approval);
-the PR stays **draft** while that gate and the full coordination suite remain
-unconfirmed. Recovery: a maintainer approves the fork workflow for the exact
-PR head, lets Web checks finish (including all coordination tests), reviews this
+the PR stays **draft** while upstream CI remains unconfirmed. Recovery: a
+maintainer approves the fork workflow for the exact PR head, lets Web checks
+finish (including all coordination tests), reviews this
 bounded implementation, then marks this same PR ready if the gates pass. No
 workflow approval or remote-CI success is claimed here. The original deck's PI
 correction and broader browser/theme coverage remain explicitly unclaimed.
 There is no shared API request. No sibling/shared/global files, dependencies,
 versions, tags, main, merge or deployment were changed. This contribution ends
-with this one PR; no further module, extra agent or scheduled follow-up is claimed.
+with this one PR. Further contributions use separate branches and PRs; this PR
+does not include another module, extra agent or scheduled follow-up.
