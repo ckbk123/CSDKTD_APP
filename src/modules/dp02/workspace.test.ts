@@ -39,4 +39,11 @@ describe('DP02 deferred browser view lifecycle', () => {
     expect(mount({ container, signal: controller.signal })).toBeUndefined();
     expect(container.childElementCount).toBe(0);
   });
+  it('shows recoverable feedback if the browser view cannot initialize', async () => {
+    const container = document.createElement('div');
+    view.mount.mockImplementationOnce(() => { throw new Error('Synthetic view failure'); });
+    const cleanup = mount({ container, signal: new AbortController().signal });
+    await vi.waitFor(() => expect(container.textContent).toContain('Reset the tool to try again'));
+    if (typeof cleanup === 'function') cleanup();
+  });
 });

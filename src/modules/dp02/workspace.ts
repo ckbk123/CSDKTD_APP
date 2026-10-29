@@ -14,7 +14,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const cleanup = view.mount({ container, signal });
     if (typeof cleanup === 'function') release = cleanup;
   }).catch(() => {
-    if (!disposed && !signal.aborted) pending.textContent = 'Pole mapping could not load. Reset the tool to try again.';
+    if (!disposed && !signal.aborted) {
+      pending.textContent = 'Pole mapping could not load. Reset the tool to try again.';
+      container.replaceChildren(pending);
+    }
   });
   const cleanup = () => { if (disposed) return; disposed = true; release?.(); pending.remove(); };
   signal.addEventListener('abort', cleanup, { once: true });
