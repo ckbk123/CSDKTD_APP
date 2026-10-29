@@ -26,7 +26,7 @@
 
 ## Supported mathematical domain and limits
 
-- Proper real SISO rational transfer functions in s, denominator/numerator degree 0–2, expanded or factored; real numbers, fractions, sums, products, integer powers −2…2, optional `G(s)=`. MathLive one-token fraction shorthand is supported, including `\frac12`, with explicit TeX argument boundaries. No delays or other variables/functions. Parser length ≤300 characters, ≤160 tokens, nesting ≤24, intermediate degree ≤8. No symbolic pole-zero cancellation.
+- Proper real SISO rational transfer functions in s, denominator/numerator degree 0–2, expanded or factored; real numbers, fractions, sums, products, polynomial powers −2…2, textbook integer powers of 10 (−400…400 subject to finite/resource bounds), optional `G(s)=`. Ambiguous e/E coefficient literals are rejected in visual equations; HTML numeric controls retain their standard numeric semantics. MathLive one-token fraction shorthand is supported, including `\frac12`, with explicit TeX argument boundaries. No delays or other variables/functions. Parser length ≤300 characters, ≤160 tokens, nesting ≤24, intermediate degree ≤8. No symbolic pole-zero cancellation.
 - Internal polynomial arrays use ascending powers `[constant, s, s²]`; the denominator is normalized to monic. Expanded coefficient magnitudes ≤10000; normalized ≤10⁶; leading denominator coefficient magnitude ≥10⁻⁸; denominator pole magnitudes ≤100 rad/s. Improper plants are rejected with their input-derivative meaning.
 - Open-loop continuous-time plant; no feedback or sample period. Input is A sin(ωt), with zero canonical states at t=0. A uses arbitrary input units; y uses the corresponding output units. ω=0.01–100 rad/s, A=0.01–100, window start=0–1000 s, three periods per window, total t≤3000 s.
 - Denominator modes are retained. “Stable” requires every denominator pole's real part <0; pure gain has no dynamic modes. This is conservative for canceled denominators and makes no claim about an unspecified physical hidden realization. Unstable/marginal models receive an explicit analytic-only qualification.
@@ -53,9 +53,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **53/53 passed**, 3 files.
+- `npm test -- src/modules/cp03`: **55/55 passed**, 3 files.
 - `npm run check`: passed.
-- `npm test`: **95/95 passed**, 9 files.
+- `npm test`: **97/97 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -86,6 +86,12 @@ Additional numerical guards reject nonzero coefficients/values that would underf
 
 ## Browser-QA scheduling dependency
 
-The first resumed QA attempt was at approximately 16:31 Asia/Saigon on 2026-10-29. CP03 has not acquired or used the shared browser. While its implementation, 53 module tests, 95 project tests, type check, build and [CI run](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40855540832) are passing, successive reservations have included DR02, DR01, DS03, DP01, DP02, CS01, DS02, coordinator integration QA, and a newer DD04 contribution. At the latest attempt (approximately 17:22), DD04 held the resource. No reservation has been stolen or cleared.
+The first resumed QA attempt was at approximately 16:31 Asia/Saigon on 2026-10-29. CP03 has not acquired or used the shared browser. While its implementation, 53 module tests, 95 project tests, type check, build and [CI run](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40855540832) are passing, successive reservations have included DR02, DR01, DS03, DP01, DP02, CS01, DS02, coordinator integration QA, and a newer DD04 contribution. At approximately 17:22, DD04 held the resource; a later attempt reported DF01 busy. No reservation has been stolen or cleared.
 
 **Coordination action needed:** allocate CP03 a dedicated next browser turn after the current holder releases, or provide an ordered QA queue. The exclusive helper has no waiting queue, and repeated new acquisitions have left this already checked implementation unable to complete its required real-browser gate. Until that turn, PR #7 stays draft, the claim stays active, and the module stays in-progress. This is an external scheduling dependency, not evidence that the exercise has passed browser validation. The worker will keep the goal active and resume its own tests as soon as the resource is available.
+
+## Visual exponent semantics review repair
+
+The coordinator reproduced that MathLive displays `1e-2/(s+1)` as algebra involving e, while the earlier parser interpreted it as a decimal exponent. Visual input now rejects e/E literals with a concrete message and accepts `0.01/(s+1)` and textbook `10^{-2}/(s+1)` (including a visible multiplication sign). Numeric HTML controls and scientific result typesetting remain separate. Powers of the scalar 10 use a bounded integer exponent and finite/underflow checks; polynomial powers retain the −2…2 bound. The underflow and near-coincident fixtures now use supported textbook powers/products. Meaningful view/parser regressions cover rejection, equivalent accepted coefficients and standard numeric-control entry.
+
+After this repair: `npm test -- src/modules/cp03` **55/55 passed**; `npm test` **97/97 passed**; type check and production build passed. CI at the earlier documented SHA was green; the new commit will trigger another check. Real browser evidence is still pending; no reservation was acquired during the coordinator's requested scheduling holds.

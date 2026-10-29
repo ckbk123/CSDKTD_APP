@@ -69,10 +69,11 @@ export function parsePlant(latex: string): Plant {
   if (!latex.trim()) fail('Enter a plant transfer function.');
   if (latex.length > 300) fail('Keep the plant expression within 300 characters.');
   const cleaned = latex.replace(/\\(?:left|right)\b/g, '')
-    .replace(/\\(?:dfrac|tfrac)\b/g, '\\frac').replace(/\\(?:cdot|times)\b/g, '*')
+    .replace(/\\(?:dfrac|tfrac)\b/g, '\\frac').replace(/\\(?:cdot|times)(?![A-Za-z])/g, '*')
     .replace(/\\[,;! ]/g, '').replace(/\s/g, '').replace(/−/g, '-').replace(/^G\(s\)=/, '');
   const source = expandFractions(cleaned);
-  const tokens = source.match(/\\frac|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|[s()+\-*/^{}]/g) ?? [];
+  if (/[0-9.][eE]/.test(source)) fail('Use decimal coefficients or textbook powers of ten. In a visual equation, e/E notation is algebra, not a decimal exponent.');
+  const tokens = source.match(/\\frac|(?:\d+(?:\.\d*)?|\.\d+)|[s()+\-*/^{}]/g) ?? [];
   if (!tokens.length || tokens.join('') !== source) fail('Use real numbers, s, sums, products, fractions and integer powers only.');
   if (tokens.length > 160) fail('The plant expression contains too many terms.');
   let i = 0, depth = 0;
@@ -108,12 +109,19 @@ export function parsePlant(latex: string): Plant {
     if (peek() === '^') {
       i++;
       const braces = peek() === '{'; if (braces) i++;
-      let sign = 1; if (peek() === '-') { sign = -1; i++; }
+      let sign = 1; if (peek() === '-' || peek() === '+') { sign = peek() === '-' ? -1 : 1; i++; }
       const exponent = Number(tokens[i++]) * sign;
-      if (!Number.isInteger(exponent) || Math.abs(exponent) > 2 || (braces && tokens[i++] !== '}')) fail('Use integer powers from −2 to 2.');
-      let powered: Rational = { n: [1], d: [1] };
-      for (let k = 0; k < Math.abs(exponent); k++) powered = combine(powered, value, '*');
-      value = exponent < 0 ? combine({ n: [1], d: [1] }, powered, '/') : powered;
+      const ten = value.n.length === 1 && value.d.length === 1 && value.n[0] === 10 && value.d[0] === 1;
+      if (!Number.isInteger(exponent) || Math.abs(exponent) > (ten ? 400 : 2) || (braces && tokens[i++] !== '}')) fail('Use powers −2…2 for polynomials, or integer powers −400…400 of the number 10, within numeric bounds.');
+      if (ten) {
+        const result = 10 ** exponent;
+        if (result === 0) fail('This power of ten is too small to represent. Rescale the expression.');
+        value = { n: trim([result]), d: [1] };
+      } else {
+        let powered: Rational = { n: [1], d: [1] };
+        for (let k = 0; k < Math.abs(exponent); k++) powered = combine(powered, value, '*');
+        value = exponent < 0 ? combine({ n: [1], d: [1] }, powered, '/') : powered;
+      }
     }
     depth--;
     return value;

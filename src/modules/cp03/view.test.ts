@@ -52,6 +52,16 @@ describe('CP03 exercise flow and ownership', () => {
     expect(v.container.textContent).toContain('improper plant');
     expect(v.container.querySelector('figure')).toBeNull();
   });
+  it('rejects visual e/E algebra while computing the equivalent textbook power', () => {
+    const v = open(), plant = v.container.querySelector('textarea')!;
+    v.change(plant, '1e-2/(s+1)'); v.apply(); expect(v.container.textContent).toContain('e/E notation is algebra');
+    expect(v.container.querySelector('figure')).toBeNull();
+    v.change(plant, '10^{-2}/(s+1)'); v.apply(); v.button('Reveal calculation and linked plots').click();
+    expect(v.container.textContent).toContain('0.0070711');
+    v.change(v.field('Frequency ω'), '1e-2'); v.apply();
+    expect(v.field('Frequency ω').valueAsNumber).toBe(0.01);
+    expect(v.container.querySelector('figure')).not.toBeNull();
+  });
   it('distinguishes unsettled actual data and unstable analytic evaluation', () => {
     const v = open();
     v.button('Slow transient').click(); expect(v.container.textContent).toContain('Not settled');

@@ -28,18 +28,25 @@ describe('CP03 bounded equation parser', () => {
     expect(() => parsePlant('1'.repeat(301))).toThrow(/300/);
     expect(() => parsePlant('('.repeat(30) + 's' + ')'.repeat(30))).toThrow(/deep/);
     expect(() => parsePlant('10001/(s+1)')).toThrow(/10000/);
-    expect(() => parsePlant('1e4/(1e-8s+1e-8)')).toThrow(/Normalized/);
+    expect(() => parsePlant('10000/(10^{-8}s+10^{-8})')).toThrow(/Normalized/);
+  });
+  it('keeps visual e/E algebra separate from numeric decimal coefficients and displayed powers of ten', () => {
+    expect(() => parsePlant('1e-2/(s+1)')).toThrow(/visual equation/);
+    expect(() => parsePlant('1E-2/(s+1)')).toThrow(/visual equation/);
+    expect(parsePlant('0.01/(s+1)')).toEqual({ numerator: [0.01], denominator: [1, 1] });
+    expect(parsePlant('10^{-2}/(s+1)')).toEqual({ numerator: [0.01], denominator: [1, 1] });
+    expect(parsePlant(String.raw`\frac{2\times10^{-2}}{s+1}`)).toEqual({ numerator: [0.02], denominator: [1, 1] });
   });
   it('reports numerical underflow instead of silently turning nonzero models into zero', () => {
-    expect(() => parsePlant('1e-999/(s+1)')).toThrow(/too small/);
-    expect(() => parsePlant('1e-300*1e-300/(s+1)')).toThrow(/too small/);
-    expect(() => parsePlant('1e-323/(10000s+10000)')).toThrow(/lose a nonzero/);
-    expect(() => frequency(parsePlant('1e-323s/(s+1)'), 0.01)).toThrow(/lose a nonzero/);
-    expect(() => frequency(parsePlant('1e-323/(s+100)'), 100)).toThrow(/too small/);
-    expect(() => experiment(parsePlant('1e-323'), 1, 0.01)).toThrow(/too small/);
-    expect(() => parsePlant('1/(s^2+5e-324s+1)')).toThrow(/real part is too small/);
-    expect(() => parsePlant('1/(s^2+100s+5e-324)')).toThrow(/pole is too small/);
-    expect(poles(parsePlant('1/(s^2+1e-200s)'))).toEqual([{ re: 0, im: 0 }, { re: -1e-200, im: 0 }]);
+    expect(() => parsePlant('10^{-400}/(s+1)')).toThrow(/too small/);
+    expect(() => parsePlant('10^{-300}*10^{-300}/(s+1)')).toThrow(/too small/);
+    expect(() => parsePlant('10^{-320}*0.001/(10000s+10000)')).toThrow(/lose a nonzero/);
+    expect(() => frequency(parsePlant('10^{-320}*0.001s/(s+1)'), 0.01)).toThrow(/lose a nonzero/);
+    expect(() => frequency(parsePlant('10^{-320}*0.001/(s+100)'), 100)).toThrow(/too small/);
+    expect(() => experiment(parsePlant('10^{-320}*0.001'), 1, 0.01)).toThrow(/too small/);
+    expect(() => parsePlant('1/(s^2+(10^{-320}/2000)s+1)')).toThrow(/real part is too small/);
+    expect(() => parsePlant('1/(s^2+2s+10^{-320}/2000)')).toThrow(/pole is too small/);
+    expect(poles(parsePlant('1/(s^2+10^{-200}s)'))).toEqual([{ re: 0, im: 0 }, { re: -1e-200, im: 0 }]);
   });
 });
 
@@ -140,7 +147,7 @@ describe('CP03 independent frequency and time fixtures', () => {
   it('does not cancel away nearly coincident integrator transients', () => {
     // y'' = sin t with zero state gives t−sin t. Perturbing D by 10⁻⁴⁰
     // changes this by far below floating-point resolution on this horizon.
-    const e = experiment(parsePlant('1/(s^2-1e-40)'), 1, 1);
+    const e = experiment(parsePlant('1/(s^2-10^{-40})'), 1, 1);
     for (const t of [0, 0.2, 1, 5, 20]) expect(e.sample(t).output).toBeCloseTo(t - Math.sin(t), 12);
   });
   it('does not certify a slow transient merely because a few cycles are visible', () => {
