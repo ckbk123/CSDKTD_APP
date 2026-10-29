@@ -124,6 +124,14 @@ describe('DR05 visual expression grammar', () => {
       expect(run(realize(model), base).samples[1].y).toBeCloseTo(Math.expm1(-0.05), 13);
     }
   });
+  it('accepts numeric-only font wrappers from pasted fraction entry without hiding unsupported algebra', () => {
+    for (const input of [String.raw`\frac{\mathrm{1}}{s+1}`, String.raw`\frac{\mathrm1}{s+1}`, String.raw`\frac{\mathit{1}}{s+1}`, String.raw`\frac{\text{1}}{s+1}`]) {
+      expect(parseModel(input)).toEqual({ a: [1, 1], b: [0, 1] });
+    }
+    expect(parseModel(String.raw`-\frac{\mathbf{1}}{s+1}`).b).toEqual([0, -1]);
+    expect(() => parseModel(String.raw`\mathrm{1e-2}/(s+1)`)).toThrow();
+    expect(() => parseModel(String.raw`\text{s+1}/(s+2)`)).toThrow();
+  });
   it.each(['', 'G(z)=1/(z+1)', '\\sin(s)', 'NaN', '(1e-2)/(s+1)', '1e3/(s+1)', '1/(s+)', '1/(s-s)', '1/(s^3+1)', 's^2/(s+1)', '1/(0.000000001s+1)', '1000001/(s+1)', '1/(s+1))'])('rejects malformed/unsupported %s', s => expect(() => parseModel(s)).toThrow());
   it('bounds input length and rejects nonzero underflow before constructing a plant', () => {
     expect(() => parseModel('s'.repeat(513))).toThrow(/512/);

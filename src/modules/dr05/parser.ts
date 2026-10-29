@@ -32,6 +32,11 @@ function plain(latex: string): string {
   if (/\d\s+\d/.test(latex)) fail('Use a multiplication sign between separate numbers.');
   let s = latex.replace(/\\left|\\right/g, '').replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\[,;! ]/g, '').replace(/−/g, '-').replace(/\s/g, '');
+  // MathLive can retain an upright/font wrapper around pasted digits. Keep
+  // its argument grouped so a compact fraction still consumes one argument.
+  // Never strip a font command around e/E, variables or arbitrary algebra.
+  s = s.replace(/\\(?:mathrm|mathit|mathbf|mathsf|mathtt|text)\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}/g, '{$1}')
+    .replace(/\\(?:mathrm|mathit|mathbf|mathsf|mathtt)([0-9])/g, '{$1}');
   s = s.replace(/^G\(s\)=/, '');
   let pos = 0, depth = 0;
   const fractionCommand = (): string | undefined => /^(?:\\dfrac|\\tfrac|\\frac)/.exec(s.slice(pos))?.[0];
