@@ -1,6 +1,6 @@
 # CD01 implementation status
 
-- **Stage:** in-progress — source/ownership audit and independent design derivation complete; implementation and verification pending.
+- **Stage:** in-progress — bounded pure models/matching/response calculations implemented;22 independent mathematical tests and type check pass. Parser/UI/project/browser work remains.
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -43,3 +43,13 @@ Matching constraints: P's linear coefficient is fixed at a1; PI's quadratic coef
 Independent analytic authored fixture: b1,a1=3,a0=2,PI Kp1,Ki1 gives full characteristic (s+1)^3 while output transfer is1/(s+1)^2. From zero initial states/unit step, y=1−(1+t)exp(−t),u=2−exp(−t). This tests the full realization plus a cancelled output factor without dropping its internal mode.
 
 Plan: bounded degree≤4 root verification, augmented-state numerical exponential response, explicit sampled overshoot/effort and finite-window settling feedback; analytic stable DC error separate from finite-horizon measures. Resource and conditioning thresholds must be fixed/tested in code before delivery. This record is an early recovery checkpoint, not a solver success claim.
+
+## Mathematical checkpoint
+
+Owned `math.ts`/`numerics.ts` now implement the four structures, inactive-term/state removal, actual state-matrix characteristic check, complete degree≤4 analytic roots with normalized residual/Vieta verification, stable DC error, coefficient matching/constraints, standard-form conversion and an augmented-state step response. Final-value overshoot/window and command-tracking band are distinct, so P's nonzero tracking error is not mislabeled as a missing transient settling window. Sampled measures remain finite-horizon observations. No parser/UI exists yet; the workspace remains the untouched scaffold at this checkpoint.
+
+Node24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/cd01/math.test.ts` passes22 tests; `node node_modules/typescript/bin/tsc --noEmit` passes. Fixtures cover four real roots, two conjugate pairs, repeated multiplicities, zero/RHP/imaginary-axis roots, singular-matrix exponential, all course characteristic polynomials, analytic P response and cancelled-mode PI response, fixed-coefficient matching failures, changed numerator invariance, controller term contributions and range/growth/horizon failures. Repeated triple/quartic tests allow2×10⁻⁴ root error because multiple roots are sensitive; polynomial and complete coefficient residual checks remain separate.
+
+Independent bundled NumPy2.3.5/SciPy1.18.1 check used manually specified output TFs P4/[1,3,6],PI[4,2]/[1,3,6,2],PID[1.2,4.1,2]/[.05,1.15,4.3,6.1,2]. Effort numerators multiply each output numerator by[1,3,2], retaining direct feedthrough. `scipy.signal.tf2ss` plus `scipy.linalg.expm` at t0,1,5,20 gives PID output[0,.7232639601893959,.971128782713998,.9999700109233961] and effort[24,1.8964989138990447,1.9759366374534828,1.9999749340840935]; independent P/PI values are recorded in tests. This is numerical reference evidence, not an added application dependency.
+
+Current implemented bounds: plant |b| from10⁻⁶ to100,|a0/a1|≤100; gains magnitude≤100; active Tf.001–10s; closed state/input entries≤10⁶; monic polynomial coefficients≤10¹²; degree1–4 roots require relative normalized residual10⁻⁹ and complete Vieta check10⁻⁸. Actual matrix/formula coefficient discrepancy≤10⁻⁹. Stability uses real-part tolerance10⁻⁸ times max(1,mode magnitude). Initial states/reference magnitude≤100,horizon.1–100s,2–1001samples (default801),response≤10⁸. Exponential order≤5,30 scaling steps,24 Taylor terms,reduced norm≤.5,term threshold10⁻¹⁶. Coarse mode sampling is flagged. These bounds still need UI disclosure, parser tests and real-browser checks before delivery.
