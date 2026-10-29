@@ -1,0 +1,34 @@
+[data-module="CD02"] .cd02 { display: grid; gap: 18px; min-width: 0; line-height: 1.55; }
+[data-module="CD02"] .cd02 section { padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); min-width: 0; }
+[data-module="CD02"] .cd02 h2 { margin: 0 0 10px; font-size: 19px; font-weight: 550; }
+[data-module="CD02"] .cd02 p { margin: 8px 0; }
+[data-module="CD02"] .cd02-note { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+[data-module="CD02"] .cd02-equations { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+[data-module="CD02"] .cd02-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 14px 0; }
+[data-module="CD02"] .cd02 label { display: flex; flex-direction: column; gap: 5px; font-size: 13px; }
+[data-module="CD02"] .cd02 input[type="number"], [data-module="CD02"] .cd02 select { min-height: 42px; width: 100%; max-width: 240px; padding: 8px; background: var(--background); border: 1px solid var(--line); border-radius: 6px; color: var(--text); font: inherit; }
+[data-module="CD02"] .cd02 button { border: 1px solid var(--line); border-radius: 7px; min-height: 42px; padding: 9px 13px; color: var(--text); background: var(--background); }
+[data-module="CD02"] .cd02 button.cd02-primary { background: var(--tint); color: var(--accent-strong); border-color: var(--accent); }
+[data-module="CD02"] .cd02 button:disabled, [data-module="CD02"] .cd02 input:disabled { opacity: .55; cursor: default; }
+[data-module="CD02"] .cd02 .equation-tool { min-height: 34px; padding: 4px 8px; }
+[data-module="CD02"] .cd02-feedback { padding: 10px 13px; border-left: 3px solid var(--accent); background: var(--tint); overflow-wrap: anywhere; flex-basis: 100%; }
+[data-module="CD02"] .cd02-plot { margin: 15px 0; }
+[data-module="CD02"] .cd02-plot figcaption { font-weight: 550; font-size: 14px; }
+[data-module="CD02"] .cd02-plot svg { width: 100%; height: auto; display: block; }
+[data-module="CD02"] .cd02-plot text { fill: var(--muted); font: 12px sans-serif; }
+[data-module="CD02"] .cd02-gridline { stroke: var(--line); }
+[data-module="CD02"] .cd02-axis { stroke: var(--muted); opacity: .5; stroke-dasharray: 3 5; }
+[data-module="CD02"] .cd02-line { fill: none; stroke: var(--accent); stroke-width: 2; }
+[data-module="CD02"] .cd02-series-1, [data-module="CD02"] .cd02-series-3 { stroke: var(--text); }
+[data-module="CD02"] .cd02-mark { fill: var(--surface); stroke: var(--text); stroke-width: 2; }
+[data-module="CD02"] .cd02-selected { fill: var(--accent); stroke: var(--accent); }
+[data-module="CD02"] .cd02-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+[data-module="CD02"] .cd02-table th, [data-module="CD02"] .cd02-table td { text-align: left; padding: 9px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+[data-module="CD02"] .cd02-table-wrap { max-width: 100%; overflow-x: auto; }
+@media (max-width: 760px) {
+  [data-module="CD02"] .cd02-equations { grid-template-columns: 1fr; }
+  [data-module="CD02"] .cd02 section { padding: 14px; }
+  [data-module="CD02"] .cd02-controls > label { flex: 1 1 130px; min-width: 0; }
+  [data-module="CD02"] .cd02-table th, [data-module="CD02"] .cd02-table td { padding: 7px 4px; }
+  [data-module="CD02"] .cd02-plot text { font-size: 25px; }
+}
