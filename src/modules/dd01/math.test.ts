@@ -100,6 +100,7 @@ describe('actual sampled loop and independent continuous reference',()=>{
   it('reveals unstable emulation and safely truncates a growing trace',()=>{
     const m=make(undefined,{method:'forward',T:.5});expect(stability(m)).toBe('unstable');
     const s=simulate(m,500);expect(s.stopped).toContain('10¹²');expect(s.samples.length).toBeLessThan(500);expect(s.samples.length).toBeGreaterThan(5);
+    expect(s.held.at(-1)!.t).toBe(s.samples.at(-1)!.t);expect(s.held.at(-1)!.y).toBe(s.samples.at(-1)!.y);
   });
   it('distinguishes the numerical unit-circle boundary',()=>{
     const T=.1,ad=Math.exp(-T),bd=1-ad,g=(1+ad)/bd;

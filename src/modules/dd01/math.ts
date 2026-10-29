@@ -102,7 +102,10 @@ export function simulate(m: Discrete, count: number): Trace {
   let x=0,oldU=0,oldE=0;const samples:Sample[]=[],held:{t:number;y:number}[]=[];
   for(let i=0;i<=count;i++){
     const e=1-x,u=m.alpha*oldU+m.beta0*e+m.beta1*oldE;
-    if(![x,e,u].every(Number.isFinite)||Math.max(Math.abs(x),Math.abs(u))>1e12)return{samples,held,stopped:`Stopped before sample ${i}: output/control magnitude exceeded 10¹². No later response is inferred.`};
+    if(![x,e,u].every(Number.isFinite)||Math.max(Math.abs(x),Math.abs(u))>1e12){
+      const last=samples.at(-1);
+      return{samples,held:last?held.filter(point=>point.t<=last.t):[],stopped:`Stopped before sample ${i}: output/control magnitude exceeded 10¹². No later response is inferred.`};
+    }
     samples.push({k:i,t:i*T,y:x,e,u,oldU,oldE});
     if(i<count)for(let j=0;j<8;j++){const tau=T*j/8,minus=-Math.expm1(-a*tau);held.push({t:i*T+tau,y:Math.exp(-a*tau)*x+k/a*minus*u});}
     oldU=u;oldE=e;x=ad*x+bd*u;

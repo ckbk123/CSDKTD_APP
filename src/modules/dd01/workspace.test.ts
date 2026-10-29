@@ -19,7 +19,7 @@ describe('DD01 teaching flow and numerical controls',()=>{
   it('starts unrevealed and checks an independent recurrence attempt',async()=>{
     const {container,controller,reveal}=await open();expect(container.querySelector('svg')).toBeNull();
     update(label(container,'Prediction α'),'7/13');update(label(container,'Prediction β₀'),'136/13');update(label(container,'Prediction β₁'),'-8');reveal();
-    expect(container.textContent?.match(/Matches/g)).toHaveLength(3);expect(label(container,'Exact primitive integer coefficients').textContent).toContain('136z+(-104)');expect(container.querySelectorAll('svg')).toHaveLength(2);
+    expect(container.textContent?.match(/Matches/g)).toHaveLength(3);expect(label(container,'Exact primitive integer coefficients').textContent).toContain('136z+(-104)');expect(label(container,'Checked controller recurrence').textContent).toContain('\\frac{136}{13}');expect(container.querySelectorAll('svg')).toHaveLength(2);
     expect(container.textContent).toContain('Classification: stable');expect(container.textContent).toContain('0.84210526');controller.abort();
   });
   it('changes period/method, invalidates old output and recomputes the actual loop',async()=>{
@@ -42,6 +42,7 @@ describe('DD01 teaching flow and numerical controls',()=>{
     update(label(container,'Inspect frequency ω (rad/s)'),'1e-2');expect(container.textContent).toContain('At ω=0.01');
     update(label(container,'Inspect frequency ω (rad/s)'),'1e-999');expect(container.textContent).toContain('nonzero but too small');
     update(label(container,'Inspect frequency ω (rad/s)'),'0e-999');expect(container.textContent).toContain('At ω=0');
+    update(label(container,'Inspect frequency ω (rad/s)'),'1e-7');expect(container.textContent).toContain('0.000001 rad/s');
     update(label(container,'Sample period T (s)'),'1e-999');reveal();expect(container.querySelector('svg')).toBeNull();expect(container.textContent).toContain('nonzero but too small');
     update(label(container,'Sample period T (s)'),'1e-2');reveal();expect(container.querySelector('svg')).not.toBeNull();
     update(label(container,'Sample intervals'),'20.5');reveal();expect(container.textContent).toContain('20–500');controller.abort();
