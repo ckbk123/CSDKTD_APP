@@ -79,6 +79,7 @@ describe('CF03 independent finite-horizon fixtures', () => {
     for(const h of [NaN,Infinity,0,.01,51]) expect(()=>simulate(base,{kp:4,ki:0},h)).toThrow(/horizon/);
     for(const tol of [0,NaN,1e-10,.1]) expect(()=>simulate(base,{kp:4,ki:0},10,tol)).toThrow(/tolerance/);
     expect(()=>simulate({g:1,a:[1,1000,1]},{kp:1,ki:0},50)).toThrow(/too fast/);
+    expect(()=>simulate({g:1000,a:[1,1]},{kp:1000,ki:0},.05)).toThrow(/too fast/);
     expect(()=>uniform(base,{kp:4,ki:0},10,3)).toThrow(/even/);
     expect(()=>simulate({g:NaN,a:[1,3,2]},{kp:4,ki:0},10)).toThrow(/normalized/);
     expect(()=>simulate(base,{kp:4,ki:NaN},10)).toThrow(/finite/);

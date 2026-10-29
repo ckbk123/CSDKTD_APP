@@ -75,7 +75,10 @@ export function simulate(plant: Plant, controller: Controller, horizon: number, 
   if (!Number.isFinite(tolerance) || tolerance < 1e-8 || tolerance > 1e-2) fail('Choose a refinement tolerance from10⁻⁸ to10⁻².');
   checkedSettings(horizon, 2);
   const order = plant.a.length - 1;
-  const speed = Math.max(1, Math.abs(plant.a[1]), Math.sqrt(Math.abs(plant.a.at(-1)!) + Math.abs(plant.g * controller.kp)), Math.cbrt(Math.abs(plant.g * controller.ki)));
+  const feedbackCoefficient = Math.abs(plant.a.at(-1)! + plant.g * controller.kp);
+  const speed = order === 1
+    ? Math.max(1, feedbackCoefficient, Math.sqrt(Math.abs(plant.g * controller.ki)))
+    : Math.max(1, Math.abs(plant.a[1]), Math.sqrt(feedbackCoefficient), Math.cbrt(Math.abs(plant.g * controller.ki)));
   let intervals = 2 ** Math.ceil(Math.log2(Math.max(128, horizon * speed / .5)));
   if (intervals >= 16384) fail('Dynamics are too fast for the bounded refinement grid. Reduce gains/horizon; no checked integral is available.');
   let coarse = uniform(plant, controller, horizon, intervals);
