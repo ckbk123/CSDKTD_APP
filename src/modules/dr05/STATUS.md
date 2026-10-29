@@ -1,6 +1,6 @@
 # DR05 implementation status
 
-- **Stage:** implemented; independent final integration acceptance remains separate.
+- **Stage:** in-progress
 - **Assessed:** 2026-10-29. Contribution base: 8696261267b7620bfc101ce2b5f13772bfaa529a. This delivery record accompanies the tested tree; the submitted claim names its exact final commit.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802
 - **Branch/worktree:** codex/dr05-zoh-f802; C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP
@@ -20,7 +20,7 @@ The claimed baseline contained metadata and a blank workspace, with no local mat
 | Intermediate reasoning and recurrence | Source equations/matrices, augmented construction, exp/integral identities, sampled update, conditioned zero-state pulse TF/scalar recurrence, inspected arithmetic and complete accessible sample/state table. Unreliable scalar conversion is explicitly omitted while the state recurrence survives. |
 | Integer delay | Causal input delay mT before plant, zero input history and right-hand output timing. Fractional delay rejected; insufficient post-delay horizon reported. |
 | Attempt/reveal and variation | First-sample prediction with explicit tolerance; editable plant/T/delay/input/amplitude/initial state/count/density/method. Baseline/.2 s worksheet, singular integrators, delayed 5/s² and oscillator presets. Edits hide stale results. |
-| Validation and lifecycle | 62 math/parser, 9 view-flow and 3 loader tests. Synchronous workspace, abort-guarded lazy view, active error recovery and equation destruction. Mutable state belongs to mount. Scoped CSS, numeric controls, keyboard access and internal math/plot/table scrolling. |
+| Validation and lifecycle | 62 math/parser, 10 view-flow and 5 loader tests. Synchronous workspace, owned lazy host/child signal, immediate partial-mount abort, active error recovery and equation destruction. Mutable state belongs to mount. Scoped CSS, numeric controls, keyboard access and internal math/plot/table scrolling. |
 
 ## Supported domain and conventions
 
@@ -52,16 +52,26 @@ The coordinator returned source 0872a8f in this same PR for a real scalar-conver
 
 The correction applies the separate scalar gate above and preserves valid state results. The independent partial-fraction oracle integrates modes 60 and −.01; changed T=.1 checks scalar coefficients through modal geometric sequences. UI regression checks omission of scalar equations, retained state recurrence/table, announced status and recovery at smaller T. Additional notation regressions reject mixed numbers/invisible grouping without silently changing displayed meaning.
 
-Coordinator chat 01a182f7-8bce-7fb3-b79d-2ef1b1cfe8dd reported preliminary review of immutable bb301f8c480de842e96acbc8ebc2e53c3d7708d0: the returned conditioning gate passed; 1,212 model/interval probes found no further blocker (1,163 accepted, 49 conservatively suppressed), maximum scaled coefficient error 1.03×10⁻⁹. This is independent evidence for that correction, not final integration acceptance. Current code is unchanged from that checkpoint apart from this delivery record.
+Coordinator chat 01a182f7-8bce-7fb3-b79d-2ef1b1cfe8dd reported preliminary review of immutable bb301f8c480de842e96acbc8ebc2e53c3d7708d0: the returned conditioning gate passed; 1,212 model/interval probes found no further blocker (1,163 accepted, 49 conservatively suppressed), maximum scaled coefficient error 1.03×10⁻⁹. This is independent evidence for that correction, not final integration acceptance. The mathematical implementation remains unchanged by the later UI/lifecycle correction below.
+
+## Second review return: inspection draft and partial-mount cleanup
+
+The coordinator reopened submitted 9124825 in the same PR after integration preparation found two owned defects. CR06 was checkpointed at 21e8cbc and suspended before these repairs.
+
+Reveal previously used Number(inspect.value)||0, silently changing nonzero underflow 1e-400 into sample zero despite guarded inspection input events. Reveal now reads through the approved local guard, preserves invalid/empty/negative/noninteger drafts for localized showSample feedback, and clamps only a validated nonnegative integer to a shortened sample count. Newly revealed plots are cleared before inspection so an invalid draft cannot leave old-model plots beside new equations/table. The valid numerical model/table stays available. Intentional zero 0e-400 still selects zero; invalid drafts do not.
+
+workspace.ts now creates its own host and child AbortController, forwards parent abort, and aborts child resources immediately when lazy view mounting throws after partial allocation. Recovery replaces only the owned host. Disposal aborts/detaches once, calls normal cleanup if returned, and removes the host; unrelated container siblings survive. Tests register an actual signal-owned listener and abort cleanup before deliberately throwing, then verify immediate release while the parent remains active. Normal disposal and repeated cleanup are tested too.
+
+The focused regressions and complete automated checks pass below. Actual-browser Reveal/underflow/intentional-zero and normal reset/navigation checks on this corrected build remain pending under the shared QA order DD04 -> CP03 -> DR01 -> DP03 -> normal acquisition. Deliberate partial-mount failure is tested with an allocated-resource mock, not claimed as browser fault injection.
 
 ## Automated verification
 
 Executed in this isolated worktree using Node 24.22.1/npm 10.8.2 (explicit bundled Node invoking npm CLI):
 
 - npm ci: passed, 109 packages, zero audit vulnerabilities at installation.
-- npm test -- src/modules/dr05: **74 passed** across 3 files (62 math/parser, 9 view, 3 loader).
+- npm test -- src/modules/dr05: **77 passed** across 3 files (62 math/parser, 10 view, 5 loader), after the second review correction.
 - npm run check: TypeScript passed.
-- npm test: **157 passed** across 11 files on this branch's recorded base.
+- npm test: **160 passed** across 11 files on this branch's recorded base, after the second review correction.
 - npm run build: type check/production Vite build passed; existing MathLive large-chunk advisory only. Generated output is untracked.
 - [GitHub check for reviewed code checkpoint bb301f8](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40869920735): passed. Final submitted SHA also includes this evidence record.
 
@@ -91,6 +101,6 @@ One earlier immediate preset/reveal after automated viewport reset reported an u
 
 ## Remaining work and coordination
 
-No accepted bounded exercise work is deferred. Independent final coordinator review/integration is pending; this stage is implemented, not verified. No package, shell, routing, deployment or sibling-module edits are included.
+Focused production-browser validation of the second review correction remains. This stage is in-progress until that evidence is recorded and the exact clean final tree is resubmitted. Independent final coordinator review/integration remains separate. No package, shell, routing, deployment or sibling-module edits are included.
 
 This branch predates main v0.3.3's readNumericInput(input,label). Its tested equivalent local native-number guard is an approved carry-forward under the coordinator's 2026-10-29 instruction. The coordinator owns import adaptation and its checks during integration; no unowned shared file, rebase or merge was added for that rollout. The same PR/branch is preserved for exact clean resubmission and later review.

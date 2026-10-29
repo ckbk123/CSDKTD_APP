@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ModuleContext } from '../../core/module';
 const stub = vi.hoisted(() => ({ mount: vi.fn(), cleanup: vi.fn() }));
 vi.mock('./view', () => ({ mount: stub.mount }));
 import { mount } from './workspace';
@@ -32,5 +33,37 @@ describe('DR05 synchronous lazy mount', () => {
     await vi.waitFor(() => expect(container.textContent).toContain('Reset the tool to try again'));
     controller.abort(); if (typeof cleanup === 'function') cleanup();
     expect(container.textContent).toBe(''); expect(stub.cleanup).not.toHaveBeenCalled();
+  });
+  it('immediately aborts partial mount resources and keeps unrelated container children', async () => {
+    const target = new EventTarget(), listener = vi.fn(), release = vi.fn();
+    let partialSignal: AbortSignal | undefined;
+    stub.mount.mockImplementationOnce(({ container, signal }: ModuleContext) => {
+      partialSignal = signal;
+      container.append(document.createElement('button'));
+      target.addEventListener('probe', listener, { signal });
+      signal.addEventListener('abort', release, { once: true });
+      throw new Error('Failed after allocating resources');
+    });
+    const container = document.createElement('div'), unrelated = document.createElement('aside');
+    unrelated.textContent = 'Unrelated'; container.append(unrelated);
+    const controller = new AbortController(), cleanup = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(container.textContent).toContain('Reset the tool to try again'));
+    expect(partialSignal).not.toBe(controller.signal); expect(partialSignal!.aborted).toBe(true);
+    expect(controller.signal.aborted).toBe(false); expect(release).toHaveBeenCalledOnce();
+    target.dispatchEvent(new Event('probe')); expect(listener).not.toHaveBeenCalled();
+    expect(container.querySelector('button')).toBeNull(); expect(unrelated.parentElement).toBe(container);
+    if (typeof cleanup === 'function') { cleanup(); cleanup(); }
+    expect(container.children).toHaveLength(1); expect(container.firstChild).toBe(unrelated);
+    expect(stub.cleanup).not.toHaveBeenCalled(); expect(release).toHaveBeenCalledOnce();
+  });
+  it('aborts the child on direct disposal and makes repeated cleanup harmless', async () => {
+    const container = document.createElement('div'), controller = new AbortController();
+    const cleanup = mount({ container, signal: controller.signal });
+    await vi.waitFor(() => expect(stub.mount).toHaveBeenCalledOnce());
+    const childSignal = stub.mount.mock.calls[0][0].signal as AbortSignal;
+    if (typeof cleanup === 'function') { cleanup(); cleanup(); }
+    expect(childSignal.aborted).toBe(true); expect(controller.signal.aborted).toBe(false);
+    expect(stub.cleanup).toHaveBeenCalledOnce(); expect(container.children).toHaveLength(0);
+    controller.abort(); expect(stub.cleanup).toHaveBeenCalledOnce();
   });
 });

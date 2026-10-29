@@ -129,7 +129,14 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const head = element('thead'), body = element('tbody'); head.append(header);
       result.samples.forEach((r, k) => { const row = element('tr'); [String(k), fmt(r.t), fmt(r.held), fmt(r.y), result!.comparison ? fmt(result!.comparison[k].y) : 'Unavailable', r.x.map(fmt).join(', ')].forEach(text => row.append(element('td', text))); body.append(row); });
       table.append(head, body); tableHost.replaceChildren(table);
-      inspect.max = String(result.samples.length - 1); inspect.value = String(Math.min(Number(inspect.value) || 0, result.samples.length - 1));
+      inspect.max = String(result.samples.length - 1);
+      // Keep invalid drafts visible for showSample's localized feedback. Only
+      // a validated nonnegative integer may be clamped to a shorter horizon.
+      try {
+        const k = read(inspect);
+        if (Number.isInteger(k) && k >= 0) inspect.value = String(Math.min(k, result.samples.length - 1));
+      } catch { /* showSample reports the unchanged draft below. */ }
+      outputPlot.replaceChildren(); inputPlot.replaceChildren();
       resultHost.hidden = false;
       notice.textContent = 'Exact ZOH state model computed. ' + (result.comparison ? 'Selected approximation computed. ' : 'Selected approximation unavailable; see feedback. ') + (tf ? 'Change the inputs to run another experiment.' : 'Scalar transfer and recurrence are unavailable for this conditioning; use the state model.');
       showSample();

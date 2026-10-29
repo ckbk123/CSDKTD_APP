@@ -69,6 +69,25 @@ describe('DR05 teaching flow with the equation API stub', () => {
     change(control(root, 'Inspect sample k'), '1e-400'); expect(root.textContent).toContain('Inspection point:');
     change(control(root, 'Inspect sample k'), '0e-400'); expect(root.textContent).toContain('Sample k = 0');
   });
+  it('preserves invalid inspection drafts on Reveal and clamps only validated indices', () => {
+    const root = open(); click(root, 'Reveal sampled model');
+    const inspect = control(root, 'Inspect sample k');
+    change(inspect, '5'); expect(root.textContent).toContain('Sample k = 5');
+    change(control(root, 'Sample period T (s)'), '.2');
+    for (const raw of ['1e-400', '', '-1', '1.5']) {
+      change(inspect, raw); click(root, 'Reveal sampled model');
+      expect(inspect.value).toBe(raw);
+      expect(root.textContent).not.toContain('Sample k = 0');
+      expect(root.textContent).toContain(raw === '1e-400' || raw === '' ? 'Inspection point:' : 'Choose k from 0');
+      expect(outputValues(root)[1]).toBe('0.1812692');
+      expect(root.querySelectorAll('.zoh-plot svg')).toHaveLength(0);
+    }
+    change(inspect, '20'); change(control(root, 'Number of sample instants'), '4'); click(root, 'Reveal sampled model');
+    expect(inspect.value).toBe('3'); expect(root.textContent).toContain('Sample k = 3');
+    change(inspect, '0e-400'); click(root, 'Reveal sampled model');
+    expect(inspect.value).toBe('0'); expect(root.textContent).toContain('Sample k = 0');
+    expect(root.querySelectorAll('.zoh-plot svg')).toHaveLength(2);
+  });
   it('reopen restores the baseline and cleanup removes owned controls', () => {
     const root = open(); click(root, 'Delayed 5/s²'); controller.abort(); if (typeof cleanup === 'function') cleanup(); expect(root.children.length).toBe(0);
     const next = open(); click(next, 'Reveal sampled model'); expect(control(next, 'Input delay m (whole samples)').value).toBe('0'); expect(outputValues(next)[1]).toBe('0.09516258');
