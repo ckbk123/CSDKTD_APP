@@ -86,6 +86,8 @@ Use `readNumericInput(input, label)` from `src/shared/numeric-input.ts` when rea
 
 Catch its error in the module's normal feedback path; clear or hide stale computed results, and preserve a prior valid map point when a new candidate is invalid. Test genuine zero (`0` and `0e-999`), a normal native exponent (`1e-2`), a nonzero underflow and the module's range/integer boundaries. Text controls accepting exact fractions and visual equation fields have their own parsers and must not be routed through this native-number helper.
 
+An older preserved branch may lack this helper. With an explicit coordinator disposition, an independently tested equivalent local reader can be carried forward to a functional submission; record the coordinator-owned API adaptation in STATUS. The integration owner applies and verifies that adaptation before accepting the release. Keep submitted history intact and create later module worktrees from current main.
+
 ## Local assets and lifecycle
 
 The wrapper imports `mathlive/fonts.css` and `mathlive/static.css`. Vite emits all 20 referenced WOFF2 fonts as local hashed assets. The build disables asset inlining so even the smallest font remains a same-origin file, compatible with `font-src 'self'`. `MathfieldElement.fontsDirectory = null` disables MathLive's separate automatic font lookup; the imported CSS supplies the fonts. No runtime CDN is required. Keep the CSS import, build setting and font lookup setting together.
