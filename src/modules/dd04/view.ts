@@ -126,7 +126,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
     if (!experiment) return;
     history.replaceChildren();
     history.append(samplePlots(committed, experiment.initialMemory.output, experiment.initial.e0, experiment.model.period));
-    const wrap = document.createElement('div'); wrap.className = 'pid-table'; const table = document.createElement('table');
+    const wrap = document.createElement('div'); wrap.className = 'pid-table'; wrap.tabIndex = 0;
+    wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', 'Committed sample values, scroll horizontally if needed');
+    const table = document.createElement('table');
     const header = document.createElement('tr');
     for (const text of ['k', 'kT (s)', 'e[k]', 'P', 'I', 'D', 'u (position)', 'u (incremental)', '|difference|']) say(header, text, 'th');
     const thead = document.createElement('thead'); thead.append(header); table.append(thead);
