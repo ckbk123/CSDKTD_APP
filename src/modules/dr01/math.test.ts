@@ -94,6 +94,13 @@ describe('bounded grammar and failures', () => {
     expect(() => samples(parseTransform('1'), [NaN, 0], 8)).toThrow(/history/);
     expect(() => validateTransform({ b: [], a: [1] })).toThrow();
   });
+  it('rejects normalization underflow of nonzero numerator or denominator coefficients', () => {
+    // The numerator is about 10^-312 (representable), then division by 10^12
+    // gives about 10^-324, below the smallest positive floating-point number.
+    expect(1e-312).toBeGreaterThan(0);
+    expect(() => parseTransform('(1e-12)^14*(1e-12)^12/(1e6)^2')).toThrow(/underflow during normalization/);
+    expect(() => parseTransform('1/((1e6)^2+(1e-12)^14*(1e-12)^12*q)')).toThrow(/underflow during normalization/);
+  });
   it('rejects out-of-range and fractional builder values', () => {
     expect(() => fromSequence('sum', 1, .8, 12, 12)).toThrow(/Length/);
     expect(() => fromSequence('geometric', 1, .8, .5, 4)).toThrow(/Delay/);

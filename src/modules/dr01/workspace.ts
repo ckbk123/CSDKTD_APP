@@ -5,22 +5,28 @@ export const mount: ModuleMount = ({ container, signal }) => {
   if (signal.aborted) return;
   let disposed = false;
   let release: void | (() => void);
+  const viewController = new AbortController();
+  const host = document.createElement('div');
   const message = document.createElement('p');
   message.textContent = 'Loading sequence editor…';
-  container.append(message);
+  host.append(message); container.append(host);
   const dispose = () => {
     if (disposed) return;
     disposed = true;
     signal.removeEventListener('abort', dispose);
-    release?.(); message.remove();
+    viewController.abort();
+    try { release?.(); } finally { host.remove(); }
   };
   signal.addEventListener('abort', dispose, { once: true });
   void import('./view').then(({ mountView }) => {
     if (disposed || signal.aborted) return;
     message.remove();
-    release = mountView({ container, signal });
+    release = mountView({ container: host, signal: viewController.signal });
   }).catch(() => {
-    if (!disposed && !signal.aborted) message.textContent = 'The sequence editor could not load. Reset the tool to try again.';
+    if (disposed || signal.aborted) return;
+    viewController.abort();
+    message.textContent = 'The sequence editor could not load. Reset the tool to try again.';
+    host.replaceChildren(message);
   });
   return dispose;
 };

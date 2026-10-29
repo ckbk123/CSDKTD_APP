@@ -129,6 +129,9 @@ export function validateTransform(model: Transform): Transform {
   const scale = a[0];
   if (Math.abs(scale) < 1e-10 * Math.max(...a.map(Math.abs))) throw new Error('The leading denominator is too small to normalize reliably.');
   const normalized = { a: a.map(x => x / scale), b: b.map(x => x / scale) };
+  if (a.some((x, i) => x !== 0 && normalized.a[i] === 0) || b.some((x, i) => x !== 0 && normalized.b[i] === 0)) {
+    throw new Error('Coefficients underflow during normalization. Use less extreme scales.');
+  }
   if ([...normalized.a, ...normalized.b].some(x => Math.abs(x) > MAX_COEFFICIENT)) throw new Error('Normalized coefficients must have magnitude at most 1,000,000.');
   return normalized;
 }
