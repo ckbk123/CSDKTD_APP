@@ -40,6 +40,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const equation = createEquationInput({ label: 'Transfer function G(z)', value: BASELINE, signal, onChange: next => {
     draft = next; modelDirty = true; derived.replaceChildren(); invalidate('Equation changed. Apply the transfer function to rebuild the recurrence and memory slots.');
   } });
+  equation.element.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); window.mathVirtualKeyboard.hide(); }
+  }, { capture: true, signal });
   draft = equation.getValue();
   const derived = el('div');
   const apply = () => {

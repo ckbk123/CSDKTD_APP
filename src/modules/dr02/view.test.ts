@@ -22,6 +22,16 @@ function visit() {
   return { container, click, close: () => { controller.abort(); cleanup?.(); } };
 }
 describe('DR02 exercise state transitions', () => {
+  it('dismisses the keyboard before raw-notation Escape handling and removes the listener on abort', () => {
+    const previous=window.mathVirtualKeyboard,hide=vi.fn();Object.defineProperty(window,'mathVirtualKeyboard',{value:{hide},configurable:true});
+    try{
+      const {container,click,close}=visit(),field=container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!,editor=vi.fn();field.addEventListener('keydown',editor);
+      const escape=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true});field.dispatchEvent(escape);
+      expect(escape.defaultPrevented).toBe(true);expect(editor).not.toHaveBeenCalled();expect(hide).toHaveBeenCalledOnce();
+      click('Baseline');expect(container.textContent).toContain('Ready at k = 0');close();
+      field.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));expect(hide).toHaveBeenCalledOnce();
+    }finally{Object.defineProperty(window,'mathVirtualKeyboard',{value:previous,configurable:true});}
+  });
   it.each([['0',0],['0e-999',0],['1e-2',.01],['1e-999',null],['',null]])('reads native amplitude %s without silently rounding a nonzero value to zero', (raw, value) => {
     const {container,click}=visit();
     const field=container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;
