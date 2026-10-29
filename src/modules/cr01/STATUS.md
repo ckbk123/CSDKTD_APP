@@ -6,6 +6,7 @@
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
 - **Branch:** `codex/cr01-polynomials-7e78`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\cr01-polynomials-7e78\CSDKTD APP`
+- **PR:** https://github.com/ckbk123/CSDKTD_APP/pull/25
 - **Ownership:** `src/modules/cr01/**`; [accepted contract](TASK.md)
 
 ## Audit and bounded design
