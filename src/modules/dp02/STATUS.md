@@ -23,7 +23,7 @@ The starting workspace was blank; no working mathematical features were replaced
 | Visual mathematical entry and validation | Shared createEquationInput/createEquationDisplay, visit-owned draft; bounded local parser and domain checks; keyboard division and visual fractions | None |
 | Local state, lazy metadata, abort/cleanup | Metadata unchanged. Synchronous workspace mount defers browser view; abort/dispose guards; mount-owned state, signal listeners and result-event cleanup; five lifecycle/error-path tests | None |
 | Keyboard and narrow layout | Direct typing, fraction boxes, Systems keyboard/Escape, Tab, Enter reveal, reset/reopen and 390×844 viewport checked in production Chromium before pause | None |
-| Independent mathematics and project checks | 57 module tests; check, all 99 project tests, production build pass at 1baa7f3 | None; submitted SHA is in claim/PR |
+| Independent mathematics and project checks | 57 module tests; check, all 99 project tests, production build pass at beedadb | None; submitted SHA is in claim/PR |
 
 ## Supported mathematical domain
 
@@ -93,7 +93,7 @@ Another worker's browser evidence showed MathLive can serialize a completed frac
 
 ## Pull request
 
-[DP02 PR #3](https://github.com/ckbk123/CSDKTD_APP/pull/3) is the single draft PR for this module, targeting main from codex/dp02-pole-mapping-01a186d1. It is attached to this chat. It was initially opened as a draft while QA was reserved elsewhere; final evidence and ready-for-review state are updated at submission. GitHub connector creation returned 403; the PR was created through GitHub REST using Git's existing authenticated connection without storing or exposing credentials. Latest human steering requires preserving this PR/branch for review and then selecting the next module in a separate worktree after DP02 submission.
+[DP02 PR #3](https://github.com/ckbk123/CSDKTD_APP/pull/3) is the single PR for this module, targeting main from codex/dp02-pole-mapping-01a186d1. It is attached to this chat. It was initially opened as a draft while QA was reserved elsewhere; final evidence and ready-for-review state are updated at submission. GitHub connector creation returned 403; the PR was created through GitHub REST using Git's existing authenticated connection without storing or exposing credentials. Latest human steering requires preserving this PR/branch for review and then selecting the next module in a separate worktree after DP02 submission.
 
 
 ## Final production pass (2026-10-29, after beedadb)
@@ -108,3 +108,4 @@ QA was acquired through the atomic helper after the previous worker released it.
 - Worker-local proof capture: C:\Users\baokh\.codex\visualizations\2026\10\29\01a186d1-a367-78f1-98f5-e1cf147ef306\dp02-final.png (not committed). It shows the computed linked planes for the T=.2 experiment.
 
 QA was released and worker preview 8793 stopped. No remaining required module work or shared dependency is deferred. This is implemented, not independently reviewed/verified; coordinator review may return corrections on the same preserved PR branch. No primary-main merge, version bump or deployment was performed.
+
