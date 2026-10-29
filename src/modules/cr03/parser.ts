@@ -30,6 +30,11 @@ function expand(text: string): string {
       if (text.startsWith('\\frac', position) || text.startsWith('\\dfrac', position) || text.startsWith('\\tfrac', position)) {
         const command = /^\\(?:dfrac|tfrac|frac)/.exec(text.slice(position))![0]; position += command.length;
         const top = argument(), bottom = argument(); output += `((${top})/(${bottom}))`;
+      } else if (text[position] === '^') {
+        position++;
+        if (text[position] === '{') { position++; output += `^(${group('}')})`; }
+        else if (/[0-9]/.test(text[position] ?? '')) output += `^(${text[position++]})`;
+        else fail('Complete the power box with an integer; signed powers need the whole exponent inside that box.');
       } else if (text[position] === '{') { position++; output += `(${group('}')})`; }
       else if (text[position] === '}' || text[position] === '\\') fail('Unsupported notation. Use real coefficients, the named variables, fractions and integer powers.');
       else output += text[position++];

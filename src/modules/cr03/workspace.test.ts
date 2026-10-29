@@ -6,8 +6,9 @@ it('ignores a view import that arrives after navigation', async () => {
   const controller = new AbortController(), container = document.createElement('div'), cleanup = mount({ container, signal: controller.signal }); controller.abort(); cleanup?.(); await vi.dynamicImportSettled(); expect(view.mount).not.toHaveBeenCalled(); expect(container.children.length).toBe(0);
 });
 it('reattaches visible recovery after an active view mount failure', async () => {
-  const controller = new AbortController(), container = document.createElement('div'); view.mount.mockImplementationOnce(() => { container.append(document.createElement('section')); throw new Error('failed'); });
-  const cleanup = mount({ container, signal: controller.signal }); await vi.dynamicImportSettled(); expect(container.children.length).toBe(1); expect(container.querySelector('[role="alert"]')?.textContent).toContain('Reset'); controller.abort(); cleanup?.();
+  const controller = new AbortController(), container = document.createElement('div'); let viewSignal: AbortSignal | undefined;
+  view.mount.mockImplementationOnce((...args: unknown[]) => { viewSignal = (args[0] as {signal:AbortSignal}).signal; container.append(document.createElement('section')); throw new Error('failed'); });
+  const cleanup = mount({ container, signal: controller.signal }); await vi.dynamicImportSettled(); expect(container.children.length).toBe(1); expect(container.querySelector('[role="alert"]')?.textContent).toContain('Reset'); expect(viewSignal?.aborted).toBe(true); expect(controller.signal.aborted).toBe(false); controller.abort(); cleanup?.();
 });
 it('does not attach a late failure after abort', async () => {
   const controller = new AbortController(), container = document.createElement('div'); view.mount.mockImplementationOnce(() => { controller.abort(); container.replaceChildren(); throw new Error('late'); });

@@ -30,6 +30,19 @@ describe('CR03 bounded visual transfer grammar', () => {
     expect(parseTransfer('s^{-2}')).toEqual({ numerator: [1], denominator: [1, 0, 0] });
     for (const text of ['1e-2','1E2','e/(s+1)']) expect(() => parseTransfer(text)).toThrow(/visual e\/E/);
   });
+  it('preserves TeX single-token exponent arguments instead of absorbing trailing digits', () => {
+    expect(parseTransfer('10^02')).toEqual({ numerator: [2], denominator: [1] });
+    expect(parseTransfer('10^{02}')).toEqual({ numerator: [100], denominator: [1] });
+    expect(parseTransfer('1/(s^22+3s+2)')).toEqual({ numerator: [.5], denominator: [1, 1.5, 1] });
+  });
+  it('does not turn a displayed zero exponent into a fourth-order pole', () => {
+    expect(parseTransfer(String.raw`\frac1{s^04}`)).toEqual({ numerator: [.25], denominator: [1] });
+    expect(parseTransfer(String.raw`\frac1{s^42}`)).toEqual({ numerator: [.5], denominator: [1, 0, 0, 0, 0] });
+  });
+  it('rejects an unbraced signed power instead of inventing a larger exponent argument', () => {
+    for (const text of ['s^-2','10^+2','s^(-2)']) expect(() => parseTransfer(text)).toThrow(/power box/);
+    expect(parseTransfer(String.raw`10^{-2}`)).toEqual({ numerator: [.01], denominator: [1] });
+  });
   it('retains nonminimal denominator factors rather than erasing state modes', () => {
     expect(parseTransfer('(s-1)/((s-1)(s+2))')).toEqual({ numerator: [1, -1], denominator: [1, 1, -2] });
     expect(parseTransfer('0/(s-1)')).toEqual({ numerator: [0], denominator: [1, -1] });
