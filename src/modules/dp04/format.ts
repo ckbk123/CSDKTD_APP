@@ -12,8 +12,9 @@ export function polynomialTex(coefficients: readonly number[], symbol = 'z'): st
     return `${value < 0 ? '-' : '+'}${Math.abs(value) === 1 && power ? '' : numberTex(Math.abs(value))}${variable}`;
   }).join('').replace(/^\+/, '') || '0';
 }
-export function intervalText(segment: Segment): string {
-  const indistinguishable = segment.left !== null && segment.right !== null && rounded(segment.left) === rounded(segment.right);
+export function intervalText(segment: Segment, partition: readonly Segment[] = [segment]): string {
+  const boundaries = [...new Set(partition.flatMap(item => [item.left, item.right]).filter((value): value is number => value !== null))];
+  const indistinguishable = new Set(boundaries.map(rounded)).size !== boundaries.length;
   const endpoint = (value: number) => indistinguishable ? textNumber(String(value)) : numberText(value);
   return `(${segment.left === null ? '−∞' : endpoint(segment.left)}, ${segment.right === null ? '∞' : endpoint(segment.right)})`;
 }

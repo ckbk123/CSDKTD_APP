@@ -37,6 +37,7 @@ describe('DP04 model/attempt/reveal wiring (mocked equation presentation only)',
   it('distinguishes adjacent interval endpoints and grades its odd boundary count', () => {
     const { container, button, editor } = visit(); editor('(z-0.9999999999999999)/(z(z-1))'); button('build').click();
     const intervals = container.querySelectorAll<HTMLInputElement>('[data-interval]');
+    expect(intervals[1].parentElement!.textContent).toBe('(0, 0.9999999999999999)');
     expect(intervals[2].parentElement!.textContent).toBe('(0.9999999999999999, 1)');
     intervals[0].checked = true; intervals[2].checked = true; button('reveal').click();
     expect(container.querySelector('.rl-message')!.textContent).toContain('Correct interval prediction');

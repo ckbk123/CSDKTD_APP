@@ -120,7 +120,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const area = get('.rl-construction'), m = exercise.model; area.replaceChildren();
     const fixed = m.b1 === 0 ? m.b0 : m.b1, asym = asymptotes(m);
     say(area, `The fixed leading numerator coefficient is ${n(fixed)}. Its phase is ${fixed < 0 ? '180°' : '0°'}: valid real intervals have an ${fixed < 0 ? 'even' : 'odd'} count to the right. Endpoints at poles/zeros are handled separately.`);
-    area.append(table(['Open interval', 'Real poles + zeros to right', 'On K ≥ 0 locus', 'Your checked answer'], exercise.segments.map((segment, index) => [intervalText(segment), String(segment.rightCount), segment.onLocus ? 'Yes' : 'No', choices[index] ? 'Yes' : 'No']), 'Real-axis construction check'));
+    area.append(table(['Open interval', 'Real poles + zeros to right', 'On K ≥ 0 locus', 'Your checked answer'], exercise.segments.map((segment, index) => [intervalText(segment, exercise!.segments), String(segment.rightCount), segment.onLocus ? 'Yes' : 'No', choices[index] ? 'Yes' : 'No']), 'Real-axis construction check'));
     equation(area, String.raw`c=\frac{\sum p_i-\sum z_i}{n-m},\quad\phi_q=\frac{(2q+1)\pi-\arg(c_B)}{n-m}`, 'Asymptote centroid and angles with fixed coefficient phase');
     say(area, `Centroid ≈ ${n(asym.centroid)}; asymptote directions ${asym.angles.map(angle => `${n(angle * 180 / Math.PI)}°`).join(', ')}. K remains nonnegative; a negative fixed factor changes these directions.`);
     equation(area, String.raw`K(z)=-\frac{D(z)}{B(z)},\quad D'B-DB'=b_1z^2+2b_0z+(a_1b_0-a_0b_1)=0`, 'Stationary real-gain candidate equation');
@@ -157,7 +157,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       say(area, `Open poles: ${poles(model).map(complexText).join('; ')}. ${zero(model) ? `Finite zero: ${complexText(zero(model)!)}` : 'No finite zero.'} Coefficient order is descending powers; the denominator is monic. No factor has been canceled.`);
       get('.rl-preview').hidden = false; get('.rl-preview').replaceChildren(locusPlot(model, { range }));
       const options = get('.rl-choices'); options.replaceChildren();
-      exercise.segments.forEach((segment, index) => { const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'rl-choice'; checkbox.type = 'checkbox'; checkbox.dataset.interval = String(index); label.append(checkbox, document.createTextNode(intervalText(segment))); options.append(label); });
+      exercise.segments.forEach((segment, index) => { const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'rl-choice'; checkbox.type = 'checkbox'; checkbox.dataset.interval = String(index); label.append(checkbox, document.createTextNode(intervalText(segment, exercise!.segments))); options.append(label); });
       quiz.hidden = false; get('.rl-point-feedback').textContent = 'Test a point to draw its vectors.';
       message.textContent = 'Pole/zero view built. Predict the real-axis intervals, then check and reveal.';
     } catch (error) { exercise = undefined; message.textContent = (error as Error).message; }
