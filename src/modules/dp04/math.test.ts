@@ -47,6 +47,20 @@ describe('DP04 independent quadratic locus fixtures', () => {
       expect(Math.hypot(path.branches[0][index].re - path.branches[1][index].re, path.branches[0][index].im - path.branches[1][index].im)).toBeLessThan(1e-6);
     }
   });
+  it('counts poles at a narrow interval right boundary without a rounded midpoint', () => {
+    const previous = 0.9999999999999999;
+    const segments = realSegments({ a1: -1, a0: 0, b1: 1, b0: -previous });
+    expect(segments).toEqual([
+      { left: null, right: 0, rightCount: 3, onLocus: true },
+      { left: 0, right: previous, rightCount: 2, onLocus: false },
+      { left: previous, right: 1, rightCount: 1, onLocus: true },
+      { left: 1, right: null, rightCount: 0, onLocus: false },
+    ]);
+    expect(realSegments({ a1: -1, a0: 0, b1: -1, b0: previous }).map(segment => segment.onLocus)).toEqual([false, true, false, true]);
+  });
+  it('retains repeated-pole multiplicity at interval boundaries', () => {
+    expect(realSegments({ a1: -2, a0: 1, b1: 1, b0: -0.9999999999999999 }).map(segment => segment.rightCount)).toEqual([3, 2, 0]);
+  });
   it('responds to a changed zero and constant numerator', () => {
     const changed = rootsAt({ ...baseline, b0: 0.5 }, 2);
     expect(changed.roots[0].re).toBe(-0.5); expect(changed.roots[0].im).toBeCloseTo(Math.sqrt(3) / 2, 14);

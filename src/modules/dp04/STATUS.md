@@ -1,12 +1,12 @@
 # DP04 implementation status
 
-- **Stage:** implemented (full bounded quadratic construction exercise; independent integration review pending)
+- **Stage:** in-progress (coordinator review return: exponent atom boundaries and adjacent-interval parity)
 - **Assessed:** 2026-10-29; starting primary main `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d`
 - **Owned scope:** `src/modules/dp04/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Branch:** `codex/dp04-root-locus-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dp04-root-locus-01a186d1\CSDKTD APP`
-- **PR:** [DP04 #19](https://github.com/ckbk123/CSDKTD_APP/pull/19), attached; final checked revision submitted for integration
+- **PR:** [DP04 #19](https://github.com/ckbk123/CSDKTD_APP/pull/19), attached; reopened for two independent review corrections
 
 ## Starting evidence and full bounded exercise
 
@@ -113,3 +113,11 @@ Exclusive browser QA was acquired after DP03 and released at2026-10-29T13:12:50Z
 Proof was saved outside Git as `dp04-phone-root-locus.png` in this worker's2026/10/29 visualization folder. These are actual UI checks, not a claimed automated end-to-end suite. There is no shared API/dependency request or remaining accepted bounded-exercise implementation work. DS04 matching data remains manual.
 
 Final commands, using supported Node24.22.1 in this worktree: `npm test -- src/modules/dp04` (89 tests in4 files), `npm run check`, `npm test` (292 tests in19 files) and `npm run build`; all pass. Build retains the existing MathLive chunk-size warning (about221.49kB gzip and20 local fonts); DP04 view is about13.17kB gzip. Only the owned DP04 folder is committed. PR19 is reused/attached and made ready; the private claim records the exact tested final HEAD after a clean-tree/remote check. No merge, release/version change, deployment or generated output is included.
+
+## Independent review return: exponent atoms and adjacent intervals
+
+The coordinator reopened the same reservation after submission ofb482137, preserving its history and PR19. No newer module had been claimed. Its independent review found that unbraced `z^+2` and `z^2.0` could be consumed as a complete programming-style number instead of the displayed one-token TeX power. It also found a midpoint rounded to a right boundary in(.9999999999999999,1), incorrectly dropping the pole at1 from the real-axis parity count. These are required corrections; the prior implemented stage is superseded until focused verification is complete.
+
+Added regression fixtures first: eight assertions failed against the submitted code, including adjacent repeated-pole multiplicity, sign-reversed parity and labels that collapsed to(1,1). The parser now normalizes each TeX exponent atom with its own preserved delimiter. Unbraced signs/multiple digits/decimal tails are rejected; explicitly braced supported integers (including`z^{+2}`) and`z^2` remain valid. Following numeric text cannot merge with a braced exponent. Interval parity counts locations at or beyond its right boundary directly, retaining multiplicity without requiring a representable midpoint. Distinct endpoints that round to one label use round-trip precision for that interval.
+
+Current corrected checks:103 module tests in4 files and type checking pass. Focused production-browser exponent/close-interval checks, full-project tests/build and exact corrected commit submission remain pending. The prior actual browser gate remains evidence for unchanged performed behavior only. The coordinator's DP02 QA slot has priority; this worker holds no slot or preview while awaiting its release.

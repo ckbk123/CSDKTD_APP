@@ -69,8 +69,9 @@ export function realSegments(model: Model): readonly Segment[] {
   const negativeLeading = (m.b1 === 0 ? m.b0 : m.b1) < 0;
   return ends.slice(1).map((right, index) => {
     const left = ends[index];
-    const probe = left === null ? right === null ? 0 : right - Math.max(1, Math.abs(right)) : right === null ? left + Math.max(1, Math.abs(left)) : left / 2 + right / 2;
-    const rightCount = realLocations.filter(value => value > probe).length;
+    // Every endpoint at or beyond the right boundary is strictly right of this
+    // open interval. A numeric midpoint may round onto a boundary of a tiny gap.
+    const rightCount = right === null ? 0 : realLocations.filter(value => value >= right).length;
     return { left, right, rightCount, onLocus: rightCount % 2 === (negativeLeading ? 0 : 1) };
   });
 }

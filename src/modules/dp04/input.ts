@@ -44,10 +44,24 @@ export function parseModel(latex: string): Model {
     .replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
     .replace(/\\(?:,|;|!|quad|qquad| )/g, '').replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/').replace(/\s/g, '');
   if (/[eE]/.test(source)) fail('The visual field treats e/E as symbols. Use decimals or fractions here; native numeric controls accept scientific notation.');
-  source = source.replace(/\^\{\(?([+-]?\d+)\)?\}/g, '^$1');
-  if (source.includes('^{')) fail('Use only literal integer powers 0, 1 or 2.');
   let cursor = 0;
   const depthCheck = (depth: number) => { if (depth > 8) fail('Use at most eight visible grouping/fraction levels.'); };
+  const exponent = (): string => {
+    cursor++; // TeX gives an unbraced power exactly one argument atom.
+    let literal: string;
+    if (source[cursor] === '{') {
+      const end = source.indexOf('}', cursor + 1);
+      if (end < 0) fail('Complete the exponent braces.');
+      literal = source.slice(cursor + 1, end); cursor = end + 1;
+      if (/^\([+-]?\d+\)$/.test(literal)) literal = literal.slice(1, -1);
+    } else {
+      literal = source[cursor++] ?? '';
+      if (!/^[012]$/.test(literal) || /[\d.]/.test(source[cursor] ?? '')) fail('Use a single power 0, 1 or 2, or put its entire exponent in braces. Ambiguous unbraced signs/decimal tails are unsupported.');
+    }
+    if (!/^[+]?\d+$/.test(literal) || ![0, 1, 2].includes(Number(literal))) fail('Use only literal integer powers 0, 1 or 2. Write decimal coefficients instead of powers of ten.');
+    // Keep a delimiter after normalization so z^{0}2 can never turn into z^02.
+    return `^(${Number(literal)})`;
+  };
   const fraction = (depth: number): string => {
     depthCheck(depth); cursor += 5;
     return `((${argument(depth)})/(${argument(depth)}))`;
@@ -66,7 +80,8 @@ export function parseModel(latex: string): Model {
       if (source.startsWith('\\frac', cursor)) {
         if (/[0-9.z)]$/.test(output)) fail('Write an explicit + or × before an adjacent fraction. Mixed-number adjacency is unsupported.');
         output += fraction(depth + 1);
-      } else if (source[cursor] === '(') { cursor++; output += `(${group(depth + 1, ')')})`; }
+      } else if (source[cursor] === '^') output += exponent();
+      else if (source[cursor] === '(') { cursor++; output += `(${group(depth + 1, ')')})`; }
       else if (source[cursor] === '{') fail('Use visible parentheses for grouping and explicit + or × before a fraction.');
       else if (source[cursor] === ')' || source[cursor] === '}') fail('Check the expression grouping.');
       else output += source[cursor++];
@@ -93,10 +108,10 @@ export function parseModel(latex: string): Model {
   const power = (depth: number): Ratio => {
     let value = primary(depth);
     if (tokens[at] === '^') {
-      at++; let sign = 1;
-      if (tokens[at] === '+' || tokens[at] === '-') sign = tokens[at++] === '-' ? -1 : 1;
-      const exponent = sign * Number(tokens[at++]);
-      if (!Number.isInteger(exponent) || exponent < 0 || exponent > 2) fail('Use only literal integer powers 0, 1 or 2. Write decimal coefficients instead of powers of ten.');
+      at++;
+      if (tokens[at++] !== '(') fail('Check the exponent grouping.');
+      const exponent = Number(tokens[at++]);
+      if (tokens[at++] !== ')' || ![0, 1, 2].includes(exponent)) fail('Use only literal integer powers 0, 1 or 2.');
       if (exponent === 0) { if (value.num.every(coefficient => coefficient === 0)) fail('The form 0⁰ is unsupported.'); value = { num: [1], den: [1] }; }
       else if (exponent === 2) value = ratio(product(value.num, value.num), product(value.den, value.den));
     }

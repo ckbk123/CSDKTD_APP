@@ -20,6 +20,15 @@ describe('DP04 bounded visual rational polynomials', () => {
     expect(parseModel('-1/(-z^2+z)')).toEqual({ a1: -1, a0: 0, b1: 0, b0: 1 });
     expect(parseModel('(z-2)/((z-2)(z+0.5))')).toEqual({ a1: -1.5, a0: -1, b1: 1, b0: -2 });
   });
+  it.each([String.raw`\frac{z+.2}{z^+2-z}`, String.raw`\frac{z+.2}{z^2.0+z^2-z}`, String.raw`\frac{z+.2}{z^02-z}`, String.raw`\frac{z+.2}{z^20-z}`, String.raw`\frac{z+.2}{z^2.5-z}`])('rejects ambiguous unbraced exponent atoms %s', source => {
+    expect(() => parseModel(source)).toThrow(/power|exponent/);
+  });
+  it.each([String.raw`\frac{z+.2}{z^{+2}-z}`, String.raw`\frac{z+.2}{z^{2}-z}`, String.raw`\frac{z+.2}{z^2-z}`, String.raw`\frac{z+.2}{z^{(2)}-z}`])('retains explicit supported powers %s', source => {
+    expect(parseModel(source)).toEqual({ a1: -1, a0: 0, b1: 1, b0: 0.2 });
+  });
+  it.each([String.raw`\frac{z+.2}{z^{0}2+z^2-z}`, String.raw`\frac{z+.2}{z^{2}.0+z^2-z}`])('does not merge a braced exponent with following coefficient text %s', source => {
+    expect(() => parseModel(source)).toThrow();
+  });
   it('normalizes purely numeric font wrappers without granting algebraic variables', () => {
     expect(parseModel(String.raw`\frac{\mathrm{1}}{z(z-1)}`)).toEqual({ a1: -1, a0: 0, b1: 0, b0: 1 });
     expect(() => parseModel(String.raw`\frac{\mathrm{e}}{z(z-1)}`)).toThrow(/e\/E/);

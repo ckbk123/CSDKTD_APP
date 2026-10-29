@@ -34,6 +34,15 @@ describe('DP04 model/attempt/reveal wiring (mocked equation presentation only)',
     expect(container.querySelector('.rl-selected')!.textContent).toContain('0.4472136j');
     expect(container.querySelector('.rl-selected')!.textContent).toContain('Numerically inside');
   });
+  it('distinguishes adjacent interval endpoints and grades its odd boundary count', () => {
+    const { container, button, editor } = visit(); editor('(z-0.9999999999999999)/(z(z-1))'); button('build').click();
+    const intervals = container.querySelectorAll<HTMLInputElement>('[data-interval]');
+    expect(intervals[2].parentElement!.textContent).toBe('(0.9999999999999999, 1)');
+    intervals[0].checked = true; intervals[2].checked = true; button('reveal').click();
+    expect(container.querySelector('.rl-message')!.textContent).toContain('Correct interval prediction');
+    const row = container.querySelectorAll('.rl-construction tbody tr')[2];
+    expect([...row.querySelectorAll('td')].map(cell => cell.textContent)).toEqual(['(0.9999999999999999, 1)', '1', 'Yes', 'Yes']);
+  });
   it('shows the entire boundary and unstable root set when K changes', () => {
     const { container, reveal, numeric } = visit(); reveal(); numeric('gain', '2.5');
     expect(container.querySelector('.rl-selected')!.textContent).toContain('Boundary or numerically near-boundary');
