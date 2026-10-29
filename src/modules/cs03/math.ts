@@ -2,7 +2,8 @@
 function checkFractionMeaning(latex: string) {
   const source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '');
   // Protect one-token fraction arguments and powers before inspecting invisible grouping.
-  const adjacency = source.replace(/\^\{[0123]\}|\^[0123]/g, '^p').replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g, '@').replace(/[{}]/g, '');
+  const adjacency = source.replace(/\^\{[0123]\}|\^[0123]/g, '^p').replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g, '@');
+  if (/[{}]/.test(adjacency)) throw new Error('Use visible parentheses for grouped terms; fraction boxes accept numbers only. Insert + or × between a whole number and fraction.');
   if (/\d\.?@/.test(adjacency)) throw new Error('Mixed numbers are unsupported here. Insert + or × between the whole number and fraction.');
 }
 export interface Rational { readonly n: bigint; readonly d: bigint }
