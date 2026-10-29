@@ -33,6 +33,11 @@ describe('CF03 visit state and numeric-feedback integration (mocked equations)',
   expect(v.container.querySelector('.cf-feedback')!.textContent).toContain('Correct. IAE: tie');
   expect(v.container.querySelector('.cf-reasoning')!.textContent).toContain('0.00001');v.close();
  });
+ it('updates already revealed integral reasoning when the selected criterion changes',()=>{
+  const v=visit();v.click('reveal');v.select('metric','ITSE');
+  expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(false);
+  expect(v.container.querySelector('.cf-reasoning')!.textContent).toContain('Selected finite-horizon integral: ITSE=');v.close();
+ });
  it('clears old results on invalid raw horizon input and accepts normal numeric exponents',()=>{
   const v=visit();v.click('reveal');expect(v.container.querySelector<HTMLElement>('.cf-answer')!.hidden).toBe(false);
   v.input('horizon','1e-400');v.click('compute');

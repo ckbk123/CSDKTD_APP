@@ -29,6 +29,7 @@ export const mount:ModuleMount=({container,signal})=>{
     <div class="cf-controls"><label>Criterion to inspect<select name="metric">${metrics.map(m=>`<option value="${m}">${m==='Effort'?'Control effort ∫u²dt':m}</option>`).join('')}</select></label>
     <label>Inspect run<select name="run"><option value="A">A</option><option value="B">B</option></select></label>
     <label>Inspection time (s)<input name="time" type="number" min="0" max="10" step="any" value="5"></label></div>
+    <p class="cf-muted">On narrow screens, scroll each plot sideways; use the time field to inspect a panel.</p>
     <div class="cf-response cf-plot"></div><div class="cf-density cf-plot"></div><p class="cf-inspection" aria-live="polite"></p><div class="cf-panel-equation"></div>
     <p class="cf-muted">The density plot shades a linear illustration through the selected panel. Its incremental contribution uses the three-point Simpson calculation shown below. Squaring emphasizes large errors; multiplying by t emphasizes later errors.</p>
     <div class="cf-controls"><label>Your lower-score prediction<select name="prediction"><option value="">Choose A, B or a tie</option><option value="A">A is lower</option><option value="B">B is lower</option><option value="tie">Tie within tolerance</option></select></label></div>
@@ -118,7 +119,7 @@ export const mount:ModuleMount=({container,signal})=>{
     try{const name=select('run').value as 'A'|'B',m=metric(),r=runs[name],check=verifyIntegral(r,m);q('.cf-verification').textContent=`Run ${name}, ${m}: original Simpson=${f(r.totals[m])}${unit[m]}; independent composite trapezoid on ${check.intervals} intervals=${f(check.trapezoid)}${unit[m]}; finer Simpson=${f(check.fineSimpson)}${unit[m]}. Refined tolerance=${f(check.tolerance)} (ten times tighter); independent-rule normalized difference=${f(check.ruleChange)}, original-score difference=${f(check.relativeChange)}. ${check.consistent?'Consistent within 5× the refined rule tolerance and 5× the original-score tolerance.':'Not established at this check tolerance; request finer refinement before relying on the score.'} This checks quadrature consistency on a finer state grid, not a certified exact-integral error bound.`;}catch(error){q('.cf-verification').textContent=error instanceof Error?error.message:'Integral check failed.';}
   }
   number('horizon').addEventListener('input',invalidate,{signal});select('tolerance').addEventListener('change',invalidate,{signal});number('time').addEventListener('input',inspect,{signal});
-  for(const name of['metric','run'])select(name).addEventListener('change',()=>{feedback.textContent='';q('.cf-verification').textContent='';select('prediction').value='';inspect();},{signal});
+  for(const name of['metric','run'])select(name).addEventListener('change',()=>{feedback.textContent='';q('.cf-verification').textContent='';select('prediction').value='';inspect();if(name==='metric'&&!answer.hidden)reveal();},{signal});
   root.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button=>button.addEventListener('click',()=>{const action=button.dataset.action!;if(action==='compute')compute();else if(action==='reveal')reveal();else if(action==='verify')verify();else preset(action);},{signal}));
   compute();
   return()=>{runs=undefined;plant.destroy();A.destroy();B.destroy();root.remove();};

@@ -1,6 +1,6 @@
 # CF03 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Assessed:** 2026-10-29; starting primary revision `c45512e`
 - **Ownership:** `src/modules/cf03/**`; acceptance: [TASK.md](TASK.md)
 - **Worker chat:** `01a18701-3f40-7572-9a49-7dc0103c9161`
@@ -78,3 +78,34 @@ Near-equal scores now use the selected refinement tolerance for the displayed co
 ## Firefox fallback attempt / browser evidence still pending
 
 The direct human Firefox fallback instruction in coordinator chat was verified (user message01a187fa-35b6-7323-9b7d-99d119834775). The unused IAB waiter was stopped before switching; no IAB reservation was held. Installed Firefox reports159.0. A dedicated-profile launch through the shell was rejected by automatic review as blocked by policy. The supported native app launcher opened Firefox, but selecting its windows ended Computer Use because browser URL-policy enforcement is unsupported for Windows Firefox. No module page inspection, interaction, screenshots, layout or font evidence was obtained from that attempt; it does not satisfy the browser gate. Returning to supported IAB QA after the assigned DR01→DP03 slots. Implementation/tests remain at the pushed tolerance-corrected checkpoint, with34 local/474 application tests, type/build passing. The claim remains active and PR22 remains draft.
+
+## Final worker verification — 29 October 2026
+
+The full accepted bounded exercise is implemented; independent coordinator review is pending. The ownership, worker chat, branch/worktree and single PR22 recorded above remain current. No shared helper, package, version, other module, deployment or primary8787 change is included. Earlier DF01 PR16 is preserved.
+
+### Requirement evidence
+
+- All four tracking criteria and squared-control effort are computed from editable visual plant/P or PI data on one common horizon. The baseline A at10s displays IAE3.666666, ISE1.518518, ITAE16.72222, ITSE5.645061 and effort24.29629 at default tolerance10⁻⁵, consistent with the independent antiderivatives recorded above. B=8 changes every score, with tracking criteria favoringB and effort favoringA.
+- The computed PI ranking fixture displays A/B IAE3.779699/4.055777, ISE2.242892/1.914776 and effort24.74085/20.24187. Browser predictions correctly favorA for IAE andB for ISE/effort. The early/late split matches the independent residue fixture and explains why time weighting penalizesB's late error.
+- Error/control overlays, explicit dual units and distinct line patterns, selected density shading, numerical cursor, Simpson panel arithmetic, cumulative cost and the five-score table are present. Shading and sampled peaks retain their stated numerical meanings. The independent trapezoid check used1024 intervals and tolerance10⁻⁶ for the default10⁻⁵ run; baseline IAE rule/original differences were about1.62×10⁻¹⁰/8.45×10⁻⁸, with consistency established. The ranking fixture B/ISE independent check also passed.
+- Changed real visual inputs G=1/(s+1), A=1, B=2, H=2s, tolerance10⁻⁷ display A's IAE1.245421, ISE0.8079001, ITAE1.113553, ITSE0.6291306 and effort0.8079001, matching e=.5+.5exp(−2t) closed integrals. Real fraction/power buttons and ordinary keyboard input reconstructed1/(s²+3s+2), confirmed by the revealed model and full characteristic. This is actual bundled MathLive, not the jsdom mock.
+- P gains4 and4.00001 report a tie at selected tolerance. Empty and unfinished fraction fields show useful completion feedback; actual pasted hidden-brace grouping is rejected with plots cleared. Native H=1e−400 reports nonzero underflow, hides stale totals and clears plots; ordinary1e1 recomputes H10. Inspection-time underflow preserves the prior valid plot, while genuine0e−400 selects the initial panel. Bounds, malformed/unsupported, singular/stability-boundary, work/magnitude and finer-check failures are also covered by independent local tests.
+- The short unstable experiment shows smaller tracking costs forB at.3s while explicitly withholding a recommendation; its full cubic condition a1a2−a3=−34 fails. Control effort is shown separately (about213.767U²·s forB). No optimum, infinite-horizon conclusion or saturation model is asserted.
+
+### Actual browser and lifecycle evidence
+
+Production preview http://127.0.0.1:8973/#/module/CF03 was tested through the supported in-app browser. The coordinator explicitly replaced the overbroad global lock after controlled cross-chat tab/viewport isolation checks. Fresh inventory here confirmed codexSessionId01a18701-3f40-7572-9a49-7dc0103c9161, no existing tabs, and a new private tab3. The obsolete global waiter was stopped; no other owner's reservation or tab was changed. Firefox was not used as evidence.
+
+Desktop1280×900 and narrow390×844 layouts were inspected. Narrow document client/scroll width both375px; plots scroll locally (281px viewport/820px content), verified by an actual horizontal scroll to375px. Tables scroll locally (281px/490px). Three visual fields remain within their cards. Mathematics, fractions, powers and keyboard controls render with loaded local fonts; document.fonts.status reports loaded and no browser warning/error logs were recorded. Screenshots show readable units/line patterns and typeset equations. A narrow-screen sideways-scroll hint was added after inspection.
+
+Reset restores the plant, A4/B8, H10, default tolerance/metric/run, empty prediction and hidden answers. The math keyboard opens and Escape dismisses it. Leaving with a keyboard open removes CF03 and hides the keyboard on CS01. Rapid CF03→CS01 navigation leaves no CF03 root; reopening CF03 starts from baseline and reproduces the baseline totals. All event/draft/result state is mount-local and cleanup guards are covered by the lazy-workspace tests.
+
+A browser reproduction found already revealed reasoning retained the old criterion after the inspector changed. The handler now refreshes that revealed reasoning immediately; a local regression and production reload verified IAE→ITSE updates the integral to ∫te²dt. The latest build was reloaded before this recheck. No known accepted requirement remains unfinished within the declared domain.
+
+Saved evidence is outside Git at C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-3f40-7572-9a49-7dc0103c9161/: cf03-browser.jpg (computed overlay/density), cf03-narrow.jpg (local equation/table scrolling), cf03-inputs.jpg (actual visual fields/fonts). The temporary viewport override was reset and the sole created tab closed; the private tab inventory is empty. The worker preview is stopped after delivery.
+
+### Final checks and delivery
+
+- Relevant Vitest run:35 CF03 tests (input19, math8, view6, workspace2).
+- npm run check: pass; npm test:475/475 tests across23 files; npm run build: pass. Existing bundled MathLive chunk-size warning only. git diff --check: pass. These checks cover the final browser correction; no dependencies or generated outputs are committed.
+- PR22 is the same attached contribution, to be marked ready and submitted at the exact clean final HEAD after the final committed checks/push. Final SHA is recorded by the claim/PR, avoiding a self-referential source hash. The coordinator owns independent review and integration; this worker does not mark it verified or merge/version it.
