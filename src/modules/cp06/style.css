@@ -1,0 +1,41 @@
+[data-module="CP06"] { display: grid; gap: 1rem; min-width: 0; }
+[data-module="CP06"] .cp-card { padding: 1rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--surface); min-width: 0; }
+[data-module="CP06"] h3 { margin: 0 0 .7rem; font-size: 1.05rem; }
+[data-module="CP06"] p { line-height: 1.55; }
+[data-module="CP06"] .cp-controls, [data-module="CP06"] .cp-equation-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: .85rem; margin: .8rem 0; }
+[data-module="CP06"] label { display: grid; gap: .4rem; font-size: .9rem; min-width: 0; }
+[data-module="CP06"] input, [data-module="CP06"] select, [data-module="CP06"] button { color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: .4rem; padding: .6rem; font: inherit; min-width: 0; }
+[data-module="CP06"] input, [data-module="CP06"] select { width: 100%; box-sizing: border-box; }
+[data-module="CP06"] button { cursor: pointer; }
+[data-module="CP06"] button:disabled { cursor: default; opacity: .55; }
+[data-module="CP06"] .cp-primary { background: var(--accent); color: var(--background); }
+[data-module="CP06"] .cp-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .85rem; }
+[data-module="CP06"] .cp-note { color: var(--muted); font-size: .86rem; }
+[data-module="CP06"] .cp-feedback, [data-module="CP06"] .cp-prediction, [data-module="CP06"] .cp-warning { padding: .7rem; background: var(--tint); border-left: 3px solid var(--accent); border-radius: .3rem; overflow-wrap: anywhere; }
+[data-module="CP06"] .cp-results { display: grid; gap: 1rem; min-width: 0; }
+[data-module="CP06"] [hidden] { display: none; }
+[data-module="CP06"] .cp-checkbox { display: flex; align-items: center; gap: .5rem; margin: .6rem 0; }
+[data-module="CP06"] .cp-checkbox input { width: auto; }
+[data-module="CP06"] .cp-plane-region, [data-module="CP06"] .cp-table-region { overflow: auto; max-width: 100%; margin: .65rem 0; }
+[data-module="CP06"] .cp-plane-region > svg { width: 100%; min-width: 440px; max-width: 680px; height: auto; display: block; color: var(--text); cursor: crosshair; }
+[data-module="CP06"] .cp-plane-bg { fill: var(--surface); stroke: var(--line); }
+[data-module="CP06"] .cp-grid { stroke: var(--line); stroke-width: .6; }
+[data-module="CP06"] .cp-axis { stroke: var(--muted); stroke-width: 1; }
+[data-module="CP06"] .cp-tick, [data-module="CP06"] .cp-axis-title, [data-module="CP06"] .cp-multiplicity { fill: var(--text); font: 10px system-ui, sans-serif; }
+[data-module="CP06"] .cp-axis-title { font-size: 12px; }
+[data-module="CP06"] .cp-branch, [data-module="CP06"] .cp-arrow { fill: none; stroke: var(--accent); stroke-width: 1.9; }
+[data-module="CP06"] .cp-branch-1 { stroke-dasharray: 7 2; }
+[data-module="CP06"] .cp-branch-2 { stroke-dasharray: 2 2; }
+[data-module="CP06"] .cp-real-segment { stroke: var(--accent); stroke-width: 6; opacity: .22; }
+[data-module="CP06"] .cp-asymptote { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 7 4; }
+[data-module="CP06"] .cp-tangent { stroke: var(--text); stroke-width: 1.5; stroke-dasharray: 3 3; }
+[data-module="CP06"] .cp-vector { stroke: var(--muted); stroke-width: 1; }
+[data-module="CP06"] .cp-vector-zero { stroke-dasharray: 3 3; }
+[data-module="CP06"] .cp-pole, [data-module="CP06"] .cp-candidate { stroke: var(--text); stroke-width: 2; fill: none; }
+[data-module="CP06"] .cp-zero, [data-module="CP06"] .cp-fixed { stroke: var(--text); stroke-width: 1.8; fill: var(--surface); }
+[data-module="CP06"] .cp-selected { fill: var(--accent); stroke: var(--surface); stroke-width: .8; }
+[data-module="CP06"] table { border-collapse: collapse; min-width: 25rem; width: 100%; font-size: .87rem; }
+[data-module="CP06"] th, [data-module="CP06"] td { text-align: left; vertical-align: top; padding: .55rem; border-bottom: 1px solid var(--line); }
+[data-module="CP06"] details { border-top: 1px solid var(--line); padding: .7rem 0; }
+[data-module="CP06"] summary { cursor: pointer; font-weight: 600; }
+[data-module="CP06"] :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
