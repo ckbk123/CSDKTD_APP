@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** in-progress (native underflow and TeX argument review return)
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -89,3 +89,16 @@ At the submitted 62fce60, a native numeric entry with a nonzero mantissa such as
 The fraction normalizer also accepted unbraced parentheses as grouped arguments even though TeX groups fraction arguments with braces. It now rejects forms such as \frac(1)(2) and \frac1(2), while preserving ordinary parentheses inside braced numerator/denominator, outer signs and nested compact fractions. These are prepared local corrections to the same PR #1; no claim is made that 62fce60 contains them. Module tests pass 64/64, full `npm test` passes 106/106 and the production build passes. Fresh targeted browser evidence and coordinator-owned reopening/resubmission remain pending. DP03 is independently checkpointed at 34fa975 with its own draft PR #14, so this review return can resume immediately when enabled.
 
 The primary v0.3.3 shared native-number reader did not exist in this branch's baseline. The coordinator explicitly approved the equivalent tested local guard for preserved older contributions and owns adapting its shared import at integration. No unowned shared file, merge or rebase is introduced here. At 18:24 local the coordinator reopened the claim and reported that all 64 working-tree tests and these corrections cleared its preliminary code review. This checkpoint contains the corrections; targeted real-browser evidence and final exact-HEAD submission are still required. DP03 is suspended at its pushed checkpoint 34fa975.
+
+## Final native-number review verification — 29 October 2026
+
+The pending checks in the preceding checkpoint are now complete. Corrected source commit `3fb789305cb860f5bd4ad9a6b900487d398770c8` passed `npm run check`, `node node_modules/vitest/vitest.mjs run src/modules/dr01` (**64/64**), `npm test` (**106/106**) and `npm run build` at 18:25 local under Node 24.22.1. Build warning: the unchanged shared MathLive chunk exceeds 500 kB.
+
+An exclusive helper reservation and a fresh worker-owned in-app Chromium tab on production preview port 13517 verified the correction directly:
+
+- Raw `1e-999` in Gain c, Geometric pole a, Initial x[−1] and Initial x[−2] produced the specific nonzero-underflow error; results were hidden in every case.
+- Gain spellings `0`, `0e-999` and `-0e-999` each built/revealed an intentional all-zero sequence. Native `1e-2` built/revealed .01,.008,.0064,..., preserving ordinary numeric exponent entry.
+- Ordinary keys and the fraction button entered 1/2 in the real mathfield and revealed .5,0,0,0,... . Malformed raw TeX parenthesis arguments are independently rejected by the parser regressions; no claim of clipboard serialization is made. Earlier actual nested-fraction and powers-of-ten browser evidence remains recorded above.
+- Reset restored baseline and zero histories. Reveal at a 390×844 override produced 1,.8,.64,...; document clientWidth and scrollWidth both equaled 375 px. Console warning/error inventory was empty. The viewport was reset, owned tab closed, preview stopped and QA released. No other worker tab or primary preview was changed.
+
+No accepted module requirement remains open within the declared domain. This final evidence update accompanies the correction and is rechecked at its own exact HEAD before the same PR/claim is resubmitted. Independent final acceptance and the approved shared-reader adaptation remain the coordinator's integration work.
