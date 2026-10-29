@@ -8,7 +8,7 @@
 - **Branch:** `codex/cr03-state-realizations-01a186d2`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr03-state-realizations-01a186d2/CSDKTD APP`
 - **Contract:** [TASK.md](TASK.md)
-- **PR:** not yet created
+- **PR:** [CR03 #21](https://github.com/ckbk123/CSDKTD_APP/pull/21), attached to this worker chat; draft pending real-browser QA
 
 ## Accepted requirement audit before implementation
 
@@ -66,3 +66,6 @@ The owned `view.ts` and scoped CSS now implement the given TF/ODE/matrix selecto
 All **78 module tests (five files)** and **332 project tests (22 files)** pass. Type checking and production build pass; the existing MathLive chunk warning remains. The tests include an independently eliminated noncanonical fourth-order model, scale-relative tiny-gain equivalence, matrix/vector underflow, ten caller-state/notation cases and four active/late loading paths. Numerical equivalence has no absolute floor that could accept a small nonzero gain as zero; transformed TFs and sampled outputs are checked independently. Plot warnings identify potentially unresolved fast state variation.
 
 No actual CR03 browser check has been performed yet. The current coordinator QA order gives DP04 and then DP02 integration priority after DP03, so no new CR03 acquisition is pending during that restriction. The next steps are real visual input/font/keyboard tests, numerical fixtures and changed/error controls, all-state/physical/coordinate views, reset/reopen/rapid navigation, a narrow viewport, repair/recheck any findings, final STATUS/PR and exact tested clean submission. Stage remains in-progress.
+
+
+Draft PR #21 records interface checkpoint db6181aeb47e6d53a7c479ef8f8d66ba13d15b7f and the actual 78/332 automated results. The worker production preview is on 8864; primary 8787 is untouched. No CR03 browser reservation is held or requested while the current DP03→DP04→coordinator DP02 order is in force. This delivery record is a checkpoint, not a completed submission.
