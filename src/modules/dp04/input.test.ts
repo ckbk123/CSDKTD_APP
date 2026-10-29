@@ -29,6 +29,11 @@ describe('DP04 bounded visual rational polynomials', () => {
   it.each([String.raw`\frac{z+.2}{z^{0}2+z^2-z}`, String.raw`\frac{z+.2}{z^{2}.0+z^2-z}`])('does not merge a braced exponent with following coefficient text %s', source => {
     expect(() => parseModel(source)).toThrow();
   });
+  it('preserves all supported powers and explicit multiplication after a power', () => {
+    expect(parseModel(String.raw`\frac{z^0+0.2z^1}{z^{+2}-z^1}`)).toEqual({ a1: -1, a0: 0, b1: 0.2, b0: 1 });
+    expect(parseModel(String.raw`\frac{z+.2}{z^{0}\times2+z^2-z}`)).toEqual({ a1: -1, a0: 2, b1: 1, b0: 0.2 });
+    expect(parseModel(String.raw`\frac{z+.2}{z^2\times0+z^2-z}`)).toEqual({ a1: -1, a0: 0, b1: 1, b0: 0.2 });
+  });
   it('normalizes purely numeric font wrappers without granting algebraic variables', () => {
     expect(parseModel(String.raw`\frac{\mathrm{1}}{z(z-1)}`)).toEqual({ a1: -1, a0: 0, b1: 0, b0: 1 });
     expect(() => parseModel(String.raw`\frac{\mathrm{e}}{z(z-1)}`)).toThrow(/e\/E/);
