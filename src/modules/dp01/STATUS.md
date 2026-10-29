@@ -4,7 +4,8 @@
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
-- **Delivery:** final tested commit recorded in the submitted claim and pull request
+- **Pull request:** [#6](https://github.com/ckbk123/CSDKTD_APP/pull/6)
+- **Delivery:** final tested commit recorded in the submitted claim and PR head; implementation/browser evidence checked before this documentation-only delivery update
 - **Ownership:** `src/modules/dp01/**`; branch `codex/dp01-sequences-f802`
 - **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md)
 
@@ -29,7 +30,7 @@ The starting revision contained a blank workspace and no local tests. Existing m
 - Real proper rational SISO transfer function with denominator degree 1–2. Optional G(z)=; decimal numbers; z; sums, subtraction, products, fractions, parentheses, integer powers 0–2 and ordinary implicit multiplication. No general CAS, negative powers, transcendental functions or other variables.
 - Coefficients are displayed in descending z powers, normalized to leading denominator 1; numerator is left-padded to the same degree. Recurrence coefficients multiply successive delays. The denominator is not cancelled: arbitrary output history may excite its modes even if the selected zero-state channel cancels a factor. No feedback topology is assumed.
 - Causal input u[k]=0 for k<0. Step A, sample impulse A at k=0, physical ramp A kT, or zero input. Output history is y[-1], y[-2] (second entry unused for order 1). Free response uses zero input; forced response uses zero output history.
-- 4–200 samples; T in [0.0001,100] seconds; entered/normalized coefficient magnitudes at most 10^6; amplitude/history magnitudes at most 10^4; response/components at most 10^10. Leading denominator magnitude at least 10^-8. Expression length 512, nesting 20, intermediate degree 6 and intermediate coefficients at most 10^12.
+- 4–200 samples; T in [0.0001,100] seconds; entered/normalized coefficient magnitudes at most 10^6; amplitude/history magnitudes at most 10^4; selected response/components at most 10^10. Leading denominator magnitude at least 10^-8. Expression length 512, nesting 20, intermediate degree 6 and intermediate coefficients at most 10^12.
 - Floating-point arithmetic; displays use six significant digits and scientific notation as needed. Pole-radius boundary tolerance 10^-9. Near-coincident real modal roots (relative separation below 10^-7) use recurrence reasoning. Repeated unit-circle poles may give k p^k growth; a single-mode envelope does not certify BIBO/internal stability. δ[k] denotes a sample impulse and 0^0=1 in zero-pole formulas.
 
 ## Independent mathematical fixtures and provenance
@@ -65,7 +66,7 @@ Preliminary coordinator review found three issues, all corrected with regression
 
 1. A scaled selected impulse experiment G(z)=z/(z−10000), A=0.0001, count=4 has samples [0.0001,1,10000,10^8]. Its optional unit-kernel explanation previously reused the selected response bound and rejected the experiment. The explanation now computes just four finite coefficients separately; the selected experiment retains its 10^10 bound. The browser confirms y[3]=10^8.
 2. A throwing view mount removed the loading node before the catch updated it. Active failures now reattach a reset/recovery message; an explicit throwing-mount/abort regression passes.
-3. Nonzero decimals/products/normalization could silently underflow to zero. These cases now reject with rescaling feedback; regressions include a 400-zero decimal within the character bound, a tiny product and normalization underflow. The parser also handles actual MathLive single-token fraction notation (including nested fractions), not only fully braced developer input.
+3. Nonzero decimals/products/normalization could silently underflow to zero. These cases now reject with rescaling feedback; regressions include a 400-zero decimal within the character bound, a tiny product and normalization underflow. The fixed four-coefficient unit-kernel explanation may exceed the selected plot bound; it cannot veto an otherwise valid scaled selected experiment. The parser also handles actual MathLive single-token fraction notation (including nested fractions), not only fully braced developer input.
 
 Production build inspected on 2026-10-29 in the in-app Chromium browser, system dark theme, private preview 8891. QA was exclusively reserved through the shared helper, then released; the temporary viewport was reset and the private tab closed. No primary preview/browser tab was reused.
 
@@ -77,3 +78,4 @@ Production build inspected on 2026-10-29 in the in-app Chromium browser, system 
 - Leaving while the keyboard is open removes it. Rapid DP01→DP02 navigation shows only DP02's workspace, then reopening DP01 starts fresh; no late sequence controls/results appear in the other module.
 - At viewport override 390×844, document client/scroll widths both equal 375 CSS px (scrollbar accounted for): no page-wide horizontal overflow. Plot regions are 305 px wide with their 560 px diagrams scrolling internally. Controls wrap, equations scroll locally and the math keyboard fits. Desktop stems and modal text were visually inspected at the default viewport. Light theme and other browser engines were not separately tested.
 - Browser warning/error log is empty at the end. Build output emits all 20 same-origin font files. These observations do not claim every browser/device was tested.
+
