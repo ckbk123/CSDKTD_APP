@@ -1,6 +1,6 @@
 # CF01 implementation status
 
-- **Stage:** scaffold
+- **Stage:** in-progress
 - **Assessed:** 2026-10-29; fresh primary main9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86 (v0.3.9)
 - **Owned scope:** src/modules/cf01/**; [accepted contract](TASK.md)
 - **Worker chat:** 01a18701-3f40-7572-9a49-7dc0103c9161
@@ -35,3 +35,13 @@ Proposed independent fixtures include the baseline damped-sinusoid step formula;
 The claim is active on its fresh main baseline; dependencies were installed with npm ci --no-audit --no-fund using the bundled Node24 toolchain in this isolated worktree (109 packages, success). No implementation tests, project checks or browser verification are claimed yet. No new PR exists at this initial audit. All exercise requirements above remain to be implemented/checked.
 
 Earlier submissions remain intact: DF01 PR16 and CF03 PR22. A self-audit against newly clarified primary lifecycle rules found CF03 needs a child abort signal on partial view-mount failure. Its submitted branch remains frozen pending coordinator reopening; this newer CF01 setup/audit is checkpointed so that correction can take priority without losing ownership.
+
+## First mathematical checkpoint
+
+response.ts now computes the actual normalized unit-step response for the declared second-order transfer and optional pole/zero factors. It derives all real/complex poles, supports exact repeated factors through finite Taylor/partial-fraction terms, keeps the positive DC output scale separate, checks initial-condition and three independent rational reconstruction residuals, and exposes value/slope and a future modal envelope with roundoff allowance. The envelope evaluates future maxima of t^k exp(−σt), including a term still growing at H; it is explicitly numerical rather than interval-certified arithmetic.
+
+Current limits: positive g from10⁻⁹ to1000, ωn0.05–20rad/s, ζ0.02–3, optional p0.02–50s⁻¹, optional |z|0.02–50s⁻¹, evaluation H0–100s. Exactly coincident roots are supported; distinct root gaps at most10⁻⁵ times their scale and modal coefficient sum above10⁶ reject with conditioning feedback. Polynomial coefficients are descending in the public model. Unit step and zero initial states are fixed; optional zero can cause inverse response but no impulse.
+
+Six response tests pass: independent baseline damped sinusoid and derivative; critical/triple repeated factors; changed overdamped pair with positive DC gain5; added distinct pole formula; LHP cancellation/RHP inverse response; future-envelope/slow-pole and finite/range/conditioning failures. The module test command was node node_modules/vitest/vitest.mjs run src/modules/cf01/response.test.ts (6/6); TypeScript tsc --noEmit passes. Full suite/build/browser checks have not yet been run for this partial tool.
+
+Remaining: bounded visual parser; target-requirement derivation and regions; refined response sampling/crossing/peak/rise/settling measurement and insufficient-horizon gate; full student UI/plots/attempt/reveal; full lifecycle and browser verification. The workspace is still blank; this checkpoint is not an implemented contribution or completed exercise.
