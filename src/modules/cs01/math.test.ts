@@ -5,6 +5,18 @@ const matrix = (rows: string[][]): string => `\\begin{bmatrix}${rows.map(row => 
 const make = (a: string[][], b = ['0', '1'], c = ['1', '0'], d = '0') => parseModel(matrix(a), matrix(b.map(x => [x])), matrix([c]), d);
 const baseline = () => make([['0', '1'], ['-2', '-3']]);
 
+describe('CS01 TeX argument spacing at scalar and matrix entries', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`\frac1\;`, '\\frac1\u20092', String.raw`\frac1\left\;2`, String.raw`\frac{1}{\left\;2}`, String.raw`\frac\left(1\right)\;2`])('rejects an empty spacing argument in %s', source => {
+    expect(() => parseScalar(source)).toThrow(/blank space cannot fill a box/);
+    expect(() => parseMatrix(matrix([[source, '0'], ['0', '1']]), 2, 2, 'A')).toThrow(/blank space cannot fill a box/);
+    expect(() => make([[source, '0'], ['0', '1']])).toThrow(/blank space cannot fill a box/);
+  });
+  it.each([String.raw`\frac1{\;2}`, String.raw`\frac{\,1}{2}`, String.raw`\frac 1{2}`, '\\frac1{\u20092}'])('preserves valid spacing through the matrix wrapper in %s', source => {
+    expect(textRat(parseScalar(source))).toBe('1/2');
+    expect(textRat(parseMatrix(matrix([[source, '0'], ['0', '1']]), 2, 2, 'A')[0][0])).toBe('1/2');
+  });
+});
+
 describe('bounded exact state-space entry', () => {
   it('preserves decimal and fractional values exactly', () => {
     expect(textRat(parseScalar('0.1'))).toBe('1/10');

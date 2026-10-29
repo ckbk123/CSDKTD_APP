@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { analyze, BASELINE, mapToW, parseFamily, roots, stableInterval, transform, VARIANT } from './math';
 
+describe('DS03 TeX argument spacing', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`2^\;2`, String.raw`\frac1\;`, '\\frac1\u20092', '2^\u20092', String.raw`\frac1\left\;2`, String.raw`2^\left\;2`, String.raw`\frac{1}{\left\;2}`, String.raw`\frac\left(1\right)\;2`])('rejects an empty spacing argument in %s', coefficient => {
+    expect(() => parseFamily(`z^2+(${coefficient})Kz+.2`)).toThrow(/blank space cannot fill a box/);
+  });
+  it.each([[String.raw`\frac1{\;2}`, .5], [String.raw`\frac{\,1}{2}`, .5], [String.raw`2^{\;2}`, 4], [String.raw`\frac 1{2}`, .5], [String.raw`\dfrac1{\,2}`, .5], ['\\frac1{\u20092}', .5], ['2^{\u20092}', 4]] as const)('preserves scoped spacing in %s', (coefficient, expected) => {
+    expect(parseFamily(`z^2+(${coefficient})Kz+.2`).b.slope).toBe(expected);
+  });
+});
+
 describe('DS03 bounded polynomial grammar', () => {
   it('reads visual notation, factors and numeric fractions', () => {
     expect(parseFamily(BASELINE)).toEqual({ b: { slope: 1, constant: -1 }, c: { slope: .2, constant: 0 } });

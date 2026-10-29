@@ -3,6 +3,15 @@ import { classify, locate, parsePole, realDimension, realization, samples, valid
 
 const mode = (re: number, structure: Mode['structure'] = 'simple', visible = true, im = 0): Mode => ({ pole: { re, im }, structure, visible });
 
+describe('DS01 TeX argument spacing', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`\frac1\;`, String.raw`\frac\mathrm{1}\;2`, '\\frac1\u20092', String.raw`\frac1\left\;2`, String.raw`\frac{1}{\left\;2}`, String.raw`\left\;2`, String.raw`\frac\left(1\right)\;2`, String.raw`\frac1{\left\left\,2}`, String.raw`\frac1{\left2\;}`, String.raw`\frac1{\left\frac12\;}`])('rejects an empty spacing argument in %s', source => {
+    expect(() => parsePole(source)).toThrow(/blank space cannot fill a box/);
+  });
+  it.each([String.raw`\frac1{\;2}`, String.raw`\frac{\,1}{2}`, String.raw`\frac 1{2}`, String.raw`\frac{\mathrm{1}}{\;2}`, '\\frac1{\u20092}'])('preserves scoped spacing and supported numeric styles in %s', source => {
+    expect(parsePole(source)).toEqual({ re: .5, im: 0 });
+  });
+});
+
 describe('bounded visual complex-pole grammar', () => {
   it.each([
     ['0.8', .8, 0], ['(-.8)', -.8, 0], ['−1', -1, 0], ['j', 0, 1], ['-i', 0, -1],

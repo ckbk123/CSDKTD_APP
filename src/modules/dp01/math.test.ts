@@ -5,6 +5,15 @@ const baseline = String.raw`G(z)=\frac{0.2}{z-0.8}`;
 const experiment: Experiment = { T: 0.1, count: 20, amplitude: 1, history: [0, 0], input: 'step' };
 const run = (formula: string, overrides: Partial<Experiment> = {}) => simulate(parseModel(formula), { ...experiment, ...overrides });
 
+describe('DP01 TeX argument spacing', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`2^\;2`, String.raw`\frac1\;`, '\\frac1\u20092', '2^\u20092', String.raw`\frac1\left\;2`, String.raw`2^\left\;2`, String.raw`\frac{1}{\left\;2}`, String.raw`\left\;2`, String.raw`\frac\left(1\right)\;2`])('rejects an empty spacing argument in %s', coefficient => {
+    expect(() => parseModel(String.raw`G(z)=\frac{${coefficient}}{z-.5}`)).toThrow(/blank space cannot fill a box/);
+  });
+  it.each([[String.raw`\frac1{\;2}`, .5], [String.raw`\frac{\,1}{2}`, .5], [String.raw`2^{\;2}`, 4], [String.raw`\frac 1{2}`, .5], [String.raw`\frac{\frac1{\;2}}{2}`, .25], ['\\frac1{\u20092}', .5], ['2^{\u20092}', 4], [String.raw`2^\left(\;2\right)`, 4]] as const)('preserves scoped spacing and fraction arguments in %s', (coefficient, gain) => {
+    expect(parseModel(String.raw`G(z)=\frac{${coefficient}}{z-.5}`)).toEqual({ a: [1, -.5], b: [0, gain] });
+  });
+});
+
 describe('DP01 bounded visual notation', () => {
   it('normalizes the baseline and factored quadratic without reversing delays', () => {
     expect(parseModel(baseline)).toEqual({ a: [1, -0.8], b: [0, 0.2] });

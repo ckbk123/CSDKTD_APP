@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { aliasExperiment, decimalLiteral, inversePole, mapPole, modeSamples, parsePole, radialMovement } from './math';
 
+describe('DP02 TeX argument spacing', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`\frac1\;`, '\\frac1\u20092', String.raw`\frac1\left\;2`, String.raw`\frac{1}{\left\;2}`, String.raw`\left\;2`, String.raw`\frac\left(1\right)\;2`, String.raw`\frac1{\left\left\,2}`, String.raw`\frac1{\left2\;}`, String.raw`\frac1{\left\frac12\;}`])('rejects an empty spacing argument in %s', expression => {
+    expect(() => parsePole(expression)).toThrow(/blank space cannot fill a box/);
+  });
+  it.each([String.raw`\frac1{\;2}`, String.raw`\frac{\,1}{2}`, String.raw`\frac 1{2}`, String.raw`\frac{\frac1{\;2}}{1}`, '\\frac1{\u20092}'])('preserves braced spacing and ordinary token boundaries in %s', expression => {
+    expect(parsePole(expression)).toEqual({ real: .5, imag: 0 });
+  });
+});
+
 describe('DP02 pole notation', () => {
   it.each([
     ['s=-2+3j', -2, 3], ['-2-3j', -2, -3], ['j', 0, 1], ['-j', 0, -1],

@@ -1,3 +1,5 @@
+import { rejectSpacingArguments } from '../../shared/tex-arguments';
+
 /** Bounded exact algebra for a real two-state continuous-time SISO realization. */
 export interface Rational { readonly n: bigint; readonly d: bigint }
 const gcdInt = (a: bigint, b: bigint): bigint => {
@@ -33,6 +35,7 @@ function decimal(source: string): Rational {
 }
 
 export function parseScalar(source: string): Rational {
+  rejectSpacingArguments(source);
   const s = source.replace(/\s|\\[,;!]/g, '').replace(/−/g, '-').replace(/\\(?:dfrac|tfrac)/g, '\\frac');
   if (!s || s.length > 90) throw new Error('Enter one bounded real number.');
   // MathLive may serialize single-digit fraction arguments without braces.
@@ -53,6 +56,7 @@ export function parseScalar(source: string): Rational {
 
 export function parseMatrix(source: string, rows: number, columns: number, name: string): Rational[][] {
   if (!source.trim() || source.length > 512) throw new Error(`${name}: enter a ${rows} by ${columns} matrix (at most 512 characters).`);
+  rejectSpacingArguments(source);
   const clean = source.replace(new RegExp(`^\\s*${name}\\s*=`), '').replace(/\\(?:left|right)/g, '').trim();
   const match = /^(?:\[|\()?\\begin\{(bmatrix|pmatrix|matrix)\}([\s\S]*)\\end\{\1\}(?:\]|\))?$/.exec(clean);
   if (!match) throw new Error(`${name}: keep the displayed matrix and edit its numeric entries.`);

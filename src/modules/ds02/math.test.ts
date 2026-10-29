@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { at, cmp, conditions, decimal, exact, intersect, intervalText, num, parseFamily, parseNumber, rat, roots } from './math';
 
+describe('DS02 TeX argument spacing', () => {
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`2^\;2`, String.raw`\frac1\;`, '\\frac1\u20092', '2^\u20092', String.raw`\frac1\left\;2`, String.raw`2^\left\;2`, String.raw`\frac{1}{\left\;2}`, String.raw`\frac\left(1\right)\;2`])('rejects an empty spacing argument in %s', coefficient => {
+    expect(() => parseFamily(`z^2+(${coefficient})Kz+.2`)).toThrow(/blank space cannot fill a box/);
+  });
+  it.each([[String.raw`\frac1{\;2}`, '1/2'], [String.raw`\frac{\,1}{2}`, '1/2'], [String.raw`2^{\;2}`, '4'], [String.raw`\frac 1{2}`, '1/2'], [String.raw`\frac{\frac1{\;2}}{1}`, '1/2'], ['\\frac1{\u20092}', '1/2'], ['2^{\u20092}', '4']] as const)('preserves scoped spacing in %s', (coefficient, expected) => {
+    expect(exact(parseFamily(`z^2+(${coefficient})Kz+.2`).b.slope)).toBe(expected);
+  });
+});
+
 describe('quadratic Jury interval: independent analytic fixtures', () => {
   it('derives all four baseline constraints and their strict intersection', () => {
     const f = parseFamily('P(z)=z^2+(K-1)z+0.2K');

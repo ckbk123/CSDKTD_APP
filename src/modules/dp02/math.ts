@@ -1,3 +1,5 @@
+import { rejectSpacingArguments } from '../../shared/tex-arguments';
+
 /** DP02: a single continuous pole and its conjugate, not a plant solver. */
 export interface Pole { readonly real: number; readonly imag: number }
 export type Movement = 'inward' | 'outward' | 'unchanged';
@@ -26,6 +28,7 @@ export function decimalLiteral(value: number): string {
 export function parsePole(latex: string): Pole {
   if (!latex.trim()) fail('Enter a pole, for example −2 + 3j.');
   if (latex.length > 1024) fail('Keep the pole expression within 1024 characters.');
+  rejectSpacingArguments(latex);
   if (/[\d.]\s+[\d.]/.test(latex)) fail('Separate numbers with an arithmetic operator.');
   let source = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:mathrm|operatorname)\{j\}/g, 'j')
     .replace(/\\(?:,|;|!|quad|qquad| )/g, '').replace(/\\pi/g, 'π')

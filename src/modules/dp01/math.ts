@@ -1,3 +1,5 @@
+import { rejectSpacingArguments } from '../../shared/tex-arguments';
+
 /** Real causal proper models, descending coefficients normalized to a[0]=1.
  * The original denominator is retained; no pole/zero cancellation is performed. */
 export interface Model { a: number[]; b: number[] }
@@ -35,6 +37,7 @@ function mul(a: Poly, b: Poly): Poly {
 function plain(latex: string): string {
   if (!latex.trim()) fail('Enter a transfer function.');
   if (latex.length > 512) fail('Use an expression of at most 512 characters.');
+  rejectSpacingArguments(latex);
   if (/\d\s+\d/.test(latex)) fail('Use a multiplication sign between separate numbers.');
   let s = latex.replace(/\\left|\\right/g, '').replace(/\\(?:cdot|times)/g, '*')
     .replace(/\\[,;! ]/g, '').replace(/−/g, '-').replace(/\s/g, '');
