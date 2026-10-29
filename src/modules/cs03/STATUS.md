@@ -3,109 +3,76 @@
 - **Stage:** in-progress
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
-- **Owned folder / contract:** `src/modules/cs03/**`; [TASK.md](TASK.md)
+- **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cs03/**` only
 - **Branch:** `codex/cs03-parameter-regions-2175`
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cs03-parameter-regions-2175/CSDKTD APP`
-- **Starting primary main:** `0c6f038e37c321169cbbac9961c3c3ebd125d25a`
+- **Baseline primary main:** `0c6f038e37c321169cbbac9961c3c3ebd125d25a` (v0.3.2)
+- **PR / submission:** pending actual production-browser verification; no PR created yet
 
-## Initial audit
+## Scope and accepted requirements
 
-Current inspection confirms a metadata scaffold, empty synchronous mount and no local tests. No working feature is being replaced. Current primary coordination guides were rechecked against the last read revision; the only changes were the recorded DS03/DP01 accepted dispositions. The updated visual-parser semantic gates were read from current primary EQUATION_INPUT.md.
+Initial inspection found immutable metadata, an empty synchronous mount and no local tests. No working module feature was replaced. The current primary coordination guides govern this preserved worktree. Source/audit anchors confirm the cubic gain exercise and W06 variation; original slides were not inspected. Extra fixtures below are independently derived, not newly attributed slide examples.
 
-| Accepted requirement | Starting evidence | Remaining implementation |
+The complete bounded exercise is implemented offline:
+
+| Accepted requirement | Implemented evidence | Remaining gate |
 |---|---|---|
-| Form feedback characteristic polynomial | Metadata P(s)=s³+7s²+10s+K | Editable cubic D(s), scalar g, negative unity loop Kg/D; derive P=D+Kg |
-| Solve complete inequalities, not a sweep | Absent | Exact rational Routh conditions and gain interval, including reversed gain polarity/all-real/empty cases |
-| Align every inequality on one gain axis | Absent | Individual condition strips, their intersection, selected K and exact endpoints |
-| Student interval with open/closed endpoints | Absent | Finite/all-real/empty prediction and explicit endpoint inclusion controls; useful grading/reveal |
-| Full roots at interior/exterior/endpoints | Absent | All three cubic modes, units, robust numerical roots/residuals and boundary factors |
-| Required baseline and W06 variation | TASK/audit only | Independent 0<K<70 and 0<K<48 fixtures; K=0 and upper-bound classifications |
-| Lifecycle/equations/accessibility/browser | Blank mount | Shared visual field/typeset results, keyboard/numeric controls, abort/disposal, responsive CSS and reserved browser QA |
-| Delivery | None | Meaningful tests, check/full-suite/build, evidence, one PR/attachment and exact submitted SHA |
+| Form the feedback characteristic polynomial | Editable visual D(s), native scalar g; derive P=D+Kg | Actual editor/browser check |
+| Derive the complete gain region | Exact rational affine Routh conditions, finite open/all-real/empty sets | Browser interaction |
+| Mark every inequality on one parameter axis | Four condition strips plus intersection, open equality markers and selected K | Actual desktop/phone appearance |
+| Student interval and endpoint inclusion | Two visual endpoint fields, finite/all/empty selection, open/closed controls and independent grading/reveal | Real visual fraction entry |
+| All roots at interior/exterior/boundary gains | Exact inspection gains, full numerical cubic modes, Routh table, factors, counts/residuals | Browser inspection buttons |
+| Required baseline and W06 variation | Independent 0<K<70 and 0<K<48 tests and computed changed-data presets | Browser/reset verification |
+| Lifecycle and readable input | Three caller-owned equation editors, scoped styles, cold-load status, child-signal abort/failure cleanup | Actual keyboard, fast navigation and narrow viewport |
+| Delivery | Clean pushed checkpoints and current claim | Browser evidence, one attached PR, final exact tested submission |
 
-Chosen bounded domain: D(s)=s³+a s²+b s+d, constant scalar plant numerator g, real dimensionless feedback gain K, negative unity feedback. P(s,K)=s³+a s²+b s+(d+gK). a,b,d,g are editable bounded real values; zero g is supported as a gain-independent case. This completes the source cubic gain exercise and W06 variant without pretending to solve arbitrary K-dependent coefficients or higher-order regions. Strict stability is exactly a>0, b>0, d+gK>0, ab-d-gK>0. Algebra establishes the complete gain set; root plots are numerical checks.
+## Mathematical domain and reasoning
 
-Time is normalized in seconds (s has inverse-second units); polynomial coefficients carry their corresponding powers and gK has the constant-term units. Original slides have not been inspected in this run; recorded source/audit provenance is retained. The baseline factors D=s(s+2)(s+5); proposed extra conditioning fixtures will be labeled independently derived. No shared helper/package/configuration change is required; private pure math remains in the owned folder. All accepted functionality and verification are still open at this initial checkpoint.
+Negative unity SISO feedback uses L(s)=Kg/D(s), D(s)=s³+a s²+b s+d and P(s,K)=D(s)+Kg. The editable coefficients and g are real. No factors are cancelled, including g=0: all characteristic D modes remain. K is dimensionless; time is in seconds and s has units s⁻¹. Coefficients a,b,d have units s⁻¹,s⁻²,s⁻³, and gK has units s⁻³. There is no sample period.
 
-## Checkpoint before earlier review correction
+With c(K)=d+gK, strict cubic Hurwitz stability is exactly a>0, b>0, c(K)>0 and ab−c(K)>0. Each condition is constant or affine in K. Their exact intersection is the complete real-gain set, rather than a sampled proof. For a,b>0 and g≠0 the open endpoints are the sorted values −d/g and (ab−d)/g. Nonpositive a/b gives the empty set; g=0 gives all real gains only when the gain-independent D is strictly Hurwitz.
 
-Private exact-rational polynomial parsing, cubic Routh interval derivation, numerical cubic roots and interval grading are drafted in math.ts. Node 24 npm run check passes; no mathematical tests or interface/browser verification yet, so stage remains in-progress. CS03 is checkpointed while the worker addresses coordinator-returned DS04 PR #13 singular-gain plot consistency. Resume this preserved worktree afterward; no CS03 work was discarded.
+The interface shows P, both affine inequalities, all condition values, the common parameter axis and the Routh table. For nonzero a the first column is 1,a,(ab−c)/a,c. Zero entries receive explicit special-treatment feedback rather than a fabricated sign-change count; a=0 never divides by zero. Endpoint identities P=s(s²+as+b) at c=0 and P=(s+a)(s²+b) at c=ab remain exact. For a,b>0 these exclude the zero mode and ±j√b boundary pair from strict stability; frequency is √b rad/s.
 
+Exact buttons select both equality gains, midpoint and exterior points one quarter-interval width beyond the endpoints. Fractional K is retained in the selected polynomial, root calculation and displayed reasoning. Global inspection may lie outside the manual/window bounds. The diagram is clipped to its chosen window; the exact global answer remains visible. All three roots including multiplicities are listed; overlapping plotted crosses are explained.
 
-## Implemented slice and verification checkpoint
+Cubic roots use exact c=0/c=ab factorizations, exact discriminant sign, real Cardano/trigonometric branches and repeated/triple-root cases. The conjugate imaginary part avoids subtraction cancellation. Root coordinates are numerical, distinct from exact stability decisions. Each calculation checks the complex polynomial residual normalized by the sum of term magnitudes or1, maximum1e-8. Axis tolerance is1e-8 times max(1,largest root magnitude). Exact inequalities/Routh signs retain the decision when a numerical mode is within axis tolerance. Nonfinite roots, excessive exact precision and failed residual checks produce useful errors.
 
-The full bounded exercise is now implemented in private math.ts, ui.ts, plots.ts and scoped workspace.css; workspace.ts defers the browser editor import and guards abort/cleanup. Metadata stays unchanged. Stage remains in-progress until actual production-browser checks and final delivery are recorded.
+## Input and computation bounds
 
-- Editable D(s) and g derive P=D+Kg under negative unity feedback; no cancellation, including gain-independent g=0 (all D modes retained).
-- Exact rational a>0,b>0,c>0,ab-c>0 derive the complete open interval, all-real or empty set. Every condition and the intersection share one gain axis, with exact equality values, open boundary markers and numeric window/current-gain controls.
-- Student answers select finite/all-real/empty, both numeric endpoints and explicit open/closed inclusion. Grading and an independent reveal action explain errors. W06, reverse-polarity and gain-independent experiments recompute from data.
-- The Routh table, nonzero first-column sign changes, zero-pivot/zero-row feedback and exact endpoint factors are displayed. Exact inspection buttons preserve rational gains at c=0/c=ab, midpoint and both exterior points; all three roots remain visible. Global buttons can inspect boundaries outside the manual gain/window range.
-- Cubic roots use exact discriminant sign, exact c=0/c=ab factors, real Cardano/trigonometric branches and explicit repeated/triple cases. Imaginary parts avoid subtraction cancellation. Coordinates are approximate. Every result checks the complex polynomial residual normalized by the sum of term magnitudes or1 (maximum1e-8). Axis comparison is1e-8 times max(1,largest mode magnitude); exact inequalities decide strict stability even when numerical roots are within tolerance of the axis.
-- Native controls reject empty/nonfinite numbers and nonzero raw underflow; ordinary numeric exponents remain valid. This equivalent local guard is an approved carry-forward on a branch predating the coordinator's shared readNumericInput rollout; adapt at integration rather than adding unowned files or rebasing. Visual e notation is separately rejected, not silently interpreted as a decimal.
+- D(s) is exactly monic cubic after expansion; internal coefficient order is ascending [d,b,a,1]. Supported: sums/products, constant division, visible parentheses, powers0..3 and signed numeric visual fractions. Compact MathLive one-token fraction forms are accepted. Nested visual fractions, invisible generic brace grouping, visual e notation and K inside D are unsupported.
+- Mixed whole-number/fraction adjacency is rejected with explicit +/× guidance before expansion. Pure lexical preflight protects supported numeric fraction arguments and powers, then checks grouping/adjacency. Explicit sums/products, visible parenthesized products, ordinary adjacent fractions and power-followed-by-fraction products preserve their displayed meaning. An earlier MathML diagnostic prototype was replaced; final math has no MathLive renderer import.
+- D limits:300characters,160symbols,12groups; literals9digits/6decimal places; final nonzero coefficient magnitudes1e-8..100 and reduced coefficient parts≤1e12. Exactly zero coefficients are supported.
+- g is zero or has magnitude1e-8..100. Manual K and axis endpoints are finite in[−1000,1000], with minimum<maximum. Native finite exponents are accepted; empty/nonfinite text and nonzero raw underflow are rejected. Intentional0e-999 remains zero.
+- Exact fraction arithmetic caps components at2048bits before reduction; sign comparisons can form temporary4096bit products. Some extreme equivalent expressions can conservatively hit this declared limit.
+- Student endpoints use separate constant-only visual arithmetic: signed numeric fractions, decimals, sums, explicit products/divisions and visible parentheses; no variables/powers/e notation/nested visual fractions. Limits300characters,80symbols,12groups,80digits/50decimal places per literal, magnitude≤1e13 and the same precision cap.
+- Endpoint comparison uses rational arithmetic, with tolerance capped by BOTH1e-6*max(1,abs(endpoint)) and1e-4*interval width. Very narrow intervals require exact fractions or sufficient decimal precision. Missing/incomplete notation, unsupported expressions, wrong values, wrong set kind and closed endpoints have separate feedback. Editing a checked answer marks its feedback stale.
+- No higher-order region or arbitrary K-dependence in a/b is claimed. No remote solver, persistence, API, dependency or shared-file change is included.
 
-Input grammar: exactly monic cubic after expansion, ascending internal rational coefficients [d,b,a,1], powers0..3 and constant division only. Visual numeric fractions allow signed literal arguments and compact MathLive bracing, not nested fraction notation. Limits:300characters,160tokens,12groups; numeric literals9digits/6places; final coefficient magnitude zero or1e-8..100; reduced coefficient parts<=1e12; exact intermediates<=2048bits. g zero or magnitude1e-8..100; manualK/window bounded[-1000,1000]. Invalid/unsupported data clears stale answers/plots. No higher-order or arbitrary K-dependent a/b region is claimed.
+The equivalent local native-number reader is an explicitly approved carry-forward because this baseline predates shared readNumericInput. The coordinator owns adaptation to the shared helper during integration; do not add unowned shared files or rebase this branch to obtain it.
 
-Independent fixtures: source baseline0<K<70 and roots{0,-2,-5} at0, {-7,+/-j sqrt10} at70; W06 gives0<K<48 and {-6,+/-j sqrt8} at48. Proposed independently derived changes include negativeg=-1 =>-70<K<0, constant-term offset1 =>-1<K<69, g=-2 and offset1 =>-69/2<K<1/2, fractional endpoint-1/3 withg=.3, stable/all-real and boundary/empty g=0 cases. Factored cubics supply distinct real, conjugate, repeated and triple-root oracles. Forty-eight changed coefficient triples satisfy independently evaluated complex residuals and Vieta sums; tiny conjugate parts near a triple root and balanced huge rational conversion are preserved. Original slides were not inspected; existing source/audit provenance is unchanged.
+## Independent verification
 
-Actual checks on this isolated Node24 worktree:
+Source baseline D=s(s+2)(s+5) gives0<K<70; K=0 has{0,−2,−5}, and K=70 has{−7,±j√10}. W06 D=s³+6s²+8s gives0<K<48 and boundary{−6,±j√8}. These factor identities are independent root oracles.
 
-- npm test -- src/modules/cs03:44/44 passed (36math/parser,8workspace/lifecycle).
-- npm run check:passed.
-- npm test:178/178 passed across13files on the recorded main0.3.2 baseline.
-- npm run build:passed; existing MathLive chunk warning only.
-- git diff --check:passed.
+Proposed independent variations cover g=−1 giving−70<K<0; d=1 translating to−1<K<69; d=1,g=−2 giving−69/2<K<1/2; d=.1,g=.3 giving−1/3<K<3; gain-independent stable/all-real, unstable/empty and boundary/empty cases; nonpositive a/b and a zero Routh pivot. Known factored cubics supply distinct real, conjugate, repeated and triple roots. Forty-eight changed triples pass independently evaluated residuals and Vieta sums. Tiny conjugate parts near a triple root, balanced huge rational conversion, exact K=±1e-100 decisions and a global K=1e10 boundary are covered.
 
-Real-browser visual editing/font/keyboard, reset/reopen/fast navigation, narrow viewport and final PR/commit/submission remain open. DS04 review correction is frozen pending its shared QA slot; CS03 offline work proceeds independently without simultaneous edits in DS04. No shared files/configuration/dependencies/version/deployment were changed.
+Grading regressions reject a false1e-7-wide interval for the true width1e-18 and accept exact −100<K<−999999999999999999/10000000000000000 even when direct binary endpoint conversion collapses both to−100. Parser tests cover signed/compact fractions, mixed-number/grouping semantics, malformed/unsupported input and bounded work.
 
-DS04 correction is now resubmitted at6be898d in its preserved PR#13; CS03 resumes as the only active implementation. The affine inequality display now preserves its typesetting spacing command through String.raw. Browser QA remains explicitly deferred until DD04 and the coordinator's next integration slot are complete; no pending acquisition watcher remains and this worker holds no QA reservation. The prepared own preview8825 is independent of primary8787.
+Workspace tests use a mocked editor only for caller state/lifecycle, not browser functionality. They verify changed data, exact fractional selection, prediction/error recovery, intentional zero/finite exponent/nonzero-underflow distinctions, fresh reopen, immediate abort and cold-load status. A partial-mount failure creates a button and document listener before throwing; both are removed/aborted immediately while the parent remains active. The wrapper owns its child signal/container, ignores late imports and provides a recoverable Reset message.
 
+Actual Node24 checks at clean source checkpoint d57b99f:
 
-Additional precision regression: baselineK=+/-1e-100 remains inside numerical axis tolerance, but the exact inequalities retain the correct stable/unstable decisions and exact Routh sign count.45/45modulechecks now pass (37math,8workspace). Precision wording refers to exact fraction components <=2048bits; q checks arithmetic result components before reduction, and sign comparisons can form temporary products up to4096bits. Earlier178full-suite evidence predates this added test; final checks will cover the final tree. No new browser reservation has been attempted during the explicit DD04/coordinator order.
+- `npm test -- src/modules/cs03`:63/63 passed (51math/parser,12workspace).
+- `npm run check`:passed.
+- `npm test`:197/197 passed across13files on the recorded v0.3.2 baseline.
+- `npm run build`:passed; existing MathLive large-chunk warning only.
+- `git diff --check`:passed; owned files only, metadata unchanged, generated output untracked/ignored.
 
+## Browser and delivery still pending
 
-### Endpoint grading precision completion
+Own production preview8825 is independent of primary8787. No CS03 real-browser claim is made yet. Required checks remain visual fraction/power entry and fonts, all three fields, keyboard/Escape/Tab/Enter, interval grading, changed data/failure recovery, reset/reopen/rapid navigation and desktop/narrow layouts. Exact labels/buttons have wrapping and the inequality diagram has its own horizontal scroll area, but CSS preparation is not browser evidence. Small numerical labels use ×10 with superscript exponents.
 
-The first numeric-answer draft was insufficient for very narrow supported gain intervals: an absolute tolerance floor could accept a wrong interval, and native binary numbers cannot distinguish some exact endpoints. Both answer bounds now use caller-owned shared visual equation fields. A separately bounded constant-only parser accepts signed numeric fractions, sums, explicit products/divisions and parentheses; it rejects variables/powers/e notation, nested visual fractions and malformed grouping. Limits:300characters/80tokens/12groups,80digits/50decimal places per literal, final magnitude<=1e13, same exact fraction-component cap. Empty/incomplete editor drafts get separate feedback. All-real/empty answers hide unused bounds, and editing an already checked answer marks its feedback stale until checked again. Cleanup destroys all three equation inputs.
+The coordinator-relayed human Firefox fallback is authorized. The executable exists and was launched through CUA, but concurrent identical-title native windows prevented attributable selection; no native input/focus/close action was sent and unknown windows were preserved. The coordinator subsequently reported Firefox URL-policy controls unavailable and instructed workers to stop that route. No Firefox version or module behavior is certified. This chat's read-only IAB inventory is tagged with its own session ID and has no tabs; viewport isolation remains under coordinator investigation. No IAB controls were used while another worker held QA.
 
-Grading now compares rational bounds exactly, with numerical approximation tolerance capped by BOTH1e-6*max(1,abs(endpoint)) and1e-4*interval width. This supersedes the earlier numeric-answer description. Independent regressions reject a spurious1e-7-wide answer for the actual0<K<1e-18 interval, and correctly accept exact -100<K<-999999999999999999/10000000000000000 even though straightforward binary endpoint conversion collapses the bounds. The visual workspace regression covers that answer and stale grading feedback.49/49local tests pass (40math/parser,9workspace), plus type checking. Browser verification remains open; normal acquisition has now resumed after the coordinator's order.
-
-Checkpoint for second DS04 review return: current CS03 head122c0eb is clean and retains exact visual endpoint grading,49local/183full passing checks and production build. Its pending QA event watcher42659 was explicitly stopped before returning to DS04; no CS03 browser reservation was acquired. DS04 reviewer found mixed-number display/parser semantics, so work returns to the preserved PR#13 before CS03 browser delivery. The same lexical/display consistency concern will be checked in CS03 before submission.
-
-
-While DS04's committed correction waits for the explicit QA order, the same displayed-meaning guard has been applied independently within this owned folder to BOTH denominator coefficients and visual interval endpoints. The existing pinned MathLive public MathML conversion only detects its invisible-plus mixed-number marker before normalization; all polynomial expansion, endpoint arithmetic, Routh conditions and cubic roots remain independently computed here. Direct, negative, grouped and nested mixed forms now receive +/× guidance; explicit sums/products and clear grouped fraction products retain their meaning. Six further math regressions pass:55/55module tests (46math/parser,9workspace), and type checking passes. Earlier full-suite/browser-pending records remain dated checkpoints. No shared/sibling code was changed or imported. DS04 remains the priority for the next available permitted browser slot.
-
-Notation diagnostic refinement checkpoint: MathML does not emit invisible plus through thin spaces or invisible brace groups, so the first runtime renderer guard is being replaced by a pure bounded lexical preflight. It protects each one-token numeric fraction and supported power before checking adjacency, preserving consecutive fractions and visible parenthesized products. This draft passes58module tests/type checking. It is checkpointed while the earlier DS04 correction finalizes its explicit visible-grouping policy; the matching final policy and actual browser checks still remain open here. No MathLive renderer import is required for this draft's math. Earlier renderer-based descriptions are historical checkpoints, not the final policy.
-
-### Current complete offline implementation checkpoint
-
-The final pure preflight now matches DS04's bounded displayed-meaning policy: protect supported fraction arguments and powers, reject whole-number/fraction adjacency (including thin spaces), and reject remaining invisible brace groups instead of silently replacing them with mathematical parentheses. Ordinary groups use visible parentheses; numeric fraction and power argument braces still work. Explicit+/×, visible parenthesized products, consecutive fractions and powers followed by fractions have independent coefficient checks. This supersedes earlier renderer/brace-flattening prototype descriptions. No runtime MathLive import is present in the math helper; shared equation components still supply the three visual fields and typeset results.
-
-The full current tree passes npm test:194/194 across13files, including60owned tests (51math/parser,9workspace). npm run build (including type checking) and git diff --check pass. The existing MathLive chunk warning remains. Production preview8825 was rebuilt for this exact source. Stage remains in-progress: first real-browser editing/three-field keyboard/lifecycle/narrow checks and PR/delivery are still open. DS04 is frozen at6bf3da0 awaiting its targeted browser pass; a new CF02→coordinator DS01 order is currently deferred, and no acquisition watcher or browser reservation is active for this worker.
-
-Endpoint layout checkpoint: each visual bound now shares a group with its own inclusion selector. The answer grid uses a240pxminimum below the available width, respecting the shared editor's210pxdesktop minimum while collapsing on phones. This prevents field overlap at intermediate widths without changing the shell or shared styles.60/60module tests and the production build/type check pass; actual viewport evidence is still pending. No QA request is active during the current order.
-
-
-Current native-number fixtures also explicitly verify0e-999 as intentionalzero for both g and selectedK,1e-2 as exact selecteddecimal1/100, and1e-999 as rejected nonzero underflow. The UI regression checks the computed gain heading and all-real g=0 outcome.60/60module tests pass. This test-only checkpoint leaves the rebuilt browser implementation unchanged; the DP03→DP04→coordinatorDP02 order remains pending and no acquisition is active.
-
-
-### Cold-load/lifecycle completion checkpoint
-
-Source audit confirmed src/app.ts decides “Implementation pending” from the synchronous child count after mounting. CS03's original empty lazy wrapper could therefore retain that label on a cold load, even after its tool appeared. The owned wrapper now appends a truthful loading status synchronously, removes it after UI mount, disposes it and all mounted resources on abort/cleanup, ignores late imports, and gives a recoverable Reset message if the UI chunk rejects. DS04 was inspected and already had this working behavior; it was preserved unchanged. No shell/shared edit was needed.
-
-Meaningful new lifecycle tests check the initial nonempty/loading render before the import settles, immediate abort before a late mount, a simulated rejected chunk with useful feedback, cleanup, and a subsequent fresh successful visit.62/62module tests (51math/parser,11workspace) pass; npm run check and production build pass. Full npm test now passes196/196 across13files. This is unit/mock evidence for lifecycle, not a claim of real browser editor or network/offline functionality. The first real production load must still verify the absence of a stale scaffold label, along with the remaining keyboard/reset/rapid navigation/viewport checks. Current work is cleanly checkpointed while the ordered DP04→coordinatorDP02 QA dependency finishes; no acquisition watcher or reservation is held.
-
-Phone readability preparation: the five-row inequality diagram keeps a440pxminimum inside its own horizontal scroll area, avoiding roughly8pxlabels when a480-unit SVG shrinks into a phone card. Its note explains scrolling; numeric controls, exact interval text and condition table remain outside that scroll area. Build/type checking passes. Actual phone geometry and usability still require the reserved browser pass; no browser evidence is inferred from CSS.
-
-
-DS04 review correction is resubmitted at a0d3704 in the preserved PR#13; CS03 is the sole active implementation again. Its first browser pass is deferred for the coordinator's next DD04 slot. Long exact gain headings now wrap inside the result section, whose minimum width is explicitly zero; this keeps large rational endpoints within the module on phones. Build/type check passes; real phone evidence remains pending.
-
-
-### Partial-load cleanup correction
-
-Offline lifecycle review found that an exception after mountUI created some controls could leave their listeners alive until parent navigation. The lazy wrapper now gives the view its own child AbortSignal and owned container: failure immediately aborts child resources and removes partial controls while preserving the recoverable reset message. Parent abort/disposal also clears the view, including an abort during synchronous mounting. A meaningful regression creates a partial button plus a document listener before throwing and verifies both are detached immediately while the parent remains active.
-
-Actual npm test -- src/modules/cs03 now passes63/63 (51math/parser,12workspace); npm run check and npm run build pass. The previous unchanged checkpoint42bbe93 also passed all196 project tests. Final full-suite evidence will be renewed after browser verification. Browser scheduling currently defers ordinary acquisition until DD04 → CP03 → DR01 → DP03 have released; this worker holds no QA reservation or acquisition watcher. First CS03 browser checks, PR and submission remain open.
-
-Numerical result labels now use ×10 with superscript exponents for small coordinates/tolerances instead of programming e notation. Exact inspection buttons also wrap long supported rational gains inside the module width. Production build/type checking passes. Actual phone rendering remains pending. A coordinator-relayed direct human Firefox fallback is authorized: read-only CUA inventory exposes only this chat's IAB and MCP Apps browser, with no Firefox application/window. Standard local Firefox paths are being checked; no independent Firefox evidence is claimed and no other worker's browser/window/viewport has been touched.
-
-Firefox fallback observation: C:/Program Files/Mozilla Firefox/firefox.exe exists and was opened through the supported CUA launcher. The returned native inventory showed three, then four concurrent Firefox windows with the same Mozilla Firefox title and no unique attributable target. No native click, typing, focus, viewport or close action was sent to any of them. Window isolation could not be established, so this is not browser verification; the in-app route remains pending its ordered QA release. No Firefox version or module behavior is claimed. This worker has no IAB acquisition watcher/reservation.
+The bounded CS03 release watcher88157 ended without acquiring after ten minutes. No watcher/reservation is held now. CD08 retains the shared IAB slot while finishing its actual plot check/isolation probe. Earlier DS04 PR#13 is frozen at submitteda0d3704 and has cleared final review for coordinator integration. Browser evidence, final stage/PR/attachment and exact clean submission are the remaining CS03 work; no merge, release or deployment is performed by this worker. Intermediate checkpoint history remains recoverable in this branch's Git commits.
