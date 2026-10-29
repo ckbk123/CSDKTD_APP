@@ -1,8 +1,9 @@
 # DP02 implementation status
 
-- **Stage:** in-progress (final browser check pending)
-- **Assessed:** 2026-10-29; implementation revision `1baa7f3`, based on `c5d1135`
+- **Stage:** implemented
+- **Assessed:** 2026-10-29; implementation revision `beedadb`, based on `c5d1135`
 - **Ownership:** `src/modules/dp02/**`; [accepted contract](TASK.md)
+- **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Worker:** `worker-dp02-01a186d1`, branch `codex/dp02-pole-mapping-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dp02-pole-mapping\CSDKTD APP`
 
@@ -20,9 +21,9 @@ The starting workspace was blank; no working mathematical features were replaced
 | Frequencies differing by 2π/T alias | Exact integer-sample identity plus independent unreduced-phase floating-point residual; T-dependent alias frequency shown | None |
 | Radius controls stability, including negative-real z | Negative-real, growing and circle-boundary experiments; tests for (-.8)^k, growth/decay and near-boundary tolerance; full-system/multiplicity caveat | None |
 | Visual mathematical entry and validation | Shared createEquationInput/createEquationDisplay, visit-owned draft; bounded local parser and domain checks; keyboard division and visual fractions | None |
-| Local state, lazy metadata, abort/cleanup | Metadata unchanged. Synchronous workspace mount defers browser view; abort/dispose guards; mount-owned state, signal listeners and result-event cleanup; five lifecycle/error-path tests | Rapid-navigation browser scenario pending |
-| Keyboard and narrow layout | Direct typing, fraction boxes, Systems keyboard/Escape, Tab, Enter reveal, reset/reopen and 390×844 viewport checked in production Chromium before pause | Repeat final production check after notation fix |
-| Independent mathematics and project checks | 57 module tests; check, all 99 project tests, production build pass at 1baa7f3 | Final browser evidence and submission |
+| Local state, lazy metadata, abort/cleanup | Metadata unchanged. Synchronous workspace mount defers browser view; abort/dispose guards; mount-owned state, signal listeners and result-event cleanup; five lifecycle/error-path tests | None |
+| Keyboard and narrow layout | Direct typing, fraction boxes, Systems keyboard/Escape, Tab, Enter reveal, reset/reopen and 390×844 viewport checked in production Chromium before pause | None |
+| Independent mathematics and project checks | 57 module tests; check, all 99 project tests, production build pass at 1baa7f3 | None; submitted SHA is in claim/PR |
 
 ## Supported mathematical domain
 
@@ -51,12 +52,12 @@ Read the atlas DP02 and docs/research/DISCRETE_EXERCISE_AUDIT.md (DP1), which ci
 
 Runtime: Node 24.22.1. On this host, commands use that bundled node.exe and the installed npm-cli.js explicitly, with Node 24 first on PATH; the system npm.cmd otherwise selects Node 20. Locked npm ci completed with 0 vulnerabilities. No packages or global runtime settings changed.
 
-At implementation revision 1baa7f3:
+At implementation revision beedadb (final code):
 
 - npm test -- src/modules/dp02: **57 passed**, 2 files (52 math/parser, 5 lifecycle/error-path).
 - npm run check: **passed**.
 - npm test: **99 passed**, 8 files.
-- npm run build: **passed**, static output and 20 local font assets emitted. Existing MathLive large-chunk warning remains (about 221.49 kB gzip); DP02 view is about 7.58 kB gzip.
+- npm run build: **passed**, static output and 20 local font assets emitted. Existing MathLive large-chunk warning remains (about 221.49 kB gzip); DP02 view is about 7.71 kB gzip.
 
 An initial full-suite failure due to eagerly initializing MathLive in the non-browser catalogue inspection was resolved locally with the guarded deferred view. No shared test/configuration change was needed. Added lifecycle tests confirm synchronous return, single cleanup, no late mount after abort or explicit disposal, no already-aborted mount, and recoverable initialization feedback.
 
@@ -72,24 +73,38 @@ Worker-only production preview on port 8793, exclusive QA reservation, in-app Ch
 - Reset with keyboard open hides it and restores baseline/reveal state. Leave/reopen after a numeric edit restores σ=-2. No visit state is transferred.
 - 390×844 viewport has no page-wide overflow (document width 375, viewport 390 including scrollbar); inputs, stacked planes, result equations with local horizontal scrolling and keyboard remain usable. Local KaTeX_Main check passed; font set reported loaded. Browser warning/error log was empty.
 
-Rapid-navigation-during-load and a repeat of final production output after notation fixes remain pending. Light theme was not separately browser-tested; this implementation uses shared light/dark tokens without local palette overrides.
+The final production pass below completed rapid navigation and rechecked the latest output. Light theme was not separately browser-tested; this implementation uses shared light/dark tokens without local palette overrides.
 
 ## Checkpoints, delivery and remaining work
 
 Audit e759bc9, implementation 77e5bd1, pause checkpoint 9251348 and resumed fixes 1baa7f3 are committed on the worker branch. Pausing preserved all work and released browser QA/stopped the worker preview. A transient remote rejection of 77e5bd1 was later resolved; 1baa7f3 is pushed. No main merge or deployment occurred.
 
-Remaining: obtain QA after the current holder releases it; finish the final production/navigation check, record evidence, then commit/push this final status and submit the claim. No shared helper/dependency request or unimplemented mathematical requirement remains. Independent technical review for verified stage belongs to integration; it is not claimed here.
+All required mathematical and browser checks are complete. Final delivery uses PR #3 and the exact tested final commit recorded by the submitted claim. No shared helper/dependency request or unimplemented mathematical requirement remains. Independent technical review for verified stage belongs to integration; it is not claimed here.
 
 
 ### Numerical hardening while waiting for QA
 
-A review of extreme inputs found that nonzero literals/products/quotients could underflow to zero before validation. The parser now rejects these explicitly; exact-zero literals remain valid and representable tiny values remain intact. Numeric component inputs reject the same literal underflow. Radial movement uses sign comparisons rather than a potentially underflowing product, so even the smallest representable nonzero σ retains its direction. Six new parser regressions plus tiny-pole direction assertions pass. Latest module tests: 50/50; full suite: 92/92; production build/type check pass. Final browser pass will include numeric underflow feedback. These changes preserve the accepted exercise and declared floating-point limits.
+A review of extreme inputs found that nonzero literals/products/quotients could underflow to zero before validation. The parser now rejects these explicitly; exact-zero literals remain valid and representable tiny values remain intact. Numeric component inputs reject the same literal underflow. Radial movement uses sign comparisons rather than a potentially underflowing product, so even the smallest representable nonzero σ retains its direction. Six new parser regressions plus tiny-pole direction assertions pass. At this intermediate checkpoint module tests passed 50/50, full suite 92/92 and build/type check passed; the final browser pass confirmed numeric underflow feedback. These changes preserve the accepted exercise and declared floating-point limits.
 
 
 ### Compact visual fractions
 
-Another worker's browser evidence showed MathLive can serialize a completed fraction as the valid shorthand \\frac12. DP02 now reads bounded single-token and grouped fraction arguments, including nested forms, with seven new analytic/malformed fixtures. Module tests pass 57/57; full suite passes 99/99; type check and build pass. This closes an editor/parser compatibility gap before final browser QA; a completed fraction-button entry will be checked directly.
+Another worker's browser evidence showed MathLive can serialize a completed fraction as the valid shorthand \\frac12. DP02 now reads bounded single-token and grouped fraction arguments, including nested forms, with seven new analytic/malformed fixtures. Module tests pass 57/57; full suite passes 99/99; type check and build pass. This closed an editor/parser compatibility gap. The final browser pass accepted a completed fraction-button entry directly.
 
 ## Pull request
 
-[DP02 PR #3](https://github.com/ckbk123/CSDKTD_APP/pull/3) is the single draft PR for this module, targeting main from codex/dp02-pole-mapping-01a186d1. It is attached to this chat. The draft explicitly records final browser QA as pending; no claim submission or completion is asserted yet. GitHub connector creation returned 403; the PR was created through GitHub REST using Git's existing authenticated connection without storing or exposing credentials. Latest human steering requires preserving this PR/branch for review and then selecting the next module in a separate worktree after DP02 submission.
+[DP02 PR #3](https://github.com/ckbk123/CSDKTD_APP/pull/3) is the single draft PR for this module, targeting main from codex/dp02-pole-mapping-01a186d1. It is attached to this chat. It was initially opened as a draft while QA was reserved elsewhere; final evidence and ready-for-review state are updated at submission. GitHub connector creation returned 403; the PR was created through GitHub REST using Git's existing authenticated connection without storing or exposing credentials. Latest human steering requires preserving this PR/branch for review and then selecting the next module in a separate worktree after DP02 submission.
+
+
+## Final production pass (2026-10-29, after beedadb)
+
+QA was acquired through the atomic helper after the previous worker released it. Only the DP02 worker preview at 8793 and its own tab were used. Final checks:
+
+- Baseline unchanged-period prediction and target T=.2 inward prediction matched .818731 → .670320; editing T removed the previous result. Inverse branch m=1 at T=.2 produced -2+34.4159j without changing z.
+- A complete fraction constructed by typing 1, selecting it, pressing the fraction button, filling denominator 2, exiting the fraction and typing +4j was accepted. It computed s=.5+4j, r≈1.05127 and z≈.968285+.409384j. This exercised the actual editor output, not a mocked editor or a canned string.
+- Entering numeric σ=1e-999 produced “The nonzero value for σ is too small to represent. Use a larger magnitude.” Reset restored the baseline.
+- Opened the math keyboard, left the tool, and immediately reopened DP02 then navigated away while the workspace had not yet rendered its view. The final DP01 page showed Sequence response, zero .dp-tool roots and zero DP02 keyboard controls. Reopening DP02 restored σ=-2 and aria-pressed=false. Together with the five lifecycle regressions, this verifies stale imports and visit state do not leak.
+- At 390×844 with results revealed, content width was 375 px within the 390 px viewport including scrollbar; no page-wide overflow. Local KaTeX fonts reported loaded. Warning/error log was empty. Restored the viewport and closed the worker tab.
+- Worker-local proof capture: C:\Users\baokh\.codex\visualizations\2026\10\29\01a186d1-a367-78f1-98f5-e1cf147ef306\dp02-final.png (not committed). It shows the computed linked planes for the T=.2 experiment.
+
+QA was released and worker preview 8793 stopped. No remaining required module work or shared dependency is deferred. This is implemented, not independently reviewed/verified; coordinator review may return corrections on the same preserved PR branch. No primary-main merge, version bump or deployment was performed.
