@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EPS, U, Z, addP, addQ, axisMultiplicity, constantRF, divRF, divideP, equalQ, evaluateP, fromNumber, gcdP, latexRF, limitRF, mulP, positiveDistinctRoots, positiveRootsWithMultiplicity, q, rf, subRF, symmetricClassification, textQ, type Poly } from './algebra';
+import { EPS, U, Z, addP, addQ, axisMultiplicity, constantRF, divRF, divideP, equalQ, evaluateP, fromNumber, gcdP, latexRF, limitRF, mulP, mulRF, positiveDistinctRoots, positiveRootsWithMultiplicity, q, rf, subRF, symmetricClassification, symmetricClassificationRF, textQ, type Poly } from './algebra';
 const p = (...a: number[]): Poly => a.map(n => q(n));
 const shown = (a: Poly) => a.map(textQ);
 
@@ -58,5 +58,14 @@ describe('independent Sturm and axis fixtures', () => {
     const factor = p(1, 0, 2, 0, 1); // (s²+1)²
     expect(axisMultiplicity(mulP(factor, p(2, 1)))).toBe(4);
     expect(shown(addP(factor, factor, true))).toEqual(['0']);
+  });
+  it('classifies epsilon-dependent auxiliary roots before taking their limiting coordinates', () => {
+    const zero = constantRF(Z), one = constantRF(U);
+    // For epsilon>0: s²+epsilon has imaginary roots; s²-epsilon has real roots.
+    expect(symmetricClassificationRF([EPS, zero, one])).toEqual({ origin: 0, realPairs: 0, imaginaryPairs: 1, complexQuartets: 0 });
+    expect(symmetricClassificationRF([mulRF(EPS, constantRF(q(-1))), zero, one])).toEqual({ origin: 0, realPairs: 1, imaginaryPairs: 0, complexQuartets: 0 });
+    expect(symmetricClassificationRF([EPS, zero, zero, zero, one])).toEqual({ origin: 0, realPairs: 0, imaginaryPairs: 0, complexQuartets: 1 });
+    // (s²+epsilon)² keeps two imaginary pairs for every positive epsilon.
+    expect(symmetricClassificationRF([mulRF(EPS, EPS), zero, mulRF(EPS, constantRF(q(2))), zero, one])).toEqual({ origin: 0, realPairs: 0, imaginaryPairs: 2, complexQuartets: 0 });
   });
 });

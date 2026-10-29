@@ -1,0 +1,32 @@
+[data-module="CS02"] .routh-tool { display: grid; gap: 1rem; min-width: 0; }
+[data-module="CS02"] [hidden] { display: none !important; }
+[data-module="CS02"] .routh-tool p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+[data-module="CS02"] .routh-tool h3 { margin: 1.5rem 0 .6rem; overflow-wrap: anywhere; }
+[data-module="CS02"] .routh-tool h4 { margin: 0 0 .6rem; }
+[data-module="CS02"] .routh-tool > section { min-width: 0; }
+[data-module="CS02"] .r-controls { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,230px),1fr)); gap: .8rem; }
+[data-module="CS02"] .r-controls label { display: flex; flex-direction: column; gap: .35rem; font-weight: 600; font-size: .88rem; min-width: 0; }
+[data-module="CS02"] .r-controls input, [data-module="CS02"] .r-controls select { width: 100%; min-width: 0; padding: .6rem; border: 1px solid var(--line); border-radius: .4rem; color: var(--text); background: var(--surface); font: inherit; }
+[data-module="CS02"] .routh-tool fieldset, [data-module="CS02"] .routh-tool details { min-width: 0; margin: 0; padding: 1rem; border: 1px solid var(--line); border-radius: .6rem; }
+[data-module="CS02"] .routh-tool fieldset > * + * { margin-top: .8rem; }
+[data-module="CS02"] .routh-tool legend { padding: 0 .4rem; font-weight: 600; }
+[data-module="CS02"] .routh-tool summary { cursor: pointer; font-weight: 600; }
+[data-module="CS02"] .routh-tool details p { margin-top: .6rem; }
+[data-module="CS02"] .r-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+[data-module="CS02"] .routh-tool button { max-width: 100%; overflow-wrap: anywhere; padding: .55rem .75rem; border: 1px solid var(--line); border-radius: .4rem; color: var(--text); background: var(--surface); font: inherit; font-weight: 600; cursor: pointer; }
+[data-module="CS02"] .routh-tool button:hover { border-color: var(--accent); }
+[data-module="CS02"] .routh-tool button:focus-visible, [data-module="CS02"] .routh-tool input:focus-visible, [data-module="CS02"] .routh-tool select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+[data-module="CS02"] .r-feedback { padding: .6rem .8rem; border-left: 3px solid var(--accent); background: var(--surface); }
+[data-module="CS02"] .r-count { font-size: 1.15rem; font-weight: 700; color: var(--accent); }
+[data-module="CS02"] .r-small { font-size: .84rem; color: var(--muted); }
+[data-module="CS02"] .r-table-scroll { overflow-x: auto; max-width: 100%; margin: 1rem 0; }
+[data-module="CS02"] .routh-tool table { border-collapse: collapse; text-align: left; min-width: 580px; width: 100%; }
+[data-module="CS02"] .routh-tool th, [data-module="CS02"] .routh-tool td { padding: .65rem; border: 1px solid var(--line); overflow-wrap: anywhere; }
+[data-module="CS02"] .routh-tool td button { min-width: 3.5rem; width: 100%; }
+[data-module="CS02"] .routh-tool .equation-display { margin: .6rem 0; }
+[data-module="CS02"] .routh-tool td .equation-display { margin: 0; }
+[data-module="CS02"] .r-source { outline: 2px dashed var(--accent); outline-offset: -3px; }
+[data-module="CS02"] .r-selected { outline: 3px solid var(--accent); outline-offset: -3px; }
+[data-module="CS02"] .r-leading { background: var(--surface); box-shadow: inset 0 0 0 2px var(--accent); }
+[data-module="CS02"] .r-special { padding: 1rem; border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: .4rem; margin: 1rem 0; min-width: 0; }
+[data-module="CS02"] .routh-tool li { margin: .45rem 0; overflow-wrap: anywhere; }

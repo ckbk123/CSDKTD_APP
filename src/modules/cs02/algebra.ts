@@ -155,3 +155,58 @@ export function symmetricClassification(p: Poly) {
   if (remaining < 0 || remaining % 4) throw new Error('Auxiliary root classification failed its degree check.');
   return { origin, realPairs, imaginaryPairs, complexQuartets: remaining / 4 };
 }
+
+/** The same finite-degree Sturm calculation over ordered rational functions.
+ * Signs describe sufficiently small epsilon>0, before taking its zero limit. */
+export function symmetricClassificationRF(source: readonly RF[]) {
+  const zero = constantRF(Z), one = constantRF(U);
+  const clean = (p: readonly RF[]) => { let end = p.length; while (end > 1 && zeroRF(p[end - 1])) end--; const out = p.slice(0, end); if (out.length > 7) throw new Error('Auxiliary polynomial degree is limited to six.'); return out.length ? out : [zero]; };
+  const deg = (p: readonly RF[]) => p.every(zeroRF) ? -1 : clean(p).length - 1;
+  const scale = (p: readonly RF[], value: RF) => clean(p.map(c => mulRF(c, value)));
+  const monic = (p: readonly RF[]) => deg(p) < 0 ? [zero] : scale(p, divRF(one, clean(p).at(-1)!));
+  const differentiate = (p: readonly RF[]) => clean(p.slice(1).map((c, i) => mulRF(c, constantRF(q(i + 1)))));
+  function divide(numerator: readonly RF[], denominator: readonly RF[]) {
+    const divisor = clean(denominator); if (deg(divisor) < 0) throw new Error('Symbolic auxiliary division by zero.');
+    let remainder = clean(numerator); const quotient = Array.from({ length: Math.max(1, deg(remainder) - deg(divisor) + 1) }, () => zero);
+    for (let pass = 0; deg(remainder) >= deg(divisor); pass++) {
+      if (pass > 6) throw new Error('Auxiliary division exceeded its degree bound.');
+      const shift = deg(remainder) - deg(divisor), factor = divRF(remainder.at(-1)!, divisor.at(-1)!);
+      quotient[shift] = addRF(quotient[shift], factor);
+      const removed = [...Array.from({ length: shift }, () => zero), ...scale(divisor, factor)];
+      remainder = clean(remainder.map((c, i) => subRF(c, removed[i] ?? zero)));
+    }
+    return { quotient: clean(quotient), remainder };
+  }
+  function gcd(a: readonly RF[], b: readonly RF[]): RF[] {
+    let x = clean(a), y = clean(b);
+    for (let pass = 0; deg(y) >= 0; pass++) { if (pass > 7) throw new Error('Auxiliary GCD exceeded its degree bound.'); const remainder = divide(x, y).remainder; x = y; y = remainder; }
+    return monic(x);
+  }
+  function distinct(p: readonly RF[]) {
+    if (deg(p) <= 0) return 0;
+    const first = monic(divide(p, gcd(p, differentiate(p))).quotient), sequence = [first, differentiate(first)];
+    while (deg(sequence.at(-1)!) >= 0) {
+      if (sequence.length > 8) throw new Error('Auxiliary Sturm sequence exceeded its degree bound.');
+      const remainder = scale(divide(sequence.at(-2)!, sequence.at(-1)!).remainder, constantRF(q(-1)));
+      if (deg(remainder) < 0) break;
+      const lead = remainder.at(-1)!, positiveLead = limitRF(lead).sign > 0 ? lead : mulRF(lead, constantRF(q(-1)));
+      sequence.push(scale(remainder, divRF(one, positiveLead)));
+    }
+    const atZero = sequence.map(poly => limitRF(poly.find(c => !zeroRF(c)) ?? zero).sign), atInfinity = sequence.map(poly => limitRF(poly.at(-1)!).sign);
+    return variations(atZero) - variations(atInfinity);
+  }
+  function multiplicity(p: readonly RF[]) {
+    let current = clean(p), count = 0;
+    for (let pass = 0; deg(current) > 0; pass++) { if (pass > 6) throw new Error('Auxiliary multiplicity exceeded its degree bound.'); count += distinct(current); current = gcd(current, differentiate(current)); }
+    return count;
+  }
+  const polynomial = clean(source), n = deg(polynomial); if (n < 0) throw new Error('An auxiliary polynomial cannot be zero.');
+  const parity = n % 2;
+  if (polynomial.some((c, i) => !zeroRF(c) && i % 2 !== parity)) throw new Error('Auxiliary powers must have one parity.');
+  const half = clean(polynomial.filter((_c, i) => i % 2 === parity));
+  let originPairs = 0; while (originPairs < half.length && zeroRF(half[originPairs])) originPairs++;
+  const origin = parity + 2 * originPairs, realPairs = multiplicity(half), imaginaryPairs = multiplicity(half.map((c, i) => i % 2 ? mulRF(c, constantRF(q(-1))) : c));
+  const remaining = n - origin - 2 * realPairs - 2 * imaginaryPairs;
+  if (remaining < 0 || remaining % 4) throw new Error('Symbolic auxiliary classification failed its degree check.');
+  return { origin, realPairs, imaginaryPairs, complexQuartets: remaining / 4 };
+}

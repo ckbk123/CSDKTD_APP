@@ -1,4 +1,4 @@
-import { EPS, U, Z, axisMultiplicity, constantOf, constantRF, degree, divQ, divRF, divideP, equalQ, gcdP, limitRF, monicP, mulQ, mulRF, negQ, q, signQ, subQ, subRF, symmetricClassification, trim, zeroRF, type Poly, type Q, type RF } from './algebra';
+import { EPS, U, Z, axisMultiplicity, constantOf, constantRF, degree, divQ, divRF, divideP, equalQ, gcdP, limitRF, monicP, mulQ, mulRF, negQ, q, signQ, subQ, subRF, symmetricClassification, symmetricClassificationRF, trim, zeroRF, type Poly, type Q, type RF } from './algebra';
 
 export interface Row {
   readonly power: number;
@@ -86,7 +86,7 @@ export function analyzeCoefficients(coefficients: Poly) {
     if (!row.auxiliary) return [];
     const constants = row.auxiliary.map(constantOf);
     const polynomial = constants.every((value): value is Q => value !== null) ? constants : null;
-    return [{ row: index, polynomial, symbolic: row.auxiliary, classification: polynomial ? symmetricClassification(polynomial) : null }];
+    return [{ row: index, polynomial, symbolic: row.auxiliary, classification: polynomial ? symmetricClassification(polynomial) : symmetricClassificationRF(row.auxiliary), epsilonFamily: polynomial === null }];
   });
   return { original, normalized, leading: original[n], degree: n, rows, limits, signs, firstColumnChanges: changes, separation, right, axis, left, strict, matrix, matrixPowers, minors, auxiliaries };
 }
