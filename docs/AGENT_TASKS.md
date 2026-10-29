@@ -6,7 +6,9 @@
 
 ## Assign work with narrow ownership
 
-Assign one module folder to one agent. Several agents may work in parallel on different folders after shared dependencies have clear owners. Do not issue a broad parallel assignment to “implement all modules”: it invites changes to the same catalogue, types, dependencies and shared mathematics.
+For automatic selection, copy [WORKER_GOAL.txt](WORKER_GOAL.txt) unchanged into each local chat. It includes the exact primary checkout and directs each agent to select/claim its own unfinished module. The [worker protocol](AUTONOMOUS_WORKERS.md) provides atomic reservations, isolated worktrees, checkpoints, browser QA coordination and branch submission. The module index remains the catalogue of accepted goals, not a requirement that the user manually assign every ID.
+
+Each worker owns one module folder. Several agents may work in parallel on different folders after shared dependencies have clear owners. Do not issue an uncoordinated broad assignment to “implement all modules”: it invites changes to the same catalogue, types, dependencies and shared mathematics.
 
 Copy one module's full TASK assignment, or use this template:
 

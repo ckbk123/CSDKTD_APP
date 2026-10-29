@@ -2,6 +2,8 @@
 
 Use [START_HERE.md](START_HERE.md) to begin an assignment. This page separates available application foundations from individual teaching-tool implementation. Module progress belongs in each module's `STATUS.md`, linked from the [56-module index](AGENT_TASKS.md).
 
+Unassigned local agents can use the same [generic goal](WORKER_GOAL.txt) and [worker protocol](AUTONOMOUS_WORKERS.md). Their claim queue is separate from these implementation stages: an active/submitted/handoff reservation records ownership and delivery state, not mathematical completion. Run `npm run agents:list` for that local queue; inspect the module's STATUS and actual code for implementation evidence.
+
 ## Assessed baseline
 
 **29 October 2026, v0.3.0, code baseline `e0b7ddb`.** The tables below are a dated assessment, not an automatically updated claim about later commits. Recheck current source/tests before relying on them. Keep module progress local to its folder so several agents can contribute without editing the same central ledger.

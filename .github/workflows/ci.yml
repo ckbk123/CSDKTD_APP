@@ -33,5 +33,7 @@ jobs:
         run: npm run check
       - name: Run tests
         run: npm test
+      - name: Check agent coordination
+        run: npm run test:agents
       - name: Build static application
         run: npm run build

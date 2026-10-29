@@ -14,6 +14,8 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 
 ## Read before editing
 
+If the user gives the generic worker goal without a module ID, follow [docs/AUTONOMOUS_WORKERS.md](docs/AUTONOMOUS_WORKERS.md): inspect the queue, choose and atomically claim one eligible module, then work in an isolated worktree and unique branch. Do not ask the user to choose an ID. The exact primary Git checkout and reusable `/goal` are in that guide and `docs/WORKER_GOAL.txt`. Explicit single-module assignments still take precedence, but concurrent workers must reserve their ownership.
+
 1. Read `docs/START_HERE.md`, then the assigned module's `src/modules/<id>/TASK.md`, `STATUS.md`, `index.ts`, `workspace.ts` and existing tests.
 2. Read `docs/CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, `docs/DESIGN.md`, `docs/EQUATION_INPUT.md` and the matching atlas entry.
 3. Check the current working tree and existing shared helpers. Course slides remain outside Git; audits distinguish inspected examples from proposed fixtures. Preserve those distinctions.
@@ -26,6 +28,8 @@ Update the module's progress record with supported limits, exact checks, browser
 
 ## Ownership and isolation
 
+- Generic workers reserve a module through `scripts/agent-claim.mjs`, record their worktree/branch/checkpoints and preserve claims until submission or deliberate recovery. The local registry lives in Git's common directory so linked worktrees coordinate. Never steal a reservation because of its age; separate clones/machines are outside this local protocol.
+- Workers build/test/preview in their own worktree. Preserve the primary checkout and live preview on port 8787. Reserve shared browser QA with the helper before using browser/viewport controls, then release it. Do not run unrelated workers in one checkout or reuse another worker's browser tab.
 - A normal module assignment owns only `src/modules/<id>/**`, including its local tests/styles/helpers. Do not import from a sibling module or alter another module's files.
 - Do not change the shell, routing, catalogue, shared types, global configuration, package dependencies, deployment configuration or shared math without explicit coordination with their owner. Describe the required API/dependency and why it is needed; continue independent module work while coordination happens.
 - `index.ts` exports an immutable `manifest` with ID/title/description/domain/category/defaultExample and `load: () => import('./workspace')`. Keep algorithms and UI work out of this eagerly loaded metadata file.
@@ -33,6 +37,8 @@ Update the module's progress record with supported limits, exact checks, browser
 - The shell aborts the signal and runs cleanup before leaving/resetting; it rejects stale lazy imports. Use the signal for event listeners and asynchronous work. Cleanup timers, animation frames, observers, workers, subscriptions and third-party instances. Ignore late results after abort.
 - Scope styles with CSS modules or selectors beneath this tool's `[data-module="ID"]` root. Never introduce unscoped element/global styles from a module.
 - Shared helpers belong in coordinated, stateless `src/shared/math/` or other explicitly assigned shared locations. Inputs/results/workspaces are caller-owned. A general instruction to "implement all modules" is not a safe parallel ownership assignment.
+
+For the generic goal, delivery is one fully implemented and checked module on its own committed/pushed branch, with a submitted claim and updated STATUS evidence. Do not merge `main`, deploy or spawn additional agents under that worker prompt. The integration owner reviews and integrates submissions separately. Respect the user's configured goal budget; checkpoint early because a hard stop may prevent a final handoff, and never equate partial work or no eligible work with a completed exercise.
 
 ## Mathematics and student interface
 

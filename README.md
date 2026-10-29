@@ -2,7 +2,9 @@
 
 Control Studio is a browser application for learning **SISO LTI control theory**, organized into Continuous and Discrete systems and five subject groups in each: System Representation, Plots, Stability, Performance and Controller Design. The repository remains `CSDKTD_APP`; package and Cloudflare identifiers remain `csdktd-app`.
 
-**Assigning work to an agent? Start with [START_HERE.md](docs/START_HERE.md).** It explains the end goal, how to assess existing work, the autonomous implementation workflow and a copyable module assignment. [Project status](docs/PROJECT_STATUS.md) separates working foundations from module progress; each module owns a `STATUS.md` with its evidence and remaining work.
+**Starting agents? Copy the same [generic `/goal`](docs/WORKER_GOAL.txt) into each local chat.** It contains the exact Git checkout path; agents choose and reserve their own unfinished modules, work in separate checkouts and submit individual branches. Follow [AUTONOMOUS_WORKERS.md](docs/AUTONOMOUS_WORKERS.md) for the claim queue, budgets, checkpoints and integration. No module ID needs editing.
+
+[START_HERE.md](docs/START_HERE.md) explains the product goal, current-work assessment and completion criteria. [Project status](docs/PROJECT_STATUS.md) separates working foundations from module progress; each module owns a `STATUS.md` with its evidence and remaining work.
 
 ## Current milestone
 

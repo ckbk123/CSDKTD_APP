@@ -2,6 +2,8 @@
 
 Implement one clearly assigned tool at a time. Begin with [START_HERE.md](START_HERE.md). The [task index](AGENT_TASKS.md) links all 56 durable briefs and module-owned progress records. Each brief copies its exercise, evidence, intended interaction, verification requirements and default-example metadata. A scaffold's existence is not evidence that its mathematics works.
 
+For a generic goal without an assigned ID, use [AUTONOMOUS_WORKERS.md](AUTONOMOUS_WORKERS.md) to choose and atomically reserve an eligible module. Work in its isolated worktree and unique branch. Editing a STATUS file is not an ownership lock; the common-Git claim queue coordinates concurrent local workers and reserves shared browser QA.
+
 ## Before implementation
 
 1. Read the assigned `TASK.md`, `STATUS.md`, `index.ts`, `workspace.ts`, existing tests, [atlas](EXERCISE_TOOL_ATLAS.md), [functional specification](FUNCTIONAL_SPECIFICATION.md) and [development guide](DEVELOPMENT.md).

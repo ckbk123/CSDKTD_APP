@@ -10,6 +10,9 @@
     "dev": "vite --host 127.0.0.1",
     "check": "tsc --noEmit",
     "test": "vitest run",
+    "test:agents": "node --test scripts/agent-claim.node-test.mjs",
+    "agents:list": "node scripts/agent-claim.mjs list",
+    "agents:claim": "node scripts/agent-claim.mjs claim",
     "build": "npm run check && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "deploy": "npm run build && wrangler deploy"

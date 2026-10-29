@@ -1,6 +1,8 @@
 # Start here: implement a Control Studio goal
 
-This is the entry point for an agent receiving a goal such as **"Implement CD02"** or **"Finish the Routh tool"**. Assess the repository first, then complete the missing work within the assigned scope. Do not stop at a proposal or replace an existing implementation without checking it.
+This is the entry point for an agent receiving either the [generic worker goal](WORKER_GOAL.txt) or an explicit assignment such as **"Implement CD02"**. With the generic goal, follow [AUTONOMOUS_WORKERS.md](AUTONOMOUS_WORKERS.md) to select and reserve a module yourself; the user need not choose its ID. Assess the repository first, then complete the missing work within the claimed/assigned scope. Do not stop at a proposal or replace an existing implementation without checking it.
+
+The primary Git checkout on the owner's computer is **`C:\Users\baokh\OneDrive\BKHCM\2026-2027\CSDKTD\CSDKTD APP`**, with origin **https://github.com/ckbk123/CSDKTD_APP.git**. Generic workers inspect it, share a claim queue through its Git common directory and implement in isolated linked worktrees. See the worker guide for the exact setup and finite stopping condition.
 
 ## The finished product
 
@@ -54,10 +56,12 @@ Keep the actual audit in [CD02/STATUS.md](../src/modules/cd02/STATUS.md). This e
 
 ## Assignment you can send to an agent
 
-Replace CD02 and its folder when assigning a different module. The [module index](AGENT_TASKS.md) maps all IDs to their briefs and progress records.
+For unassigned agents, paste [WORKER_GOAL.txt](WORKER_GOAL.txt) unchanged. It already contains the local repository path and directs the worker to choose its own eligible module, claim it, implement and verify it, then submit a unique branch. You can repeat it in several local chats; [AUTONOMOUS_WORKERS.md](AUTONOMOUS_WORKERS.md) explains coordination and recovery.
+
+Use the explicit example below only when you want a particular module. Replace CD02 and its folder as needed. Concurrent agents must still reserve that module before editing. The [module index](AGENT_TASKS.md) maps all IDs to their briefs and progress records.
 
 ```text
 Implement CD02 in Control Studio. Start with AGENTS.md and docs/START_HERE.md, then read src/modules/cd02/TASK.md, STATUS.md and the current code/tests. Audit the accepted requirements against what already works, preserve working behavior, and autonomously complete the missing implementation and verification. Own src/modules/cd02/**; coordinate necessary shared API changes. Use the shared visual equation components and the existing mount/reset/cleanup contract. Do not stop at a plan or a fixed-answer demonstration. Update STATUS.md with requirement-level evidence, supported limits, exact test/build/browser results and remaining issues. Do not mark unfinished requirements complete or deploy the application.
 ```
 
-For a shared-foundation goal, specify the owned shared paths/API and the first consuming module separately. For parallel module work, assign distinct folders and one integration owner for shared changes and final integration. Do not make all 56 agents edit one global progress document or develop competing shared math APIs.
+For a shared-foundation goal, specify the owned shared paths/API and the first consuming module separately. Generic workers select distinct folders themselves; one integration owner handles shared changes and final integration. Do not make all 56 agents edit one global progress document or develop competing shared math APIs.

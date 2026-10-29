@@ -17,6 +17,9 @@ Use Vite's printed local address. The other commands are:
 |---|---|
 | `npm run check` | TypeScript checking (`tsc --noEmit`) |
 | `npm test` | Vitest tests (`vitest run`) |
+| `npm run test:agents` | Node tests for local atomic claims, worktree coordination and recovery |
+| `npm run agents:list` | Read eligible modules and reservations shared by local linked worktrees |
+| `npm run agents:claim -- --owner <unique> --module <ID>` | Atomically reserve one unfinished module; does not create a worktree or change Git refs |
 | `npm run build` | Produce the static application in `dist/` |
 | `npm run preview` | Serve the production build locally for inspection |
 
@@ -37,6 +40,7 @@ Run check, tests and build before handing off a module. Local development/previe
 | `src/shared/math/` | Future coordinated stateless mathematical helpers |
 | `src/shared/equations/` | Shared visual equation display/input and curated baseline previews; no mathematical solver |
 | `docs/research/` | Course evidence and provenance; original slide decks remain outside Git |
+| `scripts/agent-claim.mjs` | Local worker reservation/QA/handoff metadata under Git's common directory; no Git mutations |
 
 The catalogue uses eager `import.meta.glob` discovery for **metadata only**. Each manifest's `load` lazily imports `./workspace`. Keep large algorithms, plotting libraries and module UI out of metadata imports so opening the home grid does not load every tool's implementation.
 
@@ -57,6 +61,8 @@ export const manifest = {
 Domains are `continuous`/`discrete`; categories are `representation`, `plots`, `stability`, `performance`, `design`. IDs and folder names are stable routing identities. Coordinate changes rather than silently renaming them.
 
 ## Mount, reset and leave
+
+When running several agents, use the [generic worker protocol](AUTONOMOUS_WORKERS.md) and [copyable goal](WORKER_GOAL.txt). Claims coordinate linked worktrees on this computer; installations/builds/previews run in each worker's returned directory. The primary preview on 8787 stays untouched. Run `npm run test:agents` after changing the coordination helper; these Node tests use disposable temporary Git fixtures and do not claim real application modules.
 
 The workspace exports a **synchronous** mount function. It receives an HTML container and an `AbortSignal`, and may return cleanup:
 

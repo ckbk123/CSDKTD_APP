@@ -1,4 +1,5 @@
 *.ts text eol=lf
+*.mjs text eol=lf
 *.json text eol=lf
 *.jsonc text eol=lf
 *.css text eol=lf
@@ -7,6 +8,7 @@
 *.yml text eol=lf
 *.jpg -text
 *.png -text
+docs/WORKER_GOAL.txt text eol=lf
 
 # Preserve upstream license text verbatim, including its Markdown whitespace.
 public/licenses/** -whitespace
