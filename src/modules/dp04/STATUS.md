@@ -6,7 +6,7 @@
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
 - **Branch:** `codex/dp04-root-locus-01a186d1`
 - **Worktree:** `C:\Users\baokh\.codex\worktrees\dp04-root-locus-01a186d1\CSDKTD APP`
-- **PR:** not created yet
+- **PR:** [DP04 #19](https://github.com/ckbk123/CSDKTD_APP/pull/19), draft and attached
 
 ## Starting evidence and full bounded exercise
 
@@ -81,3 +81,9 @@ workspace.ts retains a synchronous mount and defers the browser-only view, guard
 The interface regressions caught a class-name conflict between an SVG root marker and the result panel that could leave the root table stale after moving K. The marker now has its own class, and repeated gain/candidate updates are checked. Additional numeric conditioning rejects nonzero normalized coefficients, K and candidate components below10^-100, avoiding unrepresentable polynomial products; exact zero remains supported. Tiny supported nonzero roots remain nonzero, and decaying modal tails may still round to zero. Near/repeated-root text distinguishes the unit basis from a full response and qualifies nonzero versus zero repeated-root transients.
 
 Current checks:89 module cases in4 files (17 math,53 input,14 mocked interface,5 lazy lifecycle); npm run check passes; all292 project tests in19 files pass; production build passes. The DP04 view is about12.94kB gzip, with the existing MathLive warning about221.49kB gzip and20 local fonts. Mocked presentation is not evidence of actual MathLive behavior. Browser editing/fraction/fonts/keyboard, construction/gain/candidate checks, reset/reopen/fast navigation and phone layout remain pending. No shared/package/configuration change was needed. The coordinator has released the temporary QA order; normal acquisition can resume when this build is ready.
+
+## PR and current QA scheduling
+
+Single draft PR #19 targets main from the owned DP04 branch and is attached to worker chat01a186d1-a367-78f1-98f5-e1cf147ef306. It describes the full bounded quadratic exercise, current89 module/292 full-project checks and remaining browser gate. The connected GitHub integration cannot create/update these PRs (403); the existing authenticated Git connection is used through GitHub REST without storing or printing credentials. No duplicate PR was opened.
+
+The coordinator's latest schedule reserves the slot after current CF02 for a short DS01 integration check. This worker has not acquired QA or started a browser tab and will defer new acquisition until that release notice. Code/math/parser/lifecycle checks and production build are complete; real browser evidence is still missing. PR remains draft and the claim active. The current helper's clean-worktree/HEAD submission gate will be followed after completing and committing all evidence.
