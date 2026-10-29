@@ -104,7 +104,7 @@ describe('all numerical cubic roots', () => {
 });
 
 describe('bounded visual polynomial grammar and scalar controls', () => {
-  it.each([String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)`, String.raw`1+(2\frac12)`, String.raw`\left(-2\frac{1}2\right)`])('rejects mixed semantics in polynomial coefficients and endpoints: %s', source => {
+  it.each([String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)`, String.raw`1+(2\frac12)`, String.raw`\left(-2\frac{1}2\right)`, String.raw`2\,\frac12`, String.raw`2{\frac12}`, String.raw`{2}\frac12`])('rejects mixed semantics in polynomial coefficients and endpoints: %s', source => {
     expect(() => parseDenominator(`s^3+s^2+(${source})s+1`)).toThrow('Insert + or ×');
     expect(() => parseEndpoint(source)).toThrow('Insert + or ×');
   });

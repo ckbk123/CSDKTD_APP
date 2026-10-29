@@ -1,10 +1,9 @@
 /** Private exact coefficients plus bounded cubic root checks; no shared state. */
-import { convertLatexToMathMl } from 'mathlive';
 function checkFractionMeaning(latex: string) {
-  if (!/\\(?:dfrac|frac)/.test(latex)) return;
-  let notation: string;
-  try { notation = convertLatexToMathMl(latex); } catch { throw new Error('Check the fraction notation before computing.'); }
-  if (/&#(?:x0*2064|0*8292);|\u2064/i.test(notation)) throw new Error('Mixed numbers are unsupported here. Insert + or × between the whole number and fraction.');
+  const source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '');
+  // Protect one-token fraction arguments and powers before inspecting invisible grouping.
+  const adjacency = source.replace(/\^\{[0123]\}|\^[0123]/g, '^p').replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g, '@').replace(/[{}]/g, '');
+  if (/\d\.?@/.test(adjacency)) throw new Error('Mixed numbers are unsupported here. Insert + or × between the whole number and fraction.');
 }
 export interface Rational { readonly n: bigint; readonly d: bigint }
 const abs = (n: bigint) => n < 0n ? -n : n;
