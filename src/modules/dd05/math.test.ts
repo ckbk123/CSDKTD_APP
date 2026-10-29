@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createModel, design, desiredRoots, polynomialRoots, simulate, type Settings, type Target } from './math';
+import { assess, createModel, design, desiredRoots, polynomialRoots, simulate, type Settings, type Target } from './math';
 const source = (): Settings => ({ plant: { gain: 10, tau: 10 }, sensor: .05, T: 2, structure: 'pi', reference: 1, preweight: 'raw' });
 const target: Target = { mode: 'continuous', zeta: .707, wn: 2 };
 const exact = (structure: 'pi' | 'pid' = 'pi'): Settings => ({ plant: { gain: 1, tau: 1 }, sensor: .5, T: Math.log(2), structure, reference: 1, preweight: 'raw' });
@@ -49,6 +49,14 @@ describe('DD05 full characteristic matching, sensor convention and actual sample
   it('does not discard the derivative delay mode when Kd=0 in a PID realization', () => {
     const d = design(exact('pid'), pair, 0, 'comparator', true); expect(d.model.gains.kd).toBeCloseTo(0, 14); expect(d.model.poles).toHaveLength(3); expect(d.model.poles).toContainEqual({ re: 0, im: 0 });
     expect(design(exact(), pair, NaN, 'comparator', true).desired.extra).toBeNull(); // unused extra data does not alter PI.
+  });
+  it('rejects a target-pair-only check against a full third-order PID candidate', () => {
+    const pid = design(exact('pid'), pair, -.2, 'comparator', true).model;
+    const incomplete = desiredRoots(pair, Math.log(2), 'pi', 0);
+    const result = assess(pid, incomplete, 'comparator', true);
+    expect(result.compatible).toBe(false); expect(result.issues.join()).toContain('orders differ'); expect(result.residuals).toEqual([]);
+    const changed = createModel(exact('pid'), { ...pid.gains, kp: pid.gains.kp + .01 });
+    expect(assess(changed, desiredRoots(pair, Math.log(2), 'pid', -.2), 'comparator', true).issues.join()).toContain('coefficient residual');
   });
   it('retains an unexcited integral mode and rejects final-value claims for it', () => {
     const m = createModel(exact(), { kp: .5, ki: 0, kd: 0 }); expect(m.stability).toBe('boundary'); expect(m.poles).toHaveLength(2);

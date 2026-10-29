@@ -117,18 +117,24 @@ export function createModel(settings: Settings, gains: Gains): Model {
   const statuses = poles?.map(poleStatus), stability = !statuses ? 'unresolved' : statuses.includes('outside') ? 'outside' : statuses.includes('boundary') ? 'boundary' : 'inside';
   return { settings: p, gains: { ...gains }, a, b, F, q, polynomial, poles, stability, rootError };
 }
+export function assess(model: Model, desired: Desired, tracking: 'comparator' | 'physical', nonnegative: boolean): Pick<Design, 'residuals' | 'issues' | 'compatible'> {
+  if (tracking !== 'comparator' && tracking !== 'physical') throw new Error('Choose comparator or physical tracking error.');
+  const p = model.settings, issues: string[] = [], sameOrder = model.polynomial.length === desired.polynomial.length;
+  const residuals = sameOrder ? model.polynomial.map((x, i) => x - desired.polynomial[i]) : [];
+  const scale = Math.max(1, ...desired.polynomial.map(Math.abs));
+  if (!sameOrder) issues.push('The full characteristic orders differ. A target pair alone does not specify every PID mode.');
+  else if (residuals.some(x => Math.abs(x) > 1e-8 * scale)) issues.push('The full coefficient residual exceeds1e-8 relative scale.');
+  if (model.stability !== 'inside') issues.push('Every full closed-loop pole must be resolved strictly inside the disk for a stable tracking design.');
+  if (nonnegative && Object.values(model.gains).some(x => x < -1e-10)) issues.push('This controller uses a negative PID gain, incompatible with the selected nonnegative-gain constraint.');
+  if (tracking === 'physical' && p.reference !== 0 && Math.abs(model.F / p.sensor - 1) > 1e-9) issues.push('Zero physical tracking error is incompatible with raw F=1 and H≠1 under integral comparator control. Select calibrated F=H or change the constraint.');
+  return { residuals, issues, compatible: issues.length === 0 };
+}
 export function design(settings: Settings, target: Target, extra: number, tracking: 'comparator' | 'physical', nonnegative: boolean): Design {
   const p = validateSettings(settings), desired = desiredRoots(target, p.T, p.structure, extra), a = Math.exp(-p.T / p.plant.tau), b = p.plant.gain * -Math.expm1(-p.T / p.plant.tau), hb = p.sensor * b;
-  if (tracking !== 'comparator' && tracking !== 'physical') throw new Error('Choose comparator or physical tracking error.');
   const q = p.structure === 'pi' ? [(desired.polynomial[1] + 1 + a) / hb, (desired.polynomial[2] - a) / hb] : [(desired.polynomial[1] + 1 + a) / hb, (desired.polynomial[2] - a) / hb, desired.polynomial[3] / hb];
   const kd = p.structure === 'pid' ? q[2] * p.T : 0, kp = -q[1] - (p.structure === 'pid' ? 2 * q[2] : 0), ki = q.reduce((s, x) => s + x, 0) / p.T;
-  const model = createModel(p, { kp, ki, kd }), residuals = model.polynomial.map((x, i) => x - desired.polynomial[i]), issues: string[] = [];
-  const scale = Math.max(1, ...desired.polynomial.map(Math.abs));
-  if (residuals.some(x => Math.abs(x) > 1e-8 * scale)) issues.push('The full coefficient residual exceeds1e-8 relative scale.');
-  if (model.stability !== 'inside') issues.push('Every full closed-loop pole must be resolved strictly inside the disk for a stable tracking design.');
-  if (nonnegative && [kp, ki, kd].some(x => x < -1e-10)) issues.push('This complete target requires a negative PID gain, incompatible with the selected nonnegative-gain constraint.');
-  if (tracking === 'physical' && Math.abs(model.F / p.sensor - 1) > 1e-9) issues.push('Zero physical tracking error is incompatible with raw F=1 and H≠1 under integral comparator control. Select calibrated F=H or change the constraint.');
-  return { desired, model, residuals, issues, compatible: issues.length === 0 };
+  const model = createModel(p, { kp, ki, kd });
+  return { desired, model, ...assess(model, desired, tracking, nonnegative) };
 }
 export interface Sample { k: number; time: number; output: number; comparator: number; physical: number; control: number | null; incrementResidual: number | null }
 export interface Performance { samples: Sample[]; limit: number | null; comparatorLimit: number | null; physicalLimit: number | null; overshoot: number | null; rise: number | null; settlingCandidate: number | null; controlEnergy: number; horizon: number }
