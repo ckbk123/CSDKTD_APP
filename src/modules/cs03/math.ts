@@ -1,4 +1,11 @@
 /** Private exact coefficients plus bounded cubic root checks; no shared state. */
+import { convertLatexToMathMl } from 'mathlive';
+function checkFractionMeaning(latex: string) {
+  if (!/\\(?:dfrac|frac)/.test(latex)) return;
+  let notation: string;
+  try { notation = convertLatexToMathMl(latex); } catch { throw new Error('Check the fraction notation before computing.'); }
+  if (/&#(?:x0*2064|0*8292);|\u2064/i.test(notation)) throw new Error('Mixed numbers are unsupported here. Insert + or × between the whole number and fraction.');
+}
 export interface Rational { readonly n: bigint; readonly d: bigint }
 const abs = (n: bigint) => n < 0n ? -n : n;
 export function q(n: number | bigint, d: number | bigint = 1): Rational {
@@ -51,6 +58,7 @@ function decimal(token: string): Rational {
 }
 export function parseDenominator(latex: string): Polynomial {
   if (!latex.trim() || latex.length > 300) throw new Error('Enter D(s) using at most 300 characters.');
+  checkFractionMeaning(latex);
   let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(/^D\(s\)=/, '');
   source = source.replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g,
     (_all, n, nd, d, dd) => `((${n ?? nd})/(${d ?? dd}))`).replace(/\^\{([0123])\}/g, '^$1').replace(/\{/g, '(').replace(/\}/g, ')');
@@ -165,6 +173,7 @@ export function analyze(m: Model, gain: number | Rational) {
 /** Constant-only visual endpoint arithmetic; independent of the polynomial grammar. */
 export function parseEndpoint(latex: string): Rational {
   if (!latex.trim() || latex.length > 300) throw new Error('Enter a numeric endpoint using at most 300 characters.');
+  checkFractionMeaning(latex);
   let source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\[,!; ]/g, '').replace(/\s/g, '');
   source = source.replace(/\\(?:dfrac|frac)(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))(?:\{([+-]?(?:\d+(?:\.\d*)?|\.\d+))\}|(\d))/g,
     (_all, n, nd, d, dd) => `((${n ?? nd})/(${d ?? dd}))`).replace(/\{/g, '(').replace(/\}/g, ')');

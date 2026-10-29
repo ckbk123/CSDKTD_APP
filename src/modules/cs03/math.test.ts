@@ -104,6 +104,16 @@ describe('all numerical cubic roots', () => {
 });
 
 describe('bounded visual polynomial grammar and scalar controls', () => {
+  it.each([String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)`, String.raw`1+(2\frac12)`, String.raw`\left(-2\frac{1}2\right)`])('rejects mixed semantics in polynomial coefficients and endpoints: %s', source => {
+    expect(() => parseDenominator(`s^3+s^2+(${source})s+1`)).toThrow('Insert + or ×');
+    expect(() => parseEndpoint(source)).toThrow('Insert + or ×');
+  });
+  it('preserves explicit sums/products and clear polynomial fraction products', () => {
+    expect(parseDenominator(String.raw`s^3+s^2+(2+\frac12)s+1`).map(textOf)).toEqual(['1', '5/2', '1', '1']);
+    expect(parseDenominator(String.raw`s^3+s^2+2(\frac12)s+1`).map(textOf)).toEqual(['1', '1', '1', '1']);
+    expect(textOf(parseEndpoint(String.raw`2+\frac12`))).toBe('5/2');
+    expect(textOf(parseEndpoint(String.raw`2\times\frac12`))).toBe('1');
+  });
   it.each([String.raw`D(s)=s^3+\frac12s^2+\frac{3}4s+\frac{1}{-2}`, 's^3+0.5s^2+.75s-.5', 's^3+(s^2/2)+(3s/4)-.5'])('reads equivalent exact signed fractions: %s', source => {
     expect(parseDenominator(source).map(textOf)).toEqual(['-1/2', '3/4', '1/2', '1']);
   });
