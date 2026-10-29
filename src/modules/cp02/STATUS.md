@@ -1,59 +1,89 @@
 # CP02 implementation status
 
-- **Stage:** in-progress
-- **Assessed:** 2026-10-29; starting primary-main revision `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d`.
+- **Stage:** implemented
+- **Assessment:** 2026-10-29; accepted bounded exercise and mathematical/project/browser checks complete. Independent final review and integration are pending; no verified stage is claimed.
+- **Starting main:** `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (isolated v0.3.3 baseline).
 - **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`.
 - **Ownership/branch:** `src/modules/cp02/**`; `codex/cp02-pole-zero-modes-01a18701`; claim `worker-cp02-01a18701`.
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cp02-modes-01a18701/CSDKTD APP`.
 - **Contract:** [TASK.md](TASK.md), atlas CP02 and continuous source audit P1.
 
-## Requirement audit before implementation
+## Delivered accepted exercise
 
-The current mount is empty and no module-owned tests exist. Metadata, baseline preview and lazy lifecycle are already available and will be preserved.
+Students predict a mode family and initial slope, reveal weighted step-response terms, move poles and a real zero, and compare held responses with the same poles. Exact cancellation retains the original declared state realization and labels its internal stability separately from reduced-channel BIBO stability.
 
-| Accepted requirement | Missing work / intended evidence |
+| Requirement | Implementation and evidence |
 | --- | --- |
-| Match real/repeated/conjugate modes | Editable monic quadratic denominator with analytical roots; mode prediction/check and weighted modal decomposition |
-| Same poles, changed zeros | Linear/constant numerator, LHP/RHP zero presets at equal DC gain, held response comparison and explicit rejection of the same-poles/same-response misconception |
-| Pole dragging with conjugate pairs | Computed draggable pole plane, conjugate linkage and numeric coordinate alternatives; invalid candidates preserve the previous valid model |
-| Denominator lock and zero movement | Lock pole edits while moving the real numerator zero; optional DC-gain preservation and bounded zero drag/numeric entry |
-| Initial direction, modal weights, full response | Zero-state unit-step response with y(0+)=0 and y'(0+)=b1; computed constant/exponential/sine/Jordan/polynomial terms and full trace |
-| Cancellation and stability qualifications | Exact rational common-factor reduction; retain the explicitly declared original canonical realization; separate original internal and reduced-channel BIBO labels |
-| Visual input, validation and limits | Shared visual scalar coefficients, bounded rational parser, current shared native-number guard, explicit roots/zero/horizon/conditioning limits |
-| Lifecycle, tests and real browser | Fresh mount state, abortable events/drag resources, local styles, independent fixtures and project/browser checks |
+| Match real/repeated/conjugate modes | Analytical quadratic roots, prediction/check, weighted exponential/sine/cosine/generalized/polynomial terms; independent family fixtures and browser examples |
+| Same poles, different zeros | Equal-DC left/right zero examples, held response overlay, explicit same-poles misconception check, initial slope and modal-weight changes |
+| Drag poles in conjugate pairs | Release-to-apply candidate preview and linked pair update; real-pole movement and numeric keyboard alternatives; actual browser pole drag verified |
+| Lock denominator and move a zero | Locked pole controls and guarded denominator coefficient edits; optional DC preservation; real zero drag/numeric operations; invalid candidates retain the applied model |
+| Initial direction and full response | Exact initial value/slope/curvature; numerical weighted components and full unit-step trace, unit original free-mode overlays and time cursor |
+| Cancellation qualifications | Exact rational GCD/reduction, original/reduced transfer displays, explicit canonical A/B/C/D, separate internal/BIBO labels, exact/near cancellation cases |
+| Visual input and bounds | Four shared MathLive coefficient inputs; bounded private rational parser; direct shared `readNumericInput` import; real fraction/button, malformed-draft and native-number tests |
+| Lifecycle and layout | Guarded synchronous lazy mount, visit-owned state, abortable listeners, capture cleanup and editor destruction; reset/leave/rapid navigation and narrow browser checks |
 
-## Chosen bounded domain
+The initial audit found an empty mount and no module tests. Existing metadata/default example were preserved. All required rows above are delivered within the following bounds.
 
-G(s)=(b1*s+b0)/(s²+a1*s+a0), real SISO, zero initial state, unit-step input, no feedback. The original realization is explicitly the controllable canonical A=[0,1;-a0,-a1], B=[0;1], C=[b0,b1], D=0; internal stability refers to this retained realization, not to an unspecified physical system. Rational coefficient entries have bounded decimal/simple-fraction grammar. Coefficients are bounded by 100, |a1|<=20, poles have magnitude <=10 s^-1, each nonzero pole real/imaginary component has magnitude >=0.001 s^-1, and distinct poles require separation >=10^-6. Exact zero and repeated roots are supported separately. Finite zeros are zero or have magnitude 0.001–10 s^-1; a constant numerator has no finite zero. Time horizon is 0.1–20 s and exponential growth beyond exp(40) is reported. Numerical modal/step evaluation is distinct from exact algebraic cancellation.
+## Mathematical contract and limits
 
-## Independent fixtures and source distinctions
+Real continuous SISO model G(s)=(b1*s+b0)/(s²+a1*s+a0), zero initial state, unit-step input, no feedback. The retained original realization is A=[0,1;-a0,-a1], B=[0;1], C=[b0,b1], D=0. Internal labels refer to this explicit realization, not an unspecified physical system inferred from a transfer. Time is seconds; s and pole/zero coordinates are in inverse seconds; coefficients have consistent time units and output/input scaling.
 
-Baseline G=4/(s²+2s+4) has poles -1 +/- sqrt(3)j and zero-state step y=1-exp(-t)[cos(sqrt(3)t)+sin(sqrt(3)t)/sqrt(3)]. Compare b1=+2 and -2 while b0=4 and the denominator remain fixed: zeros -2/+2, identical DC gain 1, initial slopes +2/-2, different modal sine weights. Other proposed checks: 2/[(s+1)(s+2)] gives (1-exp(-t))²; 1/(s+1)² gives 1-(1+t)exp(-t); 1/[s(s+1)] gives t-1+exp(-t); 1/s² gives t²/2. Exact cancellation (s-1)/[(s-1)(s+2)] gives a stable scalar step despite the retained canonical realization's unstable eigenvalue. Near cancellation must remain uncanceled.
+Coefficient magnitude <=100; |a1|<=20. Each nonzero pole real/imaginary component has magnitude 0.001–10 s^-1, pole magnitude <=10 s^-1, and distinct-pole separation >=10^-6 s^-1. Exact zero and repeated roots are supported. Finite real zeros are zero or have magnitude 0.001–10 s^-1; constant numerators have no finite zero. Numerical component/norm boundary allowances are 10^-12 at the lower component limit and 10^-10 at the upper limit. The separation test compares the exact squared discriminant to 10^-12, retaining the exact boundary without floating subtraction.
 
-Read current primary coordination guides/diffs, assigned TASK/STATUS/source, contribution/development/design/equation guidance, matching atlas and source audit context. Original decks remain outside Git and were not newly inspected. Additional fixtures above are proposed analytic checks, not claimed slide transcriptions. The shared native-number helper exists in this fresh baseline and will be imported directly. No shared math API/dependency change is required.
+Visual entries accept signed numbers with <=9 decimal places, simple slash/compact/braced numeric fractions with <=24 digits per argument, <=8 outer groups/unary signs, <=512 raw / 100 normalized characters, and reduced coefficient denominators <=10^18. Nested fractions, mixed-number adjacency, arithmetic expressions, functions, powers and e/E literals are rejected. Native number controls have a separate exponent grammar; nonzero text rounded to zero is rejected while intentional zero and ordinary exponents remain valid.
 
-## Math checkpoint — 2026-10-29
+Entered coordinates round to nine decimals; dragging snaps to 0.01 s^-1 and to the real axis within 0.05 s^-1. An unmoved rational real pole stays exact using a BigInt perfect-square discriminant check. An irrational unmoved real pole rounds to nine decimals to keep the edited coefficients rational; this distinction is visible beside the controls. Candidate edits must still satisfy all coefficient/root bounds.
 
-Private exact-rational algebra and bounded closed-form step/modal evaluation are implemented. The 32 module math checks pass using `node node_modules/vitest/vitest.mjs run src/modules/cp02/math.test.ts` with Node 24.22.1. They cover the independent formulas above, changed zero signs/weights, exact and near cancellation, origin/Jordan modes, paired pole edits, rejection of ill-conditioned traces and finite-domain limits. Visual scalar grammar accepts a single number or simple numeric fraction (including compact/mixed-brace fraction arguments), and rejects mixed-number adjacency, signed/grouped/nested variants and explicit arithmetic rather than interpreting their displayed meaning incorrectly. UI, project-wide and browser checks remain pending. Nonzero individual pole real/imaginary components and finite zero locations are bounded below by 0.001 s⁻¹; this is stricter than just bounding pole magnitude.
+Cancellation uses exact rational polynomial division, never numerical proximity. An uncanceled real pole/zero pair closer than 10^-9*max(1, |pole|) is reported as unreliable for modal weights; exact algebra/stability remain visible and no unreliable trace is drawn. A zero scalar channel has no output terms, while its retained internal modes remain available.
 
-## Workspace checkpoint — 2026-10-29
+Response/modal evaluation is numerical. Closed forms cover all supported root families; near t=0 the full response uses 24 ODE Taylor terms when t*max(1, |a1|, sqrt(|a0|))<0.05 to preserve initial behavior without subtracting nearly equal residues. Initial derivative identities and common factors remain exact rational expressions. Horizon is 0.1–20 s, exponential growth is limited to exp(40), and plots have 401–1201 bounded samples. Rounded values and sampled curves are illustrations, not proofs of all extrema, settling or stability.
 
-Implemented all rows of the accepted audit: four visual coefficients, eight examples, family/slope/misconception predictions and checked feedback; original/reduced equations and canonical realization; separate internal/BIBO labels; linked conjugate pole dragging with release-to-apply preview; numeric pole/zero alternatives, denominator lock and optional fixed-DC zero movement; weighted step components, original unit free modes, held response comparison and time cursor. Bounds and sampled/numerical/exact distinctions are visible. Coefficient edits invalidate old output; invalid moves retain the applied model. Abort releases pointer capture and destroys all editor state; late imports cannot mount.
+## Independent fixtures and provenance
 
-Checks at this checkpoint using Node 24.22.1 and bundled npm CLI: `npm run check` passed; `node node_modules/vitest/vitest.mjs run src/modules/cp02` passed 40 tests (32 mathematics/parser + 8 flow/lifecycle tests); `npm test` passed all 243 tests in 17 files; `npm run build` passed, with the existing shared MathLive chunk-size advisory; `git diff --check` passed. Flow tests use a mocked editor and do not count as browser evidence. The real-browser gate remains pending; shared QA is currently reserved by CP03 followed by the coordinator's published-correction slot. No preview/viewport/tab has been changed by this CP02 worker yet.
+- Baseline 4/(s²+2s+4): poles -1 +/- sqrt(3)j; y=1-exp(-t)[cos(sqrt(3)t)+sin(sqrt(3)t)/sqrt(3)]. Its first peak is at pi/sqrt(3), with y=1+exp(-pi/sqrt(3)).
+- With b0=4 and the same denominator, b1=+2/-2 gives zeros -2/+2, DC gain 1, slopes +2/-2 and sine weights +1/sqrt(3) / -sqrt(3).
+- 2/[(s+1)(s+2)] gives (1-exp(-t))²; 1/(s+1)² gives 1-(1+t)exp(-t); 1/[s(s+1)] gives t-1+exp(-t); 1/s² gives t²/2. The irrational-real fixture 1/(s²-2) gives (cosh(sqrt(2)t)-1)/2.
+- (s-1)/[(s-1)(s+2)] has a stable scalar step but an unstable retained realization. Near cancellation is retained; an unresolvable numerical pair gives explicit feedback.
+- Moving -1 to -2 in (s-1/3)/[(s-1/3)(s+1)] preserves the unchanged exact +1/3 and its cancellation, giving reduced 1/(s+2).
+- For G=1/[(s+1)(s+1.000001)], y=t²/2-2.000001*t³/6+O(t^4); a short-time regression prevents residue subtraction from rounding y(10^-10) to zero. Exact separation 10^-6 is accepted; 9*10^-7 is rejected.
+- b0=2000000000000000001/10^18, a1=2, b1=1 retains the exact 1/10^18 initial curvature in the displayed identity.
 
-Short-time review added an independent close-real-pole regression: for G=1/[(s+1)(s+1.000001)], y(t)=t²/2−2.000001t³/6+O(t⁴). Direct subtraction of numerical modal residues rounded y(10⁻¹⁰) to zero. The full-response evaluator now uses 24 terms of the convergent ODE Taylor series when t·max(1, |a1|, sqrt(|a0|))<0.05, preserving initial slope/curvature; outside that range it uses the closed forms. Exact reduction and visible modal weights remain separate. All 41 module checks and type checking pass after this correction; final project/build/browser checks remain required. A private production preview is running on port 8843; no shared browser controls have been used.
+Read the assigned TASK/STATUS/source, current primary coordination guides, contribution/development/design/equation guidance, matching atlas (S05/S07; Ch6:9–10; E01) and audit P1 context. Original course decks remain outside Git and were not newly inspected. The additional fixtures are independently derived proposed checks, not claimed slide transcriptions. No shared math API/dependency change is required.
 
-Resumed after CP04's requested corrections were checked and resubmitted at `3c6eb86f704576f86c93f948a45b348719a2badc`. CP02's corrected math checkpoint `c2359f6bb6c30ecd108860a83f83259781e5ca27` passed all 244 project tests and the production build; the short-time numerical method is also explained in the tool's limits. Browser verification remains pending behind the current shared reservation. The earlier private CP02 preview was stopped during the CP04 return; it is being restarted only for CP02's own QA.
+## Project checks
 
-A final presentation check keeps the initial-curvature identity exact: b0−a1*b1 is now formed with rational arithmetic before typesetting, rather than subtracting rounded doubles. A flow regression uses b0=2000000000000000001/10¹⁸, a1=2, b1=1 and checks the visible exact 1/10¹⁸ curvature. Response curves remain numerical approximations. Browser acquisition was deferred again for the coordinator's DP03→DP04→DP02 integration order; no reservation is held by this worker while waiting.
+Using Node 24.22.1 and the bundled npm CLI in this worktree:
 
-Real-pole editing also preserves an unmoved rational root exactly (via a bounded BigInt perfect-square discriminant check). Previously rounding an unchanged +1/3 to nine decimals could disturb its exact cancellation. The independent regression moves −1 to −2 in (s−1/3)/[(s−1/3)(s+1)] and verifies retained +1/3, exact common factor and reduced 1/(s+2) step. Irrational unmoved real roots still round to nine decimals to keep the edited coefficients in the declared rational grammar; this distinction is visible beside the coordinate controls. No browser work is claimed yet.
+| Command | Result |
+| --- | --- |
+| `node node_modules/vitest/vitest.mjs run src/modules/cp02` | Passed the earlier 40-test workspace checkpoint; subsequent focused regressions are included below |
+| `npm test` | All 247 tests in 17 files pass, including 44 CP02 checks (35 math/parser, 9 flow/lifecycle), at `35eb9ae7dbecfa35386c404189e4e38afcb1ffbe` |
+| `npm run check` | Passes at that checked source |
+| `npm run build` | Passes at application-source checkpoint `b00002e4ce7b29413ae87e27c0cdc90f99462d84`; the following commit adds tests only. Existing shared MathLive chunk-size advisory remains |
+| `git diff --check` | Passes; source changes are confined to this module |
 
-Current checks: all 247 project tests pass, including 44 CP02 checks (35 mathematics/parser, 9 flow/lifecycle), at `35eb9ae7dbecfa35386c404189e4e38afcb1ffbe`; type checking passes. Production build passed on the same application source at `b00002e4ce7b29413ae87e27c0cdc90f99462d84` (the following commit adds tests only). Distinct-pole separation now compares the exact squared discriminant to 10⁻¹², so floating subtraction does not reject the exact 10⁻⁶ boundary; a 9×10⁻⁷ gap is rejected. The irrational-real fixture 1/(s²−2) is independently checked against (cosh(√2t)−1)/2.
+The flow tests use a small editor double and do not stand in for the real editor/browser evidence below. Later commits change only this delivery record.
 
-### Browser gate / authorized Firefox fallback
+## Real browser evidence — 2026-10-29
 
-The shared IAB slot has been queued behind scheduled returned corrections and coordinator integration checks. A CP02 reservation acquired at 13:43:23 UTC was released unused at 13:46:04 UTC when the next integration priority was announced; no CP02 browser controls were used under it. No reservation is held while waiting.
+Production preview `http://127.0.0.1:8843`, approximately 14:29–14:44 UTC (21:29–21:44 ICT), using the ChatGPT in-app browser. Fresh browser inventory confirmed private `codexSessionId=01a18701-1ec8-7073-a23f-e744d40a5355`; only this chat's tab was used. The coordinator's controlled cross-chat tab/viewport isolation test authorized this parallel path, now documented in primary main v0.3.9. The obsolete own global reservation/waiter was released before these checks; no other reservation or tab was altered. The supported metadata/read-only surface does not expose an engine version, so no browser-version number is invented.
 
-The human's later Firefox fallback instruction was verified in the coordinator chat. Local executable metadata confirms Firefox 159.0. The available browser API exposes IAB/MCP Apps DOM surfaces only, with Firefox available as native windows. One supported launcher call produced two concurrently appearing window IDs (2297564 and 791364); ownership could not be distinguished, so neither was navigated, typed into or closed. The coordinator subsequently confirmed that Windows Firefox page inspection cannot enforce the current URL policy and instructed workers to stop that unavailable route. Therefore **no Firefox module check or screenshot is claimed**. Existing unknown windows remain intact. Supported IAB verification is still required; the coordinator is assessing whether its cross-chat isolation permits a narrower reservation rule.
+- Before reveal there were four real editors and zero response curves. Baseline family/slope predictions checked correctly; the same-poles answer “Yes” was rejected with the modal-weight explanation. At t=1, y=0.8494256 and components 1, 0.05906545, -0.2096398.
+- Actual fraction-button/ordinary-key entry of b1=-1/2 gave zero +8, negative initial slope and exact curvature 5. Actual mixed 2½ (fraction, exit, Home, prepend 2), typed 1e-2, empty input and unfinished fraction boxes received appropriate rejection/completion feedback with no stale result curves.
+- Held the -2-zero example, locked the denominator, then applied zero +2. Original poles and DC gain remained unchanged; at t=1, current output 0.430146 versus held 1.268705, difference -0.8385593. Locked pole controls were disabled. Actual zero dragging to -1.99 retained the poles. Numeric conjugate coordinates -2,+/-3 applied exactly; actual dragging then produced -1,+/-2.01 and a0=50401/10000. Invalid real coordinate 11 retained that applied model.
+- At t=1, distinct-real output 0.3995764, repeated 0.2642411, one-integrator 0.3678794, double-integrator 0.5 and canceled unstable-pole output 0.4323324 matched the independent formulas. The canceled case showed original internal instability, reduced BIBO stability, retained original/reduced forms and a working +1 unit free-mode overlay.
+- Actual fraction entry of the +1/3 hidden-pole fixture followed by moving -1 to -2 retained the exact common factor and reduced 1/(s+2). Actual long-fraction entry displayed the exact 1/10^18 curvature. Near cancellation with b0=-(10^18+1)/10^18 retained “not BIBO stable” and gave conditioning feedback with no curve. A zero channel retained unstable original dynamics, BIBO-stable scalar output and y=0.
+- Native cursor 1e-9999 and pole-coordinate underflow were rejected as nonzero rather than coerced to zero; 0e-999 was accepted as cursor zero and 1e-2 as 0.01 s. A +6 repeated pole at horizon 8 triggered exp(40) feedback; shortening to 2 restored curves. Cursor 3 outside that horizon was rejected.
+- Math keyboard opened; Escape closed it without leaving CP02. Reset closed it and restored four baseline editors. Tab from pole real part focused the imaginary-part control. Leaving for the catalogue removed every editor and old root. Three rapid CP02/CP03 pairs ended with zero old editors/roots in CP03; reopening restored four editors, zero curves and horizon 8. A final reset/reveal reproduced baseline output.
+- Desktop dark viewport 1280x900 and narrow dark 390x844 were inspected. Narrow document client/scroll widths both equaled 375 px. Plane scrolled locally (281/420 px), plot (307/650) and table (307/380); actual scrollbar dragging reached plot scrollLeft=343, its maximum. Long 19-digit fractions remained within the editor with no page overflow. Fractions, matrices, root labels and local font glyphs rendered legibly; stylesheet URLs were same-origin assets. App warning/error logs were empty. Light theme inherits shared tokens and was not separately browser-tested.
+
+Screenshots outside Git: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a18701-1ec8-7073-a23f-e744d40a5355/cp02-browser-evidence.jpg` and `cp02-narrow-evidence.jpg` in that directory.
+
+### Firefox fallback limitation
+
+The later human Firefox instruction was verified in the coordinator chat; local executable metadata reports Firefox 159.0. Available DOM browser surfaces expose IAB/MCP Apps only. One supported launcher call produced two concurrent new native window IDs (2297564/791364) whose ownership could not be distinguished; neither was navigated, typed into or closed. The coordinator confirmed Windows Firefox page inspection cannot enforce the current URL policy and stopped that route. No Firefox module check or screenshot is claimed; unknown windows remain intact. The actual acceptance checks above use the supported private IAB path.
+
+## Delivery and remaining work
+
+No accepted exercise requirement remains within the declared domain. Independent final review/integration is pending. Own test tab is closed, private viewport restored, preview stopped and obsolete global waiter/reservation released. Primary port 8787 was preserved. No dependencies, shared files, versions, deployment or main merge changed. The PR URL and exact clean submitted HEAD will be recorded with submission; preserve this worktree/branch for review returns.
