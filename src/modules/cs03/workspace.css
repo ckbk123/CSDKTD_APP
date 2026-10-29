@@ -5,6 +5,8 @@
 [data-module="CS03"] .cubic-tool summary { cursor: pointer; font-weight: 600; }
 [data-module="CS03"] .cubic-tool details p { margin-top: .6rem; }
 [data-module="CS03"] .c-controls { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%, 190px),1fr)); gap: .8rem; }
+[data-module="CS03"] .c-answer-controls { grid-template-columns: repeat(auto-fit,minmax(min(100%, 240px),1fr)); }
+[data-module="CS03"] .c-answer-bound { display: grid; gap: .6rem; align-content: start; }
 [data-module="CS03"] .c-controls label { display: flex; flex-direction: column; gap: .35rem; font-size: .88rem; font-weight: 600; }
 [data-module="CS03"] .c-controls input, [data-module="CS03"] .c-controls select { width: 100%; min-width: 0; padding: .55rem; border: 1px solid var(--line); border-radius: .4rem; color: var(--text); background: var(--surface); font: inherit; }
 [data-module="CS03"] .cubic-tool fieldset { min-width: 0; border: 1px solid var(--line); border-radius: .6rem; padding: 1rem; margin: 0; }

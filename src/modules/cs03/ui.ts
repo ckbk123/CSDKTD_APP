@@ -46,16 +46,17 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const minField = numeric(controls, 'Gain-axis minimum', minimum, value => { minimum = value; if (model) render(); });
   const maxField = numeric(controls, 'Gain-axis maximum', maximum, value => { maximum = value; if (model) render(); });
   const attempt = el('fieldset'), legend = el('legend', 'Your complete strict-stability set'); attempt.append(legend); root.append(attempt);
-  const answerControls = el('div', undefined, 'c-controls'); attempt.append(answerControls);
+  const answerControls = el('div', undefined, 'c-controls c-answer-controls'); attempt.append(answerControls);
   const kindLabel = el('label', 'Gain-set type'), kind = el('select');
   for (const [value, label] of [['finite', 'Finite interval'], ['all', 'All real K'], ['empty', 'Empty set']]) { const option = el('option', label); option.value = value; kind.append(option); }
   kindLabel.append(kind); answerControls.append(kindLabel);
   function answerChanged() { if (model) { predictionFeedback = 'Your interval answer changed; check again.'; render(); } }
   const lower = createEquationInput({ label: 'Predicted lower endpoint', value: '', signal, onChange: answerChanged }), upper = createEquationInput({ label: 'Predicted upper endpoint', value: '', signal, onChange: answerChanged });
-  answerControls.append(lower.element, upper.element);
+  const lowerGroup = el('div', undefined, 'c-answer-bound'), upperGroup = el('div', undefined, 'c-answer-bound');
+  lowerGroup.append(lower.element); upperGroup.append(upper.element); answerControls.append(lowerGroup, upperGroup);
   attempt.append(el('p', 'Enter numerical endpoints using fractions or decimal approximations, then choose whether each endpoint is included. Use explicit + or × beside a fraction; mixed-number notation is unsupported. Very narrow intervals require exact fractions or sufficiently precise decimals.', 'c-small'));
-  function endpoint(label: string) { const wrap = el('label', label), select = el('select'); for (const [value, text] of [['open', 'Open (excluded)'], ['closed', 'Closed (included)']]) { const option = el('option', text); option.value = value; select.append(option); } wrap.append(select); answerControls.append(wrap); return select; }
-  const lowerType = endpoint('Lower endpoint inclusion'), upperType = endpoint('Upper endpoint inclusion');
+  function endpoint(parent: HTMLElement, label: string) { const wrap = el('label', label), select = el('select'); for (const [value, text] of [['open', 'Open (excluded)'], ['closed', 'Closed (included)']]) { const option = el('option', text); option.value = value; select.append(option); } wrap.append(select); parent.append(wrap); return select; }
+  const lowerType = endpoint(lowerGroup, 'Lower endpoint inclusion'), upperType = endpoint(upperGroup, 'Upper endpoint inclusion');
   kind.addEventListener('change', () => { lower.element.hidden = upper.element.hidden = kind.value !== 'finite'; lowerType.disabled = upperType.disabled = kind.value !== 'finite'; answerChanged(); }, { signal });
   lowerType.addEventListener('change', answerChanged, { signal }); upperType.addEventListener('change', answerChanged, { signal });
   const actions = el('div', undefined, 'c-actions'); root.append(actions, error, result);
