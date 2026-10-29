@@ -139,4 +139,3 @@ export const mount: ModuleMount = ({ container, signal }) => {
   try { apply(); } catch (error) { message.textContent = error instanceof Error ? error.message : 'Check the model.'; }
   return () => { editors.forEach(e => e.destroy()); root.remove(); };
 };
-

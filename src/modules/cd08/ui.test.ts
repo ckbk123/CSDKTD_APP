@@ -55,4 +55,3 @@ describe('two-state feedback lesson', () => {
     const fresh = open(); expect(fresh.root.textContent).not.toContain('Actual eigenvalues'); expect(fresh.root.querySelectorAll('textarea')[3].value).toBe('q(s)=(s+2)(s+4)');
   });
 });
-
