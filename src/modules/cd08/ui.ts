@@ -64,7 +64,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
     svg.append(path(raw, 'feedback-raw')); if (corrected) svg.append(path(corrected, 'feedback-corrected'));
     const index = Math.round(selectedTime / duration * (raw.length - 1));
     for (const samples of corrected ? [raw, corrected] : [raw]) svg.append(svgNode('circle', { cx: X(samples[index].t), cy: Y(select(samples[index])), r: 3, class: 'feedback-marker' }));
-    figure.append(svg); return figure;
+    const scroll = node('div'); scroll.className = 'feedback-plot-scroll'; scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', `${label} plot; scroll horizontally to read the full axes`); scroll.append(svg);
+    figure.append(scroll); return figure;
   }
   function render(): void {
     if (signal.aborted) return;

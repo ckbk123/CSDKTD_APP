@@ -1,6 +1,6 @@
 # CD08 implementation status
 
-- **Stage:** implemented — accepted bounded exercise and project/browser checks complete; independent integration review pending.
+- **Stage:** in-progress — coordinator reopened PR20 for scoped visual-spacing and narrow-plot corrections. Corrections/local tests/type pass; focused browser and final combined checks pending.
 - **Assessed:** 29 October 2026; contribution based on primary main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5).
 - **Ownership:** `src/modules/cd08/**`; [TASK.md](TASK.md), atlas CD08 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
@@ -9,6 +9,8 @@
 - **PR:** https://github.com/ckbk123/CSDKTD_APP/pull/20 — same PR/branch for integration review and any returned corrections. Exact tested final revision is recorded in the claim and PR.
 
 ## Requirement-to-evidence audit
+
+Review return,29 October2026: the coordinator independently checked core mathematics (192 placements,640 analytic traces,55,680 scalar checks;58 tests/type) and requested two localized corrections. The parser now inspects TeX fraction/exponent argument boundaries before deleting explicit spacing atoms, rejecting unbraced spacing arguments while preserving ordinary literal whitespace and braced spacing. Eleven focused regressions pass (69 module tests total). Each plot now has a keyboard-focusable local scroll region and a500px minimum SVG width, preserving14px axis labels on phones. Focused actual-editor rejection/recovery, narrow scrolling and final checks remain pending at this checkpoint. DD07 was checkpointed separately at25624a2 before this priority return; no submitted branch was rebased/merged.
 
 | Accepted requirement | Implemented evidence |
 |---|---|

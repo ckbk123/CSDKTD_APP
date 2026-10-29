@@ -96,6 +96,18 @@ describe('independently derived pole-placement and reference fixtures', () => {
 });
 
 describe('bounded visual semantics', () => {
+  it.each([String.raw`\frac1\,2`, String.raw`\frac\,12`, String.raw`\dfrac1\;2`, String.raw`\frac\!12`, String.raw`\frac1\ 2`, String.raw`\frac{\frac1\:2}{2}`])('rejects spacing atoms as unbraced fraction arguments: %s', source => {
+    expect(() => parseScalar(source)).toThrow(/spacing command/);
+    expect(() => parseMatrix(`C=\\begin{bmatrix}${source}&0\\end{bmatrix}`, 1, 2, 'C')).toThrow(/spacing command/);
+  });
+  it.each([String.raw`s^\,2+6s+8`, String.raw`s^ \;2+6s+8`, String.raw`s^\ 2+6s+8`, String.raw`s^2+\frac1\,2s+8`])('rejects spacing atoms as unbraced target arguments: %s', source => {
+    expect(() => parseTarget(source)).toThrow(/spacing command/);
+  });
+  it('retains literal whitespace and spacing inside braced arguments', () => {
+    for (const source of [String.raw`\frac 1 2`, String.raw`\frac{1\,}{2}`, String.raw`\frac{\,1}{\;2}`, String.raw`\frac{1}{2\,}`]) expect(parseScalar(source)).toBe(.5);
+    close(parseTarget(String.raw`s^{\,2}+6s+8`), [6,8]); close(parseTarget('s^ 2+6s+8'), [6,8]);
+    close(parseTarget(String.raw`s^2+\frac{1\,}{2}s+8`), [.5,8]);
+  });
   it('accepts equivalent signed, compact and grouped fractions without changing their meaning', () => {
     for (const source of [String.raw`-\frac12`, String.raw`\frac{-1}2`, String.raw`-\frac1{2}`, String.raw`(-\frac{1}{2})`]) expect(parseScalar(source)).toBe(-.5);
     expect(parseScalar(String.raw`\frac{\frac12}{2}`)).toBe(.25);

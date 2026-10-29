@@ -1,6 +1,18 @@
 /** Small literal/matrix/quadratic grammar; never executes input as code. */
 function clean(text: string): string {
   if (text.length > 600) throw new Error('Use at most 600 characters per equation.');
+  // TeX spacing is an atom when used as an unbraced argument. Removing it
+  // first would turn an empty fraction/exponent argument into the next digit.
+  const argumentEnd = (from: number): number => {
+    let start = from; while (/\s/.test(text[start] ?? '') && start < text.length) start++;
+    if (text[start] === '\\' && /[,!;: ]/.test(text[start + 1] ?? '')) throw new Error('Complete the fraction or power box; an explicit spacing command cannot supply an unbraced argument.');
+    if (text[start] !== '{') return start + 1;
+    let depth = 1, end = start + 1;
+    while (end < text.length && depth) { if (text[end] === '{') depth++; if (text[end] === '}') depth--; end++; }
+    return end;
+  };
+  for (const match of text.matchAll(/\\(?:dfrac|frac)/g)) argumentEnd(argumentEnd(match.index! + match[0].length));
+  for (const match of text.matchAll(/\^/g)) argumentEnd(match.index! + 1);
   // A row separator followed by whitespace is two backslashes, not a TeX
   // backslash-space command starting at its second backslash.
   return text.replace(/\\(?:left|right)/g, '').replace(/(?<!\\)\\[,!;: ]/g, '').replace(/\s/g, '');
