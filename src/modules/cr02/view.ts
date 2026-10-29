@@ -78,7 +78,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   for (const field of [y0.input,v0.input,amplitude.input,horizon.input,count.input,excitation]) on(field,'input',()=>{
     amplitude.input.disabled = excitation.value === 'zero';
     invalidate('Experiment changed. G(s) is unchanged when the physical coefficients stay fixed. Reveal again to apply this initial state/input.');
-    try { renderTerm(); } catch(reason) { error(reason); }
+    try { renderTerm(); } catch(reason) { ui('term').replaceChildren(); error(reason); }
   });
   function initial(): Initial { return {y:numeric(y0.input,'Initial displacement',100),v:numeric(v0.input,'Initial velocity',100)}; }
   function experiment(): Experiment { return { initial:initial(), excitation:excitation.value as Excitation, amplitude:numeric(amplitude.input,'Command amplitude/slope',100) }; }

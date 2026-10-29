@@ -54,7 +54,9 @@ describe('CR02 applied model and experiment state',()=>{
     expect(view.container.textContent).toContain('Damping c is too small to represent');
     view.click('Apply ODE');view.click('Reveal derivation & response');
     expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
-    view.click('Baseline');view.change('Initial displacement y(0−) (m)','-1e-999');view.click('Reveal derivation & response');
+    view.click('Baseline');view.change('Initial displacement y(0−) (m)','-1e-999');
+    expect(view.container.querySelector('[aria-label="Selected term and its Laplace transform"]')).toBeNull();
+    view.click('Reveal derivation & response');
     expect(view.container.textContent).toContain('Initial displacement is too small to represent');
     expect(view.container.querySelector<HTMLElement>('[data-ui="answers"]')!.hidden).toBe(true);
     view.change('Initial displacement y(0−) (m)','0e-999');view.click('Reveal derivation & response');
