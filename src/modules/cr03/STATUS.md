@@ -9,6 +9,7 @@
 - **Worktree:** `C:/Users/baokh/.codex/worktrees/cr03-state-realizations-01a186d2/CSDKTD APP`
 - **Contract:** [TASK.md](TASK.md)
 - **PR:** [CR03 #21](https://github.com/ckbk123/CSDKTD_APP/pull/21), attached to this worker chat; draft pending real-browser QA
+- **Current remaining work:** actual CR03 production-browser verification and any repairs it reveals, followed by final evidence and exact clean submission. Historical global-browser deferrals below are superseded by verified private per-chat IAB testing.
 
 ## Accepted requirement audit before implementation
 
@@ -74,3 +75,25 @@ Pre-browser numerical audit also checks direct-feedthrough/command product under
 The coordinator's unbraced-exponent review prompted another local check: powers now preserve TeX's single-token exponent argument, so trailing digits cannot silently become part of an exponent. Braced signed powers retain their full value; unsupported bare signed powers receive power-box guidance. Added cases distinguish `10^02` from `10^{02}` and prevent a displayed zero power from becoming a fourth-order pole. A child abort signal now tears down partially mounted view resources before active failure feedback. **81 module / 335 project tests** and the rebuilt type/build checks pass. Real CR03 browser evidence is still pending.
 
 A separate analytic range audit checks 20 outputs from unbalanced/fast oscillators, a strongly scaled repeated mode and a large command/forcing gain through 20 s. All agree within 4.5×10⁻⁹ absolute/relative error in the audited cases; a new permanent fixture preserves the broader 2×10⁻⁸ bound and a representable 10⁻²⁰⁰ gain uses a relative check. Current totals are **82 module / 336 project tests**, passing. No additional solver change was needed. DR02's frozen PR5 now also records confirmed exponent and native-number guard defects for coordinator reopening; its source was not edited.
+
+## Resumption after the DR02 review return
+
+DR02's returned notation, native-input and lifecycle defects are repaired and its actual production-browser checks are complete. The coordinator explicitly approved its equivalent local native reader and owns the integration adaptation. That contribution is now submitted at exact clean pushed `271d2df700504012089729492926157786299683`, in its original PR #5. Its worktree remains preserved. Only CR03 is actively implemented again; no newer primary changes were merged or rebased into this existing contribution.
+
+A read-only pinned-MathLive/parser audit found a CR03 displayed-meaning defect: standalone formatting braces were converted into visible parentheses. For example `1{+2}` computed 2, and the hidden group in `1/({s+2}s)` changed the denominator. `expand()` now rejects standalone formatting braces with visible-parenthesis guidance while retaining genuine fraction/power arguments, nested fractions and numeric font wrappers. Independent controls preserve `(1+2)/(s+1)`, `1/((s+2)s)` and true braced powers. ODE hidden groups receive the same feedback; a caller-state regression verifies stale answers are hidden and a valid visible group recovers.
+
+The loader also now removes its synchronous loading node on parent abort without waiting for disposal and skips an already-aborted visit. An owned child signal releases partial view resources before recovery and on disposal with an active parent; a regression registers a signal-owned window listener and forces mount failure to verify actual resource release. The existing local Escape capture remains necessary and tested on this older shared-editor baseline.
+
+Current accepted-scope coverage:
+
+| Requirement | Implemented evidence | Remaining verification |
+|---|---|---|
+| Proper TF/ODE/state conversion and recovered scalar TF | `math.ts`, `parser.ts`; baseline, changed numerator, fourth order, static and hidden-mode fixtures | Actual equation entry and matrix controls |
+| Canonical rows, numerator placement and biproper D | Canonical construction/remainder identities and caller-state tests; computed integrator-chain view | Visual reasoning and state-row selection |
+| Physical versus canonical coordinates, one input | Observability-based derivative-corrected state construction and proposed det-6 fixture | Side-by-side browser inspection and derivative notation |
+| Chosen T and initial-state mapping, equal outputs | Hand-derived T, analytic trajectories, singular/condition/underflow cases and UI invalidation tests | Changed native controls and sampled comparisons in browser |
+| Equivalent student matrices and nonminimal limits | Relative cross-polynomial residuals, independent noncanonical fourth order, tiny-gain and retained hidden-mode tests | Actual equivalent/mismatched candidate attempts |
+| Prediction/reveal, changed data and plots | Editable per-visit controls, stale-answer tests, analytic output/state fixtures and bounded sampled curves/table | Editing, prediction and plotted/table values |
+| Lifecycle, keyboard, local fonts and responsive layout | Synchronous owned loading/child abort, failure/disposal tests, local Escape capture and scoped CSS | Actual fonts/keyboard, reset/reopen/rapid navigation and narrow width |
+
+Resumption checks pass: **93 module tests in five files**, **347 project tests in 22 files**, `npm run check`, `npm run build` and `git diff --check`. The usual MathLive chunk-size warning remains. The existing private production preview session `97622` on port 8864 was confirmed live and serves the rebuilt bundle. The worker will verify its own IAB inventory identity and use only its private tabs/viewport; no global QA reservation or Firefox retry is needed. No actual CR03 browser evidence is claimed yet. Stage remains `in-progress` until that accepted gate is completed.

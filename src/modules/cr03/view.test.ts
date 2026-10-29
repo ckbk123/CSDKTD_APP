@@ -27,6 +27,11 @@ function visit() {
 }
 
 describe('CR03 exercise state and representation flow', () => {
+  it('clears a checked answer when hidden grouping is rejected and recovers with visible parentheses', () => {
+    const view=visit();view.reveal();view.change('Given transfer function',String.raw`\frac1{{s+2}s}`);view.click('Apply given model');
+    expect(view.answers().hidden).toBe(true);expect(view.container.textContent).toContain('visible parentheses');view.reveal();expect(view.answers().hidden).toBe(true);
+    view.change('Given transfer function',String.raw`\frac1{(s+2)s}`);view.click('Apply given model');view.click('Use canonical construction');view.reveal();expect(view.answers().hidden).toBe(false);expect(view.container.textContent).toContain('candidate reproduces');view.close();
+  });
   it('reveals the baseline and maps nonzero initial data through the proposed physical coordinates', () => {
     const view = visit(); view.reveal(); expect(view.answers().hidden).toBe(false); expect(view.container.textContent).toContain('candidate reproduces');
     view.click('Numerator / input-derivative example'); view.click('Output-derivative coordinates'); view.click('Nonzero initial state'); view.change('Predict y(0+)', '4'); view.reveal();

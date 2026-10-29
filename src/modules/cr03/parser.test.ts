@@ -25,6 +25,14 @@ describe('CR03 bounded visual transfer grammar', () => {
   it.each([String.raw`2\frac12`,String.raw`(-2\frac12)`,String.raw`-\left(2\frac{1}2\right)`,String.raw`\frac{2\frac12}{3}`,String.raw`2\frac{\mathrm{1}}{2}`])('rejects ambiguous mixed-number adjacency: %s', text => {
     expect(() => parseTransfer(text)).toThrow(/mixed number/);
   });
+  it.each(['1{+2}',String.raw`\frac1{{s+2}s}`,String.raw`\frac{{s+2}s}{(s+1)^2}`,'1{+2}/(s+1)'])('does not invent visible parentheses from formatting braces: %s', text => {
+    expect(() => parseTransfer(text)).toThrow(/visible parentheses/);
+  });
+  it('preserves genuine fraction/power boxes and visible algebraic groups', () => {
+    expect(parseTransfer('(1+2)/(s+1)')).toEqual({numerator:[3],denominator:[1,1]});
+    expect(parseTransfer(String.raw`\frac1{(s+2)s}`)).toEqual({numerator:[1],denominator:[1,2,0]});
+    expect(parseTransfer(String.raw`\frac1{s^{2}+3s+2}`)).toEqual({numerator:[1],denominator:[1,3,2]});
+  });
   it('preserves actual powers of ten without interpreting raw e/E as programming literals', () => {
     expect(parseTransfer(String.raw`1\times10^{-2}`)).toEqual({ numerator: [.01], denominator: [1] });
     expect(parseTransfer('s^{-2}')).toEqual({ numerator: [1], denominator: [1, 0, 0] });
@@ -62,6 +70,9 @@ describe('CR03 bounded visual transfer grammar', () => {
 });
 
 describe('CR03 linear ODE grammar', () => {
+  it.each(["y''+3y'+2y={1+2}u","{y''+y}2=u"])('rejects hidden grouping in an ODE instead of changing its meaning: %s', text => {
+    expect(()=>parseOde(text)).toThrow(/visible parentheses/);
+  });
   it.each(["y''+3y'+2y=u",String.raw`y^{\prime}^{\prime}+3y^{\prime}+2y=u`,String.raw`y^{\doubleprime}+3y^{\prime}+2y=u`,String.raw`\ddot{y}+3\dot{y}+2y=u`,'y″+3y′+2y=u'])('reads ordinary and actual MathLive derivative notation: %s', text => {
     expect(parseOde(text)).toEqual({ numerator: [1], denominator: [1, 3, 2] });
   });

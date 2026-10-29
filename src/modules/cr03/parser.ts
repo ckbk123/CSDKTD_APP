@@ -20,7 +20,7 @@ function notation(latex: string): string {
   if (/[0-9.]\\(?:dfrac|tfrac|frac)(?=[{0-9])/.test(text)) fail('Number/fraction adjacency can be a mixed number. Use explicit + or × between values.');
   return text.replace(/\\(?:cdot|times)/g, '*');
 }
-/** Preserve TeX one-token fraction arguments; keep groups instead of joining digits. */
+/** Preserve TeX fraction/power boxes; only visible parentheses group other expressions. */
 function expand(text: string): string {
   let position = 0, depth = 0;
   function group(end?: string): string {
@@ -35,7 +35,7 @@ function expand(text: string): string {
         if (text[position] === '{') { position++; output += `^(${group('}')})`; }
         else if (/[0-9]/.test(text[position] ?? '')) output += `^(${text[position++]})`;
         else fail('Complete the power box with an integer; signed powers need the whole exponent inside that box.');
-      } else if (text[position] === '{') { position++; output += `(${group('}')})`; }
+      } else if (text[position] === '{') fail('Use visible parentheses for grouping; standalone formatting braces are unsupported.');
       else if (text[position] === '}' || text[position] === '\\') fail('Unsupported notation. Use real coefficients, the named variables, fractions and integer powers.');
       else output += text[position++];
     }

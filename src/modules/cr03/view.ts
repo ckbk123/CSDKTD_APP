@@ -27,7 +27,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   root.innerHTML = `<p class="notice" role="status" aria-live="polite" data-ui="status"></p>
     <section><h3>1. Choose the given representation</h3><div class="controls" data-ui="source-control"></div>
       <div data-ui="tf"></div><div data-ui="ode" hidden></div><div class="actions" data-ui="given-actions"></div>
-      <p class="muted">Use real SISO models with 0–4 states. Transfer polynomials descend in s; a proper numerator has no higher degree than its denominator. Visual expressions support numeric fractions, products and integer powers −4…4. Separate mixed-number values with explicit + or ×.</p>
+      <p class="muted">Use real SISO models with 0–4 states. Transfer polynomials descend in s; a proper numerator has no higher degree than its denominator. Visual expressions support numeric fractions, products and integer powers −4…4. Use visible parentheses for grouped sums. Separate mixed-number values with explicit + or ×.</p>
       <div data-ui="given"></div><p class="muted">G(s) describes zero-state input/output behavior. A transfer function does not recover a unique original physical system or its hidden initial state.</p>
     </section>
     <section><h3>2. Build or inspect A, B, C and D</h3>

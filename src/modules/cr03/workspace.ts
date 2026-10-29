@@ -1,11 +1,12 @@
 import type { ModuleMount } from '../../core/module';
 
 export const mount: ModuleMount = context => {
+  if (context.signal.aborted) return;
   let disposed = false, cleanup: (() => void) | void;
   const viewController = new AbortController();
-  context.signal.addEventListener('abort', () => viewController.abort(), { once: true, signal: viewController.signal });
-  if (context.signal.aborted) viewController.abort();
-  const message = document.createElement('p'); message.textContent = 'Loading realization and coordinate controls…'; context.container.append(message);
+  const message = document.createElement('p'); message.textContent = 'Loading realization and coordinate controls…';
+  const abortView = () => { viewController.abort(); message.remove(); };
+  context.signal.addEventListener('abort', abortView, { once: true }); context.container.append(message);
   void import('./view').then(view => {
     if (disposed || context.signal.aborted) return;
     message.remove(); cleanup = view.mount({ container: context.container, signal: viewController.signal });
@@ -14,5 +15,5 @@ export const mount: ModuleMount = context => {
     viewController.abort();
     message.textContent = 'The exercise could not load. Reset the workspace to try again.'; message.setAttribute('role', 'alert'); context.container.replaceChildren(message);
   });
-  return () => { disposed = true; viewController.abort(); cleanup?.(); message.remove(); };
+  return () => { disposed = true; context.signal.removeEventListener('abort', abortView); abortView(); cleanup?.(); };
 };
