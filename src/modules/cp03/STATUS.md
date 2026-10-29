@@ -53,9 +53,9 @@
 Commands executed inside this worktree with bundled Node **v24.22.1** and npm 10.8.2 (invoked through the bundled Node executable; default PATH Node v20 was not used for final checks):
 
 - `npm ci`: passed, 109 packages, no dependency changes or vulnerabilities reported.
-- `npm test -- src/modules/cp03`: **78/78 passed**, 3 files, including the reopened notation correction.
+- `npm test -- src/modules/cp03`: **82/82 passed**, 3 files, including the reopened notation correction.
 - `npm run check`: passed.
-- `npm test`: **120/120 passed**, 9 files.
+- `npm test`: **124/124 passed**, 9 files.
 - `npm run build`: passed, including type check; existing MathLive chunk-size warning (about 221.5 kB gzip) remains. All 20 referenced fonts are emitted as local assets.
 - `git diff --check`: passed; changes are confined to the owned module.
 
@@ -101,6 +101,8 @@ The coordinator returned clean submission b8108e4 for hidden TeX braces being tr
 
 The private notation scanner now flattens standalone invisible formatting groups before algebraic tokenization. It preserves actual fraction-box and power-argument scope, and visible parentheses. Adjacent digit fragments such as 1{2}, {1}{2} and −{2}{3} rejoin into the displayed 12, 12 and −23. Wrapped mixed numbers are rejected by the existing explicit-operation guidance. One-token TeX power boundaries are preserved too: 10^23 displays 10² followed by 3, hence 300; 10^{23} remains a full exponent and exceeds this exercise's coefficient bounds. No hidden parentheses or scalar cancellation are invented.
 
-The installed MathLive static MathML renderer was inspected independently for the coordinator's examples and one-token/full exponent distinction. New mathematical regressions cover the visible arithmetic, numeric wrappers, true fractions, nested groups, signed bases, explicit operations, and mixed-number bypasses; a view regression verifies stale results clear and visible-parenthesis recovery succeeds. Current checks: 78 module tests, 120 full-suite tests, type checking and production build pass. The prior actual-browser evidence above is historical and does not certify this new correction.
+The installed MathLive static MathML renderer was inspected independently for the coordinator's examples and one-token/full exponent distinction. New mathematical regressions cover the visible arithmetic, numeric wrappers, true fractions, nested groups, signed bases, explicit operations, and mixed-number bypasses; a view regression verifies stale results clear and visible-parenthesis recovery succeeds. Current checks: 82 module tests, 124 full-suite tests, type checking and production build pass. The prior actual-browser evidence above is historical and does not certify this new correction.
 
-Focused actual-editor feedback/output verification is still required. The coordinator currently reserved the next DS01 integration turn after CF02; CP03 will defer acquisition until that reservation sequence releases. DF02 remains checkpointed at b5147b3 while this higher-priority review return is handled. No final resubmission is claimed at this checkpoint.
+Focused actual-editor feedback/output verification is still required. The coordinator released its reserved integration sequence; normal helper acquisition resumed, and CP03 is waiting behind the current DR05 holder without interrupting it. DF02 remains checkpointed at b5147b3 while this higher-priority review return is handled. No final resubmission is claimed at this checkpoint.
+
+The scanner also retains spacing commands until one-token fraction/power arguments have been identified. A spacing token cannot silently stand in for a missing numeric argument; spaced separate numbers receive explicit-operation guidance. Four independent rejection regressions cover these boundaries.

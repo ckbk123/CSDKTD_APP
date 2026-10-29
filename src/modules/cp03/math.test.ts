@@ -51,6 +51,9 @@ describe('CP03 bounded equation parser', () => {
     expect(parsePlant('10^{{-2}}')).toEqual({ numerator: [0.01], denominator: [1] });
     expect(() => parsePlant('10^{23}')).toThrow(/limit|10000/);
   });
+  it.each([String.raw`\frac1\;2`, String.raw`\frac\,12`, String.raw`s^\;2`, String.raw`1\,2`])('does not erase a meaningful TeX token before checking argument scope: %s', source => {
+    expect(() => parsePlant(source)).toThrow(/argument|explicit/);
+  });
   it('rejects displayed mixed numbers before combining them as products', () => {
     for (const source of [String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`(2\frac12)/(s+1)`, String.raw`\frac1{2\frac12}`, String.raw`-\frac{2\frac{1}2}{s+1}`, String.raw`2\frac1{2}`, String.raw`-{2}\frac12`, String.raw`2{\frac12}`, String.raw`\frac1{2{\frac12}}`]) {
       expect(() => parsePlant(source)).toThrow(/Mixed-number adjacency/);

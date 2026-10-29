@@ -74,8 +74,12 @@ export function parsePlant(latex: string): Plant {
   if (latex.length > 300) fail('Keep the plant expression within 300 characters.');
   const cleaned = latex.replace(/\\(?:left|right)\b/g, '')
     .replace(/\\(?:dfrac|tfrac)\b/g, '\\frac').replace(/\\(?:cdot|times)(?![A-Za-z])/g, '*')
-    .replace(/\\[,;! ]/g, '').replace(/\s/g, '').replace(/−/g, '-').replace(/^G\(s\)=/, '');
-  const source = normalizeVisualNotation(cleaned);
+    .replace(/\s/g, '').replace(/−/g, '-').replace(/^G\(s\)=/, '');
+  // A spacing command is a TeX token too: it cannot be deleted before true
+  // one-token arguments are identified (e.g. \frac1\;2 has no numeric divisor).
+  const structured = normalizeVisualNotation(cleaned);
+  if (/[0-9.](?:\\[,;! ])+[0-9.]/.test(structured)) fail('Use an explicit + or × between separate numeric terms; spacing does not show an operation.');
+  const source = structured.replace(/\\[,;! ]/g, '');
   if (/[0-9.][eE]/.test(source)) fail('Use decimal coefficients or textbook powers of ten. In a visual equation, e/E notation is algebra, not a decimal exponent.');
   const tokens = source.match(/\\frac|(?:\d+(?:\.\d*)?|\.\d+)|[s()+\-*/^{}]/g) ?? [];
   if (!tokens.length || tokens.join('') !== source) fail('Use real numbers, s, sums, products, fractions and integer powers only.');
