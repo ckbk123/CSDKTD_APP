@@ -9,8 +9,10 @@
 ## Implemented and inspected
 
 - `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+- `workspace.ts` exports the synchronous mount contract and guards a browser-only view import against navigation/abort.
+- `view.ts`, `math.ts`, and scoped `workspace.css` implement the editable TF, linked forms, recurrence, history registers, term highlighting, prediction/reveal/commit and zero-state comparison.
+- 31 local tests passed (27 math/parser tests plus four caller-state/lifecycle tests). Type checking passed. Full suite passed at the previous implementation checkpoint (69 tests); repeat after latest UI/lifecycle tests.
+- Browser QA is pending: DP02 held the shared reservation at the first attempt. No interactive-editor claim yet.
 
 ## Remaining acceptance work
 
@@ -30,10 +32,10 @@ The claimed baseline contains metadata and a blank mount, with no local solver o
 
 Supported design: real scalar rational polynomials, maximum six delays, expanded sums/products and integer powers in z; normalize the denominator's highest power, reject future-input forms. Unilateral zero-state TF; supplied pre-k=0 history contributes separately. Floating-point arithmetic; fixed positive T labels sample times, not an integration step. A finite sample run does not assert stability. Final bounds and evidence will replace this plan after verification. Course-source locators above are inherited audit evidence; original decks and the external MIT exam have not been newly inspected by this worker.
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
+- [x] Working exercise inputs, declared supported domain and mathematical validation.
+- [x] Input-dependent computation and the full mathematical checks in TASK.md.
+- [x] Intuitive visualization, intermediate reasoning and the required student interactions (browser inspection pending).
+- [x] Independently checked baseline, changed-data and boundary/failure tests.
 - [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
 
 ## Evidence and next action
