@@ -32,6 +32,12 @@ Chosen domain: monic real quadratic families P(z)=z^2+(aK+b)z+cK+d. Bounded pars
 
 The discrete source audit labels this baseline an independently checked bridge fixture. Original slides have not been inspected in this run; no new transcription claim is made. Local pure helpers need no shared API or package changes. Next: parser, transform, inequality/root/mapping tests, then the complete interface and browser verification.
 
+### Implementation checkpoint
+
+`math.ts` now contains the bounded parser, symbolic affine transform, strict inequality intersection, stable quadratic formula and disk map. `ui.ts` implements editable shared equation input, prediction/reveal, five derivation steps, inspectable Routh rows, Jury comparison, endpoint checks, changed .1K fixture and linked planes with numeric/keyboard controls. `workspace.ts` guards the local browser UI import against abort/disposal; its synchronous mount remains importable by the catalogue's Node test. All mutable visit state is local; CSS is scoped.
+
+27 independent parser/math tests pass, covering polynomial expansion, baseline/changed interval, root and transform residuals, mapping identity, exceptional endpoints, repeated roots, zero Routh rows, empty/all-real intervals and failure bounds. The first full-suite run exposed MathLive's Node/browser export boundary; the guarded local UI import fixed it (69/69 tests passed). Type check and production build passed. The large MathLive chunk warning is unchanged. Caller-state/lifecycle tests have been added and are being checked. Browser QA is still pending: its reservation was held by DP02 at the first attempt. No implementation-complete claim yet.
+
 Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
 
 Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
