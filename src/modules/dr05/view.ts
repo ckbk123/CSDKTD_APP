@@ -30,7 +30,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     return value;
   };
   const setup = section('1. Define the continuous plant and hold');
-  setup.append(element('p', 'Enter the rational plant alone; use the separate integer-delay control for transport delay. Real proper models of order 1–2 are supported. Inputs and outputs use normalized units, and time is in seconds.'));
+  setup.append(element('p', 'Enter the rational plant alone; use the separate integer-delay control for transport delay. Use decimal coefficients, s, fractions, products and integer powers 0–2. Real proper models of order 1–2 are supported. Inputs and outputs use normalized units, and time is in seconds.'));
   const actions = element('div', '', 'zoh-actions'); setup.append(actions);
   const resultHost = element('div'); resultHost.hidden = true;
   const notice = element('p', 'Predict the first sample, then reveal the sampled model.', 'zoh-notice'); notice.setAttribute('role', 'status');
