@@ -59,3 +59,6 @@ Real-browser visual editing/font/keyboard, reset/reopen/fast navigation, narrow 
 
 DS04 correction is now resubmitted at6be898d in its preserved PR#13; CS03 resumes as the only active implementation. The affine inequality display now preserves its typesetting spacing command through String.raw. Browser QA remains explicitly deferred until DD04 and the coordinator's next integration slot are complete; no pending acquisition watcher remains and this worker holds no QA reservation. The prepared own preview8825 is independent of primary8787.
 
+
+Additional precision regression: baselineK=+/-1e-100 remains inside numerical axis tolerance, but the exact inequalities retain the correct stable/unstable decisions and exact Routh sign count.45/45modulechecks now pass (37math,8workspace). Precision wording refers to exact fraction components <=2048bits; q checks arithmetic result components before reduction, and sign comparisons can form temporary products up to4096bits. Earlier178full-suite evidence predates this added test; final checks will cover the final tree. No new browser reservation has been attempted during the explicit DD04/coordinator order.
+

@@ -57,6 +57,11 @@ describe('exact complete cubic gain regions', () => {
     const result = analyze(parseModel('s^3+4s+1', 1), 0);
     expect(result.firstColumn).toBeNull(); expect(result.formalStable).toBe(false); expect(result.roots).toHaveLength(3);
   });
+  it('keeps the exact stability decision when tiny roots are inside the numerical axis tolerance', () => {
+    const stable = analyze(baseline(), 1e-100), unstable = analyze(baseline(), -1e-100);
+    expect(stable.formalStable).toBe(true); expect(stable.nearAxis).toBe(true);
+    expect(unstable.formalStable).toBe(false); expect(unstable.signChanges).toBe(1); expect(unstable.nearAxis).toBe(true);
+  });
   it('supports global endpoint checks beyond the manual selected-gain range', () => {
     const m = parseModel('s^3+10s^2+10s', 1e-8), set = interval(m);
     expect(textOf(set.upper!)).toBe('10000000000');
