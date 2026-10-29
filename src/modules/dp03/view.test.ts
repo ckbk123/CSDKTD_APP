@@ -30,6 +30,20 @@ function open() {
   return { container, button, field, set, visible, reveal: () => button('Reveal and compare frequency plots') };
 }
 describe('DP03 linked exercise flow', () => {
+  it('dismisses Escape before editor mode changes and keeps presets usable', () => {
+    const previous = Object.getOwnPropertyDescriptor(window, 'mathVirtualKeyboard'), hide = vi.fn();
+    Object.defineProperty(window, 'mathVirtualKeyboard', { configurable: true, value: { hide } });
+    try {
+      const visit = open(), field = visit.container.querySelector('textarea')!, defaultModeChange = vi.fn();
+      field.addEventListener('keydown', event => { if (!event.defaultPrevented) defaultModeChange(); });
+      const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }); field.dispatchEvent(escape);
+      expect(escape.defaultPrevented).toBe(true); expect(defaultModeChange).not.toHaveBeenCalled(); expect(hide).toHaveBeenCalledOnce();
+      visit.button('First-order variation'); visit.set('Normalized Ω (rad/sample)', '0'); visit.reveal();
+      expect(visit.visible()).toBe(true); expect(visit.container.textContent).toContain('|G|≈2');
+    } finally {
+      if (previous) Object.defineProperty(window, 'mathVirtualKeyboard', previous); else Reflect.deleteProperty(window, 'mathVirtualKeyboard');
+    }
+  });
   it('waits for reveal and checks independent first-order gain/phase predictions', () => {
     const visit = open(); expect(visit.visible()).toBe(false);
     visit.button('First-order variation'); visit.set('Sample period T (s)', '2'); visit.set('Normalized Ω (rad/sample)', String(Math.PI / 2));
