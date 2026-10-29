@@ -96,7 +96,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
       const index = Math.round(selectedTime / raw.at(-1)!.t * (raw.length - 1)), table = node('table'); table.append(node('caption', `Nearest sampled time: ${format(raw[index].t)} s (401 points).`));
       const header = node('tr'); ['Reference gain', 'x₁', 'x₂', 'y', 'u'].forEach(t => header.append(node('th', t))); table.append(header);
       for (const [label, samples] of [['N = 1', raw], [`N = ${format(result.prefilter ?? 1)}`, corrected]] as const) if (samples) { const tr = node('tr'), p = samples[index]; [label, ...p.state.map(format), format(p.output), format(p.effort)].forEach(t => tr.append(node('td', t))); table.append(tr); }
-      simulation.append(table); view.append(derivation, tracking, simulation);
+      const tableScroll = node('div'); tableScroll.className = 'feedback-sample-table'; tableScroll.tabIndex = 0; tableScroll.setAttribute('role', 'region'); tableScroll.setAttribute('aria-label', 'Response sample table; scroll horizontally for all columns'); tableScroll.append(table);
+      simulation.append(tableScroll); view.append(derivation, tracking, simulation);
     }
     if (active && !active.isConnected) {
       const replacement = action ? Array.from(view.querySelectorAll<HTMLButtonElement>('button[data-action]')).find(b => b.dataset.action === action) : Array.from(view.querySelectorAll<HTMLInputElement>('input[name]')).find(i => i.name === name);

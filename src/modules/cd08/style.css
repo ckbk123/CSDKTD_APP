@@ -22,7 +22,9 @@
 [data-module="CD08"] .feedback-corrected { fill:none; stroke:var(--accent); stroke-width:2; }
 [data-module="CD08"] .feedback-reference { stroke:var(--muted); stroke-width:1; stroke-dasharray:2 4; }
 [data-module="CD08"] .feedback-marker { fill:var(--surface); stroke:var(--accent); stroke-width:2; }
-[data-module="CD08"] .feedback-tool table { table-layout:fixed; border-collapse:collapse; width:100%; font-size:12px; margin-top:12px; }
+[data-module="CD08"] .feedback-sample-table { max-width:100%; overflow-x:auto; }
+[data-module="CD08"] .feedback-tool table { table-layout:fixed; border-collapse:collapse; width:100%; min-width:430px; font-size:12px; margin-top:12px; }
 [data-module="CD08"] .feedback-tool caption { text-align:left; color:var(--muted); }
-[data-module="CD08"] .feedback-tool td, [data-module="CD08"] .feedback-tool th { border:1px solid var(--line); padding:8px; text-align:left; overflow-wrap:anywhere; }
+[data-module="CD08"] .feedback-tool td, [data-module="CD08"] .feedback-tool th { border:1px solid var(--line); padding:8px; text-align:left; }
+[data-module="CD08"] .feedback-tool td { white-space:nowrap; }
 @media(max-width:700px) { [data-module="CD08"] .feedback-inputs, [data-module="CD08"] .feedback-plots { grid-template-columns:minmax(0,1fr); } [data-module="CD08"] .feedback-tool td, [data-module="CD08"] .feedback-tool th { padding:5px; font-size:11px; } }
