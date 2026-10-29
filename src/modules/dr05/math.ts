@@ -118,6 +118,16 @@ export function run(source: Source, e: Experiment): Result {
   let approx: Discrete | undefined, comparison: Sample[] | undefined, warning = '';
   try { approx = approximate(source, e.T, e.method); comparison = samples(source, approx, e); }
   catch (error) { warning = error instanceof Error ? `Approximation unavailable: ${error.message}` : 'Approximation unavailable.'; }
+  if (e.delay >= e.count - 1) warning += ' No full held interval after delayed input arrival is shown. Increase the sample count to inspect post-delay propagation.';
+  const a = source.A;
+  let rate = Math.abs(a[0][0]);
+  if (a.length === 2) {
+    const tr = a[0][0] + a[1][1], det = a[0][0] * a[1][1] - a[0][1] * a[1][0], d = tr * tr - 4 * det;
+    rate = d < 0 ? Math.sqrt(Math.max(0, det)) : Math.max(Math.abs((tr + Math.sqrt(d)) / 2), Math.abs((tr - Math.sqrt(d)) / 2));
+  }
+  // A conservative drawing diagnostic, not an accuracy certificate. Values
+  // still use the exponential independently of the rendering grid.
+  if (rate * e.T / e.density > 0.5) warning += ' Drawing intervals exceed half an inverse pole-magnitude scale. The joined line may underresolve fast motion; increase drawing density. Exact sample values do not use the drawing grid.';
   const steps = Array.from({ length: e.density + 1 }, (_, j) => exactInterval(source, e.T * j / e.density));
   const segments = rows.slice(0, -1).map(row => steps.map((step, j) => {
     const x = advance(step, row.x, row.held), y = dot(source.C, x) + source.D * row.held;

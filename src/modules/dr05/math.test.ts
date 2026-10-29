@@ -96,6 +96,20 @@ describe('DR05 selected interval approximations and safeguards', () => {
     const result = run(source('1/(s+1)'), { ...base, T: 3, count: 120 });
     expect(result.warning).toContain('Approximation unavailable'); expect(result.samples.at(-1)!.y).toBeCloseTo(1, 12);
   });
+  it('explains when the displayed horizon has no full interval after delayed input arrival', () => {
+    const result = run(source('1/(s+1)'), { ...base, count: 4, delay: 3 });
+    expect(result.samples.map(r => r.y)).toEqual([0, 0, 0, 0]);
+    expect(result.samples[3].held).toBe(1);
+    expect(result.warning).toContain('No full held interval');
+  });
+  it('flags a coarse drawing compared with source pole scales without altering exact samples', () => {
+    const plant = source('1/(s+4)');
+    const coarse = run(plant, { ...base, T: 1, count: 4, density: 2 });
+    const fine = run(plant, { ...base, T: 1, count: 4, density: 16 });
+    expect(coarse.warning).toContain('Drawing intervals'); expect(fine.warning).not.toContain('Drawing intervals');
+    expect(coarse.samples).toEqual(fine.samples);
+    expect(coarse.samples[1].y).toBeCloseTo((1 - Math.exp(-4)) / 4, 13);
+  });
   it('validates the finite augmented matrix norm and input dimensions', () => {
     expect(() => matrixExp([[65]])).toThrow(/norm/);
     expect(() => matrixExp([[NaN]])).toThrow(/finite/);

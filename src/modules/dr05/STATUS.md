@@ -1,58 +1,72 @@
 # DR05 implementation status
 
-- **Stage:** in-progress
-- **Assessed:** 2026-10-29; baseline `8696261267b7620bfc101ce2b5f13772bfaa529a`
+- **Stage:** implemented; independent integration review remains separate.
+- **Assessed:** 2026-10-29; base `8696261267b7620bfc101ce2b5f13772bfaa529a`. This record accompanies the tested implementation; the claim names the final commit.
 - **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
 - **Branch/worktree:** `codex/dr05-zoh-f802`, `C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP`
-- **Pull request:** [#11](https://github.com/ckbk123/CSDKTD_APP/pull/11), draft while final browser checks are pending
-- **Contract:** [TASK.md](TASK.md)
+- **Pull request:** [#11](https://github.com/ckbk123/CSDKTD_APP/pull/11)
+- **Ownership/contract:** `src/modules/dr05/**`, [TASK.md](TASK.md)
 
-## Initial requirement audit
+## Requirement audit
 
-At the claimed baseline, metadata/lazy loader exist, workspace is blank, and there are no local mathematical tests. The shared banner is only a notation preview. Preserve metadata and shell behavior.
+The claimed baseline contained metadata and a blank workspace, with no local mathematical tests. The shared banner was a notation preview. Metadata and shell behavior are preserved.
 
-| Accepted requirement | Planned evidence | Initial gap |
-|---|---|---|
-| Editable continuous source and sampled target | Shared visual equation entry; bounded real proper first/second-order TF parser; canonical state conversion | Not implemented |
-| Exact ZOH, including singular A | Augmented exponential [A B;0 0] to obtain Ad and the input integral without inverse(A) | Not implemented |
-| Selected approximation comparison | Forward Euler, backward Euler and trapezoidal propagation for each constant held-input interval; explicitly label approximation/timing | Not implemented |
-| Continuous trajectory, held input, sample clock | Actual held-input reconstruction via exp(A dt), sample markers and independent plot-density control | Not implemented |
-| Resulting recurrence and intermediate reasoning | Continuous matrices, exponential/integral, sample state update and zero-state rational discrete TF | Not implemented |
-| Integer delay | Explicit causal input delay mT, input history zero; reject fractional m instead of rounding | Not implemented |
-| Attempt/reveal, changed data | First-sample prediction; T=.1/.2, integrator and delayed double-integrator experiments | Not implemented |
-| Independent tests | Scalar exponential/geometric checks; nilpotent double integrator; sine/cosine oscillator; delayed 5/s^2 path | Not implemented |
-| Lifecycle/browser delivery | Abort-guarded lazy view; input cleanup; actual editor, reset/reopen/fast navigation/keyboard/narrow checks | Not implemented |
+| Accepted requirement | Implemented evidence |
+|---|---|
+| Editable source and sampled target | Shared visual equation entry/typeset results in view.ts; bounded rational parser; coefficient-derived continuous canonical realization. |
+| Exact ZOH including singular A | Augmented exponential of [A B;0 0]T gives Ad and the input integral without dividing by A. Tests cover integrators, oscillator, repeated/distinct real poles and feedthrough. |
+| Selected approximations | Forward Euler, backward Euler and trapezoidal integration use the same constant held value on each interval. Formulas, matrices and finite-horizon sampled output difference are shown. Failed/singular/bounded-out comparisons preserve valid exact results with explicit feedback. |
+| Source trajectory, held input, clock | Reconstructed continuous interval paths, exact sample circles, approximation squares and separate held-input/clock panel. Separate paths preserve feedthrough jumps. Drawing density does not alter sampled values. |
+| Intermediate steps and recurrence | Source state equations/matrices, augmented construction, exp/integral identities, sampled update, zero-state pulse TF/scalar recurrence, inspected sample arithmetic and complete accessible sample/state table. |
+| Integer delay | Causal input delay mT before plant, zero input history and right-hand output timing. Fractional delay rejected; insufficient post-delay horizon reported. |
+| Attempt/reveal and variation | Optional first-sample prediction with explicit tolerance; editable plant/T/delay/input/amplitude/initial state/count/density/method. Baseline/.2 s worksheet, singular integrators, delayed 5/s² and oscillator presets. Edits hide stale results. |
+| Validation and lifecycle | 46 math/parser, 7 view-flow and 3 loader tests. Synchronous workspace with abort-guarded lazy view, active error recovery and input destruction. Mutable state belongs to mount. Scoped CSS, labelled numeric controls, keyboard access and internal math/plot/table scrolling. |
 
-## Proposed bounds/conventions
+## Supported domain and conventions
 
-Time in seconds; normalized input/output units; canonical state coordinates. Proper real TF order 1–2 with decimal coefficients and textbook fractions/products/powers. T=0.0001–10 s; 4–120 sample instants; 2–16 visual subdivisions per interval; m=0–12 integer sample input delay before the plant; arbitrary finite initial plant states and zero input prehistory. The held value u[k−m] acts on [kT,(k+1)T); y[k] is the right-hand output Cx[k]+D u[k−m]. Zero-state TF is separate from selected initial state. Matrix exponential uses bounded scaling/squaring with a Taylor convergence test; implicit approximation singularities get explicit feedback. No shared API/package change is planned.
+Real proper SISO rational continuous plants of denominator order 1–2. Parser accepts s, decimal literals, sums/products, implicit multiplication, fractions, parentheses and integer powers 0–2; optional G(s)=. Full/compact/mixed/nested MathLive fractions are equivalent. Numeric-only font wrappers preserve grouping. Unsupported functions/delays/variables, arbitrary styled algebra and visual e/E scientific literals are rejected. Native number controls separately accept scientific numeric notation. Nonzero literal/product/normalization underflow is rejected.
 
-## Source and fixture provenance
+Arrays use descending powers. Original denominator is retained and normalized into controllable canonical coordinates: for order2, A=[[0,1],[-a0,-a1]], B=[0,1], D=b2, C=[b0−D a0,b1−D a1]. Initial states are canonical coordinates. There is no feedback connection in this experiment. Input/output units are normalized; time is seconds.
 
-Read TASK, atlas DR05 and the recorded discrete source audit DR3/DR4. Audit cites Ch7/S12 and the .2 s worksheet; original decks have not been newly inspected. Baseline uses e^(−T), 1−e^(−T); integrators/oscillator are independently derived fixtures. The delayed 5/s^2 test covers the audit's separately declared ZOH plant path, not an unverified full original feedback topology.
+u[k−m] acts on [kT,(k+1)T); negative-index input history is zero. Initial plant state is independent of that history. y[k] is right-hand Cx[k]+D u[k−m]. Fixed m with changed T changes physical delay τ=mT. Step, one-period pulse (not Dirac impulse) and sampled physical ramp A kT are supported. Transfer/scalar recurrence is zero-state; selected initial conditions propagate through the state model.
 
-## Checks and remaining work
+Bounds: T=.0001–10s, 4–120 sample instants, integer m=0–12, 2–16 drawing subdivisions/interval, amplitude/initial-state magnitude≤10⁴, output≤10¹⁰, state≤10¹². Parser: 512 characters, nesting20, intermediate degree6/coefficient≤10¹², entered/normalized coefficients≤10⁶, leading denominator≥10⁻⁸. Exponential: size≤3, infinity norm≤64, scale to norm≤.5, ≤64 Taylor terms/7 squarings; convergence threshold2×10⁻¹⁶ max(1,sum norm). Implicit-method pivot tolerance10⁻¹² max(1,matrix norm). Invalid dimensions/nonfinite data, unsupported size, singular implicit methods, excessive response/work and nonconvergence give explicit feedback.
 
-All exercise implementation and checks remain pending at this early checkpoint. DP01 is preserved separately as submitted PR #6; it is not included in this branch. Implement only DR05; prioritize coordinator review returns before continuing this newer module.
+Prediction tolerance: |guess−y[1]|≤10⁻⁵ max(1,|y[1]|). Displays use7 significant digits; calculation uses floating point. ZOH identities are exact for this hold; matrices numerically evaluate them. Continuous drawing is a finite grid, not a peak calculation. Pole-scale coarse-drawing diagnostic is not an accuracy certificate. Comparisons cover the chosen sampled horizon and are plant-interval integration methods, distinct from controller emulation by frequency substitution. No complete stability/performance region is claimed.
 
-## Working implementation checkpoint
+## Source and independent references
 
-`parser.ts` provides bounded proper rational input in s, including actual MathLive compact/nested fractions and nonzero-underflow rejection. `math.ts` builds continuous canonical matrices, computes exact ZOH by a size≤3 augmented matrix exponential, and compares forward/backward/trapezoidal held-interval propagation. It supports singular A, integer input delay, selected initial state, direct feedthrough/right-hand sample timing, finite work/response bounds and explicit approximation failure without discarding exact results. `plot.ts` draws separately reconstructed continuous intervals, sample markers, approximation squares and held input/sample-clock guides. `view.ts` implements prediction/reveal, T/delay/density/initial-state controls, intermediate equations, scalar recurrence, inspection and a full accessible sample table. The public workspace is synchronous with abort-guarded browser-view loading and active error recovery; cleanup removes controls and destroys the equation input.
+Read TASK, atlas DR05 and recorded discrete audit DR3/DR4. They cite Ch7:4–8,22–29,43–49 and S12:4–11,13–14, including the .2s worksheet. Original external decks were not newly inspected. Delayed5/s² is the audit's separately declared ZOH plant path, not an unverified complete original feedback topology. Integrator/oscillator examples are independent teaching fixtures.
 
-Actual checks at this checkpoint, with bundled Node v24.22.1 and npm10.8.2: `npm ci` passes (109 packages, zero audit vulnerabilities); `npm test -- src/modules/dr05` passes 50 tests (40 math/parser, 7 view-flow API-stub checks, 3 lazy loader/cleanup checks); `npm run check` passes. Mathematical references are independently derived scalar exponential/geometric formulas, nilpotent single/double integrators, oscillator sine/cosine matrices, critically damped/distinct real step responses, and the declared delayed 5/s² plant path. The equation API stub is not real-browser editor evidence. Full suite/build and real-browser checks remain pending; stage stays in-progress.
+Independent test oracles: baseline Ad=e^(−T), Bd=1−e^(−T), step y[k]=1−e^(−kT); nilpotent single/double integrator; oscillator sine/cosine; repeated critically damped/distinct real-pole step formulas; delayed5/s² T=.2,m=1 giving y[2]=.1; direct-feedthrough jumps and selected-state/zero-input-history cases. Approximation formulas use independent scalar/matrix expected results and refinement checks. Tests cover changed coefficients/T, density invariance, scalar-recurrence equivalence, mixed/signed/styled fractions, parser/resource failures, raw numeric underflow, singular comparison and insufficient horizon. View tests stub the public equation API; they are not real-editor evidence.
 
-## Additional numerical and browser progress (QA handoff)
+Supplemental SciPy1.18.1 scipy.linalg.expm comparisons on40 deterministic models (seed20261029) checked480 samples/1,760 trajectory points. Maximum matrix absolute discrepancy1.23×10⁻¹⁵; scaled sample/trajectory discrepancies<9.8×10⁻¹⁵. Finite checks supplement analytical fixtures, not a proof for arbitrary conditioning/order. Private reference summary is retained with the worker ledger.
 
-Full worktree checks pass: `npm test` reports 133 tests across 11 files; `npm run build` and its type check pass (existing MathLive large-chunk advisory only). Independent SciPy1.18.1 `scipy.linalg.expm` comparison on 40 deterministic first/second-order models checked 480 outputs and 1,760 reconstructed trajectory points. Maximum matrix absolute discrepancy was 1.23e-15; scaled sample/trajectory discrepancies were below 9.8e-15. These finite numerical comparisons support the analytical fixtures; they are not a proof for arbitrary conditioning or order.
+## Automated verification
 
-Initial production-browser checks at 8892 pass: baseline Ad=.9048374/Bd=.09516258 with correct first-sample prediction; first samples 0,.09516258,.1812692,.2591818; density8→16 preserves those values. T=.2 gives first output .1812692. Delayed5/s² gives y[2]=.1 with m=1/T=.2 and the expected two-state matrices/recurrence. Actual fraction-button entry serializes `\frac{\frac12}{s+0.5}` and computes y[1]=.04877058. Backward/trapezoidal methods display the independently expected scalar matrices. Fractional m=.5 and empty/unsupported bare-polynomial inputs have useful errors; singular backward comparison at1/(s−1),T=1 preserves exact y[1]=1.718282 and reports comparison unavailable. Integrator held pulse gives [0,.1,.1,.1], held physical ramp gives [0,0,.01,.03], and initial x1=2 shifts that ramp to [2,2,2.01,2.03]. Continuous trajectory, sample clock, held-input chart, fractions and matrices were visually inspected.
+Executed in this isolated worktree with Node24.22.1/npm10.8.2 (explicit bundled Node invoking npm CLI):
 
-Browser inspection found coincident approximation squares covering exact dots. `plot.ts` now draws exact dots last so both shapes remain visible; build/type check passes. The preview needs reload before inspecting that final drawing change. No temporary viewport override was applied during these DR05 checks. QA was released on the coordinator's requested handoff; the private preview/tab and notes remain intact. Remaining browser checks: refreshed drawing, power/keyboard/tab flow, reset/reopen/rapid navigation, narrow layout, final warning/error log. Stage remains in-progress; this is not final browser evidence or submission.
+- `npm ci`: passed,109 packages,zero audit vulnerabilities at installation.
+- `npm test -- src/modules/dr05`: **56 passed** across3 files (46 math/parser,7 view,3 loader).
+- `npm run check`: TypeScript passed.
+- `npm test`: **139 passed** across11 files on the recorded branch base.
+- `npm run build`: type check/production Vite build passed; existing MathLive large-chunk advisory only. Generated output is untracked.
 
-While QA is handed off, added explicit regressions rejecting visual expressions `(1e-2)/(s+1)` and `1e3/(s+1)` instead of treating their letter e as scientific-number syntax. The plant help now states decimal coefficients and the accepted variable/operators. No solver change was required: the bounded parser already rejects those unsupported expressions. Current full suite: 135 tests pass (52 owned DR05 tests, including42 math/parser,7 view-flow and3 loader cases); type/build pass. The final production browser needs reload for the current build.
+## Real-browser verification
 
-Current primary equation-guide semantic gates were re-read after the coordinator update. Added explicit equivalence checks for every compact/mixed fraction-argument style plus grouped/outer/numerator minus signs; negative ratios produce the independently expected signed first sample. `npm test -- src/modules/dr05` now passes53 tests (43 math/parser,7 view-flow,3 loader). The full suite's last135-pass result predates this added mathematical test; rerun final full checks before submission. No parser implementation change was needed.
+Private production preview8892, exclusive shared QA reservations; primary8787 untouched. Actual MathLive fonts/fractions/matrices visually inspected in the in-app Chromium browser, system dark theme.
 
-A real shared-editor fraction test in another worker exposed numeric font wrappers around pasted digits. DR05 now accepts a single numeric-literal font wrapper while preserving its TeX argument grouping. It does not strip wrappers around e/E, variables or arbitrary algebra. Regression checks cover positive/negative styled numeric fractions and rejection of styled unsupported expressions. This is local parser work only; actual DR05 browser coverage for pasted styling remains on the final checklist. `npm test` now passes137 tests (54 DR05:44 math/parser,7 view-flow,3 loader); type/build pass. The current production build requires the planned reload.
+- Baseline Ad=.9048374/Bd=.09516258, correct prediction and first samples[0,.09516258,.1812692,.2591818]. T=.2 gives y[1]=.1812692; density8→16 preserves samples.
+- Delayed5/s² T=.2,m=1 gives y[2]=.1 with expected matrices/TF/recurrence. Integrator pulse[0,.1,.1,.1], physical ramp[0,0,.01,.03], x1=2 shifts to[2,2,2.01,2.03]. Backward/trapezoidal matrices match references.
+- Real fraction buttons create nested fraction(1/2)/(s+.5), giving y[1]=.04877058; changed denominator s+1 and outer minus give ±.04758129. Pasted numeric mathrm{1} fraction works. Power insertion/unsupported visual e forms, empty data and fractional delay yield useful errors. Native amplitude1e-400 rejects underflow; intentional0 works;1e-2 gives y[1]=.0009516258.
+- Backward comparison for1/(s−1),T=1 is singular but exact y[1]=1.718282 remains. Coarse1/(s+4),T=1,density2 warns/y[1]=.2454211; density16 removes warning with identical sample. Delay3/count4 reports no full post-arrival interval.
+- Plots and coincident exact-circle/approximation-square markers visually checked. Narrow390×844 viewport: document client/scroll375/375; plot305/560 with internal scrolling. Keyboard fits; Escape closes it; Tab from editor reaches fraction tools.
+- Reset restores all baseline controls, blank prediction and hidden answers, including with keyboard open. Leaving with keyboard open removes editor. Repeated rapid leave/reopen settles into one fresh baseline workspace without old results. Final fresh-load/navigation warning/error log empty. Temporary viewport reset, private tab closed and QA released.
 
-The current prediction tolerance is now explicit beside the attempt input: absolute error≤10^-5·max(1,|y[1]|). Build/type check passes after that text change. On the coordinator's next-slot request after DS01, the DR05 event-based acquisition waiter was stopped, without touching another worker's reservation. Private preview/tab and final browser checklist remain preserved; await the coordinator's release notice before new QA acquisition.
+One immediate preset/reveal after changing the automated viewport reported an unmounted/empty editor. Fresh reload and ordinary preset/reveal passed; not reproduced in normal reset/navigation. Other browser engines/light-theme screenshots/arbitrary notation outside the stated grammar were not tested.
+
+## Remaining work and coordination
+
+No accepted bounded exercise requirement is deferred. Independent coordinator review/integration is pending; stage is implemented, not verified. No package/shell/routing/deployment/sibling edits.
+
+This branch predates main v0.3.3's shared readNumericInput(input,label). Its tested equivalent local native-number guard is an approved carry-forward per coordinator instruction2026-10-29; coordinator may adapt the import during checked integration. No unowned shared file or rebase/merge was added for this rollout.
