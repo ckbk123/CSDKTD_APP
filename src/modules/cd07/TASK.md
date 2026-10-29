@@ -1,6 +1,6 @@
 # CD07 — Apply and evaluate a named PID tuning rule
 
-**Status:** accepted educational concept; the current browser workspace is a scaffold. This brief specifies future implementation, not a delivered solver. **Ownership:** `src/modules/cd07/**` only. **Course block:** Continuous / Controller Design.
+**Status snapshot (29 October 2026):** accepted educational concept; the assessed workspace was a scaffold. [STATUS.md](STATUS.md) records subsequent progress and evidence; inspect current code and checks before work. **Ownership:** `src/modules/cd07/**` only. **Course block:** Continuous / Controller Design.
 
 The [canonical atlas entry](../../../docs/EXERCISE_TOOL_ATLAS.md#cd07), [course architecture](../../../docs/FUNCTIONAL_SPECIFICATION.md), [contribution guide](../../../docs/CONTRIBUTING.md) and [development guide](../../../docs/DEVELOPMENT.md) provide context. The original slides/worksheets remain outside Git. Source anchors and proposed-fixture labels below must remain distinguishable.
 
@@ -11,7 +11,7 @@ Copy the following assignment into an agent working from this repository. It con
 ```text
 Implement CD07 — Apply and evaluate a named PID tuning rule for the CSDKTD APP browser application.
 
-Own only src/modules/cd07/**. Read AGENTS.md and this folder's TASK.md, index.ts and workspace.ts, plus docs/CONTRIBUTING.md and docs/DEVELOPMENT.md. Preserve unrelated edits. Do not edit another module, the shell/routing/catalogue, shared types, package dependencies, deployment or global configuration without coordination with the integration owner.
+Own only src/modules/cd07/**. Read AGENTS.md, docs/START_HERE.md and this folder's TASK.md, STATUS.md, index.ts and workspace.ts, plus docs/CONTRIBUTING.md and docs/DEVELOPMENT.md. Preserve unrelated edits. Do not edit another module, the shell/routing/catalogue, shared types, package dependencies, deployment or global configuration without coordination with the integration owner.
 
 Default example metadata to initialize on each visit/reset:
 G(s) = exp(-0.5s)/(2s+1); response-curve tuning example

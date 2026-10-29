@@ -2,6 +2,8 @@
 
 **Revision 4, 29 October 2026. Browser module concepts accepted; mathematical implementation pending.** Read the [course architecture](FUNCTIONAL_SPECIFICATION.md) first. The 56 entries are independent subapplications grouped into ten subject workspaces. Each is a lazily imported TypeScript workspace inside the same browser page, owns its model and temporary state initialized in synchronous `mount({container,signal})`, and starts from its baseline example on every visit. No case follows navigation between tools.
 
+The implementation-status wording in this revision describes the scaffold baseline on 29 October 2026. These entries define the teaching contracts; current delivery evidence belongs in module-owned `STATUS.md` files linked from [AGENT_TASKS.md](AGENT_TASKS.md). Read [START_HERE.md](START_HERE.md) to assess and implement an assigned goal.
+
 Every entry specifies a problem students can attempt, an interaction that exposes the concept, and an answer/verification contract. The instructor can adapt the notation, reveal order and problem data in the [review sheet](FEATURE_REVIEW.md). The first-release milestone supplies the Vite/TypeScript catalogue and 56 independent module scaffolds without a UI framework. Only immutable metadata loads eagerly. Mathematical educational functionality remains pending and will run client-side. A mount returns void or a cleanup function; the shell aborts and cleans before leave/reset, then rejects stale lazy imports. Reset starts a fresh baseline visit. The first release has no accounts, persistence, save/load, project files, export or service worker.
 
 ## Source and fixture notation

@@ -2,6 +2,8 @@
 
 **Revision 4, 29 October 2026. Browser-first architecture; 56 module scaffolds, mathematical implementation pending.** The application covers **single-input, single-output, linear time-invariant systems**. Its organization follows the mathematical course, with exercise-specific tools inside each block. This replaces the previous flat F01–F35 catalog.
 
+This revision records the accepted scope and the v0.3.0 scaffold baseline. Current delivery evidence belongs in module-owned `STATUS.md` files linked from [AGENT_TASKS.md](AGENT_TASKS.md); begin implementation at [START_HERE.md](START_HERE.md). See [PROJECT_STATUS.md](PROJECT_STATUS.md) for the foundations and completion stages.
+
 ## 1. Scope
 
 There is no SISO/MIMO selector. Continuous and Discrete are the primary sections. Each has the same five subsections: **System Representation, Plots, Stability, Performance, Controller Design**.
@@ -82,7 +84,7 @@ Examples include highlighting the coefficients used in a Routh cell, showing whi
 
 Explore, Guided and Check-my-work behaviors can be implemented inside each tool later. Every tool has a baseline default example and starts fresh when opened. Any comparison or answer-reveal state is local to that visit. Localization, keyboard input and reusable visual controls can share code. The first release has no accounts, saving, project files, persistence, export or service worker. Local reveal controls are teaching aids, not secure examinations.
 
-Tool identifiers below are review references; student menus use subject names. The [exercise tool atlas](EXERCISE_TOOL_ATLAS.md) details tasks, controls, visual behavior, source anchors and checks. The [review sheet](FEATURE_REVIEW.md) starts with the ten blocks and then their modes. The instructor has accepted the hierarchy and all 56 logical subapplication concepts. The immediate implementation milestone is the browser catalogue and 56 lazy module scaffolds; mathematical functionality and detailed interactions follow later.
+Tool identifiers below are review references; student menus use subject names. The [exercise tool atlas](EXERCISE_TOOL_ATLAS.md) details tasks, controls, visual behavior, source anchors and checks. The [review sheet](FEATURE_REVIEW.md) starts with the ten blocks and then their modes. The instructor has accepted the hierarchy and all 56 logical subapplication concepts. The browser catalogue and 56 lazy module scaffolds were delivered in the v0.3.0 baseline; subsequent mathematical work is tracked in the module progress records.
 
 ## 4. Continuous systems
 
@@ -273,4 +275,4 @@ Proposed dependency sequence:
 5. Add the corresponding discrete subapplications and their own recurrence, stability and design methods.
 6. Verify related teaching sequences using matching manually entered or predefined local examples, without automatic cross-module state transfer.
 
-All 56 subapplication concepts are accepted in scope, but they need not be mathematically implemented in one release. The [review sheet](FEATURE_REVIEW.md) distinguishes accepted scope from implementation status.
+All 56 subapplication concepts are accepted in scope, but they need not be mathematically implemented in one release. The [review sheet](FEATURE_REVIEW.md) records accepted scope and the baseline assessment; [module progress records](AGENT_TASKS.md) track subsequent implementation and evidence.

@@ -1,6 +1,6 @@
 # Browser development guide
 
-**Browser scaffold milestone, 29 October 2026.** Control Studio is a static Vite/TypeScript browser application. Its 56 independent module folders currently provide metadata and blank workspaces. A shared visual equation layer typesets their baseline examples and offers temporary equation editing. Mathematical solvers and exercise-specific controls are future per-module work.
+**Browser scaffold assessment, 29 October 2026, v0.3.0.** Control Studio is a static Vite/TypeScript browser application. At this baseline its 56 independent module folders provided metadata and blank workspaces; the shared equation layer typeset their examples and offered temporary editing. Begin assignments at [START_HERE.md](START_HERE.md). [PROJECT_STATUS.md](PROJECT_STATUS.md) and module-owned `STATUS.md` files record subsequent implementation and verification; check current code/tests before assuming a tool is still blank or already complete.
 
 ## Build and run
 
@@ -32,6 +32,7 @@ Run check, tests and build before handing off a module. Local development/previe
 | `src/modules/<id>/index.ts` | Small immutable metadata entry and lazy workspace loader |
 | `src/modules/<id>/workspace.ts` | One tool's interface and per-visit state |
 | `src/modules/<id>/TASK.md` | Durable implementation goal and mathematical acceptance contract |
+| `src/modules/<id>/STATUS.md` | Module-owned requirement audit, delivered behavior, remaining work and verification evidence |
 | `src/modules/<id>/*.test.ts` | Module-owned numerical/logic tests |
 | `src/shared/math/` | Future coordinated stateless mathematical helpers |
 | `src/shared/equations/` | Shared visual equation display/input and curated baseline previews; no mathematical solver |

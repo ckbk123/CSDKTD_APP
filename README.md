@@ -2,9 +2,11 @@
 
 Control Studio is a browser application for learning **SISO LTI control theory**, organized into Continuous and Discrete systems and five subject groups in each: System Representation, Plots, Stability, Performance and Controller Design. The repository remains `CSDKTD_APP`; package and Cloudflare identifiers remain `csdktd-app`.
 
+**Assigning work to an agent? Start with [START_HERE.md](docs/START_HERE.md).** It explains the end goal, how to assess existing work, the autonomous implementation workflow and a copyable module assignment. [Project status](docs/PROJECT_STATUS.md) separates working foundations from module progress; each module owns a `STATUS.md` with its evidence and remaining work.
+
 ## Current milestone
 
-The application provides a responsive catalogue and **56 independent module scaffolds**. A module opens inside the same browser page, with its title, typeset baseline equations and an empty workspace ready for later implementation. **Edit equations** opens visual fraction/power entry and a math keyboard. These temporary preview edits do not update the workspace. These are 56 planned educational tools, **not 56 implemented mathematical solvers**.
+At the **v0.3.0 assessment on 29 October 2026**, the application provided a responsive catalogue and **56 independent module scaffolds**. A module opened inside the same browser page, with its title, typeset baseline equations and an empty workspace ready for implementation. **Edit equations** provides visual fraction/power entry and a math keyboard; these preview edits do not update the workspace. This milestone did not deliver 56 mathematical solvers. Check the [module progress records](docs/AGENT_TASKS.md) for work completed after the assessment.
 
 Each module owns its temporary state. Opening or resetting a module starts from its default example; leaving releases its resources. There are no accounts, saved projects, persistence or student export workflows. The first browser release has no service worker or guaranteed offline mode.
 
@@ -46,7 +48,7 @@ The static output is `dist/`. The repository includes Cloudflare Workers Static 
 
 Each tool has its own directory under `src/modules/<id>/` and a durable `TASK.md` containing its exercise, source evidence, default example, visual behavior, mathematical checks and copyable agent assignment. The metadata entry is loaded eagerly; its workspace code loads only when opened.
 
-Start with the [56-task index](docs/AGENT_TASKS.md), [contribution guide](docs/CONTRIBUTING.md) and [development guide](docs/DEVELOPMENT.md). Agents should work on one explicitly assigned module at a time. Shared mathematical helpers and dependency changes need coordinated ownership.
+Start with the [agent entry guide](docs/START_HERE.md), then the [56-task index](docs/AGENT_TASKS.md), [contribution guide](docs/CONTRIBUTING.md) and [development guide](docs/DEVELOPMENT.md). Agents should work on one explicitly assigned module at a time. Shared mathematical helpers and dependency changes need coordinated ownership.
 
 Use the [shared equation input and display](docs/EQUATION_INPUT.md) when building a module's actual inputs and results. It bundles MathLive 0.111.1 and its math fonts locally, so students can enter textbook-style mathematics without learning MATLAB or LaTeX syntax. Each module must still validate its supported mathematical forms before computing; the visual editor is not a CAS.
 
@@ -54,7 +56,7 @@ Use the [shared equation input and display](docs/EQUATION_INPUT.md) when buildin
 
 - [Functional specification](docs/FUNCTIONAL_SPECIFICATION.md): accepted course scope and browser architecture.
 - [Exercise tool atlas](docs/EXERCISE_TOOL_ATLAS.md): all 56 mathematical teaching contracts.
-- [Feature review](docs/FEATURE_REVIEW.md): accepted scope, with educational implementation still pending.
+- [Feature review](docs/FEATURE_REVIEW.md): accepted scope and the dated scaffold assessment.
 - [Mathematical backend options](docs/MATH_BACKEND_OPTIONS.md): numerical, exact-algebra and optional C/WebAssembly considerations.
 - [Continuous](docs/research/CONTINUOUS_EXERCISE_AUDIT.md) and [Discrete](docs/research/DISCRETE_EXERCISE_AUDIT.md) audits, [external exercises](docs/research/EXTERNAL_EXERCISE_REFERENCES.md), and [slide inventory](docs/research/SLIDE_INVENTORY.json).
 

@@ -4,6 +4,8 @@
 
 Read the [architecture](FUNCTIONAL_SPECIFICATION.md) first. Use the [exercise atlas](EXERCISE_TOOL_ATLAS.md) when reviewing a specific tool. Source/exercise audits are supporting evidence, not additional application menus.
 
+**Status date:** the implementation labels in this review sheet describe the 29 October 2026 scaffold baseline. They are not a live progress ledger. Current implementation and verification evidence lives in each module's `STATUS.md`, linked from [AGENT_TASKS.md](AGENT_TASKS.md). Agents start at [START_HERE.md](START_HERE.md); stages are defined in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+
 ## 1. Review the blocks first
 
 All ten subject groups and their subapplication concepts are accepted. The status below records accepted scope separately from the still-pending mathematical functionality. The shell supplies eager immutable metadata, catalogue navigation and lazily mounted blank workspaces first.

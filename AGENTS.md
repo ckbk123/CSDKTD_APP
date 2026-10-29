@@ -2,7 +2,7 @@
 
 ## Product and current status
 
-Control Studio is a **browser-first static educational application** for SISO LTI control theory. Continuous and Discrete each contain Representation, Plots, Stability, Performance and Controller Design. The 56 module folders are scaffolds; mathematical features are pending until implemented and verified individually.
+Control Studio is a **browser-first static educational application** for SISO LTI control theory. Continuous and Discrete each contain Representation, Plots, Stability, Performance and Controller Design. Start at [docs/START_HERE.md](docs/START_HERE.md). The v0.3.0 assessment recorded 56 scaffolds; [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) and each module's `STATUS.md` separate delivered foundations from current exercise progress. Reassess current code/tests rather than treating the dated baseline as permanent status.
 
 Use TypeScript/HTML/CSS and Vite without adding a UI framework. All exercise computation runs in the browser. There are no accounts, persistence, saved projects, export workflow, application API server, database or API keys. Do not add a service worker/PWA/offline guarantee in this release. C/WebAssembly is an optional future math implementation detail; web interfaces use browser/TypeScript types rather than Raven or C UI types.
 
@@ -14,9 +14,15 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 
 ## Read before editing
 
-1. Read the assigned module's `src/modules/<id>/TASK.md`, `index.ts` and `workspace.ts`.
+1. Read `docs/START_HERE.md`, then the assigned module's `src/modules/<id>/TASK.md`, `STATUS.md`, `index.ts`, `workspace.ts` and existing tests.
 2. Read `docs/CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, `docs/DESIGN.md`, `docs/EQUATION_INPUT.md` and the matching atlas entry.
 3. Check the current working tree and existing shared helpers. Course slides remain outside Git; audits distinguish inspected examples from proposed fixtures. Preserve those distinctions.
+
+## Autonomous delivery
+
+Compare the assigned TASK's requirements with current behavior before editing. Preserve working features, record missing requirements and evidence in the owned `STATUS.md`, then complete the accepted scope through implementation and verification. Make routine local implementation decisions without repeated approval questions. Do not stop at a plan, silently shrink a full-tool goal into a baseline-only demonstration, or mark unfinished requirements complete. Shared changes outside assigned ownership require coordination; explicit broader user authorization takes precedence. Continue useful independent work while resolving a dependency.
+
+Update the module's progress record with supported limits, exact checks, browser evidence and remaining work in the same change as the implementation. Status stages and completion criteria are in `docs/PROJECT_STATUS.md`; independent technical review can be performed by another agent and is not a new human approval gate.
 
 ## Ownership and isolation
 

@@ -1,10 +1,10 @@
 # Contributing an educational module
 
-Implement one clearly assigned tool at a time. The [task index](AGENT_TASKS.md) links all 56 durable briefs. Each brief copies its exercise, evidence, intended interaction, verification requirements and default-example metadata. A scaffold's existence is not evidence that its mathematics works.
+Implement one clearly assigned tool at a time. Begin with [START_HERE.md](START_HERE.md). The [task index](AGENT_TASKS.md) links all 56 durable briefs and module-owned progress records. Each brief copies its exercise, evidence, intended interaction, verification requirements and default-example metadata. A scaffold's existence is not evidence that its mathematics works.
 
 ## Before implementation
 
-1. Read the assigned `TASK.md`, `index.ts`, `workspace.ts`, [atlas](EXERCISE_TOOL_ATLAS.md), [functional specification](FUNCTIONAL_SPECIFICATION.md) and [development guide](DEVELOPMENT.md).
+1. Read the assigned `TASK.md`, `STATUS.md`, `index.ts`, `workspace.ts`, existing tests, [atlas](EXERCISE_TOOL_ATLAS.md), [functional specification](FUNCTIONAL_SPECIFICATION.md) and [development guide](DEVELOPMENT.md).
 2. Confirm ownership is `src/modules/<id>/**`. Inspect existing helpers and unrelated edits. Keep the stable ID/domain/category.
 3. Turn the brief into explicit supported inputs and limits. Resolve ambiguous topology, notation or source rounding from the audits before declaring a numeric answer authoritative.
 4. Tell the integration owner about required shared math, charting or package changes. Specify inputs, outputs, conventions, failure statuses and tests. The owner assigns those dependencies; module agents do not independently edit global packages/configuration.
@@ -51,3 +51,5 @@ Exercise the module in a real browser using the available browser tools/manual i
 For visual equations, also check the actual fonts, fraction/power buttons and math keyboard. MathLive's Node export is a server renderer; successful jsdom tests with a mock do not establish interactive browser behavior. See the [equation verification checklist](EQUATION_INPUT.md#browser-verification).
 
 A useful handoff states what students can now do, the supported mathematical domain, files changed, validation results, remaining limits and any shared API requests. Do not deploy, add API keys/servers, change dependencies/global configuration or modify another module without coordination. Do not commit generated output. Retain the course evidence and asset provenance.
+
+Update the owned `STATUS.md` in the same change. Map the accepted requirements to implementation and verification evidence, name remaining work explicitly and use the [documented stage definitions](PROJECT_STATUS.md#module-stages). Do not replace unperformed checks with a plan to run them, or infer completion from the global test count.

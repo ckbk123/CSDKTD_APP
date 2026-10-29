@@ -2,6 +2,8 @@
 
 **Selected identity, 29 October 2026.** This document records the approved application name, palette, mark and compact interface. Module contributors use this contract so independently implemented tools still belong to one application. Mathematical feature scope remains in the atlas; the 56 workspaces are scaffolds until implemented and verified.
 
+The scaffold count describes the v0.3.0 assessment. Use [module progress records](AGENT_TASKS.md) and current code/tests to assess later implementation; the design contract does not act as a completion ledger.
+
 ## Name and identity
 
 The student-facing name is **Control Studio**. The mark is a minimal **pole/zero cross and open ring**, supplied as [public/control-studio.svg](../public/control-studio.svg). Use it as the favicon and the 32 px header mark. Keep its silhouette readable at small sizes; do not replace it with a response curve, block diagram, monogram or university logo.

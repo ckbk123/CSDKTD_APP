@@ -1,6 +1,6 @@
 # DR03 — Construct discrete state models and delay states
 
-**Status:** accepted educational concept; the current browser workspace is a scaffold. This brief specifies future implementation, not a delivered solver. **Ownership:** `src/modules/dr03/**` only. **Course block:** Discrete / System Representation.
+**Status snapshot (29 October 2026):** accepted educational concept; the assessed workspace was a scaffold. [STATUS.md](STATUS.md) records subsequent progress and evidence; inspect current code and checks before work. **Ownership:** `src/modules/dr03/**` only. **Course block:** Discrete / System Representation.
 
 The [canonical atlas entry](../../../docs/EXERCISE_TOOL_ATLAS.md#dr03), [course architecture](../../../docs/FUNCTIONAL_SPECIFICATION.md), [contribution guide](../../../docs/CONTRIBUTING.md) and [development guide](../../../docs/DEVELOPMENT.md) provide context. The original slides/worksheets remain outside Git. Source anchors and proposed-fixture labels below must remain distinguishable.
 
@@ -11,7 +11,7 @@ Copy the following assignment into an agent working from this repository. It con
 ```text
 Implement DR03 — Construct discrete state models and delay states for the CSDKTD APP browser application.
 
-Own only src/modules/dr03/**. Read AGENTS.md and this folder's TASK.md, index.ts and workspace.ts, plus docs/CONTRIBUTING.md and docs/DEVELOPMENT.md. Preserve unrelated edits. Do not edit another module, the shell/routing/catalogue, shared types, package dependencies, deployment or global configuration without coordination with the integration owner.
+Own only src/modules/dr03/**. Read AGENTS.md, docs/START_HERE.md and this folder's TASK.md, STATUS.md, index.ts and workspace.ts, plus docs/CONTRIBUTING.md and docs/DEVELOPMENT.md. Preserve unrelated edits. Do not edit another module, the shell/routing/catalogue, shared types, package dependencies, deployment or global configuration without coordination with the integration owner.
 
 Default example metadata to initialize on each visit/reset:
 A = [0,1; -2,-3]; B = [0;1]; C = [1,0]; use ZOH at T = 0.1 s
