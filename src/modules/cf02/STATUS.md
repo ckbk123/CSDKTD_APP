@@ -1,11 +1,11 @@
 # CF02 implementation status
 
-- **Stage:** in-progress (priority review correction; original delivery evidence retained below)
+- **Stage:** implemented (priority lexical correction verified; independent review remains separate)
 - **Assessed:** 2026-10-29, fresh primary-main baseline `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (v0.3.3).
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
 - **Branch/worktree:** `codex/cf02-steady-state-7393`; `C:\Users\baokh\.codex\worktrees\cf02-steady-state-7393\CSDKTD APP`.
-- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), same preserved branch for corrections. The coordinator reopened the original `4f763e9` submission for a lexical mixed-number bypass. Original delivery evidence below is historical until correction/resubmission. DS01 PR #10 was accepted as v0.3.6; CP01 is checkpointed while this review return takes priority.
+- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), same preserved branch for corrections. The original `4f763e9` submission was returned for a lexical mixed-number bypass. The correction and focused browser checks are complete; the shared claim records the final exact resubmission. Original delivery evidence is retained below, supplemented by this correction. DS01 PR #10 was accepted as v0.3.6; CP01 is checkpointed while this review return takes priority.
 
 ## Priority review return — lexical mixed-number boundary
 
@@ -15,7 +15,22 @@ The current correction tracks the last parsed factor's validated notation, inclu
 
 Added **32** focused lexical regressions, including pinned-renderer assertions for invisible plus and joined-digit MathML, signed/grouped/nested/wrapped variants, and valid explicit operators/variable products. Before the correction, **15 failed / 17 passed**, independently reproducing the confirmed and related bypasses. After correction the **165-test** module suite and type check pass. Workspace regressions ensure the invalid forms clear checked output and corrected valid products still compute ramp error 2.
 
-`npm test` now passes **368 tests / 20 files**, and `npm run build` (including type checking) passes under bundled Node v24.22.1. The existing MathLive chunk advisory remains. Remaining correction work: focused actual-editor feedback under the shared QA reservation, updated same-PR evidence, clean tested commit push and exact-SHA resubmission. Current QA order is DP03→DP04→coordinator DP02; no new browser reservation is held or requested before its release notice. CP01's separate active claim/worktree is preserved at its checkpoint; no concurrent implementation occurs.
+`npm test` passes **368 tests / 20 files**, and `npm run build` (including type checking) passes under bundled Node v24.22.1. The existing MathLive chunk advisory remains. Correction checkpoint `a88a86293adc4e00310447caaef7fdc3b6e238d6` passed [GitHub CI](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40878422658/job/123463159711). No numerical solver, supported plant bounds, shared file, dependency or version changed.
+
+### Focused actual-editor verification of the correction
+
+After the coordinator released its temporary order, the supported helper acquired CF02 QA when DP04 finished its repair session. Tested the corrected production build on the worker's private **8796** preview in a fresh in-app Chromium tab, **1280×720**, system dark theme:
+
+- Baseline still gives exact ramp error 1/2. Actual MathLive entry/paste of `s2` followed by 1/2, `(s+1)2` followed by 1/2, numeric-font 2 after s, outer signs, nested fractions, numeric parenthesized factors and joined numeric styles after s receives explicit +/× guidance.
+- Invalid data leaves **zero checked trace regions and exactly the two input/prediction cards**. MathLive's own input icons remain; they are not computed plots. No stale checked response is retained.
+- Copying the owned real editor field returns actual `application/x-latex` value `(s+1)2\frac12`, confirming that the browser exercised the reported serialization rather than a mocked field.
+- Valid `2s` followed by 1/2 plus 1, its explicit-× form, and `(s+1)2×1/2` all give N=s+1 and exact ramp error **2**. A true nested fraction with numerator `2s` followed by 1/2 plus 1, denominator 3, gives exact error **6**. The styled compact true fraction 12/3 plus 1 gives **2/5**.
+- The same invalid notation in the finite-pole-factor field gets operator guidance and no trace. Correcting it to `(s+1)2×1/2` produces F=s+1 and ramp error **1/4** with baseline N=4.
+- Real fraction-button input, typing numerator 1, Tab, denominator 2, still gives N=1/2 and ramp error **4**. Shell reset creates two fresh fields and restores ramp error **1/2**. Captured browser warning/error logs are empty.
+
+Raw viewport and full-page correction screenshots are preserved locally outside Git (`cf02-lexical-feedback.png`, `cf02-lexical-mixed-full.png`). This focused pass supplements the earlier full lifecycle/narrow-screen evidence; it does not claim a new light-theme/other-engine/network-trace pass. No viewport override was created; the default 1280×720 dimensions were left unchanged. The owned tab was closed, private preview stopped, QA released and no watcher remains.
+
+All requested correction work is implemented and checked. The final delivery record is committed/pushed and resubmitted at the exact clean tested HEAD; independent coordinator acceptance remains pending. CP01 is preserved at checkpoint `422b05324f2cef7c0d801ab7f16f9037178f2236` and resumes after this resubmission. No concurrent implementation occurred.
 
 ## Delivered bounded exercise and final verification — 29 October 2026
 
