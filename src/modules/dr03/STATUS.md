@@ -9,7 +9,7 @@
 
 ## Initial evidence and requirement audit
 
-At claim, index.ts contained immutable metadata and its lazy workspace loader; workspace.ts was blank and no local tests existed. The default banner is only a notation preview. The parser foundation below is now implemented; the state exercise and interface remain pending.
+At claim, index.ts contained immutable metadata and its lazy workspace loader; workspace.ts was blank and no local tests existed. The default banner is only a notation preview. The parser and pure state/history mathematics below are implemented and checked; the interactive exercise remains pending.
 
 | Accepted requirement | Missing work and planned verification |
 |---|---|
@@ -55,3 +55,15 @@ Current limits:512 source characters,20 nested groups, intermediate degree6/coef
 The55 local tests include independent polynomial identities, changed normalized coefficients, direct feedthrough, retained zero-channel denominator, exact decimal versus binary0.1, and (100000+.000001)^2-100000^2-.2=10^-12. Resource/underflow/zero-denominator and actual TeX fraction/power boundary cases pass. An unknown font command initially received grouping guidance; it is now rejected before group normalization as unsupported notation. A case-sensitive feedback assertion was corrected. npm test -- src/modules/dr03/parser.test.ts:55 passed; npm run check:passed. State construction, ZOH generation, canonical/history mapping, independent stepped comparisons, UI and browser verification remain unimplemented.
 
 Full branch npm test:715 passed across27 files. npm run build:passed, including its type check; existing MathLive large-chunk advisory only. These checks cover the parser foundation and existing main tools, not delivery of DR03's still-blank workspace.
+
+## State/history mathematics checkpoint
+
+math.ts now constructs the direct history register, controller/observer companions and explicit input-delay registers; computes actual base-matrix TF coefficients; maps nonzero prehistory into canonical initial coordinates; and compares all outputs with the separately indexed scalar recurrence. The declared mechanical ZOH source is generated with stable closed-form modal formulas at the selected T. Pure gains, zero channels and order-zero delays have explicit handling. Singular/nonminimal/ill-conditioned canonical maps preserve the history response with an unavailable explanation.
+
+Bounds now enforced: order0–2, delay0–4, count4–120, T=.0001–10 seconds, input/history magnitude≤10^4, generated state/map entries≤10^12, output≤10^10 and normalized coefficient bounds from the parser. Small dot products accumulate exact binary-value rational products and round once; nonzero arithmetic underflow is rejected. The final next-state preview is bounded too. Canonical solves require infinity-norm condition estimate≤10^10, similarity/coefficient residual≤10^-9 and scaled finite-horizon output residual≤10^-8; the history comparison threshold is10^-10. These are numerical checks, not a proof of all trajectories or a claim of minimality.
+
+npm run check passes. npm test -- src/modules/dr03 passes109 tests in2 files (55 parser,54 state/math). Independently derived exact recurrence fixtures include nonzero history/direct feedthrough and m=2; ZOH fixtures use modal step .5-exp(-kT)+.5exp(-2kT) at six periods including .0001 and10. State tests cover simultaneous old-memory update, same-history coordinate mapping, pulse/ramp/alternating sequences, gain/pure delay, retained hidden recurrence modes and invalid/resource/conditioning cases. One manually expected arbitrary-state numerator constant was corrected from-3 to-9 after explicitly expanding C adj(zI-A)B=z+5 and7 det(zI-A)=7z²-35z-14.
+
+A separate private Python check uses Fraction-indexed recurrence, NumPy complex resolvents/eigenvalue characteristic coefficients and SciPy dlsim for120 proposed order0–2/delay0–4/nonzero-history fixtures. All1050 channel evaluations agree; maximum scaled output/SciPy error2.22e-16, complex-channel error4.11e-16 and characteristic-coefficient error1.12e-16. Five zero-channel cases correctly suppress the singular canonical map while preserving the history result. Evidence: private dr03-state-probes.json and dr03-reference-check.json in this worker's artifact folder. These are independently generated fixtures; original external course diagrams were not newly inspected.
+
+workspace.ts remains a scaffold. The delay diagram, row/output selection, equation input/coefficient alternatives, history controls, prediction/reveal, stepping, comparison display, scoped styles, lifecycle/view tests and real-browser evidence are still required before implementation/submission.
