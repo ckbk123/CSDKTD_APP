@@ -1,3 +1,5 @@
+import { channel, characteristic, type Transfer } from './algebra';
+export type { Transfer } from './algebra';
 export type Matrix = number[][];
 export interface Model { A: Matrix; B: number[]; C: number[]; D: number }
 export interface Experiment { horizon: number; count: number; input: number; initial1: number[]; initial2: number[] }
@@ -6,7 +8,6 @@ export interface Point {
   total1: number[]; total2: number[]; difference: number[]; yFree1: number; yFree2: number; yForced: number; y1: number; y2: number;
 }
 export interface Mode { real: number; imag: number }
-export interface Transfer { numerator: number[]; denominator: number[]; reducedNumerator: number[]; reducedDenominator: number[]; cancellations: number }
 export interface Result { points: Point[]; modes: Mode[]; transfer: Transfer; warning: string }
 const fail = (text: string): never => { throw new Error(text); };
 const identity = (n: number): Matrix => Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => i === j ? 1 : 0));
@@ -44,45 +45,18 @@ export function validateModel(m: Model): void {
 export function modes(m: Model): Mode[] {
   validateModel(m);
   if (m.A.length === 1) return [{ real: m.A[0][0], imag: 0 }];
-  const [[a, b], [c, d]] = m.A, trace = a + d, det = a * d - b * c, discriminant = (a - d) ** 2 + 4 * b * c;
+  const { coefficients, trace, discriminant } = characteristic(m), det = coefficients[2];
   if (discriminant < 0) return [{ real: trace / 2, imag: Math.sqrt(-discriminant) / 2 }, { real: trace / 2, imag: -Math.sqrt(-discriminant) / 2 }];
   const q = (trace + (trace < 0 ? -1 : 1) * Math.sqrt(discriminant)) / 2;
+  if (det !== 0 && q !== 0 && det / q === 0) fail('A state pole is too small to represent reliably. Rescale the matrix.');
   return q === 0 ? [{ real: 0, imag: 0 }, { real: 0, imag: 0 }] : [{ real: q, imag: 0 }, { real: det / q, imag: 0 }];
 }
 
-/** Retain the characteristic polynomial even when a scalar channel cancels it.
- * Only EXACT floating coefficient identities are reduced; near cancellation is
- * deliberately retained rather than being declared a hidden mode. */
+/** Retain the characteristic polynomial; reduce only exact common factors of
+ * the binary matrix values actually used by the simulation. */
 export function transfer(m: Model): Transfer {
   validateModel(m);
-  let denominator: number[], numerator: number[];
-  if (m.A.length === 1) { denominator = [1, -m.A[0][0]]; numerator = [m.D, m.C[0] * m.B[0] - m.D * m.A[0][0]]; }
-  else {
-    const [[a, b], [c, d]] = m.A;
-    denominator = [1, -a - d, a * d - b * c];
-    numerator = [m.D, m.D * denominator[1] + dot(m.C, m.B),
-      m.D * denominator[2] + m.C[0] * (-d * m.B[0] + b * m.B[1]) + m.C[1] * (c * m.B[0] - a * m.B[1])];
-  }
-  const trim = (p: number[]): number[] => { while (p.length > 1 && p[0] === 0) p.shift(); return p; };
-  let rn = trim([...numerator]), rd = [...denominator], cancellations = 0;
-  if (rn.every(x => x === 0)) { cancellations = rd.length - 1; rn = [0]; rd = [1]; }
-  else {
-    // A constant multiple of the denominator cancels all dynamic factors,
-    // including a complex pair, with an exact coefficient identity.
-    if (rn.length === rd.length && rn.every((v, i) => v === rn[0] * rd[i])) {
-      cancellations = rd.length - 1; rn = [rn[0]]; rd = [1];
-    } else for (const mode of modes(m)) {
-      if (mode.imag !== 0 || rd.length < 2 || rn.length < 2) continue;
-      const divide = (p: number[]): number[] | undefined => {
-        const q = [p[0]];
-        for (let i = 1; i < p.length - 1; i++) q.push(p[i] + mode.real * q[i - 1]);
-        return p.at(-1)! + mode.real * q.at(-1)! === 0 ? q : undefined;
-      };
-      const n = divide(rn), d = divide(rd);
-      if (n && d) { rn = trim(n); rd = d; cancellations++; }
-    }
-  }
-  return { numerator, denominator, reducedNumerator: rn, reducedDenominator: rd, cancellations };
+  return channel(m);
 }
 
 function check(x: number[], label: string): void {

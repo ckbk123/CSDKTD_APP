@@ -41,7 +41,7 @@ describe('CR06 teaching flow with equation API stub', () => {
     target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     expect(target.getAttribute('aria-pressed')).toBe('true');
     expect(root.querySelector('[aria-label="Selected integrator derivative"]')!.textContent).toContain('(-3)x_{2}');
-    expect(root.querySelector('svg[role="img"]')!.getAttribute('aria-label')).toContain('State x2');
+    expect(root.querySelector('svg[aria-label^="State x2"]')).not.toBeNull();
     expect(root.textContent).toContain('Derivative checked for x1');
   });
   it('compares initial states while retaining identical forced values', () => {
@@ -52,6 +52,7 @@ describe('CR06 teaching flow with equation API stub', () => {
   it('shows hidden unstable state and reduced transfer channel together', () => {
     const root = open(); click(root, 'Hidden unstable state'); click(root, 'Reveal state response');
     expect(root.textContent).toContain('1 dynamic factor(s) cancel');
+    expect(root.querySelector('svg[aria-label^="One zero-state transfer block"]')!.getAttribute('aria-label')).toContain('channel order 1, with 2 original states');
     expect(root.querySelector('[aria-label="All original state modes"]')!.textContent).toContain('1');
     const p = rows(root)[20]; expect(Number(p[5].split(',')[0])).toBeCloseTo(Math.E, 6); expect(p[8]).toBe(p[9]);
   });
@@ -77,6 +78,12 @@ describe('CR06 teaching flow with equation API stub', () => {
     const root = open(); click(root, 'Two integrators'); click(root, 'Reveal state response'); expect(rows(root)[20][8]).toBe('0.5');
     change(control(root, 'Inspect drawing point k'), '999'); expect(root.textContent).toContain('Choose a drawing point from 0');
     change(control(root, 'Drawing points'), '20'); click(root, 'Reveal state response'); expect(root.textContent).toContain('21 to 401');
+  });
+  it('guards underflow in the inspection index and preserves the last valid point', () => {
+    const root = open(); click(root, 'Reveal state response');
+    change(control(root, 'Inspect drawing point k'), '1e-999'); expect(root.textContent).toContain('Inspection point:');
+    click(root, 'Reveal state response'); expect(control(root, 'Inspect drawing point k').value).toBe('20');
+    change(control(root, 'Inspect drawing point k'), '0e-999'); expect(root.textContent).toContain('t = 0 s; selected x1');
   });
   it('cleans owned controls and reopens with fresh mechanical baseline', () => {
     const root = open(); click(root, 'Hidden unstable state');

@@ -3,7 +3,7 @@ import { createEquationDisplay, createEquationInput } from '../../shared/equatio
 import { readNumericInput } from '../../shared/numeric-input';
 import { derivative, fmt, matrixTex, polynomialTex, run, tex, validateModel, type Experiment, type Model, type Result } from './math';
 import { matrixInput, parseMatrix } from './parser';
-import { diagram, responsePlot } from './visuals';
+import { channelDiagram, diagram, responsePlot } from './visuals';
 import './workspace.css';
 
 export const mount: ModuleMount = ({ container, signal }) => {
@@ -17,7 +17,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   };
   const read = (input: HTMLInputElement): number => readNumericInput(input, input.parentElement?.firstChild?.textContent ?? 'the control');
   const failMessage = (error: unknown): void => { notice.textContent = error instanceof Error ? error.message : 'Check the model and controls.'; };
-  let selected = 0, model: Model | undefined, experiment: Experiment | undefined, result: Result | undefined;
+  let selected = 0, lastInspect = 20, model: Model | undefined, experiment: Experiment | undefined, result: Result | undefined;
   const invalidate = (): void => { model = undefined; experiment = undefined; result = undefined; diagramSection.hidden = true; resultSection.hidden = true; notice.textContent = 'Data changed. Build the diagram or reveal again.'; };
   const setup = section('1. Build a state model');
   setup.append(el('p', 'Each integrator output is one state. Enter a real continuous SISO model with one or two states. Matrix rows describe signed gain paths into derivative summers; the output relation is algebraic. Time is in seconds; state, input and output units are normalized.'));
@@ -32,7 +32,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     createEquationInput({ label: 'Feedthrough D', value: 'D=0', signal, onChange: invalidate }),
   ];
   fields.forEach(f => matrices.append(f.element));
-  setup.append(el('p', 'Edit matrix cells with arrow keys, fractions and ordinary numbers. Entry grammar: decimal constants, fractions, sums/products and parentheses. No variables, powers, functions or visual e/E notation in entries. The numeric helper below accepts native numeric exponents.', 'state-small'));
+  setup.append(el('p', 'Edit matrix cells with arrow keys, fractions and ordinary numbers. Use explicit + or × before fractions, and visible parentheses for grouping. Entry grammar: decimal constants, fractions, sums/products and parentheses. No variables, powers, functions or visual e/E notation in entries. The numeric helper below accepts native numeric exponents.', 'state-small'));
   const helper = el('details'); helper.append(el('summary', 'Numeric matrix entry helper'));
   const entryHost = el('div', '', 'state-controls'); helper.append(entryHost);
   let cells: HTMLInputElement[][][] = [];
@@ -136,23 +136,29 @@ export const mount: ModuleMount = ({ container, signal }) => {
         el('p', 'These are exact continuous-time identities for constant U; matrices and curves are numerical evaluations. No inverse of A is needed. Both experiments use the same U, so xᵤ and the zero-state output are identical.'),
         createEquationDisplay('\\Delta x(t)=\\Phi(t)(x_B(0)-x_A(0)),\\quad y_f=Cx_f,\\quad y_u=Cx_u+DU', 'Initial-state comparison and output decomposition'),
         createEquationDisplay('\\dot{x}_{' + (selected + 1) + '}(0)=' + tex(actual), 'Derivative checked at reveal'),
-        createEquationDisplay('\\det(sI-A)=' + polynomialTex(t.denominator), 'Original characteristic polynomial'),
-        createEquationDisplay('\\lambda(A)=' + result.modes.map(v => tex(v.real) + (v.imag ? (v.imag > 0 ? '+' : '-') + tex(Math.abs(v.imag)) + '\\mathrm{j}' : '')).join(',\\quad '), 'All original state modes'),
-        createEquationDisplay('G(s)=D+C(sI-A)^{-1}B=\\frac{' + polynomialTex(t.numerator) + '}{' + polynomialTex(t.denominator) + '}', 'Unreduced zero-state transfer channel'));
-      if (t.cancellations) summary.append(createEquationDisplay('G_{\\mathrm{channel}}(s)=\\frac{' + polynomialTex(t.reducedNumerator) + '}{' + polynomialTex(t.reducedDenominator) + '}', 'Reduced channel with original states retained'));
-      summary.append(el('p', t.cancellations ? t.cancellations + ' dynamic factor(s) cancel in this zero-state channel. Every original mode and state remains in the diagram and response. A reduced channel cannot establish internal stability.' : 'No exactly matching floating coefficient factor was removed. Near cancellations are retained. Every original state/mode remains visible.', 'state-small'));
-      summary.append(el('p', 'Reduction checks exact floating coefficient identities only; it is not a symbolic CAS or a tolerance-based minimal-realization proof. Coefficient order is descending powers of s. Exponential evaluation is bounded by infinity norm64,64 Taylor terms and7 squarings.', 'state-small'));
+        createEquationDisplay('\\det(sI-A)\\approx ' + polynomialTex(t.denominator), 'Original characteristic polynomial'),
+        createEquationDisplay('\\lambda(A)\\approx ' + result.modes.map(v => tex(v.real) + (v.imag ? (v.imag > 0 ? '+' : '-') + tex(Math.abs(v.imag)) + '\\mathrm{j}' : '')).join(',\\quad '), 'All original state modes'),
+        createEquationDisplay('G(s)=D+C(sI-A)^{-1}B\\approx\\frac{' + polynomialTex(t.numerator) + '}{' + polynomialTex(t.denominator) + '}', 'Unreduced zero-state transfer channel'));
+      if (t.cancellations) summary.append(createEquationDisplay('G_{\\mathrm{channel}}(s)\\approx\\frac{' + polynomialTex(t.reducedNumerator) + '}{' + polynomialTex(t.reducedDenominator) + '}', 'Reduced channel with original states retained'));
+      summary.append(el('p', t.cancellations ? t.cancellations + ' dynamic factor(s) cancel in this zero-state channel. Every original mode and state remains in the diagram and response. A reduced channel cannot establish internal stability.' : 'No exact common factor was removed. Near cancellations are retained. Every original state/mode remains visible.', 'state-small'));
+      summary.append(el('p', 'Entered constants first become numerical matrix values. Channel reduction cancels exact common factors of those stored values; displayed coefficients are rounded. Coefficient order is descending powers of s. The exponential is evaluated numerically.', 'state-small'));
+      const collapsed = el('div', '', 'state-scroll'); collapsed.append(channelDiagram(model.A.length, t.reducedDenominator.length - 1));
+      summary.append(collapsed, el('p', 'A single transfer rectangle describes this zero-state input/output channel. The integrator realization retains the original states, including their initial conditions and hidden modes. Count integrator outputs, rather than graphical rectangles.', 'state-small'));
       notice.textContent = predictionText + 'Derivative checked for x' + (selected + 1) + ' at t=0: ' + fmt(actual) + '. ' + result.warning;
       const table = el('table'), head = el('thead'), hr = el('tr'), body = el('tbody');
       ['t (s)', 'Free A states', 'Free B states', 'Shared forced states', 'Total A states', 'Total B states', 'Free A output', 'Forced output', 'Total A output', 'Total B output'].forEach(s => { const h = el('th', s); h.scope = 'col'; hr.append(h); }); head.append(hr);
       result.points.forEach(p => { const tr = el('tr'); [fmt(p.t), ...[p.free1, p.free2, p.forced, p.total1, p.total2].map(x => x.map(fmt).join(', ')), ...[p.yFree1, p.yForced, p.y1, p.y2].map(fmt)].forEach(s => tr.append(el('td', s))); body.append(tr); }); table.append(head, body); tableHost.replaceChildren(table);
-      inspect.max = String(result.points.length - 1); inspect.value = String(Math.min(Number(inspect.value) || 0, result.points.length - 1)); resultSection.hidden = false; showPoint();
+      inspect.max = String(result.points.length - 1); lastInspect = Math.min(lastInspect, result.points.length - 1);
+      inspect.value = String(lastInspect); resultSection.hidden = false; showPoint();
     } catch (error) { result = undefined; experiment = undefined; resultSection.hidden = true; failMessage(error); }
   }
   function showPoint(): void {
     if (!result || !experiment || !model || signal.aborted) return;
-    const k = Number(inspect.value);
-    if (!inspect.value || !Number.isInteger(k) || k < 0 || k >= result.points.length) { inspected.replaceChildren(el('p', 'Choose a drawing point from 0 to ' + (result.points.length - 1) + '.')); return; }
+    let k: number;
+    try { k = read(inspect); }
+    catch (error) { inspected.replaceChildren(el('p', 'Inspection point: ' + (error instanceof Error ? error.message : 'Enter a valid index.'))); return; }
+    if (!Number.isInteger(k) || k < 0 || k >= result.points.length) { inspected.replaceChildren(el('p', 'Choose a drawing point from 0 to ' + (result.points.length - 1) + '.')); return; }
+    lastInspect = k;
     const p = result.points[k], vector = (v: number[]): string => matrixTex(v.map(x => [x]));
     inspected.replaceChildren(el('h4', 't = ' + fmt(p.t) + ' s; selected x' + (selected + 1)),
       createEquationDisplay('\\Phi(t)=' + matrixTex(p.phi) + ',\\quad H(t)=' + vector(p.integral), 'Transition matrix and input integral'),
@@ -162,6 +168,6 @@ export const mount: ModuleMount = ({ container, signal }) => {
     statePlot.replaceChildren(responsePlot(result, selected, k)); outputPlot.replaceChildren(responsePlot(result, 'output', k));
   }
   fillHelper(mechanical);
-  root.append(el('p', 'Bounds: real SISO n=1–2; model/input/initial magnitudes≤10⁴; horizon .01–10 s;21–401 drawing points; free/forced/total state and output magnitudes≤10¹⁰. Per-entry160 characters/nesting12/intermediate magnitude≤10⁸; matrix text≤1,200 characters. Display7 significant digits; calculations use floating point. Constant U for t≥0, with no externally connected feedback.', 'state-small'));
+  root.append(el('p', 'Bounds: real SISO n=1–2; model/input/initial magnitudes ≤10⁴; horizon .01–10 s; 21–401 drawing points; free/forced/total state and output magnitudes ≤10¹⁰. Per entry: 160 characters, nesting 12, intermediate magnitude ≤10⁸; matrix text ≤1,200 characters. Channel algebra: degree ≤2 and rational numerators/denominators ≤8192 bits; nonzero characteristic/channel coefficient magnitude 10⁻³⁰⁰–10³⁰⁰. Exponential: infinity norm ≤64, at most 64 Taylor terms and 7 squarings. Display 7 significant digits; trajectories use floating point. Constant U for t≥0, with no externally connected feedback.', 'state-small'));
   return () => { fields.forEach(f => f.destroy()); root.remove(); };
 };

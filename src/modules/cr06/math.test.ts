@@ -74,6 +74,45 @@ describe('CR06 independent continuous response fixtures', () => {
   it('retains a nearby but unequal numerator zero', () => {
     expect(transfer({ A: [[1, 0], [0, -2]], B: [1, 1], C: [1e-9, 1], D: 0 }).cancellations).toBe(0);
   });
+  it('retains a nonzero residue even below the precision of expanded numeric coefficients', () => {
+    const t = transfer({ A: [[1, 0], [0, -2]], B: [1, 1], C: [2 ** -80, 1], D: 0 });
+    // Rounded display coefficients can look identical to the cancelled example.
+    // Exact binary-input algebra must still retain both dynamic factors.
+    expect(t.numerator).toEqual([0, 1, -1]);
+    expect(t.cancellations).toBe(0); expect(t.reducedDenominator).toEqual([1, 1, -2]);
+  });
+  it('finds an exact cancellation in a coupled mechanical realization', () => {
+    const r = run({ ...baseline, C: [2, 1] }, { ...settings, initial2: [1, -2] }), t = r.transfer;
+    // (s+2)/((s+1)(s+2)) is the zero-state channel; both states remain.
+    expect(t.cancellations).toBe(1); expect(t.reducedNumerator).toEqual([1]); expect(t.reducedDenominator).toEqual([1, 1]);
+    expect(t.denominator).toEqual([1, 3, 2]); expect(r.modes).toHaveLength(2);
+    for (const p of r.points) {
+      expect(p.y1).toBeCloseTo(1 - Math.exp(-p.t), 12); expect(p.y2).toBeCloseTo(p.y1, 12);
+      closeArray(p.free2, [Math.exp(-2 * p.t), -2 * Math.exp(-2 * p.t)]);
+    }
+  });
+  it('keeps a tiny positive state mode lost by ordinary determinant subtraction', () => {
+    const delta = 2 ** -20;
+    const m: Model = { A: [[1000, 1000 + delta], [1000 - delta, 1000]], B: [0, 0], C: [1, 0], D: 0 };
+    const r = run(m, { ...settings, horizon: .01, input: 0, initial1: [1e-20, 0], initial2: [0, 0] });
+    expect(r.transfer.denominator[2]).toBe(delta * delta);
+    const slow = Math.min(...r.modes.map(p => p.real));
+    expect(slow).toBeGreaterThan(0); expect(slow / (delta * delta / 2000)).toBeCloseTo(1, 14);
+    const expected = .5 * (Math.exp(20) + 1) * 1e-20;
+    expect(r.points.at(-1)!.total1[0] / expected).toBeCloseTo(1, 12);
+  });
+  it('preserves the discriminant sign near a repeated pole', () => {
+    const delta = 2 ** -80;
+    const real = modes({ A: [[1, 1], [delta, 1]], B: [0, 0], C: [1, 0], D: 0 });
+    const complex = modes({ A: [[1, 1], [-delta, 1]], B: [0, 0], C: [1, 0], D: 0 });
+    expect(real.map(v => v.real).sort((a, b) => a - b)).toEqual([1 - 2 ** -40, 1 + 2 ** -40]);
+    expect(complex).toEqual([{ real: 1, imag: 2 ** -40 }, { real: 1, imag: -(2 ** -40) }]);
+  });
+  it('cancels an entire complex channel factor while retaining its state modes', () => {
+    const m: Model = { A: [[0, 1], [-1, 0]], B: [0, 0], C: [.5, .25], D: 1.5 };
+    const r = run(m, settings);
+    expect(r.transfer.cancellations).toBe(2); expect(r.transfer.reducedNumerator).toEqual([1.5]); expect(r.transfer.reducedDenominator).toEqual([1]); expect(r.modes).toHaveLength(2);
+  });
   it('retains all states for zero and pure feedthrough channels', () => {
     for (const D of [0, 2]) {
       const r = run({ ...baseline, B: [0, 0], D }, settings);
@@ -103,12 +142,23 @@ describe('CR06 work and input bounds', () => {
   it('reports excessive unstable response', () => {
     expect(() => run({ A: [[6]], B: [0], C: [1], D: 0 }, { ...settings, horizon: 10, initial1: [1], initial2: [0] })).toThrow(/10¹⁰/);
   });
+  it('reports an unsupported characteristic coefficient scale without erasing it', () => {
+    expect(() => modes({ A: [[1e-155, 0], [0, 1e-155]], B: [0, 0], C: [1, 0], D: 0 })).toThrow(/Rescale/);
+  });
 });
 describe('CR06 visual constant and matrix grammar', () => {
   it.each(['\\frac12', '\\frac{1}2', '\\frac1{2}', '\\frac{1}{2}', '(1)/(2)'])('reads equivalent ratio %s', s => expect(parseConstant(s)).toBe(.5));
   it.each(['-\\frac12', '(-\\frac12)', '\\frac{-1}2', '\\frac1{-2}', '-\\frac{\\mathrm{1}}2'])('preserves signed ratio %s', s => expect(parseConstant(s)).toBe(-.5));
   it('reads nested fractions, arithmetic and numeric font wrappers', () => {
     expect(parseConstant('\\frac{\\frac12}{2}')).toBe(.25); expect(parseConstant('2*(.5+1)')).toBe(3); expect(parseConstant('\\frac{\\mathrm{2}}{\\mathsf{4}}')).toBe(.5);
+  });
+  it.each(['2\\frac12', '-2\\frac12', '(2\\frac12)', '\\frac{2\\frac12}{3}', '{2}\\frac12', '\\mathrm{2}\\frac12', '2{\\frac12}'])('rejects mixed-number adjacency before normalization %s', s => expect(() => parseConstant(s)).toThrow(/explicit \+.*×/));
+  it.each(['{2+3}*4', '1{+2}', '-{2+3}', '\\frac1{{2+3}}'])('rejects invisible algebraic grouping %s', s => expect(() => parseConstant(s)).toThrow(/visible parentheses|explicit \+.*×/));
+  it('preserves visible grouping, explicit operators and compact nested arguments', () => {
+    expect(parseConstant('2+\\frac12')).toBe(2.5);
+    expect(parseConstant('2\\times\\frac12')).toBe(1);
+    expect(parseConstant('(2+3)*4')).toBe(20);
+    expect(parseConstant('\\frac1\\frac12')).toBe(2);
   });
   it('preserves row-major matrix/vector dimensions', () => {
     expect(parseMatrix('A=\\begin{bmatrix}0&1\\\\-2&-3\\end{bmatrix}', 2, 2, 'A')).toEqual(baseline.A);

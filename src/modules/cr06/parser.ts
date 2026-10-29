@@ -21,12 +21,20 @@ export function parseConstant(latex: string): number {
   }
   function fraction(): string { at += command()!.length; const n = arg(), d = arg(); return '((' + n + ')/(' + d + '))'; }
   function sequence(stop: boolean): string {
-    let out = '';
+    let out = '', lastNumeric = false;
+    const mixed = (): never => fail('Mixed-number or implicit adjacency is unsupported. Use explicit + for addition or × for multiplication before the fraction/group.');
     while (at < s.length && !(stop && s[at] === '}')) {
-      if (command()) out += fraction();
-      else if (s[at] === '{') out += '(' + arg() + ')';
+      if (command()) {
+        if (lastNumeric) mixed();
+        out += fraction(); lastNumeric = false;
+      } else if (s[at] === '{') {
+        if (lastNumeric || out.endsWith(')')) mixed();
+        const content = arg(), numeric = /^\(*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\)*$/.test(content);
+        if (!numeric) fail('Use visible parentheses instead of invisible brace grouping. Fraction arguments keep their normal grouping.');
+        out += '(' + content + ')'; lastNumeric = numeric;
+      }
       else if (s[at] === '}') fail('Remove the unmatched closing brace.');
-      else out += s[at++];
+      else { const token = s[at++]; out += token; lastNumeric = /[0-9.]/.test(token); }
     }
     return out;
   }

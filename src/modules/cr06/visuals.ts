@@ -38,6 +38,18 @@ export function diagram(m: Model, selected: number): SVGSVGElement {
   return svg;
 }
 
+export function channelDiagram(states: number, channelOrder: number): SVGSVGElement {
+  const svg = node('svg', { viewBox: '0 0 710 135', role: 'img', 'aria-label': 'One zero-state transfer block, channel order ' + channelOrder + ', with ' + states + ' original states retained in the integrator realization.' });
+  svg.append(node('text', { x: 100, y: 65, class: 'state-svg-text' }, 'u'));
+  line(svg, 125, 60, 245, 60);
+  svg.append(node('rect', { x: 245, y: 32, width: 180, height: 56, rx: 5, class: 'state-block' }));
+  svg.append(node('text', { x: 335, y: 67, 'text-anchor': 'middle', class: 'state-svg-text' }, 'G(s)'));
+  line(svg, 425, 60, 580, 60);
+  svg.append(node('text', { x: 595, y: 65, class: 'state-svg-text' }, 'y'));
+  svg.append(node('text', { x: 355, y: 120, 'text-anchor': 'middle', class: 'state-svg-small' }, '1 channel rectangle; ' + states + ' retained integrator state' + (states === 1 ? '' : 's')));
+  return svg;
+}
+
 export function responsePlot(r: Result, state: number | 'output', inspect: number): SVGSVGElement {
   const rows = r.points, values = rows.map(p => state === 'output' ? [p.y1, p.y2, p.yFree1, p.yForced] : [p.total1[state], p.total2[state], p.free1[state], p.forced[state]]);
   const all = values.flat(), lo = Math.min(0, ...all), hi = Math.max(0, ...all), range = Math.max(1e-8, hi - lo), min = lo - range * .08, max = hi + range * .08;
