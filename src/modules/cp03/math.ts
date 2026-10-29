@@ -165,7 +165,19 @@ export function experiment(plant: Plant, w: number, amplitude: number): Experime
       const [first, second] = roots.map(p => p.re);
       const k1 = (v - second * c) / (first - second), k2 = c - k1;
       const C = (r0 + r1 * first) * k1, E = (r0 + r1 * second) * k2;
-      transient = t => (C === 0 ? 0 : C * Math.exp(first * t)) + (E === 0 ? 0 : E * Math.exp(second * t));
+      const high = Math.max(first, second), low = Math.min(first, second), gap = high - low;
+      const C0 = r0 * c + r1 * v, E0 = r0 * (v - alpha * c) + r1 * (alpha * v - a0 * c);
+      transient = t => {
+        // Nearby modes can have huge, opposite residues. expm1 evaluates the
+        // divided exponential difference without losing the repeated-pole limit.
+        if (gap * t < 0.5) {
+          if (C0 === 0 && E0 === 0) return 0;
+          const coshScaled = (Math.exp(high * t) + Math.exp(low * t)) / 2;
+          const sinhScaled = Math.exp(high * t) * -Math.expm1(-gap * t) / gap;
+          return C0 * coshScaled + E0 * sinhScaled;
+        }
+        return (C === 0 ? 0 : C * Math.exp(first * t)) + (E === 0 ? 0 : E * Math.exp(second * t));
+      };
       bound = t => Math.abs(C) * Math.exp(first * t) + Math.abs(E) * Math.exp(second * t);
     } else if (delta < 0) {
       const beta = Math.sqrt(-delta), k = (v - alpha * c) / beta;

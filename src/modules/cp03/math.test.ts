@@ -118,6 +118,12 @@ describe('CP03 independent frequency and time fixtures', () => {
       for (const t of [0, 0.2, 1, 5]) expect(nearby.sample(t).output).toBeCloseTo(repeated.sample(t).output, 8);
     }
   });
+  it('does not cancel away nearly coincident integrator transients', () => {
+    // y'' = sin t with zero state gives t−sin t. Perturbing D by 10⁻⁴⁰
+    // changes this by far below floating-point resolution on this horizon.
+    const e = experiment(parsePlant('1/(s^2-1e-40)'), 1, 1);
+    for (const t of [0, 0.2, 1, 5, 20]) expect(e.sample(t).output).toBeCloseTo(t - Math.sin(t), 12);
+  });
   it('does not certify a slow transient merely because a few cycles are visible', () => {
     const e = experiment(parsePlant('1/(s+0.001)'), 1, 1);
     expect(e.tailBound(20)).toBeGreaterThan(0.9);
