@@ -5,6 +5,9 @@
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/dr01-z-transforms-7e78`
+- **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
+- **Preserved worktree:** `C:\Users\baokh\.codex\worktrees\dr01-z-transforms-7e78\CSDKTD APP`
+- **Pull request:** https://github.com/ckbk123/CSDKTD_APP/pull/1
 
 ## Requirement-to-evidence audit
 
@@ -72,3 +75,4 @@ No accepted requirement remains open within the declared domain. No shared API/p
 ## Pull request and compact-fraction follow-up
 
 PR: https://github.com/ckbk123/CSDKTD_APP/pull/1 (same preserved branch, draft while this correction is checked). Under the human's expanded continuous-worker instruction, the coordinator reopened the existing claim. The parser now expands MathLive's single-token fraction arguments before tokenizing numbers: \frac12, \frac1{...}, mixed braced arguments and nested fractions are supported. A regression independently checks 1/2, a changed .5 geometric sequence and nested 1/(2/3). Module tests pass 51/51, application tests 93/93 and the production build passes. A real-editor shorthand check remains pending shared QA; earlier browser evidence above is preserved and not substituted for this new check. Next action: reserve QA, enter 1/2 with the fraction button, verify its inverse and final resubmission, then claim the next module under the continuous goal. Earlier one-module stopping language is superseded by the latest human steering.
+
