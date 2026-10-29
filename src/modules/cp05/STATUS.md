@@ -87,3 +87,9 @@ Actual commands on the final implementation (Node24, npm scripts in this worktre
 ### Supported limits / remaining disposition
 
 Proper real rational SISO loops only: denominator degree1–3, numerator no higher; exact parser and coefficient/geometry bounds above. Curves are sampled finite constructions; no guarantee of asymptotic coverage or encirclement count, and no near cancellation. Principal phase, clipping and singular/unresolved values remain explicit. No course slide was newly inspected; TASK source anchors and independent proposed fixtures retain that distinction. No unresolved shared dependency is requested. Coordinator review and integration remain pending; the worker must record the PR and submit its exact clean tested HEAD below.
+
+## Submission record
+
+- Pull request: [#40 — CP05 Nyquist contour construction](https://github.com/ckbk123/CSDKTD_APP/pull/40), same branch/worktree/worker recorded above; attached to the worker chat.
+- Implementation checked at7bb33151c210c8e2b7dac085bc9da5f65e28a9b5; later commits only record browser evidence and this PR. Final exact-HEAD checks and clean submission use the commit containing this record. The claim/PR hold that exact revision; no self-referential commit ID is written here.
+- This is a submitted implementation awaiting independent integration review. No merge, version increment, deployment or primary-preview change is included.
