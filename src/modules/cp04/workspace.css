@@ -1,0 +1,38 @@
+[data-module="CP04"] .cp04 { min-width: 0; font-size: 14px; line-height: 1.6; }
+[data-module="CP04"] .cp04 h3 { font-size: 17px; line-height: 1.4; margin: 10px 0; font-weight: 550; }
+[data-module="CP04"] .cp04 p { margin: 12px 0; }
+[data-module="CP04"] .bode-control { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; min-width: 0; }
+[data-module="CP04"] .bode-control span { color: var(--muted); font-size: 12px; }
+[data-module="CP04"] .bode-control select, [data-module="CP04"] .bode-control input { min-width: 0; max-width: 100%; padding: 9px; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
+[data-module="CP04"] .bode-controls, [data-module="CP04"] .bode-actions { display: flex; flex-wrap: wrap; gap: 14px; margin: 12px 0; }
+[data-module="CP04"] .bode-controls > * { flex: 1 1 170px; }
+[data-module="CP04"] .bode-fields, [data-module="CP04"] .bode-coefficients { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+[data-module="CP04"] .bode-factor, [data-module="CP04"] .bode-attempt { min-width: 0; border: 1px solid var(--line); border-radius: 9px; margin: 20px 0; padding: 15px; }
+[data-module="CP04"] .bode-factor legend, [data-module="CP04"] .bode-attempt legend { font-weight: 550; }
+[data-module="CP04"] .bode-coefficients > [hidden] { display: none; }
+[data-module="CP04"] .bode-primary, [data-module="CP04"] .bode-message { background: var(--tint); color: var(--accent-strong); }
+[data-module="CP04"] .bode-message { border-left: 3px solid var(--accent); padding: 10px 12px; overflow-wrap: anywhere; }
+[data-module="CP04"] .bode-verdict, [data-module="CP04"] .bode-cursor-card { margin: 24px 0; padding: 16px; background: var(--background); border: 1px solid var(--line); border-radius: 9px; }
+[data-module="CP04"] .bode-table-wrap { overflow-x: auto; margin: 20px 0; }
+[data-module="CP04"] .cp04 table { width: 100%; border-collapse: collapse; font-size: 12px; }
+[data-module="CP04"] .cp04 th, [data-module="CP04"] .cp04 td { text-align: left; padding: 9px; border-bottom: 1px solid var(--line); }
+[data-module="CP04"] .cp04 th { font-weight: 550; }
+[data-module="CP04"] .bode-figure { margin: 24px 0; min-width: 0; overflow-x: auto; }
+[data-module="CP04"] .bode-figure figcaption { font-weight: 550; margin: 10px 0; }
+[data-module="CP04"] .bode-figure svg { display: block; width: 100%; min-width: 580px; height: auto; background: var(--background); border: 1px solid var(--line); border-radius: 8px; }
+[data-module="CP04"] .bode-figure text { fill: var(--muted); font-size: 12px; font-family: inherit; }
+[data-module="CP04"] .bode-axis { stroke: var(--muted); stroke-width: 1; }
+[data-module="CP04"] .bode-grid { stroke: var(--line); stroke-width: .7; }
+[data-module="CP04"] .bode-line { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="CP04"] .bode-exact-line { stroke: var(--accent); color: var(--accent-strong); }
+[data-module="CP04"] .bode-asymptote-line { stroke: var(--text); stroke-dasharray: 8 5; }
+[data-module="CP04"] .bode-attempt-line { stroke: var(--muted); stroke-dasharray: 2 4; color: var(--muted); }
+[data-module="CP04"] .bode-contribution-line { stroke: var(--accent); stroke-dasharray: 9 4 2 4; }
+[data-module="CP04"] .bode-marker { stroke: var(--muted); stroke-width: 1; }
+[data-module="CP04"] .bode-predicted-marker { stroke-dasharray: 2 4; }
+[data-module="CP04"] .bode-checked-marker { stroke-dasharray: 7 5; }
+[data-module="CP04"] .bode-cursor { stroke: var(--accent); stroke-width: 1.2; }
+[data-module="CP04"] .bode-legend { display: flex; flex-wrap: wrap; gap: 15px; margin: 9px 0; font-size: 12px; }
+[data-module="CP04"] .cp04 details { border-top: 1px solid var(--line); padding-top: 15px; margin: 22px 0; color: var(--muted); font-size: 12px; }
+[data-module="CP04"] .cp04 summary { color: var(--text); cursor: pointer; }
+@media (max-width: 1000px) { [data-module="CP04"] .bode-fields, [data-module="CP04"] .bode-coefficients { grid-template-columns: minmax(0, 1fr); } }
