@@ -103,7 +103,7 @@ export function frequencySamples(model: FrequencyModel, period: number, count = 
   if (!Number.isInteger(count) || count < 20 || count > 600) throw new Error('Choose 20–600 frequency samples.');
   const transformed = bilinear(model, period);
   return Array.from({ length: count }, (_, i) => {
-    const angle = Math.PI * i / (count - 1);
+    const angle = i === 0 ? 0 : Math.PI * 10 ** (-4 + 4 * (i - 1) / (count - 2));
     return { angle, exact: unitResponse(model, angle), unwarped: rationalAt(transformed, { re: 0, im: angle / period }) };
   });
 }
