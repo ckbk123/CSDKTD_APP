@@ -1,27 +1,41 @@
 # DD04 implementation status
 
-- **Stage:** scaffold
-- **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Stage:** in-progress
+- **Assessed:** 2026-10-29, starting primary main ae7daf3
+- **Owned scope:** src/modules/dd04/**; [accepted contract](TASK.md)
+- **Worker chat:** 01a186d1-a367-78f1-98f5-e1cf147ef306
+- **Branch:** codex/dd04-digital-pid-01a186d1
+- **Worktree:** C:\Users\baokh\.codex\worktrees\dd04-digital-pid-01a186d1\CSDKTD APP
+- **PR:** not created yet
 
-## Implemented and inspected
+## Starting audit and accepted scope
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+The metadata and blank synchronous mount exist; no module calculations, controls or tests exist. The independent shell preview remains unchanged. No unrelated folder edits were present before claiming.
 
-## Remaining acceptance work
+| Accepted requirement | Starting evidence | Implementation/check plan |
+|---|---|---|
+| Integration/derivative rule selectors | None | Forward/backward/trapezoidal I; backward/Tustin D; optional first-order backward-Euler filtered D; explain noncausal forward D |
+| Derive positional and incremental equations and C(z) | Baseline metadata only | Pure coefficient derivation from I/D identities; show q=z^-1 and z forms and zero-state assumptions |
+| Read specified memory, calculate, then commit update | None | Caller-owned error/integral/derivative/output history; separate compute and commit; highlight old reads; no early mutation |
+| Baseline 14.1,-23.9,10 and u1=14.1,u2=4.3 | Source audit confirms recurrence | Independent arithmetic fixtures; compare positional and recurrence results |
+| T=.2 gives 9.2,-13.8,5 | TASK and source audit | Changed-period test and experiment |
+| Initial memory is distinct from zero-state TF | None | Editable initial errors/I/D; derive consistent prior outputs/increment; show initialization convention |
+| Optional filter has its own state | None | Explicit derivative state/time constant; distinguish from S14 unfiltered controller and avoid claiming S10 topology equivalence |
+| Visual inputs, bounds and useful failures | Shared equation API only | Visual finite error list with scalar fractions including compact MathLive notation; numeric gain/memory controls; bounded parser |
+| Plot/reasoning/prediction | None | Computed sample table/stems, P/I/D arithmetic and student next-output prediction |
+| Lifecycle, keyboard, narrow viewport | Shell foundations only | Scoped UI and local state, deferred browser view and abort cleanup; actual production browser checks |
+| Delivery and integration checks | None yet | Independent tests, check/all tests/build, QA reservation, one PR/attachment and exact final submitted SHA |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Planned bounded mathematics
 
-## Evidence and next action
+Sample index starts at k=1, with e[0], e[-1], I[0] and D[0] as initial memory. Positional u[k]=Kp e[k]+I[k]+D[k]. Integrator I[k]=I[k-1]+c0 e[k]+c1 e[k-1]. Derivative D[k]=alpha D[k-1]+beta(e[k]-e[k-1]). For unfiltered backward D, alpha=0 and D[0] is fixed by error history. For other supported rules it is an independent state. Prior u/delta histories will be derived consistently, not independently guessed.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+With q=z^-1, C(q)=Kp+(c0+c1q)/(1-q)+beta(1-q)/(1-alpha q). Its common-denominator coefficients are b0=Kp+c0+beta, b1=-Kp(1+alpha)+c1-alpha c0-2beta, b2=Kp alpha-alpha c1+beta; delta u[k]=alpha delta u[k-1]+b0e[k]+b1e[k-1]+b2e[k-2]. Unreduced TF is a zero-state relation; nonzero internal states remain separate.
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+Planned limits: finite signed gains |K|<=10000; T in [.001,10] s; filtered tau in [.001,10] s; 1–40 finite error samples |e|<=10000; initial I/D <=1e6 in magnitude; bounded arithmetic/output magnitude <=1e12; scalar parser/list length and nesting bounded. No plant/closed-loop performance, actuator, saturation or anti-windup is introduced.
+
+## Provenance and current checks
+
+Read current primary guides, module TASK, atlas DD04 and DISCRETE_EXERCISE_AUDIT.md DD3/S14 recurrence. Original slides were not reinspected. The exact baseline/changed-period numbers are accepted source-audit fixtures; other tests will be independently derived checks, labeled accordingly. No shared math API or dependency is needed.
+
+Locked npm ci completed under Node 24.22.1 with 0 vulnerabilities. No implementation tests/browser checks run yet. New QA acquisition is deferred until the coordinator releases its next integration slot, per scheduling notice; independent implementation continues.
