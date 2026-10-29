@@ -66,3 +66,9 @@ The repository's continuous audit records inspected W02 model 2y″+5y′+3y=u, 
 Mathematics checkpoint `661cdd002e5370364ac17a691bad57fa0e40041e` was suspended for DR02 e/E review; UI checkpoint `d98baee63a1bee87f7c6bc0cc0820bbdb974ef81` for DR02 signed-fraction review. Corrections stayed on DR02's preserved PR/branch. CR02 resumed afterward; no sibling imports or combined contribution commits. Checkpoint `9bbaf0bbc385037b6f71f322b9880e1dcadd3118` added the independent closed-form audit.
 
 DR02 remains separately submitted at `a8d544aaafe122588b8b58fa88a8b06a4594813e`, worktree `C:/Users/baokh/.codex/worktrees/dr02-difference-equation/CSDKTD APP`, branch `codex/dr02-01a186d2`, [PR #5](https://github.com/ckbk123/CSDKTD_APP/pull/5). Its final signed visual fraction gate is coordinator-owned. A newly confirmed numeric font-wrapper equivalence defect is recorded on that PR for reopening; the frozen branch has not changed. Review returns take priority after checkpointing CR02.
+
+## Current shared API coordination
+
+Primary v0.3.3 introduced stateless readNumericInput(input,label). This older branch retains its independently tested equivalent local native-number guard: empty/nonfinite/over-limit entries fail, and a nonzero significand that underflows to zero is rejected. The coordinator explicitly approved this carry-forward on 29 October 2026 and will adapt the import during checked integration. No unowned helper was copied and no rebase/main merge was performed.
+
+The static interface audit also made metadata immutable, clarified rounded numerical labels, gave diagrams/plots keyboard-accessible local horizontal scrolling to retain readable labels on phones, and cleared stale selected Laplace terms after invalid initial data. The affected 50 module tests and production build pass. Actual-browser evidence is still pending. Current recoverable implementation checkpoint before this documentation is 977b39b1c84c43f9c5d57921cb2413e0d4464f07.
