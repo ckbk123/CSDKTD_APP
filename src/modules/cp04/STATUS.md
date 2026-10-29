@@ -1,27 +1,35 @@
 # CP04 implementation status
 
-- **Stage:** scaffold
+- **Stage:** in-progress
 - **Last assessed:** 2026-10-29
-- **Assessed code baseline:** `e0b7ddb`
-- **Goal and acceptance contract:** [TASK.md](TASK.md)
-- **Stage definitions and evidence rules:** [Project status](../../../docs/PROJECT_STATUS.md)
+- **Starting revision:** `8696261267b7620bfc101ce2b5f13772bfaa529a` (fresh primary-main snapshot)
+- **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`
+- **Ownership:** `src/modules/cp04/**`, claim `worker-cp04-01a18701`.
+- **Branch/worktree:** `codex/cp04-bode-01a18701`; `C:/Users/baokh/.codex/worktrees/cp04-bode-01a18701/CSDKTD APP`.
+- **Contract:** [TASK.md](TASK.md), atlas CP04 and continuous source audit P1.
 
-## Implemented and inspected
+## Requirement audit before implementation
 
-- `index.ts` defines the module metadata, default example and lazy workspace loader.
-- `workspace.ts` exports the synchronous mount contract and deliberately adds no controls or calculations.
-- The shared shell displays and edits a baseline-equation preview. It is not this module's solver or working input model.
+Current `workspace.ts` is an empty synchronous mount, with metadata/lazy loading intact and no local tests. Preserve those foundations.
 
-## Remaining acceptance work
+| Accepted requirement | Missing work / next action |
+| --- | --- |
+| Normalize factors and preserve gain | Editable raw first/second-order factor coefficients; show constant extraction and overall normalized gain |
+| Gain/corners, additive slopes and phases | Compute corner table, running slope intervals, factor contributions and unwrapped phase |
+| Student asymptote drawing and corner markers | Student normalization-gain and corner guesses generate an expected curve and markers before checked reveal |
+| Select a factor | Selector overlays that factor's normalized magnitude/phase contributions |
+| Exact versus asymptotic response and cursor error | Computed log-frequency plots and one numeric frequency cursor; compare magnitudes/phases and diagnose pure gain offset |
+| Explicit delay | Add exp(-tau s) as a separate exact phase term with unchanged magnitude; no Pade approximation |
+| rad/s versus Hz, dB versus linear | Convert display coordinates/controls while preserving the same physical frequency/model |
+| Bounded validation, visual equations, changed inputs | Shared visual scalar coefficient inputs with independently tested numeric/fraction grammar, error feedback and declared limits |
+| Lifecycle/scoped layout/tests/browser | Caller-owned mount state, abortable result controls and editor loading; meaningful fixtures, project checks and reserved real-browser QA |
 
-- [ ] Working exercise inputs, declared supported domain and mathematical validation.
-- [ ] Input-dependent computation and the full mathematical checks in TASK.md.
-- [ ] Intuitive visualization, intermediate reasoning and the required student interactions.
-- [ ] Independently checked baseline, changed-data and boundary/failure tests.
-- [ ] Real-browser editing, reset, reopen, keyboard, narrow-screen and cleanup checks.
+## Chosen bounded domain
 
-## Evidence and next action
+Continuous-time scalar transfer represented as K s^n exp(-tau s) times up to six numerator/denominator factors. Each factor is a0+a1 s (a0>0, nonzero signed a1) or a0+a1 s+a2 s² with positive coefficients and under/critical damping (0.05<=zeta<=1); quadratic natural frequency and all first-order corners lie in 10^-4–10^4 rad/s. Higher or overdamped polynomials can be entered as separate supported real factors where applicable; there is no general factoring/CAS claim. n is an integer -3…3, tau is 0…10 s. Coefficient/gain numbers use bounded real decimal/fraction entry. All frequencies remain positive. A declared finite log grid is sampled for illustration, while frequency evaluation is analytic up to floating-point arithmetic. The tool makes no loop-stability or complete-resonance-search claim.
 
-Source inspection found the blank mount and no module-owned mathematical tests at the assessed baseline. No module solver, plots or exercise browser behavior are claimed verified; shared-shell tests do not establish these.
+## Verification plan and source provenance
 
-Start with [START_HERE.md](../../../docs/START_HERE.md), then compare TASK.md with current source and rerun relevant checks. Replace the generic remaining list with a requirement-to-evidence assessment as implementation progresses. Record supported limits, exact check results and unresolved dependencies here; do not silently reduce the accepted goal.
+The default raw factors (s+1)(s+2) must normalize to K_n=1/2, corners 1 and 2 rad/s and slopes 0,-20,-40 dB/decade. Independently, G(j)=1/(1+3j)=0.1-0.3j, magnitude sqrt(0.1), phase -atan(3). At omega=2 the magnitude is 1/sqrt(40). Test gain-offset prediction, factor rescaling, unit round trips, delay-only phase change, origin powers, signed first-order factors, a resonant quadratic and malformed/unsupported/bounded inputs.
+
+Read current primary coordination guides, TASK/STATUS/source, contribution/development/design/equation guides, atlas CP04, source audit P1 and shared math README. No shared mathematical helpers are available or required. Original course slides remain outside Git; the source audit's baseline is retained, and new numerical fixtures will be labeled proposed. All implementation and checks are pending; no completed exercise is claimed at this checkpoint.
