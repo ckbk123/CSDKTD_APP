@@ -18,6 +18,7 @@ function multiply(a: number[], b: number[]): number[] {
 function polynomial(source: string): number[] {
   // In a visual equation, "2e-7" means a variable e, not scientific syntax.
   // Accept decimal coefficients only, rather than silently changing its meaning.
+  if (/\d*\.\d*\./.test(source)) fail('Check the decimal coefficient; use an explicit multiplication sign between numbers.');
   const tokens = source.match(/(?:\d+(?:\.\d*)?|\.\d+)|z|[()+*^\-]/g) ?? [];
   if (tokens.join('') !== source || tokens.length > 128) fail('Use real numbers, z, parentheses, +, −, products and powers 0, 1 or 2.');
   let at = 0;
@@ -84,6 +85,40 @@ function unwrap(s: string): string {
   }
   return s;
 }
+/** TeX braces are invisible, unlike the parentheses used by the polynomial
+ * reader. Only fraction arguments (already consumed), numeric wrappers and
+ * exponent arguments have a supported meaning here. Never invent grouping.
+ */
+function normalizePolynomialBraces(source: string, nesting = 0): string {
+  if (nesting > 16) fail('Use at most 16 nested numeric wrappers.');
+  let out = '';
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '}') fail('Check the equation grouping.');
+    if (source[i] !== '{') { out += source[i]; continue; }
+    const start = i + 1;
+    let depth = 1;
+    let end = start;
+    for (; end < source.length; end++) {
+      if (source[end] === '{') depth++;
+      if (source[end] === '}' && --depth === 0) break;
+    }
+    if (depth) fail('Complete the equation grouping.');
+    const inner = normalizePolynomialBraces(source.slice(start, end), nesting + 1);
+    if (out.endsWith('^')) {
+      if (!/^[012]$/.test(inner)) fail('Only powers 0, 1 and 2 are supported.');
+      out += `(${inner})`;
+    } else {
+      if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(inner)) {
+        fail('Use visible parentheses ( ) to group polynomial terms. Hidden brace groups are not supported.');
+      }
+      // Removing numeric wrappers also preserves adjacent displayed digits:
+      // 1{2} is 12, not the invented product 1(2).
+      out += inner;
+    }
+    i = end;
+  }
+  return out;
+}
 export function parseTransfer(latex: string): Transfer {
   if (!latex.trim()) fail('Enter a transfer function.');
   if (latex.length > 512) fail('Keep the transfer function within 512 characters.');
@@ -112,7 +147,7 @@ export function parseTransfer(latex: string): Transfer {
     if (s) fail('Enter one rational fraction with polynomial numerator and denominator.');
     s = `(${top})/(${bottom})`;
   }
-  s = unwrap(s.replace(/{/g, '(').replace(/}/g, ')'));
+  s = unwrap(normalizePolynomialBraces(s));
   let depth = 0, slash = -1;
   for (let i = 0; i < s.length; i++) {
     if (s[i] === '(') depth++;

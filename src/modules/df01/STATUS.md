@@ -1,6 +1,6 @@
 # DF01 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress (review correction; focused browser check pending)
 - **Assessed:** 2026-10-29; base `c5d1135`, tested implementation `717adda`; earlier checkpoints `a798749`, `309dbc8`
 - **Ownership:** `src/modules/df01/**`; acceptance: [TASK.md](TASK.md)
 
@@ -91,3 +91,11 @@ Owned changes: `math.ts`, `math.test.ts`, `view.ts`, `view.test.ts`, `workspace.
 - Coordinator reopened the existing submitted reservation solely to complete this delivery record and trim EOF whitespace. Mathematical/UI behavior is unchanged from reviewed implementation `f77ac833d927a79723b2164fc897f19c9770c53c`; no new browser reservation was acquired.
 - PR creation through the connected GitHub integration returned403 (insufficient integration permission). Existing local Git authentication successfully created the single PR; no credential values were printed or saved.
 - The final submitted SHA includes this record; independent integration/versioning remains with the coordinator.
+
+## Hidden-brace review return (2026-10-29)
+
+Coordinator reopened PR16's same reservation and branch after finding that standalone TeX braces were being turned into invented visible parentheses. The reported numerator `1{+2}` and `{z+2}z` cases are now rejected with guidance to use visible parentheses. True fraction arguments remain consumed by the fraction reader; power arguments remain limited to0,1,2; unsigned numeric wrappers are removed without inventing multiplication (`1{2}` stays the displayed12). Nontrivial standalone groups, including nested/signed placements, reject. Numeric wrapper nesting is bounded at16; malformed adjacent decimal points reject.
+
+Added 10 regression checks covering both failures, nested/denominator/signed/grouped variants, numeric wrappers/concatenation, compact fractions, power arguments, and distinct visible-addition/parenthesis controls. Current local total44 tests; full suite86 tests, type check and production build pass. Build warning unchanged. Focused actual-entry rejection/control check remains pending while DR02 holds browser QA.
+
+Coordinator disposition: period, horizon, inspector and prediction native-number controls will be adapted to current shared `readNumericInput` by the coordinator during integration, including raw nonzero numeric underflow such as1e-400. This older branch does not import/copy the unowned shared helper, rebase or merge main. That adaptation and its combined tests are required before coordinator acceptance; this record does not claim it has already happened.

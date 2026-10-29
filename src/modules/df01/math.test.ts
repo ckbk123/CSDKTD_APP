@@ -23,6 +23,32 @@ describe('DF01 bounded visual transfer reader', () => {
     expect(run('0.0000002/(z-.8)').finalValue).toBeCloseTo(1e-6, 15);
     expect(() => parseTransfer('2e-7/(z-.8)')).toThrow(/Use real numbers/);
   });
+  it.each([
+    String.raw`\frac{1{+2}}{z-.8}`,
+    String.raw`\frac{{z+2}z}{z^2+.25}`,
+    String.raw`\frac{-{z+2}z}{z^2+.25}`,
+    String.raw`\frac{({z+2})z}{z^2+.25}`,
+    String.raw`\frac{{{z+2}}z}{z^2+.25}`,
+    String.raw`\frac{1}{z-{.8+.1}}`,
+    String.raw`\frac{{1+2}}{z-.8}`,
+    String.raw`\frac{1{+2}*3}{z-.8}`,
+  ])('rejects hidden nontrivial braces without inventing visible grouping: %s', source => {
+    expect(() => parseTransfer(source)).toThrow(/visible parentheses/);
+  });
+  it('preserves fraction arguments, nested numeric wrappers and exponent arguments', () => {
+    expect(parseTransfer(String.raw`\frac{{{0.2}}}{z-.8}`).b).toEqual([0, .2]);
+    expect(parseTransfer(String.raw`\frac{1{2}}{z-.8}`).b).toEqual([0, 12]);
+    expect(parseTransfer(String.raw`\frac{{2}z+{1}}{z^{{2}}+.25}`).b).toEqual([0, 2, 1]);
+    expect(parseTransfer(String.raw`\frac{-1}{z+.5}`).b).toEqual([0, -1]);
+    expect(parseTransfer(String.raw`\frac1z`).b).toEqual([0, 1]);
+    expect(() => parseTransfer(String.raw`\frac{{.1}.2}{z-.8}`)).toThrow(/decimal coefficient/);
+  });
+  it('keeps explicit visible parentheses and explicit addition mathematically distinct', () => {
+    expect(parseTransfer(String.raw`\frac{1+2}{z-.8}`).b).toEqual([0, 3]);
+    expect(run(String.raw`\frac{1+2}{z-.8}`).finalValue).toBeCloseTo(15, 12);
+    expect(parseTransfer(String.raw`\frac{(z+2)z}{z^2+.25}`).b).toEqual([1, 2, 0]);
+    expect(parseTransfer(String.raw`\frac{z+2z}{z^2+.25}`).b).toEqual([0, 3, 0]);
+  });
 });
 describe('DF01 sample convention, independent fixtures and certificates', () => {
   it('baseline y[k]=1-.8^k; first settling sample is 18, not 17; t=1.8 s', () => {
