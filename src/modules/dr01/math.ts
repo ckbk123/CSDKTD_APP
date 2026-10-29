@@ -167,7 +167,7 @@ export function samples(model: Transform, history: readonly number[], count: num
 export type SequenceKind = 'geometric' | 'sum' | 'average';
 export function fromSequence(kind: SequenceKind, gain: number, pole: number, delay: number, length: number): Transform {
   if (!['geometric', 'sum', 'average'].includes(kind)) throw new Error('Choose a supported sequence family.');
-  if (![gain, pole].every(Number.isFinite) || Math.abs(gain) > 1e6 || Math.abs(pole) > 10) throw new Error('Use finite gain (|gain|≤10⁶) and pole (|pole|≤10).');
+  if (![gain, pole].every(x => Number.isFinite(x) && (x === 0 || Math.abs(x) >= 1e-12)) || Math.abs(gain) > 1e6 || Math.abs(pole) > 10) throw new Error('Use zero or finite gain/pole of magnitude at least 10⁻¹², with |gain|≤10⁶ and |pole|≤10.');
   if (!Number.isInteger(delay) || delay < 0 || delay > 12) throw new Error('Delay must be an integer from 0 to 12 samples.');
   if (!Number.isInteger(length) || length < 1 || length > 12 || (kind !== 'geometric' && delay + length > 15)) throw new Error('Length must be 1–12 and the last nonzero sample at most k=14.');
   const b = Array(delay).fill(0) as number[];
@@ -180,20 +180,20 @@ export function format(n: number): string {
   if (n === 0 || Object.is(n, -0)) return '0';
   return Number(n.toPrecision(7)).toString();
 }
-function numberLatex(n: number): string { return format(n).replace(/e([+-]?\d+)/, '\\times10^{$1}'); }
-export function polynomial(p: readonly number[], variable: 'q' | 'z', power = 0): string {
+export function numberLatex(n: number, fullPrecision = false): string { return (fullPrecision ? n.toString() : format(n)).replace(/e([+-]?\d+)/, '\\times10^{$1}'); }
+export function polynomial(p: readonly number[], variable: 'q' | 'z', power = 0, fullPrecision = false): string {
   const terms = p.flatMap((c, i) => {
     if (c === 0) return [];
     const exponent = variable === 'q' ? i : power - i;
     const factor = exponent === 0 ? '' : exponent === 1 ? variable : `${variable}^{${exponent}}`;
-    const magnitude = Math.abs(c) === 1 && factor ? '' : numberLatex(Math.abs(c));
+    const magnitude = Math.abs(c) === 1 && factor ? '' : numberLatex(Math.abs(c), fullPrecision);
     return [{ negative: c < 0, term: magnitude + factor }];
   });
   return terms.map(({ negative, term }, i) => `${negative ? '-' : i ? '+' : ''}${term}`).join('') || '0';
 }
-export function transformLatex(model: Transform, variable: 'q' | 'z' = 'q'): string {
+export function transformLatex(model: Transform, variable: 'q' | 'z' = 'q', fullPrecision = false): string {
   const power = Math.max(model.b.length, model.a.length) - 1;
-  const b = polynomial(model.b, variable, power), a = polynomial(model.a, variable, power);
+  const b = polynomial(model.b, variable, power, fullPrecision), a = polynomial(model.a, variable, power, fullPrecision);
   const expression = a === '1' ? b : `\\frac{${b}}{${a}}`;
   return variable === 'q' ? expression.replace(/q/g, 'z^{-1}').replace(/z\^\{-1\}\^\{(\d+)\}/g, (_, i: string) => `z^{-${i}}`) : expression;
 }

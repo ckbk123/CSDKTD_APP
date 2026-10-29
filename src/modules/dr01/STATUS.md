@@ -34,3 +34,7 @@ Course context read: atlas DR01, discrete source audit DR1, and E09's finite-seq
 - Browser-only equation view now loads after the synchronous mount, guarded against abort/cleanup. A direct top-level MathLive import exposed its Node SSR limitation in the existing catalogue test; module-local view loading resolves this without shared edits.
 - `npm run check` passed and production build passed before the view split; the existing MathLive chunk-size warning remains. Initial full test run exposed the SSR import issue; after the fix `npm test` passed 81/81. Additional edge checks are still being added.
 - Shared browser reservation was busy (DP02) at 15:50 local time; no browser controls used. Browser checks and final rerun remain required. Stage remains in-progress.
+
+## Resumed checkpoint
+
+Resumed 2026-10-29 with a clean worktree and the same active DR01 claim. At revision 1f1ddbc, `npm run check`, module tests (42/42), full `npm test` (84/84) and `npm run build` passed under Node 24.22.1. Follow-up inspection found generated average weights were rounded before being re-parsed; the editor now receives full-precision generated coefficients, with display rounding separate. Added independent one-third normalization and exercise-flow tests. Current `npm run check` and module tests pass (48/48). No real-browser evidence is claimed yet; DR02 held QA during the resumed checks.

@@ -1,6 +1,6 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
-import { format, fromSequence, initialNumerator, parseTransform, poles, polynomial, samples, transformLatex, type Sample, type SequenceKind, type Transform } from './math';
+import { format, fromSequence, initialNumerator, numberLatex, parseTransform, poles, polynomial, samples, transformLatex, type Sample, type SequenceKind, type Transform } from './math';
 import './workspace.css';
 
 export const mountView: ModuleMount = ({ container, signal }) => {
@@ -55,7 +55,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   builder.append(builderGrid, builderNote, button('Build transform', () => {
     try {
       const model = fromSequence(kind.value as SequenceKind, read(gain.input, 'gain'), read(pole.input, 'pole'), read(delay.input, 'delay'), read(length.input, 'length'));
-      equation.setValue(transformLatex(model)); draft = equation.getValue(); invalidate();
+      equation.setValue(transformLatex(model, 'q', true)); draft = equation.getValue(); invalidate();
       error.textContent = 'Transform built. Its coefficients are explicit; make a prediction before revealing.';
     } catch (cause) { error.hidden = false; error.textContent = (cause as Error).message; results.hidden = true; }
   }));
@@ -96,7 +96,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       const oldValue = oldIndex < 0 ? current!.history[-oldIndex - 1] : current!.rows[oldIndex].value;
       selectedDetails.append(el('p', `Memory x[${oldIndex}] = ${format(oldValue)}; multiply by ${format(-current!.model.a[j + 1])} → ${format(term)}.`, 'dr01-highlight'));
     });
-    selectedDetails.append(createEquationDisplay(`x[${value}]=${[row.forcing, ...row.feedback].map(x => `(${format(x)})`).join('+')}=${format(row.value)}`, 'Sample arithmetic'));
+    selectedDetails.append(createEquationDisplay(`x[${value}]\\approx${[row.forcing, ...row.feedback].map(x => `(${numberLatex(x)})`).join('+')}\\approx${numberLatex(row.value)}`, 'Sample arithmetic'));
     tableHolder.querySelectorAll('tr[data-k]').forEach(tr => { tr.classList.toggle('dr01-highlight', tr.getAttribute('data-k') === String(value)); });
     drawPlot();
   };
@@ -139,13 +139,13 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       current = { model, rows, zero, time, history };
       results.hidden = false; error.hidden = true;
       feedback.textContent = predictionsRead.some(x => x !== undefined) ? predictionsRead.flatMap((guess, k) => guess === undefined ? [] : [`x[${k}]: ${Math.abs(guess - rows[k].value) <= 1e-6 * Math.max(1, Math.abs(rows[k].value)) ? 'matches' : `your ${format(guess)}; computed ${format(rows[k].value)}`}`]).join(' · ') : 'No prediction entered. Compare the first three samples, then try a changed pole, delay or initial history.';
-      summary.replaceChildren(el('h3', 'Checked causal sequence'), feedback,
+      summary.replaceChildren(el('h3', 'Checked causal sequence'), feedback, el('p', 'Numerical coefficients and samples below are rounded to 7 significant digits. The identities describe the unrounded model; generated exercise inputs retain full floating-point precision.'),
         createEquationDisplay(`X_0(z)=${transformLatex(model)}`, 'Negative-power transform'),
         createEquationDisplay(`X_0(z)=${transformLatex(model, 'z')}`, 'Positive-power transform'));
       const numerator = initialNumerator(model, history);
       derivation.replaceChildren(el('h3', 'Transform, recurrence and initial values'));
       derivation.append(createEquationDisplay(`(${polynomial(model.a, 'q')})X_0=B(q),\\quad q=z^{-1}`, 'Coefficient identity'));
-      derivation.append(createEquationDisplay(`x[k]=b[k]${model.a.slice(1).map((a, j) => `${a > 0 ? '-' : '+'}${format(Math.abs(a))}x[k-${j + 1}]`).join('')}`, 'Recurrence'));
+      derivation.append(createEquationDisplay(`x[k]=b[k]${model.a.slice(1).map((a, j) => `${a > 0 ? '-' : '+'}(${numberLatex(Math.abs(a))})x[k-${j + 1}]`).join('')}`, 'Recurrence'));
       derivation.append(createEquationDisplay(`B(q)=${polynomial(model.b, 'q')}`, 'Forcing coefficients'));
       derivation.append(el('p', 'b[k] is the coefficient of qᵏ in B(q), and is zero after its last coefficient. Start from x[−1] and x[−2], read old values, then compute x[k].'));
       derivation.append(createEquationDisplay(`X_+(z)=\\frac{${polynomial(numerator, 'q')}}{${polynomial(model.a, 'q')}},\\quad q=z^{-1}`, 'History-corrected unilateral transform'));
@@ -154,10 +154,11 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       const poleText = (p: { re: number; im: number }) => p.im === 0 ? format(p.re) : `${format(p.re)}${p.im < 0 ? '-' : '+'}${format(Math.abs(p.im))}j`;
       if (roots.length) {
         derivation.append(el('p', `Denominator poles in z: ${roots.map(poleText).join(', ')}. Guaranteed causal exterior of convergence: |z| > ${format(radius)}. This bound is conservative if a pole is removable; factors are retained, including internal recurrence memory. Initial conditions can activate a canceled mode.`));
+        derivation.append(createEquationDisplay(roots.map((p, i) => `p_${i + 1}\\approx ${numberLatex(p.re)}${p.im ? `${p.im < 0 ? '-' : '+'}${numberLatex(Math.abs(p.im))}j` : ''}`).join(',\\quad '), 'Computed poles'));
         derivation.append(createEquationDisplay(`A(q)=${roots.map((_, i) => `(1-p_${i + 1}q)`).join('')}`, 'Transform factors'));
         if (roots.length === 1) derivation.append(createEquationDisplay('g[k]=p_1^k,\\quad k\\ge0', 'Geometric transform pair'));
         else {
-          derivation.append(createEquationDisplay(`\\Delta=${format(model.a[1] ** 2 - 4 * model.a[2])}`, 'Quadratic discriminant'));
+          derivation.append(createEquationDisplay(`\\Delta\\approx${numberLatex(model.a[1] ** 2 - 4 * model.a[2])}`, 'Quadratic discriminant'));
           const repeated = roots[0].re === roots[1].re && roots[0].im === roots[1].im;
           derivation.append(createEquationDisplay(repeated ? '\\frac{1}{A(q)}=\\frac{1}{(1-pq)^2},\\quad g[k]=(k+1)p^k' : '\\frac{1}{A(q)}=\\frac{p_1}{p_1-p_2}\\frac{1}{1-p_1q}-\\frac{p_2}{p_1-p_2}\\frac{1}{1-p_2q}', 'Inverse kernel partial fractions'));
           if (!repeated) derivation.append(createEquationDisplay('g[k]=\\frac{p_1^{k+1}-p_2^{k+1}}{p_1-p_2},\\quad k\\ge0', 'Inverse kernel'));

@@ -59,6 +59,13 @@ describe('DR01 transform parsing and independent inverse fixtures', () => {
     expect(sum.b.reduce((a, b) => a + b, 0)).toBe(4);
     expect(samples(sum, [0, 0], 8).map(x => x.value)).toEqual([0, 0, 1, 1, 1, 1, 0, 0]);
   });
+  it('keeps one-third average weights at full precision through the equation editor', () => {
+    const average = fromSequence('average', 1, .8, 0, 3);
+    const parsed = parseTransform(transformLatex(average, 'q', true));
+    expect(parsed.b).toEqual([1 / 3, 1 / 3, 1 / 3]);
+    expect(parsed.b.reduce((sum, weight) => sum + weight, 0)).toBe(1);
+    expect(samples(parsed, [0, 0], 4).map(row => row.value)).toEqual([1 / 3, 1 / 3, 1 / 3, 0]);
+  });
   it('retains recurrence memory even when the zero-history numerator is zero', () => {
     const model = parseTransform('0/(1-.5q)');
     expect(model.a).toEqual([1, -.5]);
