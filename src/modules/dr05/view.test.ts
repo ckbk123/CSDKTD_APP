@@ -88,6 +88,17 @@ describe('DR05 teaching flow with the equation API stub', () => {
     expect(inspect.value).toBe('0'); expect(root.textContent).toContain('Sample k = 0');
     expect(root.querySelectorAll('.zoh-plot svg')).toHaveLength(2);
   });
+  it('does not treat browser-reported bad numeric prediction input as an omitted guess', () => {
+    const root = open(), prediction = control(root, 'Your prediction for y[1] (optional)') as HTMLInputElement;
+    // Native browsers can retain an invalid visible edit with empty value and
+    // badInput=true; setting .value programmatically cannot create that state.
+    const validity = vi.spyOn(prediction, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState);
+    click(root, 'Reveal sampled model');
+    expect(root.textContent).toContain('Complete all required numeric controls.');
+    expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')).toBeNull();
+    validity.mockRestore(); click(root, 'Reveal sampled model');
+    expect(outputValues(root)[1]).toBe('0.09516258');
+  });
   it('reopen restores the baseline and cleanup removes owned controls', () => {
     const root = open(); click(root, 'Delayed 5/s²'); controller.abort(); if (typeof cleanup === 'function') cleanup(); expect(root.children.length).toBe(0);
     const next = open(); click(next, 'Reveal sampled model'); expect(control(next, 'Input delay m (whole samples)').value).toBe('0'); expect(outputValues(next)[1]).toBe('0.09516258');

@@ -26,6 +26,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const read = (input: HTMLInputElement): number => {
     const raw = input.value, value = input.valueAsNumber;
     if (!raw.trim()) throw new Error('Complete all required numeric controls.');
+    if (!Number.isFinite(value)) throw new Error('Enter a finite number in the numeric control.');
     if (value === 0 && /[1-9]/.test(raw.split(/[eE]/)[0])) throw new Error('A nonzero numeric input is too small to represent. Rescale it.');
     return value;
   };
@@ -102,7 +103,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       try { tf = transfer(source, d, experiment.T); }
       catch (error) { scalarWarning = error instanceof Error ? error.message : 'Scalar transfer and recurrence unavailable for this numerical conditioning. The sampled state model remains available.'; }
       const augmented = source.A.map((row, i) => [...row, source!.B[i]]).concat([Array(n + 1).fill(0) as number[]]);
-      const actual = result.samples[1].y, guess = prediction.value ? read(prediction) : NaN;
+      const actual = result.samples[1].y, guess = prediction.value || prediction.validity.badInput ? read(prediction) : NaN;
       feedback.textContent = `${prediction.value && Number.isFinite(guess) ? (Math.abs(guess - actual) <= 1e-5 * Math.max(1, Math.abs(actual)) ? 'Prediction matched within tolerance. ' : 'Compare your prediction with the state update. ') : ''}First sample y[1] = ${fmt(actual)}. ${result.maxError === undefined ? '' : `Maximum sampled output difference on this horizon: ${fmt(result.maxError)}.`} ${result.warning}`;
       equations.replaceChildren(
         createEquationDisplay(`\\dot{x}=Ax+Bu_h,\\quad y=Cx+Du_h`, 'Continuous source equations'),

@@ -20,7 +20,7 @@ The claimed baseline contained metadata and a blank workspace, with no local mat
 | Intermediate reasoning and recurrence | Source equations/matrices, augmented construction, exp/integral identities, sampled update, conditioned zero-state pulse TF/scalar recurrence, inspected arithmetic and complete accessible sample/state table. Unreliable scalar conversion is explicitly omitted while the state recurrence survives. |
 | Integer delay | Causal input delay mT before plant, zero input history and right-hand output timing. Fractional delay rejected; insufficient post-delay horizon reported. |
 | Attempt/reveal and variation | First-sample prediction with explicit tolerance; editable plant/T/delay/input/amplitude/initial state/count/density/method. Baseline/.2 s worksheet, singular integrators, delayed 5/s² and oscillator presets. Edits hide stale results. |
-| Validation and lifecycle | 62 math/parser, 10 view-flow and 5 loader tests. Synchronous workspace, owned lazy host/child signal, immediate partial-mount abort, active error recovery and equation destruction. Mutable state belongs to mount. Scoped CSS, numeric controls, keyboard access and internal math/plot/table scrolling. |
+| Validation and lifecycle | 62 math/parser, 11 view-flow and 5 loader tests. Synchronous workspace, owned lazy host/child signal, immediate partial-mount abort, active error recovery and equation destruction. Mutable state belongs to mount. Scoped CSS, numeric controls, keyboard access and internal math/plot/table scrolling. |
 
 ## Supported domain and conventions
 
@@ -60,6 +60,8 @@ The coordinator reopened submitted 9124825 in the same PR after integration prep
 
 Reveal previously used Number(inspect.value)||0, silently changing nonzero underflow 1e-400 into sample zero despite guarded inspection input events. Reveal now reads through the approved local guard, preserves invalid/empty/negative/noninteger drafts for localized showSample feedback, and clamps only a validated nonnegative integer to a shortened sample count. Newly revealed plots are cleared before inspection so an invalid draft cannot leave old-model plots beside new equations/table. The valid numerical model/table stays available. Intentional zero 0e-400 still selects zero; invalid drafts do not.
 
+The local reader also explicitly rejects nonfinite values, and an optional prediction with browser validity.badInput is validated rather than silently treated as omitted. Its view regression models the native invalid-edit state (empty DOM value but badInput=true), which cannot be created by assigning input.value programmatically.
+
 workspace.ts now creates its own host and child AbortController, forwards parent abort, and aborts child resources immediately when lazy view mounting throws after partial allocation. Recovery replaces only the owned host. Disposal aborts/detaches once, calls normal cleanup if returned, and removes the host; unrelated container siblings survive. Tests register an actual signal-owned listener and abort cleanup before deliberately throwing, then verify immediate release while the parent remains active. Normal disposal and repeated cleanup are tested too.
 
 The focused regressions and complete automated checks pass below. Actual-browser Reveal/underflow/intentional-zero and normal reset/navigation checks on this corrected build remain pending under the shared QA order DD04 -> CP03 -> DR01 -> DP03 -> normal acquisition. Deliberate partial-mount failure is tested with an allocated-resource mock, not claimed as browser fault injection.
@@ -69,9 +71,9 @@ The focused regressions and complete automated checks pass below. Actual-browser
 Executed in this isolated worktree using Node 24.22.1/npm 10.8.2 (explicit bundled Node invoking npm CLI):
 
 - npm ci: passed, 109 packages, zero audit vulnerabilities at installation.
-- npm test -- src/modules/dr05: **77 passed** across 3 files (62 math/parser, 10 view, 5 loader), after the second review correction.
+- npm test -- src/modules/dr05: **78 passed** across 3 files (62 math/parser, 11 view, 5 loader), after the second review correction.
 - npm run check: TypeScript passed.
-- npm test: **160 passed** across 11 files on this branch's recorded base, after the second review correction.
+- npm test: **161 passed** across 11 files on this branch's recorded base, after the second review correction.
 - npm run build: type check/production Vite build passed; existing MathLive large-chunk advisory only. Generated output is untracked.
 - [GitHub check for reviewed code checkpoint bb301f8](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40869920735): passed. Final submitted SHA also includes this evidence record.
 
