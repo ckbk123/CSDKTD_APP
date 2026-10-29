@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.9 — 29 October 2026
+
+- Correct deferred workspace cleanup in DS03, DP01, DS02 and DP02. Each visit owns a child abort signal; partial mounting failures and explicit disposal immediately release listeners/editor resources, including a disposer returned during an abort.
+- Add 19 lifecycle regressions. All 660 application tests, 32 coordination tests, type checking and production build pass. Actual browser checks cover default results, changed examples, reset and navigation in all four tools.
+- Remove the unnecessary global QA queue for verified private per-chat browser sessions. A controlled two-chat check confirmed disjoint tab inventories and independent viewport sizes. The worker goal/guides now allow parallel testing in those contexts and reserve only genuinely shared controls; the observed Firefox control limitation remains documented.
+
 ## 0.3.8 — 29 October 2026
 
 - DD04: derive a digital PID from integration/differentiation rules, compare positional and incremental arithmetic, predict outputs, and explicitly commit each memory update. Includes separate initial/filter memory, changed sampling periods and causal-rule feedback.

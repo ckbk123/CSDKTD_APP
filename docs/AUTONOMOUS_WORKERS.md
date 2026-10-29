@@ -84,15 +84,19 @@ Checkpoint early and after meaningful milestones:
 
 A hard token limit can stop execution before a final cleanup or handoff. Periodic checkpoints are the recovery mechanism; a prompt cannot guarantee that an agent runs after its budget is exhausted. Respect the chat's configured budget and controls. Do not invent a numerical budget, change it, or spawn extra agents to extend the run.
 
-## Reserve shared browser QA
+## Verify browser isolation; reserve genuinely shared controls
 
-Compilations, mathematical unit tests and private worktree edits can run independently. The in-app browser and its viewport may be shared by local chats. Reserve browser QA before using that shared browser, resizing it or capturing its module evidence:
+Compilations, mathematical unit tests, private worktree edits and verified private per-chat in-app browser sessions can run independently. Before testing, inspect browser inventory: its codexSessionId must match your chat, and its tab inventory must be your own. Browser ID 2 alone is not a global identity. Use only your own tabs/private preview, restore your viewport and close your temporary tabs afterward. Such isolated testing does not require qa-claim; cancel obsolete global waiters and release any obsolete reservation that you own. Never release another worker's reservation.
+
+A controlled two-chat check on 29 October confirmed disjoint tab inventories and independent viewports: coordinator 613×817 while CD08 remained 1280×720. The coordinator cleared its temporary override and closed its probe tab. The previous global gate was too broad for these contexts. Each worker must still confirm its own context before using this path; do not infer that native OS focus or other browser surfaces are isolated.
+
+If the actual controls are shared, or isolation cannot be established, reserve browser QA before using/resizing that shared surface or capturing evidence:
 
 ```text
 node scripts/agent-claim.mjs qa-claim --module DP02 --token <token>
 ```
 
-If busy, inspect the reported owner and continue independent work. Do not take over its tab, change its viewport, kill its server or repeatedly poll. Retry after another useful checkpoint. Once reserved, use your own tab and worker preview URL, test editing/results/reset/reopen/cleanup and a narrow viewport, restore temporary viewport settings, then release:
+If a genuinely shared surface is busy, inspect the reported owner and continue independent work. Do not take over its tab, change its viewport, kill its server or repeatedly poll. Retry after another useful checkpoint. Once reserved, use your own tab and worker preview URL, test editing/results/reset/reopen/cleanup and a narrow viewport, restore temporary viewport settings, then release:
 
 ```text
 node scripts/agent-claim.mjs qa-release --module DP02 --token <token>
@@ -100,9 +104,9 @@ node scripts/agent-claim.mjs qa-release --module DP02 --token <token>
 
 Browser reservations also have no automatic age expiry. If a chat is interrupted while holding one, the integration owner must verify that the previous work has stopped before recovery. Do not infer this from a timestamp alone.
 
-**Human-authorized Firefox fallback (29 October 2026):** if the in-app queue delays verification, open Firefox against your own worktree's production preview instead of waiting indefinitely. Use your own window/profile/tab and preserve other agents' and the user's browser state. An independent Firefox session does not require the in-app reservation; release an unused in-app reservation/waiter before switching and notify the coordinator. Separate profiles do not isolate the computer's mouse/keyboard focus: coordinate native UI actions among Firefox testers, without occupying or interrupting another in-app session. Use supported browser or native-app tools and record the actual browser and checks in STATUS; installed Firefox alone is not verification evidence. If a required control cannot be exercised, report that specific limitation and continue useful work. Firefox 159.0 was found at `C:\Program Files\Mozilla Firefox\firefox.exe` on this machine; inspect current supported controls before testing.
+**Human-authorized Firefox fallback (29 October 2026):** if the in-app queue delays verification, use a supported Firefox connection against your own worktree's production preview instead of waiting indefinitely. Use your own window/profile/tab and preserve other agents' and the user's browser state. An independent Firefox session does not require the in-app reservation; release an unused in-app reservation/waiter before switching and notify the coordinator. Separate profiles do not isolate the computer's mouse/keyboard focus: coordinate native UI actions among Firefox testers, without occupying or interrupting another in-app session. Use supported browser or native-app tools and record the actual browser and checks in STATUS; installed Firefox alone is not verification evidence. If a required control cannot be exercised, report that specific limitation and continue useful work. Firefox 159.0 was found at `C:\Program Files\Mozilla Firefox\firefox.exe` on this machine; inspect current supported controls before testing.
 
-**Observed tool limitation on this host:** workers could launch Firefox, but Windows page inspection stopped because Firefox URL-policy enforcement is unsupported. A separate-profile launch was also rejected by automatic approval review as “blocked by policy.” While this limitation persists, use the supported in-app browser and continue independent work; do not repeatedly launch Firefox windows or retry the rejected route. This is a control-tool limitation, not missing human authorization or completed browser evidence. The coordinator is checking actual cross-chat in-app isolation before relaxing the shared reservation.
+**Observed tool limitation on this host:** workers could launch Firefox, but Windows page inspection stopped because Firefox URL-policy enforcement is unsupported. A separate-profile launch was also rejected by automatic approval review as “blocked by policy.” While this limitation persists, use the supported in-app browser and continue independent work; do not repeatedly launch Firefox windows or retry the rejected route. This is a control-tool limitation, not missing human authorization or completed browser evidence. The controlled check above subsequently established private in-app isolation, allowing verified per-chat tests to proceed in parallel.
 
 ## One PR and exact submission per module
 

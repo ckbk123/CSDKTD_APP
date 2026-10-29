@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
 import { mount } from './workspace';
+import * as ui from './ui';
 
 // Tests caller-owned drafts and lifecycle only. Interactive MathLive needs browser QA.
 vi.mock('../../shared/equations/input', () => ({
@@ -18,7 +19,7 @@ vi.mock('../../shared/equations/input', () => ({
 }));
 
 const visits: { controller: AbortController; dispose: () => void; container: HTMLElement }[] = [];
-afterEach(() => { for (const v of visits.splice(0)) { v.controller.abort(); v.dispose(); v.container.remove(); } });
+afterEach(() => { for (const v of visits.splice(0)) { v.controller.abort(); v.dispose(); v.container.remove(); } vi.restoreAllMocks(); });
 async function open(abortImmediately = false) {
   const controller = new AbortController(), container = document.createElement('div'); container.dataset.module = 'DS03'; document.body.append(container);
   const dispose = mount({ container, signal: controller.signal }) as () => void;
@@ -131,6 +132,59 @@ describe('DS03 exercise and visit state', () => {
   });
   it('ignores a local UI import that completes after immediate abort', async () => {
     const { container } = await open(true); expect(container.childElementCount).toBe(0);
+  });
+  it('aborts resources allocated before a mount failure while its parent remains active', async () => {
+    const listener = vi.fn(); let childSignal: AbortSignal | undefined;
+    vi.spyOn(ui, 'mountUI').mockImplementationOnce(({ container, signal }) => {
+      childSignal = signal; document.addEventListener('ds03-partial-resource', listener, { signal });
+      container.append(document.createElement('section'));
+      throw new Error('Failure after resource allocation');
+    });
+    const { container, controller, dispose } = await open();
+    expect(controller.signal.aborted).toBe(false); expect(childSignal).not.toBe(controller.signal);
+    expect(childSignal?.aborted).toBe(true);
+    document.dispatchEvent(new Event('ds03-partial-resource')); expect(listener).not.toHaveBeenCalled();
+    expect(container.querySelector('section')).toBeNull();
+    expect(container.querySelector('[role="status"]')!.textContent).toContain('Reset the tool to try again');
+    dispose(); dispose(); expect(container.childElementCount).toBe(0);
+  });
+  it('aborts standalone signal resources and calls the loaded disposer only once', async () => {
+    const listener = vi.fn(), release = vi.fn(); let childSignal: AbortSignal | undefined;
+    vi.spyOn(ui, 'mountUI').mockImplementationOnce(({ signal }) => {
+      childSignal = signal; document.addEventListener('ds03-loaded-resource', listener, { signal }); return release;
+    });
+    const { container, controller, dispose } = await open();
+    document.dispatchEvent(new Event('ds03-loaded-resource')); expect(listener).toHaveBeenCalledOnce();
+    dispose(); dispose();
+    expect(controller.signal.aborted).toBe(false); expect(childSignal?.aborted).toBe(true);
+    document.dispatchEvent(new Event('ds03-loaded-resource')); expect(listener).toHaveBeenCalledOnce();
+    controller.abort(); expect(release).toHaveBeenCalledOnce(); expect(container.childElementCount).toBe(0);
+  });
+  it('releases a disposer returned after parent abort during mounting exactly once', async () => {
+    const controller = new AbortController(), container = document.createElement('div'), release = vi.fn();
+    let childSignal: AbortSignal | undefined;
+    vi.spyOn(ui, 'mountUI').mockImplementationOnce(({ signal }) => { childSignal = signal; controller.abort(); return release; });
+    const dispose = mount({ container, signal: controller.signal });
+    await vi.dynamicImportSettled();
+    expect(childSignal?.aborted).toBe(true); expect(release).toHaveBeenCalledOnce();
+    if (typeof dispose === 'function') { dispose(); dispose(); }
+    expect(release).toHaveBeenCalledOnce(); expect(container.childElementCount).toBe(0);
+  });
+  it('does not mount after explicit disposal while the import is pending', async () => {
+    const controller = new AbortController(), container = document.createElement('div'), mountUI = vi.spyOn(ui, 'mountUI');
+    const dispose = mount({ container, signal: controller.signal });
+    expect(container.textContent).toContain('Loading the exercise');
+    if (typeof dispose === 'function') { dispose(); dispose(); }
+    await vi.dynamicImportSettled();
+    expect(controller.signal.aborted).toBe(false); expect(mountUI).not.toHaveBeenCalled();
+    expect(container.childElementCount).toBe(0); controller.abort();
+  });
+  it('does not start an already-aborted visit', async () => {
+    const controller = new AbortController(), container = document.createElement('div'), mountUI = vi.spyOn(ui, 'mountUI');
+    controller.abort(); const dispose = mount({ container, signal: controller.signal });
+    await vi.dynamicImportSettled();
+    expect(mountUI).not.toHaveBeenCalled(); expect(container.childElementCount).toBe(0);
+    if (typeof dispose === 'function') dispose();
   });
   it('preserves focus while stepping with the keyboard and announces the check', async () => {
     const { container } = await open(); click(container, 'Check and reveal');

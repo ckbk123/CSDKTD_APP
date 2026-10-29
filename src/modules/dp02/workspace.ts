@@ -6,20 +6,33 @@ export const mount: ModuleMount = ({ container, signal }) => {
   if (signal.aborted) return;
   const pending = document.createElement('p'); pending.textContent = 'Loading pole mapping…';
   container.append(pending);
+  const child = new AbortController();
   let disposed = false;
   let release: (() => void) | undefined;
-  void import('./view').then(view => {
-    if (disposed || signal.aborted) return;
-    pending.remove();
-    const cleanup = view.mount({ container, signal });
-    if (typeof cleanup === 'function') release = cleanup;
-  }).catch(() => {
+  const cleanup = () => {
+    if (disposed) return;
+    disposed = true; signal.removeEventListener('abort', cleanup); child.abort();
+    const disposeView = release; release = undefined;
+    try { disposeView?.(); } finally { pending.remove(); }
+  };
+  const failed = () => {
+    child.abort();
     if (!disposed && !signal.aborted) {
       pending.textContent = 'Pole mapping could not load. Reset the tool to try again.';
       container.replaceChildren(pending);
     }
-  });
-  const cleanup = () => { if (disposed) return; disposed = true; release?.(); pending.remove(); };
+  };
   signal.addEventListener('abort', cleanup, { once: true });
-  return () => { signal.removeEventListener('abort', cleanup); cleanup(); };
+  void import('./view').then(view => {
+    if (disposed || signal.aborted) return;
+    try {
+      const disposeView = view.mount({ container, signal: child.signal });
+      if (typeof disposeView === 'function') {
+        if (disposed || child.signal.aborted) disposeView();
+        else release = disposeView;
+      }
+      if (!disposed) pending.remove();
+    } catch { failed(); }
+  }).catch(failed);
+  return cleanup;
 };

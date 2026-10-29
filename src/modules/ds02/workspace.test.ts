@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
-import { mount } from './ui';
+import * as ui from './ui';
+import { mount as mountWorkspace } from './workspace';
 
 // Test caller state and lifecycle only. Real MathLive editing is browser QA.
 vi.mock('../../shared/equations/input', () => ({
@@ -17,7 +18,7 @@ const visits: (() => void)[] = [];
 afterEach(() => { visits.splice(0).forEach(cleanup => cleanup()); });
 function open() {
   const root = document.createElement('div'), controller = new AbortController(); document.body.append(root);
-  const cleanup = mount({ container: root, signal: controller.signal });
+  const cleanup = ui.mount({ container: root, signal: controller.signal });
   visits.push(() => { controller.abort(); if (typeof cleanup === 'function') cleanup(); root.remove(); });
   const click = (action: string) => root.querySelector<HTMLButtonElement>(`button[data-action="${action}"]`)!.click();
   const set = (name: string, value: string) => { root.querySelector<HTMLInputElement>(`input[name="${name}"]`)!.value = value; };
@@ -72,5 +73,74 @@ describe('quadratic teaching flow', () => {
     const oldButton = v.root.querySelector<HTMLButtonElement>('button[data-action="variant"]')!;
     v.controller.abort(); if (typeof v.cleanup === 'function') v.cleanup(); oldButton.click(); expect(v.root.children.length).toBe(0);
     const fresh = open(); expect(fresh.root.querySelector('textarea')!.value).toContain('0.2K'); expect(fresh.root.textContent).not.toContain('Complete strict intersection');
+  });
+});
+
+describe('DS02 deferred workspace resources', () => {
+  afterEach(() => vi.restoreAllMocks());
+  function visit(aborted = false) {
+    const container = document.createElement('div'), parent = new AbortController();
+    if (aborted) parent.abort();
+    const cleanup = mountWorkspace({ container, signal: parent.signal });
+    visits.push(() => { parent.abort(); if (typeof cleanup === 'function') cleanup(); });
+    return { container, parent, cleanup };
+  }
+  it('does not initialize an already-aborted visit', async () => {
+    const viewMount = vi.spyOn(ui, 'mount'); const current = visit(true);
+    expect(current.cleanup).toBeUndefined(); expect(current.container.childElementCount).toBe(0);
+    await vi.dynamicImportSettled(); expect(viewMount).not.toHaveBeenCalled();
+  });
+  it('removes synchronous loading and skips an import after parent abort', async () => {
+    const viewMount = vi.spyOn(ui, 'mount'); const current = visit();
+    expect(current.container.textContent).toContain('Loading Jury exercise');
+    current.parent.abort(); expect(current.container.childElementCount).toBe(0);
+    await vi.dynamicImportSettled(); expect(viewMount).not.toHaveBeenCalled();
+  });
+  it('aborts partially allocated resources before replacing failed UI with recovery feedback', async () => {
+    const listener = vi.fn(); let childSignal: AbortSignal | undefined;
+    vi.spyOn(ui, 'mount').mockImplementationOnce(({ container, signal }) => {
+      childSignal = signal;
+      document.addEventListener('ds02-partial-resource', listener, { signal });
+      container.append(document.createElement('section'));
+      throw new Error('Failure after allocating a resource');
+    });
+    const current = visit(); await vi.dynamicImportSettled();
+    expect(current.parent.signal.aborted).toBe(false); expect(childSignal).not.toBe(current.parent.signal);
+    expect(childSignal?.aborted).toBe(true);
+    document.dispatchEvent(new Event('ds02-partial-resource')); expect(listener).not.toHaveBeenCalled();
+    expect(current.container.querySelector('section')).toBeNull();
+    expect(current.container.querySelector('[role="alert"]')?.textContent).toContain('Reset the workspace to try again');
+    if (typeof current.cleanup === 'function') current.cleanup();
+    expect(current.container.childElementCount).toBe(0);
+  });
+  it('aborts listeners on standalone cleanup while releasing the loaded view only once', async () => {
+    const listener = vi.fn(), release = vi.fn(); let childSignal: AbortSignal | undefined;
+    vi.spyOn(ui, 'mount').mockImplementationOnce(({ signal }) => {
+      childSignal = signal;
+      document.addEventListener('ds02-loaded-resource', listener, { signal });
+      return release;
+    });
+    const current = visit(); await vi.dynamicImportSettled();
+    document.dispatchEvent(new Event('ds02-loaded-resource')); expect(listener).toHaveBeenCalledOnce();
+    if (typeof current.cleanup === 'function') { current.cleanup(); current.cleanup(); }
+    expect(current.parent.signal.aborted).toBe(false); expect(childSignal?.aborted).toBe(true);
+    document.dispatchEvent(new Event('ds02-loaded-resource')); expect(listener).toHaveBeenCalledOnce();
+    expect(release).toHaveBeenCalledOnce(); current.parent.abort(); expect(release).toHaveBeenCalledOnce();
+    expect(current.container.childElementCount).toBe(0);
+  });
+  it('releases a disposer returned after the parent aborts during mounting', async () => {
+    const parent = new AbortController(), container = document.createElement('div'), release = vi.fn();
+    let childSignal: AbortSignal | undefined;
+    vi.spyOn(ui, 'mount').mockImplementationOnce(({ signal }) => { childSignal = signal; parent.abort(); return release; });
+    const cleanup = mountWorkspace({ container, signal: parent.signal }); await vi.dynamicImportSettled();
+    expect(childSignal?.aborted).toBe(true); expect(release).toHaveBeenCalledOnce();
+    if (typeof cleanup === 'function') cleanup();
+    expect(release).toHaveBeenCalledOnce(); expect(container.childElementCount).toBe(0);
+  });
+  it('does not attach recovery feedback after abort during mounting', async () => {
+    const parent = new AbortController(), container = document.createElement('div');
+    vi.spyOn(ui, 'mount').mockImplementationOnce(() => { parent.abort(); throw new Error('Aborted mount'); });
+    const cleanup = mountWorkspace({ container, signal: parent.signal }); await vi.dynamicImportSettled();
+    expect(container.childElementCount).toBe(0); if (typeof cleanup === 'function') cleanup();
   });
 });
