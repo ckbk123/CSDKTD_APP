@@ -91,6 +91,14 @@ describe('independent sampled observer mathematics', () => {
   it('rejects mixed sampled models rather than combining unrelated gains',()=>{const m=baseline(),f=designFeedback(m.A,m.B,C,[-1.5,.56]);expect(()=>simulate(m.observer,[1,0],options,f)).toThrow(/same sampled/);});
 });
 describe('visual z notation preserves displayed meaning',()=>{
+  it.each([String.raw`\frac1\,2`,String.raw`\frac\,12`,String.raw`\dfrac1\;2`,String.raw`\frac\!12`,String.raw`\frac1\ 2`,String.raw`\frac{\frac1\:2}{2}`])('rejects spacing atoms as unbraced fraction arguments: %s',s=>{
+    expect(()=>parseScalar(s)).toThrow(/spacing command/);expect(()=>parseMatrix(`C=\\begin{bmatrix}${s}&0\\end{bmatrix}`,1,2,'C')).toThrow(/spacing command/);
+  });
+  it.each([String.raw`z^\,2-.7z+.12`,String.raw`z^ \;2-.7z+.12`,String.raw`z^\ 2-.7z+.12`,String.raw`z^2+\frac1\,2z+.12`])('rejects spacing atoms as unbraced target arguments: %s',s=>expect(()=>parseTarget(s)).toThrow(/spacing command/));
+  it('retains literal spaces and spacing inside braced arguments',()=>{
+    for(const s of [String.raw`\frac 1 2`,String.raw`\frac{1\,}{2}`,String.raw`\frac{\,1}{\;2}`,String.raw`\frac{1}{2\,}`])expect(parseScalar(s)).toBe(.5);
+    near(parseTarget(String.raw`z^{\,2}-.7z+.12`),[-.7,.12]);near(parseTarget('z^ 2-.7z+.12'),[-.7,.12]);
+  });
   it.each(['(z-.3)(z-.4)','q(z)=z^2-.7z+.12','z^{2}-\\frac7{10}z+\\frac3{25}'])('parses %s',s=>near(parseTarget(s),[-.7,.12]));
   it('accepts signed compact fractions and spaced matrix rows',()=>{expect(parseScalar('-\\frac12')).toBe(-.5);near(parseMatrix(String.raw`A=\begin{bmatrix}0&1\\ -2&-3\end{bmatrix}`,2,2,'A'),A);expect(parseScalar('\\frac{\\frac12}{2}')).toBe(.25);});
   it.each(['z^12','z^02','z^2.0','z^-2','z^{0}2','z^{12}','1e-2z+z²','2\\frac12z+z^2','{z+2}z','z^2+1{+2}','s^2+1','z^3','z^2+\\frac10','z^2+',''])('rejects unsupported/ambiguous %s',s=>expect(()=>parseTarget(s)).toThrow());

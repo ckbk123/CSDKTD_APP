@@ -79,7 +79,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
       svg.append(svgElement('path', { d: line.values.map((v, i) => `M${X(i).toFixed(3)},${Y(0).toFixed(3)}V${Y(v).toFixed(3)}`).join(' '), class: line.style }));
       line.values.forEach((v, i) => svg.append(svgElement('circle', { cx: X(i), cy: Y(v), r: i === selected ? 4 : 2, class: line.style })));
     }
-    figure.append(svg, element('p', lines.map(l => l.label).join(' · '))); return figure;
+    const scroll = element('div'); scroll.className = 'sampled-observer-plot-scroll'; scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', `${title} plot; scroll horizontally for the full axes`); scroll.append(svg);
+    figure.append(scroll, element('p', lines.map(l => l.label).join(' · '))); return figure;
   }
   let axisSeconds = false;
   function render(): void {

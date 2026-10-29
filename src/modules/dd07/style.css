@@ -19,7 +19,8 @@
 [data-module="DD07"] .sampled-observer-tool figure { margin:0; min-width:0; border:1px solid var(--line); border-radius:8px; padding:10px; }
 [data-module="DD07"] .sampled-observer-tool figcaption { font-weight:550; }
 [data-module="DD07"] .sampled-observer-tool figure p { font-size:11px; color:var(--muted); }
-[data-module="DD07"] .sampled-observer-tool svg { display:block; width:100%; height:auto; }
+[data-module="DD07"] .sampled-observer-plot-scroll { max-width:100%; overflow-x:auto; }
+[data-module="DD07"] .sampled-observer-tool svg { display:block; width:100%; min-width:500px; height:auto; }
 [data-module="DD07"] .sampled-observer-tool svg text { fill:var(--text); font:14px system-ui; }
 [data-module="DD07"] .sampled-observer-axis { stroke:var(--muted); stroke-width:1; }
 [data-module="DD07"] .sampled-observer-reference { fill:none; stroke:var(--muted); stroke-width:2; stroke-dasharray:6 4; }
@@ -31,7 +32,7 @@
 [data-module="DD07"] .sampled-observer-tool caption { text-align:left; color:var(--muted); }
 [data-module="DD07"] .sampled-observer-tool td, [data-module="DD07"] .sampled-observer-tool th { border:1px solid var(--line); padding:8px; text-align:left; }
 [data-module="DD07"] .sampled-observer-tool td { white-space:nowrap; }
-@media(max-width:700px) { [data-module="DD07"] .sampled-observer-inputs, [data-module="DD07"] .sampled-observer-plots { grid-template-columns:minmax(0,1fr); } [data-module="DD07"] .sampled-observer-tool svg text { font-size:20px; } [data-module="DD07"] .sampled-observer-tool td, [data-module="DD07"] .sampled-observer-tool th { padding:6px; font-size:11px; } }
+@media(max-width:700px) { [data-module="DD07"] .sampled-observer-inputs, [data-module="DD07"] .sampled-observer-plots { grid-template-columns:minmax(0,1fr); } [data-module="DD07"] .sampled-observer-tool td, [data-module="DD07"] .sampled-observer-tool th { padding:6px; font-size:11px; } }
 
 [data-module="DD07"] .sampled-observer-tool select { max-width:100%; min-width:0; padding:9px; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:6px; }
 [data-module="DD07"] .sampled-observer-tool svg circle.sampled-observer-current { fill:var(--accent); }
