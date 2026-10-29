@@ -76,19 +76,27 @@ export function parseLinearExact(latex: string): ExactLinear {
     const value = primary(); return sign === 1 ? value : [neg(value[0]), neg(value[1])];
   }
   function product(): ExactLinear {
-    let value = unary();
+    const first = position;
+    let value = unary(), lastFactor = source.slice(first, position);
+    // Validated factor text, rather than its polynomial result, determines
+    // numeric adjacency. In s2½ the last factor is 2; in 2s½ it is s.
+    const numericFactor = (text: string): boolean => !text.replace(/\\[a-zA-Z]+/g, '').includes('s');
     while (position < source.length) {
-      if (source[position] === '*') { position++; value = multiply(value, unary()); }
+      if (source[position] === '*') {
+        position++; const start = position;
+        value = multiply(value, unary()); lastFactor = source.slice(start, position);
+      }
       else if (/[\d.s(\\{]/.test(source[position])) {
         const start = position, next = unary();
-        if (!value[1].n && !next[1].n && source[start] !== '(') throw new Error('Adjacent numeric factors can display as a mixed number or joined digits. Insert + for addition or × for multiplication.');
+        const nextFactor = source.slice(start, position);
+        if (numericFactor(lastFactor) && numericFactor(nextFactor) && source[start] !== '(') throw new Error('Adjacent numeric factors can display as a mixed number or joined digits. Insert + for addition or × for multiplication.');
         // MathLive can typeset number/fraction adjacency as a mixed number
         // (invisible plus). Require an explicit operator for this narrower
         // grammar, including wrapped/grouped/nested fraction forms.
-        if (!value[1].n && /\\(?:dfrac|tfrac|frac)(?![A-Za-z])/.test(source.slice(start, position))) {
+        if (numericFactor(lastFactor) && /\\(?:dfrac|tfrac|frac)(?![A-Za-z])/.test(nextFactor)) {
           throw new Error('A constant next to a fraction can be a mixed number. Insert + for addition or × for multiplication, including before a fraction-containing group.');
         }
-        value = multiply(value, next);
+        value = multiply(value, next); lastFactor = nextFactor;
       }
       else break;
     }

@@ -1,11 +1,21 @@
 # CF02 implementation status
 
-- **Stage:** implemented
+- **Stage:** in-progress (priority review correction; original delivery evidence retained below)
 - **Assessed:** 2026-10-29, fresh primary-main baseline `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (v0.3.3).
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
 - **Branch/worktree:** `codex/cf02-steady-state-7393`; `C:\Users\baokh\.codex\worktrees\cf02-steady-state-7393\CSDKTD APP`.
-- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18). Final browser verification is complete; the exact final tested submission is recorded in the shared claim. Independent coordinator integration/review remains separate. Prior DS01 PR #10 is preserved; corrections take priority.
+- **PR:** [#18](https://github.com/ckbk123/CSDKTD_APP/pull/18), same preserved branch for corrections. The coordinator reopened the original `4f763e9` submission for a lexical mixed-number bypass. Original delivery evidence below is historical until correction/resubmission. DS01 PR #10 was accepted as v0.3.6; CP01 is checkpointed while this review return takes priority.
+
+## Priority review return — lexical mixed-number boundary
+
+Coordinator review of immutable source `4f763e9d5c51243bd9b22ef8108d7099856dd11e` found that `s2` followed by 1/2, `(s+1)2` followed by 1/2 and `s` followed by numeric-font 2 then 1/2 bypassed the accumulated-constant guard. The pinned MathLive SSR output contains invisible-plus U+2064 for all three, while the old parser multiplied the mixed number. This is a confirmed defect in the original submission; prior green tests/browser cases did not cover a preceding variable factor.
+
+The current correction tracks the last parsed factor's validated notation, including numeric wrappers/groups, independently of accumulated coefficients. It rejects the numeric/fraction boundary after prior variables and explicit products, plus joined numeric font styles after a variable. It preserves `2s` followed by 1/2 and explicit multiplication: both mean s and have no invisible-plus marker. Actual fraction arguments retain their scope. CF02 continues to reject all powers; no unsupported power path is introduced.
+
+Added **32** focused lexical regressions, including pinned-renderer assertions for invisible plus and joined-digit MathML, signed/grouped/nested/wrapped variants, and valid explicit operators/variable products. Before the correction, **15 failed / 17 passed**, independently reproducing the confirmed and related bypasses. After correction the **165-test** module suite and type check pass. Workspace regressions ensure the invalid forms clear checked output and corrected valid products still compute ramp error 2.
+
+`npm test` now passes **368 tests / 20 files**, and `npm run build` (including type checking) passes under bundled Node v24.22.1. The existing MathLive chunk advisory remains. Remaining correction work: focused actual-editor feedback under the shared QA reservation, updated same-PR evidence, clean tested commit push and exact-SHA resubmission. Current QA order is DP03→DP04→coordinator DP02; no new browser reservation is held or requested before its release notice. CP01's separate active claim/worktree is preserved at its checkpoint; no concurrent implementation occurs.
 
 ## Delivered bounded exercise and final verification — 29 October 2026
 
