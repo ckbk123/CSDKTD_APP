@@ -18,6 +18,12 @@ describe('DS04 bounded exact polynomial entry', () => {
     expect(parseModel('0', 'z^2').numerator.every(q => q.n === 0n)).toBe(true);
     expect(() => parsePolynomial('(999983/999979)(999961/999959)(999953/999931)')).toThrow('fraction');
   });
+  it('keeps visual e notation distinct from decimal numeric data', () => {
+    // MathLive displays 1e-2 as multiplication/subtraction, not scientific 0.01.
+    expect(() => parsePolynomial('z+1e-2')).toThrow();
+    expect(() => parsePolynomial('z+1E-2')).toThrow();
+    expect(parsePolynomial('z+0.01')[0]).toEqual(rational(1, 100));
+  });
 });
 describe('DS04 complete exact gain partition', () => {
   it('derives the baseline independently from P=z²+(K-1)z+K/5', () => {
