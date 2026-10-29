@@ -22,6 +22,13 @@ function visit() {
   return { container, click, close: () => { controller.abort(); cleanup?.(); } };
 }
 describe('DR02 exercise state transitions', () => {
+  it('applies and commits a signed compact visual fraction as a negative gain', () => {
+    const { container, click } = visit();
+    const field=container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;
+    field.value='-\\frac12';field.dispatchEvent(new Event('input'));click('Apply transfer function');click('Reveal arithmetic');click('Commit sample & shift memory');
+    expect(container.querySelector('[aria-label="Scrollable committed sample table"]')?.textContent).toContain('-0.5');
+    expect(container.textContent).toContain('Committed y[0] = -0.5');
+  });
   it('rejects the visual e/E expression instead of revealing a scientific-notation gain', () => {
     const { container, click } = visit();
     const field = container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;

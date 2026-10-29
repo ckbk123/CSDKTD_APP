@@ -1,6 +1,7 @@
 # DR02 implementation status
 
-- **Stage:** in-progress (code and checks complete; coordinator-owned browser acceptance gate pending)
+- **Stage:** in-progress
+- **Remaining acceptance gate:** coordinator-owned signed visual 1/2 browser check; code and project checks pass.
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
@@ -36,7 +37,7 @@ The starting workspace was a blank synchronous mount with metadata and no local 
 
 ## Independent mathematical fixtures
 
-`math.test.ts` contains 36 parser/mathematics cases; `view.test.ts`, `workspace.test.ts`, and `workspace-import-failure.test.ts` add nine caller-state/lifecycle/error-path cases. The latter mock the equation view or rendering and are not offered as interactive-editor evidence.
+`math.test.ts` contains 51 parser/mathematics cases; `view.test.ts`, `workspace.test.ts`, and `workspace-import-failure.test.ts` add ten caller-state/lifecycle/error-path cases. The latter mock the equation view or rendering and are not offered as interactive-editor evidence.
 
 - Baseline: b = 1−a for the entered rounded numbers, so the independently derived held-input answer is y[k] = 1−aᵏ. Tests check eleven samples and the course's first three nonzero rounded values.
 - Changed history: the difference from zero history equals (2a+3b)aᵏ for stored y[−1]=2, u[−1]=3. The TF is unchanged.
@@ -53,8 +54,8 @@ Commands ran in this isolated worktree using bundled Node **v24.22.1** and npm *
 |---|---|
 | `npm ci` | Passed; 109 packages installed, no vulnerabilities reported |
 | `npm run check` | Passed |
-| `node node_modules/vitest/vitest.mjs run src/modules/dr02` | Passed: 45 tests, 4 files (compact fraction and ambiguous e/E corrections) |
-| `npm test` | Passed: 87 tests, 10 files (compact fraction and ambiguous e/E corrections) |
+| `node node_modules/vitest/vitest.mjs run src/modules/dr02` | Passed: 61 tests, 4 files (compact/signed fraction and ambiguous e/E corrections) |
+| `npm test` | Passed: 103 tests, 10 files (compact/signed fraction and ambiguous e/E corrections) |
 | `npm run build` | Passed; all 20 equation fonts emitted locally. Existing MathLive chunk-size warning remains. |
 | `git diff --check` | Passed |
 
@@ -84,7 +85,7 @@ After this correction: `npm run check`, all 38 DR02 tests, all 80 project tests,
 
 The coordinator reopened DR02 for actual-editor compatibility: MathLive can emit `\frac12` for a visual 1/2. The local parser now accepts single-token fraction arguments, mixed braced/unbraced forms, and an outer parenthesized fraction. Tests independently check gain 0.5, a delayed unit gain, and the normalized denominator for 1/(z−0.5); incomplete, extra-token and zero-denominator compact forms still fail. All 39 module tests, all 81 project tests, type checking and production build passed at code checkpoint `088b19c9fab33951e7b82eb0d189d41f48411453` and its documentation-only successors. The equation UI and previously checked browser behavior are unchanged.
 
-**Targeted browser acceptance gate remains explicit:** this worker has not separately entered visual 1/2 in the production browser after the correction. Actual compact serialization was reported by the coordinator from another worker's same-version MathLive browser QA, and that reported string and mixed forms are covered by the local parser tests. The coordinator first scheduled exclusive shared QA and subsequently explicitly offered to own this short check on the corrected release candidate. That coordination is accepted here: coordinator chat `01a182f7-8bce-7fb3-b79d-2ef1b1cfe8dd` owns the visual 1/2 acceptance check before integration. The worker holds no reservation and will avoid a duplicate session. This gate is pending and is not marked performed. The comprehensive earlier production-browser evidence above remains valid; no new interactive-editor check is invented here.
+**Targeted browser acceptance gate remains explicit:** this worker has not separately entered signed visual 1/2 in the production browser after the corrections. Actual compact serialization was reported by the coordinator from another worker's same-version MathLive browser QA, and that reported string, mixed forms and signed/grouped variants are covered by local parser tests. The coordinator explicitly offered to own this short check on the corrected release candidate. That coordination is accepted here: coordinator chat `01a182f7-8bce-7fb3-b79d-2ef1b1cfe8dd` owns the signed visual 1/2 acceptance check before integration. The worker holds no reservation and will avoid a duplicate session. This gate is pending and is not marked performed. The comprehensive earlier production-browser evidence above remains valid; no new interactive-editor check is invented here.
 
 The revised human goal requires one GitHub PR per module and continued queue work after submission. No existing DR02 PR was found. The GitHub connector's create-PR action returned `403 Resource not accessible by integration`. Creation through the repository's existing GitHub sign-in succeeded: PR #5 above is the one open contribution PR, and its URL is attached. Its review description records the targeted QA deferral. No credentials were exposed or committed.
 
@@ -93,3 +94,9 @@ The revised human goal requires one GitHub PR per module and continued queue wor
 Coordinator review at `b44907d` identified that raw `1e-2` is displayed by MathLive as 1·e−2 but was previously parsed as numeric gain 0.01. The parser now rejects e/E before numeric tokenization, with a message requesting decimal coefficients. The workspace help states the same boundary. Five regression inputs cover lowercase/uppercase notation and bare e/E; a caller-state regression checks that the submitted visual string does not reveal a gain or leave old results executable. Long decimal literals/products replace e-notation underflow fixtures, preserving real underflow and near-degenerate-denominator coverage. Scientific typesetting of computed results remains unchanged.
 
 All 45 module tests, 87 project tests, type checking and production build pass. CR02 was checkpointed and suspended at `85ee6e08f523e3c163a19b04c4b6423f4b1f58b2` before this return. The candidate is submitted for the coordinator's final code review and explicitly owned browser acceptance gate; completion is not asserted until that gate has actual evidence. The worker resumes the separate CR02 contribution afterward, prioritizing any further review return on this same PR/branch.
+
+## Signed fraction equivalence correction (29 October 2026)
+
+Review returned the valid editor spellings `-\frac12`, `\left(-\frac12\right)` and `G(z)=-\frac1{z-0.5}`. `splitFraction` now checks balanced parentheses and normalizes a leading unary sign sequence only when it applies to a complete fraction or complete outer group. It preserves the polynomial's ordinary precedence: `-2+1` remains −1, while `-(2+1)` is −3. Positive, negative, double-negative, braced, compact and grouped equivalents are tested, along with malformed signs, empty groups, unbalanced groups and incomplete fractions. A changed negative plant gives independently checked held-input samples 0, −1, −1.5, −1.75; a caller-state test applies and commits signed compact −1/2 as gain −0.5.
+
+The full common-spelling audit now passes 61 local tests and 103 project tests; type checking, production build and diff checks also pass. CR02's current interface checkpoint `d98baee63a1bee87f7c6bc0cc0820bbdb974ef81` is preserved separately. Stage remains canonical `in-progress` solely because the coordinator-owned signed visual fraction acceptance gate above is pending; no browser evidence for that gate is invented.

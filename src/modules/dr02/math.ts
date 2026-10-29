@@ -80,6 +80,12 @@ function polynomial(text: string): Polynomial {
   return result;
 }
 function unwrap(text: string): string {
+  let balance = 0;
+  for (const character of text) {
+    balance += character === '(' ? 1 : character === ')' ? -1 : 0;
+    if (balance < 0) fail('Balance the outer parentheses.');
+  }
+  if (balance !== 0) fail('Balance the outer parentheses.');
   while (text.startsWith('(') && text.endsWith(')')) {
     let depth = 0, whole = true;
     for (let i = 0; i < text.length - 1; i++) { depth += text[i] === '(' ? 1 : text[i] === ')' ? -1 : 0; if (depth === 0) { whole = false; break; } }
@@ -90,6 +96,17 @@ function unwrap(text: string): string {
 }
 function splitFraction(text: string): [string, string] {
   text = unwrap(text);
+  const prefix = /^[+-]+/.exec(text)?.[0];
+  if (prefix) {
+    const operand = text.slice(prefix.length), unwrapped = unwrap(operand);
+    // A sign before a whole fraction/group applies to that whole operand.
+    // Otherwise leave it in the polynomial: -2+1 must remain (-2)+1.
+    if (operand.startsWith('\\frac') || unwrapped !== operand) {
+      const [numerator, denominator] = splitFraction(operand);
+      const negative = [...prefix].filter(character => character === '-').length % 2 === 1;
+      return [negative ? `-(${numerator})` : numerator, denominator];
+    }
+  }
   if (/^\\frac(?=[{0-9])/.test(text)) {
     let i = 5;
     function group(): string {

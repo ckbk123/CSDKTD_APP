@@ -68,6 +68,21 @@ describe('DR02 independently checked recurrence', () => {
     expect(parseTransfer('\\frac{1}z')).toEqual({ a: [1], b: [0, 1] });
     for (const text of ['\\frac1', '\\frac123', '\\frac10']) expect(() => parseTransfer(text)).toThrow();
   });
+  it('preserves negative fraction signs across common visual groupings', () => {
+    for (const text of ['-\\frac12', '(-\\frac12)', '-(\\frac12)', '\\left(-\\frac12\\right)', '\\frac{-1}2', '\\frac{1}{-2}', '+(-\\frac12)', '-+(\\frac12)']) expect(parseTransfer(text)).toEqual({a:[1],b:[-.5]});
+    const model=parseTransfer('G(z)=-\\frac1{z-0.5}');
+    expect(model).toEqual({a:[1,-.5],b:[0,-1]});
+    expect(sequence(model,4)).toEqual([0,-1,-1.5,-1.75]);
+  });
+  it('preserves positive and double-negative fraction equivalence', () => {
+    for (const text of ['+\\frac12','+(\\frac12)','--\\frac12','-(-\\frac12)','-\\frac{-1}2','\\frac{-1}{-2}']) expect(parseTransfer(text)).toEqual({a:[1],b:[.5]});
+  });
+  it('does not move an initial sign across a polynomial sum', () => {
+    for (const [text,value] of [['-2+1',-1],['--2+1',3],['-(2+1)',-3],['-(2)+1',-1],['-(2+1)/3',-1],['(-2+1)/2',-.5]] as const) expect(parseTransfer(text)).toEqual({a:[1],b:[value]});
+  });
+  it.each(['+','-','--','+-','-()','(-\\frac12','-\\frac12)','-\\frac12+','\\frac-12','(-)(\\frac12)','-\\frac{1}{-}','-(1)/2-'])('rejects malformed signed expression %s', text => {
+    expect(()=>parseTransfer(text)).toThrow();
+  });
   it('physical ramp uses kT and period is not a solver step', () => {
     expect(sample('ramp', 2, 3, .2)).toBeCloseTo(1.2, 12);
     expect(sample('impulse', 2, 3, .2)).toBe(0);
