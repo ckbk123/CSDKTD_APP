@@ -26,7 +26,7 @@ function multiply(a: Polynomial, b: Polynomial): Polynomial {
   return tidy(p);
 }
 function polynomial(text: string): Polynomial {
-  const tokens = text.match(/(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|z|[()+*^\-]/g) ?? [];
+  const tokens = text.match(/(?:\d+(?:\.\d*)?|\.\d+)|z|[()+*^\-]/g) ?? [];
   if (!tokens.length || tokens.join('') !== text || tokens.length > 256) fail('Use real numbers, z, integer powers, sums and products (at most 256 symbols).');
   let i = 0;
   const peek = () => tokens[i];
@@ -39,7 +39,7 @@ function polynomial(text: string): Polynomial {
       if (!n || !/^\d|^\.\d/.test(n)) fail('Enter a number, z or a parenthesized polynomial.');
       const value = Number(n);
       if (!Number.isFinite(value) || Math.abs(value) > 1e6) fail('Each entered coefficient must be finite with magnitude at most 1,000,000.');
-      if (value === 0 && /[1-9]/.test(n.split(/[eE]/)[0])) fail('A nonzero coefficient is too small for double-precision arithmetic. Rescale the expression.');
+      if (value === 0 && /[1-9]/.test(n)) fail('A nonzero coefficient is too small for double-precision arithmetic. Rescale the expression.');
       p = tidy(new Map([[0, value]]));
     }
     if (peek() === '^') {
@@ -121,6 +121,7 @@ export function parseTransfer(latex: string): Model {
   let text = latex.replace(/\\(?:left|right)/g, '').replace(/\\(?:,|!|;|quad|qquad| )/g, '').replace(/\s/g, '')
     .replace(/\\(?:dfrac|tfrac)/g, '\\frac').replace(/\\(?:cdot|times)/g, '*').replace(/−/g, '-');
   text = text.replace(/^G\(z\)=/, '');
+  if (/[eE]/.test(text)) fail('Enter decimal coefficients, such as 0.01. The visual editor treats e/E as symbols, so e/E input notation is unsupported.');
   const [n, d] = splitFraction(text);
   const clean = (s: string) => s.replace(/\^\{([+-]?\d+)\}/g, '^$1').replace(/\{/g, '(').replace(/\}/g, ')');
   const numerator = polynomial(clean(n)), denominator = polynomial(clean(d));

@@ -22,6 +22,15 @@ function visit() {
   return { container, click, close: () => { controller.abort(); cleanup?.(); } };
 }
 describe('DR02 exercise state transitions', () => {
+  it('rejects the visual e/E expression instead of revealing a scientific-notation gain', () => {
+    const { container, click } = visit();
+    const field = container.querySelector<HTMLTextAreaElement>('[aria-label="Transfer function G(z)"]')!;
+    field.value = '1e-2'; field.dispatchEvent(new Event('input'));
+    click('Apply transfer function');
+    expect(container.textContent).toContain('visual editor treats e/E as symbols');
+    expect(container.querySelector('[aria-label="Transfer function in z"]')).toBeNull();
+    expect([...container.querySelectorAll('button')].find(b => b.textContent === 'Reveal arithmetic')?.disabled).toBe(true);
+  });
   it('reveals without shifting, commits once, then compares altered history', () => {
     const { container, click, close } = visit();
     const commit = [...container.querySelectorAll('button')].find(b => b.textContent === 'Commit sample & shift memory')!;

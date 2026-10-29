@@ -81,15 +81,19 @@ describe('DR02 independently checked recurrence', () => {
   });
 });
 describe('DR02 useful failures and resource bounds', () => {
-  it.each(['', 'NaN', 'Infinity', 's+1', 'sin(z)', '1/(0)', 'z^7', 'z^0.5', '(z+1)^-1', '1/(z^-6+z^6)', '1/(1e-14z+1)', '1/0.00000001', 'z+', '1//2', '1.2.3', '\\frac{}{z}', '\\frac{1}{z', 'z'.repeat(1001)])('rejects malformed/unsupported model %s', text => {
+  it.each(['', 'NaN', 'Infinity', 's+1', 'sin(z)', '1/(0)', 'z^7', 'z^0.5', '(z+1)^-1', '1/(z^-6+z^6)', '1/(0.00000000000001z+1)', '1/0.00000001', 'z+', '1//2', '1.2.3', '\\frac{}{z}', '\\frac{1}{z', 'z'.repeat(1001)])('rejects malformed/unsupported model %s', text => {
     expect(() => parseTransfer(text)).toThrow();
+  });
+  it.each(['1e-2', '1E+2', '1e2', 'e', 'E'])('rejects ambiguous visual e/E notation %s', text => {
+    expect(() => parseTransfer(text)).toThrow(/visual editor treats e\/E as symbols/);
   });
   it('explains future-input causality for improper forms in either notation', () => {
     expect(() => parseTransfer('(z^2+1)/(z+1)')).toThrow(/future input/);
     expect(() => parseTransfer('1/z^-1')).toThrow(/future input/);
   });
   it('reports coefficient underflow instead of silently replacing a nonzero plant by zero', () => {
-    for (const text of ['1e-9999/(z-0.5)', '(1e-200*1e-200)/(z-0.5)', '5e-324/1000000']) expect(() => parseTransfer(text)).toThrow(/too small/);
+    const tiny = `0.${'0'.repeat(200)}1`;
+    for (const text of [`0.${'0'.repeat(330)}1/(z-0.5)`, `(${tiny}*${tiny})/(z-0.5)`, `0.${'0'.repeat(323)}5/1000000`]) expect(() => parseTransfer(text)).toThrow(/too small/);
   });
   it('rejects invalid timing/input/history, excessive work and overflow before update', () => {
     const m = parseTransfer('1/(z-1000000)');
