@@ -1,6 +1,6 @@
-# Coordinator: current ten-worker batch
+# Coordinator: continuous work by ten workers
 
-The human appointed this chat as review and integration coordinator on **29 October 2026**. This is a finite batch: monitor the ten workers below until they stop, review their contributions, return defects to their owners, and resolve every submission honestly. Do not start replacement workers or take another module under this assignment.
+The human appointed this chat as review and integration coordinator on **29 October 2026**. The subsequent human amendment explicitly replaces the one-module worker limit: each of the ten workers repeatedly claims unfinished work, opens a separate PR per completed module, and continues onto another module within its existing allowance. Monitor them until they actually stop, review their contributions, return defects to their owners, and resolve every submission honestly. Do not start replacement workers, change budgets or take an implementation module under this coordinator assignment.
 
 Primary Git checkout:
 
@@ -12,7 +12,7 @@ Origin: https://github.com/ckbk123/CSDKTD_APP.git. Coordinator chat: `01a182f7-8
 
 ## Batch registry
 
-All ten were active when this batch was registered. This table records membership, not a live status claim. Use `agents:list`, compact chat snapshots, and each module's STATUS for current evidence. Worktree/branch/checkpoint details live in the shared claim queue; never copy its ownership tokens into this document.
+All ten were active when registered. This table records the original membership and initial assignments, not a permanent one-module limit or a live status claim. Follow the same chat IDs as they move to new modules; use `agents:list`, compact chat snapshots, PRs, and each module's STATUS for current evidence. Worktree/branch/checkpoint details live in the shared claim queue; never copy its ownership tokens into this document.
 
 | Module | Worker chat ID (host `local`) | Expected branch |
 |---|---|---|
@@ -27,11 +27,11 @@ All ten were active when this batch was registered. This table records membershi
 | DS02 | `01a18700-78e9-7a80-af1b-4436e25b10ff` | `codex/ds02-jury-01a18700` |
 | DS03 | `01a186d2-2175-7122-ad9f-c01694059c6c` | `codex/ds03-bilinear-2175` |
 
-The human authorizes the coordinator to message these workers with concrete review/rework instructions and to merge passing contributions. An idle chat is not proof that its accepted exercise is implemented. Preserve partial work and record its actual disposition.
+The human authorizes the coordinator to message these workers with concrete review/rework instructions and to merge passing contributions. Each ready module has its own PR; workers attach created PRs to their chats and record the URL in module STATUS. After PR/claim submission, the worker immediately chooses another eligible module on a new branch/worktree from latest primary main. It preserves earlier submitted work for asynchronous review. Review returns take priority over starting further implementation; checkpoint the newer task before returning to the original worktree/PR. An idle chat is not proof that its accepted exercise is implemented. Preserve partial work and record its actual disposition.
 
 ## Review and integration
 
-1. Inspect the exact submitted SHA, TASK, STATUS, full diff and actual implementation. Confirm module ownership, no hidden package/global changes, independent mathematical fixtures, changed/error inputs and declared limits. Review intermediate reasoning and plots as well as final answers. Preliminary review of an active checkpoint is useful but is not acceptance of a later submission.
+1. Inspect the module's PR, exact submitted SHA, TASK, STATUS, full diff and actual implementation. Attach every PR this coordinator works on to this chat. Confirm module ownership, no hidden package/global changes, independent mathematical fixtures, changed/error inputs and declared limits. Review intermediate reasoning and plots as well as final answers. Preliminary review of an active checkpoint is useful but is not acceptance of a later submission. Reuse an existing module PR when returning corrections; do not open duplicate PRs for rework.
 2. Return actionable defects with a reproduction and expected behavior. Preserve the owner's worktree, branch and claim; never steal a reservation or infer abandonment from its age. For a submitted/handoff reservation, use the coordinator's `reopen` transition with the existing token and concrete reason rather than releasing and racing to reclaim it. The owner must use the updated helper from current main (it can be invoked by absolute path) while continuing in its existing worktree. A returned submission remains unmerged until rechecked. Review against the final resubmitted SHA, including changes since the earlier review.
 3. Integrate one frozen contribution at a time in an isolated integration worktree based on current `main`. Preserve the worker's Git history. Run type checks, module and combined application tests, coordination-helper tests and the production build. Inspect relevant browser behavior under the shared QA reservation; do not interrupt a worker's active browser session.
 4. Record independent review findings/resolution in the module STATUS. Mark `verified` only with actual evidence. Apply the version policy below, then commit the complete integration/release. Fast-forward primary `main` only to a reviewed and passing result. Verify the remote before pushing `main` and the corresponding version tag. Do not force-push or deploy.
@@ -51,9 +51,11 @@ The coordinator alone owns `package.json`, the two root version fields in `packa
 
 ## Disposition ledger
 
-No contribution has been accepted by this coordinator at registration. Add one row per actual decision; include unresolved partials rather than calling the whole batch complete because chats became idle.
+[Independent review checkpoints](COORDINATOR_REVIEW_LOG.md) preserve preliminary findings and returned corrections; a checkpoint is not final acceptance.
 
-| Module | Reviewed source SHA | Decision / release | Evidence or remaining work |
+No contribution had been accepted at registration. Add one row per actual decision, including later modules delivered by the same workers; include unresolved partials rather than calling the work complete because chats became idle.
+
+| Module | PR / reviewed source SHA | Decision / release | Evidence or remaining work |
 |---|---|---|---|
 
-Completion means all ten chats have stopped and every contribution has a recorded accepted, declined or partial disposition, with no outstanding review/rework action silently dropped. Leave the goal active while useful review, integration or worker progress remains. Once complete, pause the heartbeat and mark the coordinator goal complete.
+This amendment supersedes the original native goal's first-batch stopping interpretation. Do not stop coordination when the first ten modules are delivered: follow the same workers' next claims and PRs. Completion means all ten chats have actually stopped and every submitted contribution has a recorded accepted, declined or honestly partial disposition, with no outstanding review/rework action silently dropped. A budget stop preserves unfinished work and is not implementation success. If candidates are temporarily all claimed or pending review, resolve review/rework and let workers resume eligible work rather than declaring the 56-tool backlog complete. Leave the coordinator goal active while useful review, integration or worker progress remains. Once the human-authorized coordination is complete, pause the heartbeat and mark the coordinator goal complete with the actual backlog state.
