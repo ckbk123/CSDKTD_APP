@@ -1,6 +1,6 @@
 # DR01 implementation status
 
-- **Stage:** in-progress (compact-fraction browser follow-up pending)
+- **Stage:** implemented
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
@@ -74,5 +74,4 @@ No accepted requirement remains open within the declared domain. No shared API/p
 
 ## Pull request and compact-fraction follow-up
 
-PR: https://github.com/ckbk123/CSDKTD_APP/pull/1 (same preserved branch, draft while this correction is checked). Under the human's expanded continuous-worker instruction, the coordinator reopened the existing claim. The parser now expands MathLive's single-token fraction arguments before tokenizing numbers: \frac12, \frac1{...}, mixed braced arguments and nested fractions are supported. A regression independently checks 1/2, a changed .5 geometric sequence and nested 1/(2/3). Module tests pass 51/51, application tests 93/93 and the production build passes. A real-editor shorthand check remains pending shared QA; earlier browser evidence above is preserved and not substituted for this new check. Next action: reserve QA, enter 1/2 with the fraction button, verify its inverse and final resubmission, then claim the next module under the continuous goal. Earlier one-module stopping language is superseded by the latest human steering.
-
+PR: https://github.com/ckbk123/CSDKTD_APP/pull/1 (same preserved branch and worktree; ready after final checks). Under the human's expanded continuous-worker instruction, the coordinator reopened the existing claim. The parser now expands MathLive's single-token fraction arguments before tokenizing numbers: \frac12, \frac1{...}, mixed braced arguments and nested fractions are supported. A regression independently checks 1/2, a changed .5 geometric sequence and nested 1/(2/3). Module tests pass 51/51, application tests 93/93 and the production build passes. Under an exclusive DR01 QA reservation, a new production-preview tab on port 13517 accepted 1/2 built using ordinary keys and the fraction button, producing .5,0,0,0. A nested fraction built as z/(z-1/2) produced 1,.5,.25,.125,.0625 with no parser error. Reset restored the baseline and hid results; console warnings/errors were empty. The tab was closed, the preview stopped and QA released. A clipboard shortcut was unavailable in the automation bridge, so no raw-copy claim is made; actual editor-to-computation behavior was verified directly. GitHub Web checks passed for checkpoint 016552e (run 40855159392). Next action: final tested-commit submission of this same PR, then the next module under the continuous goal. Earlier one-module stopping language is superseded by the latest human steering.
