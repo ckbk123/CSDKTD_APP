@@ -127,7 +127,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     const constantSection = card(results, '5. Interpret type and error constants');
     display(constantSection, 'K_p=\\lim_{s\\to0}HP\\,,\\quad K_v=\\lim_{s\\to0}sHP\\,,\\quad K_a=\\lim_{s\\to0}s^2HP', 'Definitions of static error constants');
     const ks = constants(m);
-    table(constantSection, 'Constants for the sensor loop H P', ['Constant', 'Value'], ks.map((k, i) => [['Kp', 'Kv', 'Ka'][i], k.kind === 'infinite' ? '∞' : exactText(k.value!)]));
+    table(constantSection, 'Constants for the sensor loop H P', ['Constant', 'Value', 'Units'], ks.map((k, i) => [['Kp', 'Kv', 'Ka'][i], k.kind === 'infinite' ? '∞' : exactText(k.value!), ['dimensionless', 's⁻¹', 's⁻²'][i]]));
     table(constantSection, 'Reference comparator-error table (requires strict closed-loop stability)', ['Input', 'Unit-input e_c limit'], [['Step', '1 / (1 + Kp)'], ['Ramp', '1 / Kv'], ['Parabolic t²/2', '1 / Ka']]);
     paragraph(constantSection, 'Interpret 1/∞ as 0. For nonzero A, a zero denominator means unbounded polynomial error in this stable family. Multiply by A for a nonunit excitation.');
     paragraph(constantSection, 'These constants describe reference comparator error. Use the derived channel for disturbances, sensor noise and physical tracking with H ≠ 1. The table does not override an unstable-loop verdict.', true);

@@ -1,9 +1,14 @@
 import type { Point, Polynomial } from './math';
 import { neg, ONE, toNumber, type Rational } from './rational';
 
-export function numeric(value: number): string {
+export function numeric(value: number, precision = 6): string {
   if (value === 0) return '0';
-  return Math.abs(value) < .001 || Math.abs(value) >= 10_000 ? value.toExponential(4) : String(Number(value.toPrecision(6)));
+  if (Math.abs(value) < .001 || Math.abs(value) >= 10_000) {
+    const [coefficient, exponent] = value.toExponential(precision - 1).split('e');
+    const superscript: Record<string, string> = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+    return `${Number(coefficient)} × 10${String(Number(exponent)).split('').map(char => superscript[char]).join('')}`;
+  }
+  return String(Number(value.toPrecision(precision)));
 }
 export function fraction(value: Rational): string {
   if (value.n < 0n) return '-' + fraction(neg(value));
@@ -51,7 +56,7 @@ export function errorPlot(points: readonly Point[]): HTMLElement {
   for (let i = 0; i <= 4; i++) {
     const value = minimum + (maximum - minimum) * i / 4;
     add('line', { x1: '92', x2: '612', y1: String(y(value)), y2: String(y(value)), class: 'cf-gridline' });
-    add('text', { x: '84', y: String(y(value) + 4), 'text-anchor': 'end' }, numeric(value));
+    add('text', { x: '84', y: String(y(value) + 4), 'text-anchor': 'end' }, numeric(value, 3));
     const time = end * i / 4;
     add('text', { x: String(x(time)), y: '265', 'text-anchor': 'middle' }, numeric(time));
   }
