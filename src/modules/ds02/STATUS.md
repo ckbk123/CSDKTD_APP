@@ -1,42 +1,57 @@
 # DS02 implementation status
 
-- **Stage:** in-progress
-- **Assessment:** 2026-10-29; baseline `c5d1135`; ownership `src/modules/ds02/**`.
-- **Contract:** [TASK.md](TASK.md), atlas DS02 and research audit DS1. Original course decks were not reinspected; preserve the audit distinction between current quadratic exercises and source full-table material.
+- **Stage:** in-progress (accepted quadratic exercise implemented; browser evidence pending)
+- **Assessment:** 2026-10-29; code checkpoint `95e667d`; starting baseline `c5d1135`.
+- **Ownership:** `src/modules/ds02/**`; [TASK.md](TASK.md), atlas DS02, research audit DS1.
+- **Delivery:** branch `codex/ds02-jury-01a18700`; pushed checkpoints and active claim. No merge, deployment, dependency or shared-file changes.
 
-## Requirement audit and checkpoint
+## Requirement-to-evidence audit
 
-| Accepted requirement | Evidence / remaining work |
+| Accepted requirement | Implementation and evidence |
 |---|---|
-| Editable polynomial and changed coefficients | `math.ts` parses monic real quadratics with affine K coefficients; visual workspace pending. |
-| Applicable Jury conditions and complete parameter interval | Four exact rational affine inequalities and strict intersection in `math.ts`; baseline and .1K tests in `math.test.ts`. |
-| Mirrored coefficient rows, determinant arithmetic | Exact quadratic reduction row computed; student row attempt and highlights pending. |
-| Inequality intersection and endpoint exclusions | Exact bounds including empty/all-real sets; interval visual and boundary controls pending. |
-| Root/unit-circle check and sweep | Stable quadratic roots with residual tests; plot and sampled sweep pending. |
-| Prediction/reveal and changed-data experiment | Workspace pending. |
-| Lifecycle, visual equation fonts/keyboard, responsive use | Scaffold lifecycle preserved; implementation/browser checks pending. |
+| Editable coefficients and parameter | `ui.ts` uses the shared visual editor; `math.ts` parses the polynomial and derives both affine coefficient functions. Edits invalidate old results. Baseline and worksheet variation buttons plus arbitrary supported edits. |
+| Applicable Jury conditions | All four strict affine inequalities shown with substitutions and value/pass at selected K. Derivation proves equivalence to the complete quadratic criterion, including constant-coefficient dominance. |
+| Mirrored rows and arithmetic highlights | Descending coefficients [1,b,a] and reverse [a,b,1], highlighted 1/a cells, exact reduction B(z)=(1−a²)z+b(1−a), input-dependent determinant arithmetic and a two-cell student row attempt. |
+| Parameter interval including changed coefficients | Rational inequality intersection, open finite endpoints, all-real/empty outcomes, individual sets, selected-condition explanation and interval visual. Student interval attempt accepts exact fractions and unbounded ends. |
+| Root and unit-circle check | Both roots and magnitudes, selected gain marker, exact endpoint selection, numerical z-plane plot. An explicitly sampled 81-gain sweep is separate from the algebraic proof. |
+| Baseline and required changed experiment | .2K yields 0<K<5/2; .1K yields 0<K<20/9. Every finite endpoint excluded and inspectable within gain bounds. |
+| Honest boundaries and failures | Unsupported syntax/order/nonlinear K, nonconstant/zero divisor, incomplete input, coefficient and arithmetic size limits, invalid gain/sweep and zero leading reduction entry have feedback. Last valid numeric state survives rejected candidates. |
+| Lazy mount, abort, reset/reopen | Metadata unchanged. Synchronous `workspace.ts` returns cleanup and guards browser-only UI import against abort/disposal; loading/error feedback. All exercise state created in `ui.ts` mount. Local tests cover old buttons, fresh visits and late imports. Real-browser scenarios pending. |
+| Keyboard, equation fonts and responsive display | Labeled visual editor, numeric/fraction inputs, native buttons, scoped Indigo/slate styles and responsive SVG/tables. Actual editor/keyboard/fonts/narrow-screen QA pending; mocks are not browser evidence. |
 
-## Declared domain
+## Supported mathematical domain
 
-Quadratic lesson, not a general high-order Jury table: `P(z)=z²+b(K)z+a(K)`, monic, real, with b and a affine in real dimensionless K. Numbers, decimals (≤6 places), constant fractions, parentheses, multiplication and powers 0–2 are accepted. Coefficient magnitude ≤10,000 and denominator ≤1,000,000; |K|≤10,000. Parser ≤400 characters, 160 tokens, nesting 16; rational numerator/denominator capped at 10²⁴. No functions, nonlinear K or variable divisors. No feedback/sample time is inferred from a characteristic polynomial; z and coefficients are dimensionless. Strict Schur stability concerns roots inside the unit disk, not an unprovided realization.
+This is the complete **quadratic mode**, not a full high-order Jury procedure: real monic P(z)=z²+b(K)z+a(K), with b,a affine in real K. Optional P(z)= prefix, ordinary numbers/decimals (≤6 places), constant fractions, parentheses, explicit/implicit multiplication and integer powers 0–2. No functions, variable divisors, higher degree in z or nonlinear K. Coefficient slopes/intercepts have magnitude ≤10,000 and denominator ≤1,000,000. Numeric inspection is |K|≤10,000; the algebraic interval describes all real K. Scalar controls accept exact fractions as well as decimals.
 
-Conditions are exact rational identities; roots and future sweeps are floating point illustrations. A zero reduction row is reported as a singular strict-stability boundary/failure rather than divided through. Full high-order procedure is outside this explicitly quadratic mode.
+z, K and coefficients are dimensionless. No sample period, feedback sign, physical time, state realization or initial history is inferred from the characteristic polynomial. Strict stability means both characteristic roots have |z|<1; hidden internal modes are outside the supplied data. Boundary/multiplicity text avoids a BIBO/free-response equivalence claim.
 
-## Verification so far
+Limits: expression ≤400 characters, 160 tokens, nesting ≤16, rational numerator/denominator ≤10²⁴ after reduction; exceeding arithmetic work/size gives an explicit error. Exact rational inequalities establish the interval. Roots use floating point and a cancellation-resistant real quadratic formula; the 10⁻⁹ circle proximity label is visual only and does not decide strict stability. Plot axes rescale and both roots remain listed even when markers coincide. The 81-gain sweep is an illustration, never a proof.
 
-- Independent fixtures derive baseline inequalities `(6/5)K>0`, `2-(4/5)K>0`, `1-K/5>0`, `1+K/5>0`; intersection `(0,5/2)`. At K=0 roots 0,1; at K=5/2 roots −1,−1/2. Changed .1K gives `(0,20/9)`, roots −1,−2/9 at upper endpoint.
-- Tests also cover changed intercepts, empty/all-real sets, repeated and conjugate boundary roots, Vieta and polynomial residuals, malformed/domain/size failures.
-- Initial test launcher selected system Node 20 and failed before tests; switched explicitly to bundled Node 24.22.1 and npm CLI with PATH for child processes. Dependencies installed locally with `npm ci`, 0 vulnerabilities; no dependency changes.
-- Project checks and browser checks remain pending. No implementation success or independent review is claimed at this checkpoint.
+The mirrored-row convention is A=[1,b,a], A*=[a,b,1], and zB=P−a z²P(1/z). Strict |a|<1 implies positive 1−a²; |b(1−a)|<1−a² becomes |b|<1+a. At |a|=1 the tool reports the singular reduction and does not divide through it.
 
-## Remaining work / dependencies
+## Independent mathematical fixtures and provenance
 
-Finish workspace, run tests/type/build and real-browser QA under reservation, update evidence and submit branch. No shared changes required.
+Original decks were not reinspected. TASK/atlas and `docs/research/DISCRETE_EXERCISE_AUDIT.md` distinguish the current quadratic exercise from source material for a full higher-order table. This implementation does not claim an inspected cubic transcription.
 
-## Working lesson checkpoint
+- Baseline gives (6/5)K>0, 2−(4/5)K>0, 1−K/5>0, 1+K/5>0. Intersection is (0,5/2). At K=0, P=z(z−1); at K=5/2, P=(z+1)(z+1/2). At K=1 roots are ±j/√5 and the reduced row is [24/25,0].
+- W13 .1K variation gives (0,20/9), endpoint factorization (z+1)(z+2/9). These independent factorizations check the numeric roots.
+- Proposed changed data z²+Kz+.5 gives (−3/2,3/2); z²−.5 gives all real K; z²+2 gives no stable K. Repeated ±1, a conjugate unit pair and ±1 pair exercise zero reductions and endpoint exclusion.
+- Changed numeric polynomials check Vieta and scaled complex residual <10⁻¹², including a cancellation-sensitive root pair. Parser tests reject malformed/nonfinite/oversized/unsupported inputs.
 
-`ui.ts` now implements visual equation entry, affine coefficient functions, mirrored rows and exact determinant arithmetic, row/interval attempts with feedback, reveal/hide, individual inequality sets and exact intersection, boundary gain selection, numerical roots and unit-circle plot, plus a bounded 81-gain illustration. Numeric/fraction controls provide keyboard access. Edits invalidate stale results; reset/reopen are per-visit. `workspace.ts` synchronously returns cleanup and guards its browser-only UI import against abort/disposal. No shared changes were needed.
+## Verification completed
 
-Bundled Node 24.22.1: `npm run check` passed; `npm test` passed 71 tests in 9 files (29 DS02 tests across math, lesson state and late-import cleanup); `npm run build` passed, with the existing MathLive large-chunk warning. The first full run exposed eager MathLive import during catalogue checks; the guarded local loader resolves it. Mocked UI tests establish caller logic only, not editor/browser behavior.
+Using bundled **Node 24.22.1**, npm 10.8.2 CLI, with Node 24 in PATH for child processes, in this isolated worktree:
 
-Browser QA has been requested twice after independent implementation checkpoints and is busy with other workers; no browser controls have been used. Real-browser evidence is still required before implemented/submitted status.
+- `npm ci`: 109 packages installed, 0 vulnerabilities; locked dependencies unchanged.
+- `npm run check`: passed.
+- `npm exec -- vitest run src/modules/ds02`: 30 tests passed in 3 files (24 math, 3 lesson-state, 3 loading/cleanup).
+- `npm test`: 72 tests passed in 9 files on `95e667d` source.
+- `npm run build`: passed; existing >500 kB MathLive chunk warning only. Same-origin fonts emitted, no generated files committed.
+- `git diff --check`: clean after removing trailing blank lines.
+- Worker production preview http://127.0.0.1:8892/ returns 200; primary 8787 returned 200 and was not changed.
+
+Initial failures were corrected: system Node 20 was accidentally used by the first launcher; explicit Node 24 fixed startup. The first catalogue test exposed eager browser-only MathLive import; local guarded loading resolved it. The first mathematical assertions used lexical root sorting and strict signed-zero equality; numerical assertions were corrected. All current checks above pass.
+
+## Remaining work and dependency state
+
+Real-browser editing/calculation, reset, reopen, fast navigation/late updates, keyboard/font assets and narrow viewport remain mandatory. The shared QA reservation is actively held by another worker; DS02 has not used browser controls. No shared-helper request is needed. Do not mark implemented or submitted until actual browser evidence is recorded. Independent technical review remains for the integration owner.
