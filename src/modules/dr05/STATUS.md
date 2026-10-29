@@ -4,6 +4,7 @@
 - **Assessed:** 2026-10-29; baseline `8696261267b7620bfc101ce2b5f13772bfaa529a`
 - **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
 - **Branch/worktree:** `codex/dr05-zoh-f802`, `C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP`
+- **Pull request:** [#11](https://github.com/ckbk123/CSDKTD_APP/pull/11), draft while final browser checks are pending
 - **Contract:** [TASK.md](TASK.md)
 
 ## Initial requirement audit
