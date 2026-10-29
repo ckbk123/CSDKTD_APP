@@ -99,3 +99,9 @@ Phone readability preparation: the five-row inequality diagram keeps a440pxminim
 
 DS04 review correction is resubmitted at a0d3704 in the preserved PR#13; CS03 is the sole active implementation again. Its first browser pass is deferred for the coordinator's next DD04 slot. Long exact gain headings now wrap inside the result section, whose minimum width is explicitly zero; this keeps large rational endpoints within the module on phones. Build/type check passes; real phone evidence remains pending.
 
+
+### Partial-load cleanup correction
+
+Offline lifecycle review found that an exception after mountUI created some controls could leave their listeners alive until parent navigation. The lazy wrapper now gives the view its own child AbortSignal and owned container: failure immediately aborts child resources and removes partial controls while preserving the recoverable reset message. Parent abort/disposal also clears the view, including an abort during synchronous mounting. A meaningful regression creates a partial button plus a document listener before throwing and verifies both are detached immediately while the parent remains active.
+
+Actual npm test -- src/modules/cs03 now passes63/63 (51math/parser,12workspace); npm run check and npm run build pass. The previous unchanged checkpoint42bbe93 also passed all196 project tests. Final full-suite evidence will be renewed after browser verification. Browser scheduling currently defers ordinary acquisition until DD04 → CP03 → DR01 → DP03 have released; this worker holds no QA reservation or acquisition watcher. First CS03 browser checks, PR and submission remain open.

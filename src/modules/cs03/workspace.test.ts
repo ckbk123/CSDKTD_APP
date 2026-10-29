@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
+import type { ModuleMount } from '../../core/module';
 import { mount } from './workspace';
 // Caller state/lifecycle only; the real visual editor is checked separately in Chromium.
 vi.mock('../../shared/equations/input', () => ({
@@ -87,5 +88,21 @@ describe('CS03 complete cubic workspace', () => {
       visit.controller.abort(); expect(visit.root.childElementCount).toBe(0);
     } finally { vi.doUnmock('./ui'); vi.resetModules(); }
     const recovered = await open(); expect(recovered.root.querySelector('textarea')!.value).toBe('D(s)=s(s+2)(s+5)');
+  });
+  it('aborts resources and removes partial controls immediately when view mounting throws', async () => {
+    let childSignal: AbortSignal | undefined, calls = 0;
+    const partial = document.createElement('button'); partial.textContent = 'Partial control';
+    vi.resetModules(); vi.doMock('./ui', () => ({ mountUI: (({ container, signal }) => {
+      childSignal = signal; container.append(partial);
+      partial.addEventListener('click', () => calls++, { signal });
+      document.addEventListener('cs03-partial', () => calls++, { signal });
+      throw new Error('Simulated failure after creating controls');
+    }) satisfies ModuleMount }));
+    try {
+      const visit = await open();
+      expect(visit.controller.signal.aborted).toBe(false); expect(childSignal?.aborted).toBe(true);
+      expect(visit.root.textContent).toBe('The exercise could not load. Reset to try again.');
+      expect(partial.isConnected).toBe(false); partial.click(); document.dispatchEvent(new Event('cs03-partial')); expect(calls).toBe(0);
+    } finally { vi.doUnmock('./ui'); vi.resetModules(); }
   });
 });
