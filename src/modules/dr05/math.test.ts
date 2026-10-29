@@ -167,6 +167,15 @@ describe('DR05 visual expression grammar', () => {
     expect(() => parseModel(String.raw`\text{s+1}/(s+2)`)).toThrow();
   });
   it.each(['', 'G(z)=1/(z+1)', '\\sin(s)', 'NaN', '(1e-2)/(s+1)', '1e3/(s+1)', '1/(s+)', '1/(s-s)', '1/(s^3+1)', 's^2/(s+1)', '1/(0.000000001s+1)', '1000001/(s+1)', '1/(s+1))'])('rejects malformed/unsupported %s', s => expect(() => parseModel(s)).toThrow());
+  it.each(['2\\frac12/(s+1)', '-2\\frac12/(s+1)', '(2\\frac12)/(s+1)', '{2\\frac12}/(s+1)', '\\frac{2\\frac12}{s+1}', '{2}\\frac12/(s+1)', '\\mathrm{2}\\frac12/(s+1)', '2{\\frac12}/(s+1)'])('rejects displayed mixed/invisible adjacency %s', s => {
+    expect(() => parseModel(s)).toThrow(/explicit \+.*×/);
+  });
+  it('preserves explicit addition/products and ordinary nested compact arguments', () => {
+    expect(parseModel('\\frac{2+\\frac12}{s+1}').b).toEqual([0, 2.5]);
+    expect(parseModel('\\frac{2\\times\\frac12}{s+1}').b).toEqual([0, 1]);
+    expect(parseModel('\\frac1\\frac12/(s+1)').b).toEqual([0, 2]);
+    expect(parseModel('2(\\frac12)/(s+1)').b).toEqual([0, 1]);
+  });
   it('bounds input length and rejects nonzero underflow before constructing a plant', () => {
     expect(() => parseModel('s'.repeat(513))).toThrow(/512/);
     const tiny = '0.' + '0'.repeat(400) + '1';

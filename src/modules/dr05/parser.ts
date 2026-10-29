@@ -59,12 +59,19 @@ function plain(latex: string): string {
     depth--; return value;
   }
   function sequence(stopAtBrace: boolean): string {
-    let value = '';
+    let value = '', lastNumeric = false;
+    const mixed = (): never => fail('Mixed-number or invisible-group adjacency is unsupported. Use an explicit + for addition or × for multiplication before the fraction/group.');
     while (pos < s.length && !(stopAtBrace && s[pos] === '}')) {
-      if (fractionCommand()) value += fraction();
-      else if (s[pos] === '{') value += `(${group()})`;
+      if (fractionCommand()) {
+        if (lastNumeric) mixed();
+        value += fraction(); lastNumeric = false;
+      } else if (s[pos] === '{') {
+        if (lastNumeric) mixed();
+        const content = group(); value += '(' + content + ')';
+        lastNumeric = /^\(*[+-]?(?:\d+(?:\.\d*)?|\.\d+)\)*$/.test(content);
+      }
       else if (s[pos] === '}') fail('Remove the unmatched closing brace.');
-      else value += s[pos++];
+      else { const token = s[pos++]; value += token; lastNumeric = /[0-9.]/.test(token); }
     }
     return value;
   }

@@ -61,6 +61,14 @@ describe('DR05 teaching flow with the equation API stub', () => {
     expect(outputValues(root)[0]).toBe('2'); expect(outputValues(root)[1]).toBe('1.904837');
     change(control(root, 'Inspect sample k'), '999'); expect(root.textContent).toContain('Choose k from 0');
   });
+  it('guards native underflow in optional prediction and sample inspection', () => {
+    const root = open();
+    change(control(root, 'Your prediction for y[1] (optional)'), '1e-400'); click(root, 'Reveal sampled model');
+    expect(root.textContent).toContain('too small to represent');
+    change(control(root, 'Your prediction for y[1] (optional)'), ''); click(root, 'Reveal sampled model');
+    change(control(root, 'Inspect sample k'), '1e-400'); expect(root.textContent).toContain('Inspection point:');
+    change(control(root, 'Inspect sample k'), '0e-400'); expect(root.textContent).toContain('Sample k = 0');
+  });
   it('reopen restores the baseline and cleanup removes owned controls', () => {
     const root = open(); click(root, 'Delayed 5/s²'); controller.abort(); if (typeof cleanup === 'function') cleanup(); expect(root.children.length).toBe(0);
     const next = open(); click(next, 'Reveal sampled model'); expect(control(next, 'Input delay m (whole samples)').value).toBe('0'); expect(outputValues(next)[1]).toBe('0.09516258');
@@ -71,6 +79,7 @@ describe('DR05 teaching flow with the equation API stub', () => {
     change(control(root, 'Number of sample instants'), '4'); change(control(root, 'Drawing subdivisions per interval'), '16');
     change(control(root, 'Amplitude A (ramp: units/s)'), '1e-70'); click(root, 'Reveal sampled model');
     expect(root.textContent).toContain('Scalar transfer and recurrence unavailable');
+    expect(root.querySelector('.zoh-notice[role="status"]')!.textContent).toContain('Scalar transfer and recurrence are unavailable');
     expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')).toBeNull();
     expect(root.querySelector('[aria-label="Zero-state scalar recurrence"]')).toBeNull();
     expect(root.querySelector('[aria-label="Sampled state recurrence"]')).not.toBeNull();

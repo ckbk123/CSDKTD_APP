@@ -30,7 +30,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     return value;
   };
   const setup = section('1. Define the continuous plant and hold');
-  setup.append(element('p', 'Enter the rational plant alone; use the separate integer-delay control for transport delay. Use decimal coefficients, s, fractions, products and integer powers 0–2. Real proper models of order 1–2 are supported. Inputs and outputs use normalized units, and time is in seconds.'));
+  setup.append(element('p', 'Enter the rational plant alone; use the separate integer-delay control for transport delay. Use decimal coefficients, s, fractions, products and integer powers 0–2. Write + for addition or × for multiplication before a fraction; mixed-number adjacency is unsupported. Real proper models of order 1–2 are supported. Inputs and outputs use normalized units, and time is in seconds.'));
   const actions = element('div', '', 'zoh-actions'); setup.append(actions);
   const resultHost = element('div'); resultHost.hidden = true;
   const notice = element('p', 'Predict the first sample, then reveal the sampled model.', 'zoh-notice'); notice.setAttribute('role', 'status');
@@ -77,7 +77,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
   on(inspect, 'input', showSample);
   function showSample(): void {
     if (!result || !source || !experiment || signal.aborted) return;
-    const k = inspect.valueAsNumber;
+    let k: number;
+    try { k = read(inspect); }
+    catch (error) { arithmetic.replaceChildren(element('p', 'Inspection point: ' + (error instanceof Error ? error.message : 'Enter a valid sample index.'))); return; }
     if (!Number.isInteger(k) || k < 0 || k >= result.samples.length) { arithmetic.replaceChildren(element('p', `Choose k from 0 to ${result.samples.length - 1}.`)); return; }
     const row = result.samples[k];
     outputPlot.replaceChildren(trajectoryPlot(result, 'output', k)); inputPlot.replaceChildren(trajectoryPlot(result, 'input', k));
@@ -100,7 +102,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
       try { tf = transfer(source, d, experiment.T); }
       catch (error) { scalarWarning = error instanceof Error ? error.message : 'Scalar transfer and recurrence unavailable for this numerical conditioning. The sampled state model remains available.'; }
       const augmented = source.A.map((row, i) => [...row, source!.B[i]]).concat([Array(n + 1).fill(0) as number[]]);
-      const actual = result.samples[1].y, guess = prediction.valueAsNumber;
+      const actual = result.samples[1].y, guess = prediction.value ? read(prediction) : NaN;
       feedback.textContent = `${prediction.value && Number.isFinite(guess) ? (Math.abs(guess - actual) <= 1e-5 * Math.max(1, Math.abs(actual)) ? 'Prediction matched within tolerance. ' : 'Compare your prediction with the state update. ') : ''}First sample y[1] = ${fmt(actual)}. ${result.maxError === undefined ? '' : `Maximum sampled output difference on this horizon: ${fmt(result.maxError)}.`} ${result.warning}`;
       equations.replaceChildren(
         createEquationDisplay(`\\dot{x}=Ax+Bu_h,\\quad y=Cx+Du_h`, 'Continuous source equations'),
@@ -128,7 +130,9 @@ export const mount: ModuleMount = ({ container, signal }) => {
       result.samples.forEach((r, k) => { const row = element('tr'); [String(k), fmt(r.t), fmt(r.held), fmt(r.y), result!.comparison ? fmt(result!.comparison[k].y) : 'Unavailable', r.x.map(fmt).join(', ')].forEach(text => row.append(element('td', text))); body.append(row); });
       table.append(head, body); tableHost.replaceChildren(table);
       inspect.max = String(result.samples.length - 1); inspect.value = String(Math.min(Number(inspect.value) || 0, result.samples.length - 1));
-      resultHost.hidden = false; notice.textContent = 'Exact ZOH model and selected comparison computed. Change T, the hold data or drawing density for another experiment.'; showSample();
+      resultHost.hidden = false;
+      notice.textContent = 'Exact ZOH state model computed. ' + (result.comparison ? 'Selected approximation computed. ' : 'Selected approximation unavailable; see feedback. ') + (tf ? 'Change the inputs to run another experiment.' : 'Scalar transfer and recurrence are unavailable for this conditioning; use the state model.');
+      showSample();
     } catch (error) {
       result = undefined; source = undefined; experiment = undefined;
       notice.textContent = error instanceof Error ? error.message : 'Check the plant and experiment values.';
