@@ -1,0 +1,42 @@
+[data-module="DD04"] .pid-tool { display: grid; grid-template-columns: minmax(0,1fr); gap: 16px; font-size: 14px; line-height: 1.6; min-width: 0; }
+[data-module="DD04"] .pid-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+[data-module="DD04"] .pid-card h3 { font-size: 17px; margin: 0 0 10px; font-weight: 600; }
+[data-module="DD04"] .pid-card h4 { font-size: 14px; margin: 8px 0; }
+[data-module="DD04"] .pid-card p { margin: 10px 0; overflow-wrap: anywhere; }
+[data-module="DD04"] .pid-controls { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 13px; margin: 14px 0; }
+[data-module="DD04"] label { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+[data-module="DD04"] input, [data-module="DD04"] select { min-width: 0; width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--text); background: var(--background); font: inherit; }
+[data-module="DD04"] input:disabled { opacity: .55; }
+[data-module="DD04"] .pid-tool button { padding: 9px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); font: inherit; }
+[data-module="DD04"] .pid-tool button:enabled:hover { background: var(--tint); border-color: var(--accent); }
+[data-module="DD04"] .pid-tool button:disabled { cursor: default; opacity: .5; }
+[data-module="DD04"] .pid-tool .pid-primary { background: var(--tint); color: var(--accent-strong); border-color: var(--accent); }
+[data-module="DD04"] .pid-presets, [data-module="DD04"] .pid-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 13px 0; }
+[data-module="DD04"] .pid-help, [data-module="DD04"] figcaption { color: var(--muted); font-size: 12px; }
+[data-module="DD04"] .pid-message { background: var(--tint); padding: 10px; border-left: 3px solid var(--accent); }
+[data-module="DD04"] .pid-lesson:not([hidden]) { display: grid; grid-template-columns: minmax(0,1fr); gap: 16px; min-width: 0; }
+[data-module="DD04"] .pid-memory { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: 14px 0; }
+[data-module="DD04"] .pid-memory > div { display: flex; flex-direction: column; padding: 10px; border: 1px solid var(--line); border-radius: 6px; overflow-wrap: anywhere; }
+[data-module="DD04"] .pid-memory.pid-read > div { border-color: var(--accent); background: var(--tint); }
+[data-module="DD04"] .pid-memory span { color: var(--muted); font-size: 12px; }
+[data-module="DD04"] .pid-prediction { max-width: 380px; }
+[data-module="DD04"] .pid-pending { min-width: 0; padding: 12px; border-left: 3px solid var(--accent); background: var(--tint); }
+[data-module="DD04"] .pid-plots { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+[data-module="DD04"] figure { margin: 0; min-width: 0; }
+[data-module="DD04"] .pid-plot-scroll { overflow-x: auto; }
+[data-module="DD04"] .pid-plot-scroll:focus-visible, [data-module="DD04"] .pid-table:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[data-module="DD04"] svg { width: 100%; min-width: 400px; height: auto; display: block; }
+[data-module="DD04"] svg text { fill: var(--muted); font: 12px system-ui,sans-serif; }
+[data-module="DD04"] .pid-axis { stroke: var(--line); fill: none; stroke-width: 1.5; }
+[data-module="DD04"] .pid-stem { stroke: var(--accent); stroke-width: 1.5; }
+[data-module="DD04"] .pid-sample { fill: var(--accent); }
+[data-module="DD04"] .pid-table { overflow-x: auto; margin-top: 14px; }
+[data-module="DD04"] table { width: 100%; border-collapse: collapse; white-space: nowrap; font-variant-numeric: tabular-nums; }
+[data-module="DD04"] th, [data-module="DD04"] td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--line); }
+[data-module="DD04"] summary { cursor: pointer; font-weight: 600; }
+@media (max-width: 650px) {
+  [data-module="DD04"] .pid-controls, [data-module="DD04"] .pid-plots { grid-template-columns: minmax(0,1fr); }
+  [data-module="DD04"] .pid-memory { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  [data-module="DD04"] .pid-card { padding: 12px; }
+  [data-module="DD04"] .pid-tool button { min-height: 42px; }
+}

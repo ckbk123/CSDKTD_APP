@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.8 — 29 October 2026
+
+- DD04: derive a digital PID from integration/differentiation rules, compare positional and incremental arithmetic, predict outputs, and explicitly commit each memory update. Includes separate initial/filter memory, changed sampling periods and causal-rule feedback.
+- Accept [PR #9](https://github.com/ckbk123/CSDKTD_APP/pull/9), source `6e1434aaf1b6c292bb6df409ac04fa2da6403c41`, with [independent mathematical and browser evidence](src/modules/dd04/STATUS.md). The coordinator applied the shared native-number reader, preserving optional prediction and disabled-field semantics, with 16 added UI regressions.
+- All 641 application tests, 32 coordination tests, type checking and production build pass. Production checks cover baseline/changed-period outputs, filtered derivative memory, actual fraction entry, underflow recovery, explicit commit timing, narrow keyboard scrolling and fresh visits. This tool executes a supplied error sequence; it does not simulate a plant or certify closed-loop performance.
+
 ## 0.3.7 — 29 October 2026
 
 - DP02: map a continuous pole/conjugate pair into the z plane, predict period-dependent radius changes, inspect modal samples and choose inverse-log branches to understand frequency aliasing.
