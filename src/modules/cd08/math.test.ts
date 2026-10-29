@@ -113,6 +113,9 @@ describe('bounded visual semantics', () => {
     close(parseTarget(String.raw`s^2+2\times\frac12 s+1`), [1, 1]);
     close(parseTarget(String.raw`s^2+2+\frac12`), [0, 2.5]);
   });
+  it.each(['s^02+4s+5', 's^2.0+4s+5', 's^22+4s+5', 's^{2}2+4s+5', 's^+2+4s+5', 's^-2+4s+5'])('rejects ambiguous or unsupported exponent %s', source => {
+    expect(() => parseTarget(source)).toThrow();
+  });
   it.each(['1e-2', '1E-2', '2\\frac12', '-2\\frac12', '1{+2}', '{1+2}', 'NaN', 'Infinity', '\\frac10', '\\frac{1+1}2', '', '1/2', '0.0000000000001'])('rejects unsupported scalar %s', source => {
     expect(() => parseScalar(source)).toThrow();
   });

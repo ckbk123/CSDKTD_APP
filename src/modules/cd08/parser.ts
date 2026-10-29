@@ -69,7 +69,12 @@ export function parseTarget(source: string): [number, number] {
     const numeric = /^(?:\d+(?:\.\d*)?|\.\d+)/.exec(text.slice(i));
     if (numeric) { if (typeof tokens.at(-1) === 'number') throw new Error('Separate numeric factors with ×.'); tokens.push(parseScalar(numeric[0])); i += numeric[0].length; continue; }
     if (text.startsWith('^{2}', i)) { tokens.push('^', 2); i += 4; continue; }
-    if ('s+-*/^()'.includes(text[i])) { tokens.push(text[i++]); continue; }
+    if (text[i] === '^') {
+      // TeX takes one unbraced token: ^02 is not ^{2}, nor is ^2.0.
+      if (text[i + 1] !== '2' || /[\d.]/.test(text[i + 2] ?? '')) throw new Error('Use the square button or an unambiguous square exponent.');
+      tokens.push('^', 2); i += 2; continue;
+    }
+    if ('s+-*/()'.includes(text[i])) { tokens.push(text[i++]); continue; }
     throw new Error('Use s, real numbers, numeric fractions, visible parentheses, +, −, × and squares. Hidden braces, functions and e/E symbols are unsupported.');
   }
   let pos = 0, nesting = 0;
