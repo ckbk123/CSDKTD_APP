@@ -17,6 +17,7 @@
 [data-module="CR02"] .cr02 table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
 [data-module="CR02"] .cr02 td, [data-module="CR02"] .cr02 th { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 [data-module="CR02"] .cr02 svg { display: block; width: 100%; height: auto; color: var(--accent); }
+[data-module="CR02"] .cr02 [data-ui="schematic"] svg, [data-module="CR02"] .cr02 [data-ui="plot"] svg { min-width: 560px; }
 [data-module="CR02"] .cr02 svg text { fill: var(--text); font-size: 14px; }
 [data-module="CR02"] .cr02 [hidden] { display: none; }
 @media(max-width:480px) { [data-module="CR02"] .cr02 section { padding: 12px; } }

@@ -30,7 +30,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
   root.innerHTML = `<p class="notice" role="status" aria-live="polite" data-ui="status"></p>
     <section><h3>1. Start with a force balance</h3>
       <p>A rigid mass moves to the right. A linear spring and a viscous damper oppose displacement and velocity. One command u creates the applied force; an optional derivative term still comes from that same command.</p>
-      <div data-ui="schematic"></div><div data-ui="balance"></div><div data-ui="equation"></div>
+      <div class="scroll" tabindex="0" aria-label="Scrollable mass, spring and damper schematic" data-ui="schematic"></div><div data-ui="balance"></div><div data-ui="equation"></div>
       <div class="actions" data-ui="model-actions"></div>
       <p class="muted">Enter sums of numeric multiples of y″, y′, y on the left and u, u′ on the right. Primes or dots and simple numeric fractions are supported. Use decimal coefficients; e/E are displayed as symbols and are rejected. There are no unknown parameters or nonlinear terms.</p>
       <p class="muted">The coefficient cells describe the applied model. Cell edits write a new equation draft; Apply synchronizes the physical and equation views.</p>
@@ -50,7 +50,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     </section>
     <section data-ui="answers" hidden><h3>4. Separate the system from its response</h3>
       <div data-ui="derivation"></div><div data-ui="derivative"></div><div data-ui="warnings"></div>
-      <div data-ui="plot"></div><div class="controls" data-ui="cursor-control"></div><div data-ui="cursor-result"></div>
+      <div class="scroll" tabindex="0" aria-label="Scrollable computed response plot" data-ui="plot"></div><div class="controls" data-ui="cursor-control"></div><div data-ui="cursor-result"></div>
       <details><summary>Inspect the computed sample table</summary><div class="scroll" tabindex="0" aria-label="Computed response table" data-ui="sample-table"></div></details>
       <p class="muted">The curves join numerically computed points. They do not certify peaks or settling between points. Response values use floating-point arithmetic and are displayed to 7 significant digits; polynomial/Laplace identities are distinguished from these approximations. Running displacement/velocity magnitudes are bounded by 10¹².</p>
     </section>`;
