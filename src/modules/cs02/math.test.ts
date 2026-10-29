@@ -51,6 +51,19 @@ describe('CS02 exact Routh and Hurwitz calculation', () => {
     const quartet = analyzeCoefficients(p(1, 0, 0, 0, 1));
     expect([quartet.right, quartet.axis, quartet.left]).toEqual([2, 0, 2]); expect(quartet.auxiliaries[0].classification?.complexQuartets).toBe(1);
   });
+  it('separates exact axis factors when an epsilon perturbation would migrate them', () => {
+    // (s²+1)(s⁴-s³-1). The quartic's independent column +,-,+,-,- has3changes.
+    const source = p(-1, 0, -1, -1, 1, -1, 1), result = analyzeCoefficients(source);
+    expect(result.firstColumnChanges).toBe(5); // Perturbed full table is not the original count.
+    expect([result.right, result.axis, result.left]).toEqual([3, 2, 1]);
+    expect(result.separation?.factor.map(textQ)).toEqual(['1', '0', '1']);
+    expect(result.separation?.quotient.map(textQ)).toEqual(['-1', '0', '0', '-1', '1']);
+    expect(result.separation?.quotientSigns).toEqual([1, -1, 1, -1, -1]);
+    for (const frequencySquared of [1, 4, 9]) {
+      const changed = analyzeCoefficients(mulP(p(frequencySquared, 0, 1), p(-1, 0, 0, -1, 1)));
+      expect([changed.right, changed.axis, changed.left]).toEqual([3, 2, 1]);
+    }
+  });
   it('agrees with independently factored combinations through degree six', () => {
     const factors = [
       { a: p(2, 1), right: 0, axis: 0, left: 1 }, { a: p(-1, 1), right: 1, axis: 0, left: 0 },
