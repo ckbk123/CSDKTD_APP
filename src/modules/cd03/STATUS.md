@@ -40,3 +40,11 @@ Primary baseline `9d923d2`; worker chat `01a18701-3f40-7572-9a49-7dc0103c9161`, 
 | Verification/lifecycle/delivery | Independent mathematical/changed/error fixtures, visual parser, shared native reader, child-signal lazy view, project and real-browser checks, one PR and exact clean submission all remain pending |
 
 Read primary AGENTS/START_HERE/AUTONOMOUS_WORKERS/COORDINATION, contribution/development/design/equation guides, CD03 TASK/current scaffold, atlas and the continuous exercise audit. Source evidence supports baseline G=1/[s(s+2)], C=4, unit-ramp error.5 and the purpose of lag compensation. Original external slide/motor assets were not inspected; selected lag examples will be proposed fixtures with independent derivations. No shared/package change is currently needed. Stage stays in-progress; no computation or verification is yet claimed complete.
+
+## Core checkpoint and stop-after-current amendment
+
+The latest human request in coordinator chat was read directly: finish ongoing work, push and stop because of usage concerns. CD03 had already been claimed and started. No further module will be claimed. Earlier submissions/review holds will be preserved for later contributors rather than keeping an endless review loop active.
+
+`model.ts` now parses the bounded plant family, derives the complete characteristic, computes/checks every quadratic/cubic root, classifies using the full Routh condition, and derives Kv, unit-ramp limits and angle/magnitude perturbation at the reference proportional pole. `response.ts` evaluates complete simple-mode responses with initial-condition/rational reconstruction checks, a future envelope and bounded halving/interpolation measurements. Private exact visual parser/algebra patterns were copied locally from this worker's CR05 implementation; no sibling imports/shared mutations. Root and time computations use module-local browser numbers and explicit conditioning feedback.
+
+Initial9 mathematical tests and TypeScript pass: baseline closed form, independent exact cubic factorization/modal expansion, changed gain/lag, full Routh boundary and instability, notation/family rejection, short in-band horizon, retained modes and response limits. This is a core checkpoint, not an implemented teaching tool: UI/plots, more independent fixtures, project/browser checks and delivery remain unfinished.
