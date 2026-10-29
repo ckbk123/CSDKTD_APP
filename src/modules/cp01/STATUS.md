@@ -1,7 +1,7 @@
 # CP01 implementation status
 
-- **Stage:** in-progress
-- **Current checkpoint:** priority numerical-conditioning correction after independent review; revised modal free response passes targeted tests, final browser/project evidence and same-PR resubmission remain.
+- **Stage:** implemented
+- **Current checkpoint:** numerical-conditioning correction independently regressed and checked in the actual browser; exact same-PR resubmission prepared for coordinator review.
 - **Last assessed:** 2026-10-29
 - **Base:** primary-main `f99cfebb65495d3f4385a61dd1d25800e341ea68` (v0.3.5), retained without merge/rebase.
 - **Worker:** chat `01a186d1-f1f0-7393-88e7-377fbac7299a`, local.
@@ -29,7 +29,7 @@ Read current primary AGENTS, START_HERE, AUTONOMOUS_WORKERS, COORDINATION, PROJE
 | Integrator/direct/differentiation caveats | Exact retained-mode category; stable asymptotic polynomial and endpoint horizon heuristic; no general settlement claim for integrators/oscillators/unstable modes; improper transfer rejected | Independent improper-form tests; actual integrator/unstable/horizon cases |
 | Bounded mathematical errors | Exact grammar/coefficient checks, native nonzero-underflow rejection, finite state-transition/trace caps, truncation/sample-budget/pulse-horizon feedback | Actual invalid notation/native drafts remove stale results |
 | Visit/lifecycle isolation | Synchronous owned loading node, child abort signal, late-load guard, partial-failure resource abort, explicit editor cleanup; old result listeners aborted when inputs change/recompute | Actual reset/reopen/rapid routes pass; deferred partial-failure resource regression |
-| Independent project/browser evidence | 187 module tests; all 531 local application tests; type/build pass | Private chat-isolated production IAB QA; single attached PR; exact submission via current helper |
+| Independent project/browser evidence | 198 module tests; all 542 local application tests; type/build pass | Private chat-isolated production IAB QA, including returned modal-conditioning fixtures; single attached PR; exact submission via current helper |
 
 ## Supported model and timing
 
@@ -46,7 +46,7 @@ Bounds: expression 400 characters, 160 primaries, nesting 12; polynomial degree�
 
 Normalized |a0|≤100, |a1|≤20 (quadratic linear coefficient), strict-remainder |b_i|≤50, parallel/effective |d|≤10; normalized rational coefficient denominators≤10^9. Phase ICs and amplitude/area −10–10. Pulse width .001–10 s; horizon .1–60 s. Native controls use shared `readNumericInput`, including intentional zero versus nonzero underflow.
 
-The numerical engine has at most four augmented states, 24 scalings / 32 Taylor terms, 600–20,000 base intervals plus pulse/event points (at most 20,024), caches capped at 128 transitions each and a 10^10 state/component cap. It reports truncation, a reached sampling budget and pulse end outside the horizon. These are floating-point traces, not exact curves or stability proofs. Analytic identities remain exact rational/radical terms; no rounded root decides an identity. Near/repeated roots use a regular real basis. Pulse propagation advances the postpulse state rather than subtracting large nearly equal step states.
+Free states/output use prepared analytic modal coefficients at absolute time, rather than repeated floating transition steps. Exact rational coefficients are resolved before exponential amplification; small genuine modes are retained, with explicit rescaling feedback if an exact nonzero modal coefficient cannot be represented. Near-coincident modes use a regular real basis. The forced numerical engine has at most four augmented states, 24 scalings / 32 Taylor terms, 600–20,000 base intervals plus pulse/event points (at most 20,024), a cache capped at 128 transitions and a 10^10 state/component cap. It reports truncation, a reached sampling budget and pulse end outside the horizon. These are floating-point traces, not exact curves or stability proofs. Analytic identities remain exact rational/radical terms; no rounded root decides an identity. Pulse propagation advances the postpulse state rather than subtracting large nearly equal step states.
 
 For a strictly stable retained denominator, the computed nondecaying polynomial is shown; a nonzero slope means no finite final value. Endpoint agreement uses a declared 1% normalized-scale horizon heuristic and is explicitly not a settling-time certificate. Other retained-mode categories receive no blanket settling claim, since input/output/initial-state cancellations can remove a particular mode.
 
@@ -60,13 +60,13 @@ Independent closed-form oracles include:
 - Exact IC coordinate/output equivalence, initial Laplace numerator, direct ordinary jumps and output delta area, finite-pulse endpoint continuity/jump and convergence away from 0, plus diagonal/rotation/nilpotent matrix-exponential oracles.
 - Pinned MathLive SSR MathML independently confirms mixed-number invisible-plus semantics and one-token exponent scope. This is parser semantic evidence, **not** real-browser editor certification.
 
-Module tests (187): 86 parser, 21 model, 22 response/transition, 5 rational, 31 analytic, 18 workspace-flow, 4 deferred-lifecycle. Workspace-flow uses explicit mock equation fields only for caller draft/ownership behavior; no actual MathLive functionality is inferred. Partial mount failure test registers a child-signal window resource then throws while parent remains active, and confirms immediate abort/recovery. Result replacement and visit cleanup tests prevent old listeners updating new results.
+Module tests (198): 86 parser, 21 model, 22 response/transition, 5 rational, 31 analytic, 20 workspace-flow, 4 deferred-lifecycle and 9 conditioning regressions. Workspace-flow uses explicit mock equation fields only for caller draft/ownership behavior; no actual MathLive functionality is inferred. Partial mount failure test registers a child-signal window resource then throws while parent remains active, and confirms immediate abort/recovery. Result replacement and visit cleanup tests prevent old listeners updating new results.
 
 Checks under bundled Node v24.22.1 at this workspace checkpoint:
 
-- `node node_modules/vitest/vitest.mjs run src/modules/cp01`: **187 tests / 7 files pass**.
+- `node node_modules/vitest/vitest.mjs run src/modules/cp01`: **198 tests / 8 files pass**.
 - `npm run check`: passes.
-- `npm test`: **531 tests / 24 files pass**.
+- `npm test`: **542 tests / 25 files pass**.
 - `npm run build`: passes, 152 modules transformed; existing MathLive large-chunk advisory only.
 - `git diff --check`: passes.
 
@@ -101,7 +101,7 @@ Full analytic/UI checkpoint `a5df141` passed 186/530 tests before the final sign
 
 The full accepted bounded exercise now has mathematical, project and actual-browser evidence. Independent coordinator review/integration remains; no release/version/deployment is claimed. Preserve this worktree, branch and exact submitted revision for corrections on the same PR. Prior contributions remain recoverable. No shared-helper request or unowned change remains. Global application checks reflect this isolated v0.3.5-based branch; the coordinator owns current-main combined integration checks.
 
-## Returned numerical-conditioning defect — correction in progress
+## Returned numerical-conditioning defect — correction verified
 
 Independent review of frozen `87034c7` reproduced free-response failure in supported models. For G=1/[(s−2)(s+3)], x(0−)=[1,−3], the actual w=y=e^(−3t) became −128 at cursor20, trace20 ended near−171.434 and trace30 falsely truncated. For G=1/[(s−.1)(s−10)], x=[1,.1], the actual e^(.1t) became16384 at cursor5 and the trace also invented a fast mode. The displayed exact modal formulas were correct, but both transition multiplication/iteration and the previous cosh/sinh numerical evaluator suffered cancellation after exponential amplification. The source187-test suite did not cover these conditioned eigenvector fixtures; the earlier implemented label is superseded until correction verification finishes.
 
@@ -115,4 +115,10 @@ Implemented correction:
 
 New independent checks: all six originally added direct/analytic/trace regressions failed before repair. Nine conditioning tests now cover both reported examples at20/30 and5, every retained trace sample, genuine fast components down to2×10^-21, near-coincident rational roots, an irrational near-eigenvector and explicit nonrepresentable-coefficient failure. The irrational oracle uses Python Decimal at85digits: G=1/(s²−2), x=[1,−1.414213562373095], y(30)=45.9667975612399498165191…; this small genuine unstable component is retained. Two workspace-flow regressions check the repaired fixtures and typeset scientific output.
 
-Current local module check: **198 tests / 8 files pass**, and `npm run check` passes. Full final project checks and actual private-browser correction checks are next; this is not yet a corrected submission. Historical browser evidence above remains valid for those earlier flows, and must not be presented as verification of this new numerical path.
+Final correction checks: **198 tests / 8 files pass**, **542 full tests / 25 files pass**, `npm run check` and `npm run build` pass (same existing MathLive chunk advisory); `git diff --check` passes. No unchanged large random grid was repeated; the independent review's earlier moderate-time/parser checks remain its separate evidence.
+
+Actual production correction QA used only newly created IAB tab5 and this worktree preview8799, after again confirming this chat's `codexSessionId` and an empty inventory. At1280×720, both reported models now compute the correct cursor/state/trace endpoint without false truncation: decaying fixture20→8.756511×10^-27 and30→8.194013×10^-40; slow mode5→1.648721. Genuine perturbed initial derivatives −2.999999999999 at20, −2.99999999999999999999 at30 and .10000000000001 at5 give47077.05,228401.5 and5237078 respectively; all retain the requested trace horizon. The irrational near-eigenvector gives45.9668 at30, agreeing with the85-digit independent oracle. An exact nonzero derived coefficient below numerical range gives explicit rescaling feedback with no stale plots, rather than being trimmed to zero.
+
+New cursor scientific output typesets correctly. At390×844 the page scroll width equals client width375, fonts report loaded and there are zero MathLive display-error nodes; long expressions/tables use their existing local horizontal scrolling. Reset returns baseline y(1)=.1997882 with two fresh fields; leave/reopen has no old result/scaffold. Console warning/error log is empty. Viewport reset and verified1280×720, owned tab closed/inventory empty and own preview stopped. No global QA/native resource held and no primary8787 access.
+
+Correction screenshots outside Git: `C:/Users/baokh/.codex/visualizations/2026/10/29/01a186d1-f1f0-7393-88e7-377fbac7299a/cp01-modal-repair-decaying.png` and `cp01-modal-repair-mobile.png` in that directory. Core correction checkpoint `6510d51c56276ead2f34e993c0d69d0615ff5fbb` preserves implementation and tests before this final evidence record. The same PR24/branch will carry the exact clean final corrected source; independent coordinator acceptance remains pending.
