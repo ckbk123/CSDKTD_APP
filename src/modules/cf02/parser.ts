@@ -46,7 +46,7 @@ export function parseLinearExact(latex: string): ExactLinear {
   function primary(): ExactLinear {
     if (++operations > 160) throw new Error('Use a shorter expression (at most 160 operations).');
     if (source[position] === '(') { position++; return group(')'); }
-    if (source[position] === '{') { position++; return group('}'); }
+    if (source[position] === '{') throw new Error('Hidden braces are not visible parentheses. Use the parentheses button to show grouping explicitly.');
     if (source[position] === 's') { position++; return [ZERO, ONE]; }
     if (source[position] === '\\') {
       const command = /^\\([a-zA-Z]+)/.exec(source.slice(position));
@@ -57,7 +57,12 @@ export function parseLinearExact(latex: string): ExactLinear {
         const numerator = argument(), denominator = argument();
         depth--; return divide(numerator, denominator);
       }
-      if (['mathrm', 'mathit', 'mathbf', 'mathsf', 'mathtt', 'text'].includes(command[1])) return argument();
+      if (['mathrm', 'mathit', 'mathbf', 'mathsf', 'mathtt'].includes(command[1])) {
+        const start = position, value = argument();
+        const atom = source.slice(start, position).replace(/\\(?:mathrm|mathit|mathbf|mathsf|mathtt)/g, '').replace(/[{}]/g, '');
+        if (!/^(?:\d+(?:\.\d*)?|\.\d+|s)$/.test(atom)) throw new Error('A font wrapper cannot group arithmetic. Re-enter with ordinary math keys and visible parentheses.');
+        return value;
+      }
       return fail();
     }
     const literal = /^(?:\d+(?:\.\d*)?|\.\d+)/.exec(source.slice(position));
@@ -76,6 +81,7 @@ export function parseLinearExact(latex: string): ExactLinear {
       if (source[position] === '*') { position++; value = multiply(value, unary()); }
       else if (/[\d.s(\\{]/.test(source[position])) {
         const start = position, next = unary();
+        if (!value[1].n && !next[1].n && source[start] !== '(') throw new Error('Adjacent numeric factors can display as a mixed number or joined digits. Insert + for addition or × for multiplication.');
         // MathLive can typeset number/fraction adjacency as a mixed number
         // (invisible plus). Require an explicit operator for this narrower
         // grammar, including wrapped/grouped/nested fraction forms.

@@ -78,3 +78,11 @@ The coordinator identified that pinned MathLive presents number/fraction adjacen
 The private QA watcher was stopped after the coordinator assigned CR02→CP03→coordinator order. No CF02 browser reservation has been acquired. Own production preview is on port 8796; primary 8787 is unchanged. Wait for the coordinator's order-release notice before new acquisition.
 
 The local suite now passes **115 tests**: 62 parser, 5 rational, 41 math/trace and 7 workspace. Three additional independent trace fixtures cover a factorable cubic at every sample (residues 1, −5/2, 2, −1/2), a stable finite-pole cancellation and a biproper plant with H=3. `npm test` passed **315 tests** and the production build/type check passed after the mixed-fraction correction, before those three extra fixture-only tests. Final full-project/browser evidence remains required before submission.
+
+### Hidden grouping and styled adjacency
+
+Inspection of the pinned MathLive 0.111.1 SSR MathML confirmed that `2{3+4}` has no visible parentheses, and a font wrapper such as `\mathrm{2+3}s` does not visibly group the sum. CF02 now rejects free hidden braces, arithmetic used inside font wrappers, and adjacent numeric factors that could look like joined digits. Atomic numeric/single-s font styles remain supported, including fraction-argument scope. Explicit visible parentheses and explicit multiplication retain ordinary polynomial meaning. A braced numerator/denominator of an actual fraction remains its proper visible fraction scope. No SSR inspection is counted as real interactive browser evidence.
+
+The updated local suite passes **133 tests** (80 parser, 5 rational, 41 math/trace, 7 workspace). UI regressions cover hidden grouping rejection/correction and normal native scientific input in addition to the existing raw-underflow/intentional-zero checks. Final full-project/build and actual-editor checks must use this corrected candidate.
+
+After this correction, `npm test` passes **336 tests / 19 files** and `npm run build` (including `npm run check`) passes under Node v24.22.1. This is the production candidate served by the private port 8796 preview. Real-browser QA and final submission still await the coordinated reservation order; no browser result is implied by these checks.

@@ -62,7 +62,10 @@ describe('CF02 workspace state and lifecycle (mock editor; real browser separate
     edit(container, 'Numerator N(s)', String.raw`2\frac12`); submit(container); expect(result(container)).toContain('Insert +'); expect(container.querySelector('svg')).toBeNull();
     edit(container, 'Numerator N(s)', String.raw`2+\frac12`); submit(container); expect(result(container)).toContain('Finite limit: 4/5');
     edit(container, 'Numerator N(s)', String.raw`2\times\frac12`); submit(container); expect(result(container)).toContain('Finite limit: 2');
+    edit(container, 'Numerator N(s)', '2{3+4}'); submit(container); expect(result(container)).toContain('Hidden braces'); expect(container.querySelector('svg')).toBeNull();
+    edit(container, 'Numerator N(s)', '2(3+4)'); submit(container); expect(result(container)).toContain('Finite limit: 1/7');
     edit(container, 'Numerator N(s)', '4'); edit(container, 'Amplitude A (normalized units)', '1e-999'); submit(container); expect(result(container)).toContain('too small');
+    edit(container, 'Amplitude A (normalized units)', '1e-2'); submit(container); expect(result(container)).toContain('Finite limit: 1/200');
     edit(container, 'Amplitude A (normalized units)', '0e-999'); submit(container); expect(result(container)).toContain('Finite limit: 0');
     edit(container, 'Trace horizon (s)', ''); submit(container); expect(result(container)).toContain('finite number');
     edit(container, 'Trace horizon (s)', '121'); submit(container); expect(result(container)).toContain('between 0.1 and 120');

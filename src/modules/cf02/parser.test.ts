@@ -6,7 +6,7 @@ describe('CF02 bounded visual polynomial entry', () => {
     ['4', [4, 0]], ['s+2', [2, 1]], ['4(s+1)', [4, 4]], ['2s+4', [4, 2]],
     [String.raw`\frac12s+\frac{3}{4}`, [.75, .5]],
     [String.raw`\frac{s+1}2`, [.5, .5]], [String.raw`\frac{1}2(s+2)`, [1, .5]],
-    [String.raw`\frac1{\frac12}`, [2, 0]], [String.raw`\frac123`, [1.5, 0]],
+    [String.raw`\frac1{\frac12}`, [2, 0]],
     [String.raw`\frac{1}{23}`, [1 / 23, 0]],
     [String.raw`-\left(\frac12s+\frac12\right)`, [-.5, -.5]],
     [String.raw`\frac{-s-1}{2}`, [-.5, -.5]],
@@ -37,7 +37,7 @@ describe('CF02 bounded visual polynomial entry', () => {
     String.raw`2\frac12`, String.raw`-2\frac12`, String.raw`-(2\frac12)`,
     String.raw`(2)\frac12`, String.raw`2\left(\frac12\right)`,
     String.raw`\frac{2\frac12}{3}`, String.raw`2\frac{\frac12}{3}`,
-    String.raw`\mathrm{2}\frac{\mathrm{1}}{2}`, String.raw`2\mathrm{\frac12}`,
+    String.raw`\mathrm{2}\frac{\mathrm{1}}{2}`,
     String.raw`2(s+\frac12)`, String.raw`\frac12\frac12`,
   ])('rejects mixed-number/fraction adjacency with explicit-operator guidance: %s', text => {
     expect(() => parseLinear(text)).toThrow(/Insert \+.*×/);
@@ -47,6 +47,24 @@ describe('CF02 bounded visual polynomial entry', () => {
     [String.raw`-2-\frac12`, [-2.5, 0]], [String.raw`2\cdot(s+\frac12)`, [1, 2]],
     [String.raw`\frac12s`, [0, .5]], [String.raw`\frac{2+\frac12}{3}`, [2.5 / 3, 0]],
   ] as const)('retains ordinary fractions and explicit operators: %s', (text, expected) => {
+    parseLinear(text).forEach((value, i) => expect(value).toBeCloseTo(expected[i], 13));
+  });
+  it.each([
+    '2{3+4}', '{2+3}s', String.raw`\frac12{s+2}`, '{s}',
+    String.raw`\mathrm{2+3}s`, String.raw`\mathbf{2s+3}`, String.raw`\mathrm{-2}s`,
+    String.raw`2\mathrm{3}`, String.raw`\mathrm{2}3`, String.raw`\mathrm{2}\mathrm{3}`,
+    String.raw`\frac123`, String.raw`\text{1 2}`, String.raw`2\mathrm{\frac12}`,
+  ])('rejects invisible arithmetic grouping or ambiguous numeric adjacency: %s', text => {
+    expect(() => parseLinear(text)).toThrow();
+  });
+  it.each([
+    ['2(3+4)', [14, 0]], ['(2+3)s', [0, 5]],
+    [String.raw`\frac12(s+2)`, [1, .5]],
+    [String.raw`\frac{2+3}{4}s`, [0, 1.25]],
+    [String.raw`\frac\mathrm{12}3`, [4, 0]],
+    [String.raw`\mathrm{\mathbf{12}}s`, [0, 12]],
+    [String.raw`2\times\mathrm{3}`, [6, 0]],
+  ] as const)('retains visible grouping, atomic numeric style and true fraction scope: %s', (text, expected) => {
     parseLinear(text).forEach((value, i) => expect(value).toBeCloseTo(expected[i], 13));
   });
 });
