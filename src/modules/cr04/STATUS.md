@@ -39,6 +39,16 @@ Original Ch2/S03/W03 image assets remain unavailable and uninspected. The record
 
 The historical partial-core and integration records follow unchanged and describe their own earlier checkpoints.
 
+## Coordinator active-drag Escape correction — 30 October 2026
+
+Independent integration review of frozen PR #57 source `117ff30db6d7a1669d26c3ff8cad672e83b9f845` reproduced a shell interaction that the isolated drag tests missed: pressing Escape during a drag also invoked the shell's earlier window listener, navigated to the category and discarded the visit. The promised cancellation therefore did not retain previously committed diagram edits.
+
+The drag now consumes Escape in its signal-owned capture listener only while a drag is active. Cancellation still releases capture/listeners once and restores the committed layout. After cancellation, or before any drag, Escape retains ordinary shell navigation. The shell, parser, mathematical core and external contributor branch are unchanged.
+
+`shell.test.ts` runs the real application shell, catalogue, lazy workspace and CR04 view together, mocking only the equation widgets and baseline-preview panel. It first commits a position edit, starts and moves a drag, verifies Escape retains that edit without adding history, checks pointer release exactly once, then verifies a second Escape leaves normally. A separate no-drag case verifies normal navigation. The new active-drag test failed against the submitted source at the route assertion before the correction.
+
+Validation with Node 24.22.1: CR04 plus application/session suites **79/79 tests in 12 files**, TypeScript checking and `git diff --check` pass. Existing abort/disposal, pointer cancellation and late-mount tests remain passing. No browser session, preview, new mathematical review, CI approval, release or deployment is claimed by this narrow correction; the coordinator retains the combined browser and acceptance gates.
+
 ---
 # CR04 implementation status
 
