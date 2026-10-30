@@ -43,6 +43,19 @@ describe('temporary exercise flow (mocked editor; not browser evidence)', () => 
     set('Zero-intercept marker t₀ (s)', '.75'); set('Plateau-intercept marker t₁ (s)', '4.5'); button('Check prediction and reveal rule').click();
     expect(field('Manual Kp (input/output)').value).toBe('3'); expect(field('Manual Ti (s)').value).toBe('1.5');
   });
+  it.each([
+    { name: 'exact L/τ = 1 boundary', gain: '1', tau: String.raw`\frac23`, delay: String.raw`\frac23`, lower: 2 / 3, upper: 4 / 3, kp: 1.2 },
+    { name: 'regular changed model', gain: '2', tau: '3', delay: '1', lower: 1, upper: 4, kp: 1.8 },
+  ])('restores a usable model tangent for $name', model => {
+    visit(); set('Plant gain K', model.gain); set('Time constant τ (s)', model.tau); set('Delay L (s)', model.delay);
+    button('Use model tangent').click();
+    expect(field('Zero-intercept marker t₀ (s)').valueAsNumber).toBe(model.lower);
+    expect(field('Plateau-intercept marker t₁ (s)').valueAsNumber).toBe(model.upper);
+    expect(feedback()).toContain('Curve updated'); expect(document.querySelectorAll('svg')).toHaveLength(1);
+    reveal(); expect(button('Compare controllers').disabled).toBe(false);
+    expect(field('Manual Kp (input/output)').valueAsNumber).toBeCloseTo(model.kp, 12);
+    button('Compare controllers').click(); expect(feedback()).toContain('Comparison computed'); expect(document.querySelector('table')).not.toBeNull();
+  });
   it('uses PI integral time L/0.3 and ignores disabled derivative fields', () => {
     visit(); const select = document.querySelector('select')!; select.value = 'PI'; select.dispatchEvent(new Event('change')); reveal();
     expect(field('Manual Ti (s)').value).toBe('1.6667'); expect(field('Manual Td (s)').disabled).toBe(true);
