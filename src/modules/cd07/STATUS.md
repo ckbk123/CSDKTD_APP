@@ -103,3 +103,36 @@ There is no shared API request. No sibling/shared/global files, dependencies,
 versions, tags, main, merge or deployment were changed. This contribution ends
 with this one PR. Further contributions use separate branches and PRs; this PR
 does not include another module, extra agent or scheduled follow-up.
+
+## Coordinator-assigned tangent precision correction — 30 October 2026
+
+- Corrective owner: worker chat `01a18700-78e9-7a80-af1b-4436e25b10ff`;
+  local branch `codex/cd07-tangent-precision-01a18700`, rooted at frozen PR #50
+  head `b160305816ac5b7f10b65a2ff3a64b653308a990`.
+- Preserved review/fix worktree:
+  `C:\Users\baokh\.codex\worktrees\review-cd07-pr50-01a18700\CSDKTD APP`.
+  The coordinator explicitly assigned this finite correction; no competing
+  module claim or external-fork edit was made.
+- Independent review reproduced a valid boundary failure: for τ = L = 2/3 s,
+  **Use model tangent** wrote the five-significant-digit values 0.66667 and
+  1.3333 s. Their derived L̂/τ̂ ≈ 1.0000600033 exceeded the supported upper
+  boundary, rejected the measurement and removed the plot.
+- `view.ts` now serializes the model delay and plateau-intercept time with
+  full numeric round-trip precision in both tangent autofill paths. Read-only
+  result formatting, mathematical limits, validation and solver are unchanged.
+- `view.test.ts` adds the exact τ = L = 2/3 boundary and a regular changed
+  K = 2, τ = 3 s, L = 1 s control. Both check the numeric marker values,
+  successful curve/reveal, independently expected PID Kp = 1.2 / 1.8 and a
+  computed controller comparison. Before the fix, the boundary case failed
+  (`0.66667` instead of `2/3`); the regular control passed.
+- Corrected checks under Node 24.22.1:
+  `node node_modules/vitest/vitest.mjs run src/modules/cd07` — **128 passed in
+  4 files**; `node node_modules/typescript/bin/tsc --noEmit` — passed.
+  These are controlled DOM/mocked-editor regressions, not fresh browser
+  evidence. The earlier full-suite/build review covered the frozen original
+  head; combined acceptance, browser and remote CI gates remain with the
+  coordinator for this correction.
+- Delivery is a local corrective commit for coordinator integration with the
+  original history. No push, new PR, external PR metadata change, version,
+  dependency or deployment change is part of this assignment. This record
+  does not mark the contribution independently verified.

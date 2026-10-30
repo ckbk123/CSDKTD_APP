@@ -51,7 +51,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     note(model, 'Move these markers with typing or arrow keys to fit the dashed tangent. They estimate L̂ = t₀ and τ̂ = t₁ − t₀; the measured plateau is K. For this FOPDT surrogate, the true initial tangent starts at t = L.');
     const curveActions = element('div', undefined, 'cd07-controls'); model.append(curveActions);
     button(curveActions, 'Plot response curve', () => guard(drawCurve), true);
-    button(curveActions, 'Use model tangent', () => guard(() => { const p = readPlant(); lower.value = fmt(p.delay); upper.value = fmt(p.delay + p.tau); dirty(); drawCurve(); }));
+    button(curveActions, 'Use model tangent', () => guard(() => { const p = readPlant(); lower.value = String(p.delay); upper.value = String(p.delay + p.tau); dirty(); drawCurve(); }));
     const curve = element('div'); model.append(curve);
     function readPlant(): Plant {
       const values = editors.map(e => { const d = e.getValue(); if (d.empty || d.hasPlaceholders || d.syntaxIssues.length) throw new Error('Complete the model equation boxes and check their notation.'); return parseNumber(d.latex); });
@@ -71,7 +71,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     }
     function preset(values: string[]): void {
       editors.forEach((e, i) => e.setValue(values[i])); dirty();
-      guard(() => { const p = readPlant(); lower.value = fmt(p.delay); upper.value = fmt(p.delay + p.tau); drawCurve(); });
+      guard(() => { const p = readPlant(); lower.value = String(p.delay); upper.value = String(p.delay + p.tau); drawCurve(); });
     }
     const rule = section('2. Predict, then reveal the tuning rule');
     const confirmLabel = element('label', undefined, 'cd07-confirm'), confirm = element('input'); confirm.type = 'checkbox';
