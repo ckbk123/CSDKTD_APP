@@ -5,7 +5,7 @@
 - **Owner:** external contributor `ckbk456`, branch `codex/cr04-block-diagram-editor-20261030`.
 - **Worker chat:** `01a188d9-ee2e-7c20-bdf2-0725a50f5406`.
 - **Public reservation / delivery:** [PR #57](https://github.com/ckbk123/CSDKTD_APP/pull/57), reserved before substantial implementation and kept draft for the remaining repository gates.
-- **Scope:** `src/modules/cr04/**` only. Metadata/TASK, the exact algebra/model/operations/parser, their mathematical tests, shared/global/dependency/version/release/deployment files remain unchanged. The obsolete blank-mount assertion is replaced by working-entry and lifecycle coverage; the integration test's independent channel and parser checks remain.
+- **Scope:** `src/modules/cr04/**` only. The external completion preserves metadata/TASK, exact algebra/model/operations/parser and their mathematical tests; the coordinator's subsequent bounded parser correction is recorded below. Shared/global/dependency/version/release/deployment files remain unchanged. The obsolete blank-mount assertion is replaced by working-entry and lifecycle coverage; the integration test's independent channel and parser checks remain.
 
 The latest FINAL_HANDOFF permits this fresh-branch completion of the integrated partial. Former PR #45 and its branch remain preserved. Upstream and all open PRs/issues were audited before reservation: no competing CR04 reservation was found. The public reservation, exact tested final head, private local claim and remote head are tracked separately; no private claim credential belongs in this file.
 
@@ -36,6 +36,14 @@ All history, editors and controllers are caller-owned. A private synchronous loa
 - Sanitized desktop/phone/diagram/wrong-compensation captures are local delivery evidence outside Git. The unchanged coordination-helper suite had separately passed 32/32 checks; its reuse is qualified by unchanged script blobs in the PR, not claimed as a fresh run for this source-only completion.
 
 Original Ch2/S03/W03 image assets remain unavailable and uninspected. The recorded audit topology is explicit; the positive E2 disturbance and additional series/parallel fixtures are authored variations. No new transcription claim or independent-review certification is made. Upstream fork-workflow approval, required CI and independent technical review remain merge gates; no merge, release or deployment has occurred. A coordinated variable-agnostic exact-rational/lifecycle helper may reduce duplication later; no shared API is requested as a blocker to this isolated contribution.
+
+## Coordinator input correction — 30 October 2026
+
+- Preserved source: `117ff30db6d7a1669d26c3ff8cad672e83b9f845` (PR #57). This correction owns only `parser.ts`, `parser.test.ts` and this evidence record, on isolated branch `codex/review-cr04-input-boundary-20261030`; no external branch, primary checkout or release files were changed.
+- Independent input review found that `parseTransfer('1\u20092')` and its U+202F counterpart computed the constant 12 even though pinned MathLive renders separate numeric and blank-looking symbol atoms. Reject the 16 renderer-significant JavaScript whitespace symbols before normalization. Remove only the nine renderer-ignored separators: ASCII whitespace, NBSP, U+2028 and U+2029. No expression syntax, mathematical bounds or solver behavior is broadened.
+- Added 26 parser regressions: pinned renderer-backed distinctions for all 16 significant characters and nine ignored separators, plus nested delimiter/raw argument controls. Significant symbols are checked in ordinary decimal fragments and inside fraction/power boxes. Compact fractions, explicit +/×, visible parentheses, e/E rejection, hidden-group rejection and prior native-control tests remain intact. The first 16 new cases failed against the preserved parser before the fix.
+- Verification: CR04 **83/83 tests, 9 files**; CR04 plus unchanged shared TeX argument tests **262/262 tests, 10 files**; TypeScript `--noEmit` and `git diff --check` passed. Tests used the existing locked dependencies without manifest/lockfile changes.
+- Stage remains **implemented**. The actual browser evidence above belongs to the external completion and predates this parser-only correction; no new browser, full-app build, release or independent acceptance is claimed here. Coordinator review and candidate checks remain pending.
 
 The historical partial-core and integration records follow unchanged and describe their own earlier checkpoints.
 
