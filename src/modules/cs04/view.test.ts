@@ -52,6 +52,21 @@ describe('staged Nyquist flow (mocked editors; actual browser checked separately
     visit(); build(); const slider = field('Follow the complete contour'); slider.value = '10'; slider.dispatchEvent(new Event('input', { bubbles: true })); expect(field('Contour sample index').value).toBe('10'); expect(document.body.textContent).toContain('Sample 10/');
     set('Contour sample index', '1e-999'); expect(document.body.textContent).toContain('too small');
   });
+  it.each(['', '1e-999', '-1', '999999'].flatMap(value => [['full', value], ['critical', value]]))('keeps the last %s plot coherent when index=%s blocks a view change', (previousView, value) => {
+    visit(); build(); const zoom = document.querySelector('select')!;
+    zoom.value = previousView; zoom.dispatchEvent(new Event('change', { bubbles: true }));
+    const figures = document.querySelector('.cs04-plots')!, previousFigures = figures.innerHTML;
+    set('Contour sample index', value);
+    const errors: string[] = [], onError = (event: ErrorEvent) => { errors.push(event.message); event.preventDefault(); };
+    window.addEventListener('error', onError);
+    const nextView = previousView === 'full' ? 'critical' : 'full';
+    try { zoom.value = nextView; zoom.dispatchEvent(new Event('change', { bubbles: true })); }
+    finally { window.removeEventListener('error', onError); }
+    expect(errors).toEqual([]); expect(zoom.value).toBe(previousView); expect(figures.innerHTML).toBe(previousFigures);
+    expect(figures.previousElementSibling!.textContent).toContain('last valid view');
+    set('Contour sample index', '0'); zoom.value = nextView; zoom.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(zoom.value).toBe(nextView); expect(figures.querySelectorAll('figcaption')[1].textContent).toBe(nextView === 'critical' ? 'L(s) near −1: clipped Cartesian window' : 'L(s): complete finite mapped contour');
+  });
   it('revokes a checked P when the attempt changes', () => { visit(); build(); checkP('0'); reveal(); set('Your open-loop RHP pole count P', '1'); expect(table()).toBe(''); expect(field('Your counterclockwise winding N').disabled).toBe(true); });
   it('reopens from the metadata baseline after cleanup and releases old controls', () => {
     const first = visit(); button('Two RHP poles').click(); build(); const oldButton = button('Build the selected loop and contour'); first.parent.abort(); oldButton.click(); expect(first.container.children).toHaveLength(0);

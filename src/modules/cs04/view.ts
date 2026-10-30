@@ -52,7 +52,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     const viewControls = el('div'); viewControls.className = 'cs04-grid'; visual.append(viewControls);
     const zoomLabel = el('label', 'Mapped-curve view'), zoom = el('select'); for (const [v, name] of [['full', 'Whole finite curve, true scale'], ['critical', 'Near −1, clipped true scale']]) { const o = el('option', name); o.value = v; zoom.append(o); } zoomLabel.append(zoom); viewControls.append(zoomLabel);
     const index = number(viewControls, 'Contour sample index', '0', '0', '0', '1'), sliderLabel = el('label', 'Follow the curve (arrow keys)'), slider = el('input'); slider.type = 'range'; slider.min = '0'; slider.max = '0'; slider.step = '1'; slider.value = '0'; slider.setAttribute('aria-label', 'Follow the complete contour'); sliderLabel.append(slider); viewControls.append(sliderLabel);
-    const inspector = el('p'), figures = el('div'); figures.className = 'cs04-plots'; visual.append(inspector, figures);
+    const inspector = el('p'), figures = el('div'); figures.className = 'cs04-plots'; visual.append(inspector, figures); let paintedView = zoom.value;
     note(visual, 'Blue dashed: negative-frequency axis; purple: positive-frequency axis; ochre: axis indents; green: outer arc. Arrows follow traversal. × marks open-loop poles on the source plot and −1 on the image plot; the dot follows the selected sample. The near−1 view clips the curve; the count always uses the entire curve.');
     const attempt = section('3. Check P before revealing N and Z');
     const attemptControls = el('div'); attemptControls.className = 'cs04-grid'; attempt.append(attemptControls);
@@ -96,6 +96,14 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       }
       figures.replaceChildren(plot('Clockwise RHP source contour', source, [...loop.openRoots.map(z => ({ x: z.re, y: z.im, label: '', cross: true })), { x: point.source.re, y: point.source.im, label: 's', color: '#192b45' }], ['Re(s) (s⁻¹)', 'Im(s) (s⁻¹)']), plot(zoom.value === 'critical' ? 'L(s) near −1: clipped Cartesian window' : 'L(s): complete finite mapped contour', image, [{ x: -1, y: 0, label: '−1', cross: true }, ...(point.response.kind === 'value' ? [{ x: point.response.value.re, y: point.response.value.im, label: 'L(s)', color: '#192b45' }] : [])], ['Re(L), dimensionless', 'Im(L), dimensionless'], zoom.value === 'critical'));
       inspector.textContent = `Sample ${selectedIndex}/${points.length - 1}, ${point.kind}: s=${complex(point.source)} s⁻¹; ${point.response.kind === 'value' ? `L(s)=${complex(point.response.value)}` : point.response.message}. Indent samples evaluate L(s) off the imaginary axis, rather than L(jω).`;
+      paintedView = zoom.value;
+    }
+    function refreshPlot() {
+      try { paint(); }
+      catch (error) {
+        zoom.value = paintedView;
+        inspector.textContent = `${error instanceof Error ? error.message : 'Choose a curve sample.'} The last valid view is kept. Correct the contour sample index to continue.`;
+      }
     }
     function reveal() {
       answer.replaceChildren(); if (!loop || !analysis || !checkedP) throw new Error('Check the correct open-loop pole count P first.');
@@ -117,8 +125,8 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     function table(names: string[], values: string[]) { const region = el('div'); region.className = 'cs04-table'; region.tabIndex = 0; region.setAttribute('role', 'region'); region.setAttribute('aria-label', 'Nyquist counts; scroll horizontally if needed'); const t = el('table'), head = el('tr'), row = el('tr'); names.forEach((name, i) => { const th = el('th', name); th.scope = 'col'; head.append(th); row.append(el('td', values[i])); }); const thead = el('thead'), tbody = el('tbody'); thead.append(head); tbody.append(row); t.append(thead, tbody); region.append(t); answer.append(region); }
     guessP.addEventListener('input', () => { checkedP = false; nButton.disabled = true; guessN.disabled = true; pReason.replaceChildren(); answer.replaceChildren(); }, { signal });
     guessN.addEventListener('input', () => answer.replaceChildren(), { signal });
-    index.addEventListener('input', () => { try { paint(); } catch (e) { inspector.textContent = e instanceof Error ? e.message : 'Choose a curve sample.'; } }, { signal });
-    slider.addEventListener('input', () => { index.value = slider.value; paint(); }, { signal }); zoom.addEventListener('change', paint, { signal });
+    index.addEventListener('input', refreshPlot, { signal });
+    slider.addEventListener('input', () => { index.value = slider.value; refreshPlot(); }, { signal }); zoom.addEventListener('change', refreshPlot, { signal });
     ready = true; pButton.disabled = nButton.disabled = guessN.disabled = true; index.disabled = slider.disabled = true;
     parent.addEventListener('abort', cleanup, { once: true }); return cleanup;
   } catch (error) { cleanup(); throw error; }
