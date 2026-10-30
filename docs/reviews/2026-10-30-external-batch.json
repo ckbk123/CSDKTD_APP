@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-30",
+  "baselineVersion": "0.3.14",
+  "baselineCommit": "a43989def918052cc969cbee8691ce79d8824ec9",
+  "integrationAccepted": false,
+  "notes": [
+    "Initial empty-query search was incomplete; use an explicit repository/open-PR query and exact PR metadata.",
+    "All eight fork workflow runs were approved after inspecting unchanged read-only CI configuration, owned file scope and submitted source. Approval is not a successful check or acceptance.",
+    "Local assignments changed to independent read-only reviews; external branches and authorship remain preserved.",
+    "Primary preview restarted as an owned local Wrangler session; no deployment."
+  ],
+  "contributions": [
+    {
+      "module": "CD07",
+      "pr": 50,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/50",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/cd07-response-curve-20261030",
+      "sourceSha": "b160305816ac5b7f10b65a2ff3a64b653308a990",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40939275387,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a18700-78e9-7a80-af1b-4436e25b10ff"
+    },
+    {
+      "module": "CD02",
+      "pr": 51,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/51",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/cd02-lead-root-locus-20261030",
+      "sourceSha": "e7becdcbc50a2d0a06932707624639019f5178f9",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40938335048,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a18701-3f40-7572-9a49-7dc0103c9161"
+    },
+    {
+      "module": "CD06",
+      "pr": 52,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/52",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/cd06-lag-frequency-20261030",
+      "sourceSha": "e2576366ba1f3863cf65673a7134f765e936af5b",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40955182268,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a186d1-e192-7e11-a9da-294fb7ec7b78"
+    },
+    {
+      "module": "CD04",
+      "pr": 53,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/53",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/cd04-lead-lag-allocation-20261030",
+      "sourceSha": "e2decbf570dfd3bf5311d7ec7d9cfa1f75cd0e3e",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40954234184,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a18700-cc48-7482-ba96-f9aab107f802"
+    },
+    {
+      "module": "CS04",
+      "pr": 54,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/54",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/cs04-nyquist-pole-count-20261030",
+      "sourceSha": "1d5e04586b8ba5315bef963b515d8fb96f89e6cf",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40964964488,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a186d1-f1f0-7393-88e7-377fbac7299a"
+    },
+    {
+      "module": "DD02",
+      "pr": 55,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/55",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/dd02-direct-z-lead-lag-20261030",
+      "sourceSha": "c6ced5ee38f5af8cdfa25afe3bca82424d3ba791",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40974363018,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a186d1-a367-78f1-98f5-e1cf147ef306"
+    },
+    {
+      "module": "DR04",
+      "pr": 56,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/56",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/dr04-sampled-mason-20261030",
+      "sourceSha": "3125905de603454b2b43916a861d85f86a8fc56d",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40980000958,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a186d2-0050-7de0-aa3f-c6616623f222"
+    },
+    {
+      "module": "CR04",
+      "pr": 57,
+      "url": "https://github.com/ckbk123/CSDKTD_APP/pull/57",
+      "sourceRepository": "ckbk456/CSDKTD_APP",
+      "sourceBranch": "codex/cr04-block-diagram-editor-20261030",
+      "sourceSha": "117ff30db6d7a1669d26c3ff8cad672e83b9f845",
+      "disposition": "under-independent-review",
+      "draft": true,
+      "workflowRun": 40987377809,
+      "workflowApproval": "approved-for-exact-head",
+      "requiredCi": "success-on-frozen-head",
+      "reviewerThread": "01a186d2-2175-7122-ad9f-c01694059c6c"
+    }
+  ],
+  "candidate": {
+    "branch": "codex/integration-external-20261030",
+    "worktree": "C:\\Users\\baokh\\AppData\\Local\\ControlStudio\\worktrees\\coordinator-20261029",
+    "head": "d8a55d8",
+    "published": false,
+    "applicationTestsBeforeCorrections": 5499,
+    "coordinationTests": 32,
+    "typeCheck": "passed-before-corrections",
+    "build": "passed-before-corrections",
+    "primaryPreviewSession": 36531,
+    "temporaryPreview26702": "stopped-before-rebuild"
+  },
+  "corrections": [
+    {
+      "module": "CR04",
+      "finding": "Renderer-significant Unicode whitespace silently fused numeric tokens",
+      "source": "117ff30db6d7a1669d26c3ff8cad672e83b9f845",
+      "fix": "e7cd51449a18e908ebbc0fae621893406579503f",
+      "status": "reviewed-and-staged-locally"
+    },
+    {
+      "module": "CR04",
+      "finding": "Active drag Escape escaped to shell navigation; arrow redraw lost node focus",
+      "fixes": [
+        "1522339f0620338535e2ab167a82fdbe7f1d2088",
+        "b6ef1599ea74612034ec9df05e985e5c0ec28a8c"
+      ],
+      "status": "reviewed-and-staged-locally"
+    },
+    {
+      "module": "CD07",
+      "finding": "Rounded model tangent markers rejected valid tau=L=2/3",
+      "fix": "0a139a2314636e91002aca2d78c95f51f443de88",
+      "status": "reviewed-and-staged-locally"
+    },
+    {
+      "module": "CS04",
+      "finding": "Invalid index with plot view change escaped validation; unresolved mapped sample bridged by false chord",
+      "fix": "663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f",
+      "status": "zoom-fix-reviewed-gap-fix-in-progress",
+      "worker": "01a186d1-f1f0-7393-88e7-377fbac7299a"
+    }
+  ],
+  "coordinatorBrowserBeforeCorrections": {
+    "CD02": "desktop baseline and pole-minus8 full response/ramp check",
+    "CD04": "desktop and390px baseline/refined-lag complete checks",
+    "CD06": "desktop and390px default auto-lead and changed-lag checks",
+    "DD02": "desktop and390px stable lead, unstable-extra-mode, physical-vs-sample ramp checks",
+    "DR04": "desktop and390px baseline exact Mason/direct equations and intermediate-hold first samples"
+  }
+}

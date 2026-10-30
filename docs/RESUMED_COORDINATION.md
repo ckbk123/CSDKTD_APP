@@ -35,6 +35,8 @@ The two audit assignments are finite read-only tasks. They do not reserve implem
 
 ## Student workflow acceptance
 
+The eight external submissions predate today's interface feedback. First review them against their accepted TASK and existing safety/usability gates. Record busy layouts, excessive initial settings and delayed plots as prioritized interface follow-ups; do not invent a retroactive merge-blocking requirement to redesign an otherwise correct complete exercise. A workflow that prevents the accepted exercise, broken required accessibility, stale/wrong results or resource leakage remains a real defect. The baseline-first direction below guides new changes and the user's subsequent iterative simplification.
+
 The human finds the first draft too complicated. Keep each exercise's accepted mathematical content while reducing what a student must understand before the first useful interaction:
 
 1. Open on a valid default example with a clear question and useful diagram/plot or concise initial preview.
