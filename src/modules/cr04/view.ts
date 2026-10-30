@@ -1,0 +1,152 @@
+import type { ModuleMount } from '../../core/module';
+import { createEquationDisplay as equationMarkup, createEquationInput, type EquationInput } from '../../shared/equations/input';
+import { readNumericInput } from '../../shared/numeric-input';
+import { degree, equalTF, latexTF, type TF } from './algebra';
+import { drawDiagram, type Drawing } from './canvas';
+import { addNode, checkEditable, deleteNode, editNode, fixture, gainText, History, nextPortId, positioned, unchanged } from './editor';
+import { solveDiagram, type Diagram, type Node as DiagramNode, type Port, type Solution } from './model';
+import { operations, previewOperation, type Operation, type Preview } from './operations';
+import { parseTransfer } from './parser';
+import './style.css';
+
+function el<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string):HTMLElementTagNameMap[K]{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;}
+function mathDisplay(tex:string,label:string){if(tex.length>8192)throw new Error('This equation exceeds the 8192-character display limit. Simplify the diagram.');const e=equationMarkup(tex,label);e.tabIndex=0;return e;}
+type Checked={base:Diagram;operation:Operation;raw:string;preview:Preview};
+type PortControl={id:string;source:HTMLSelectElement;sign:HTMLSelectElement};
+const familyOptions:readonly(readonly[Operation['kind'],string])[]=[['series','Series blocks'],['parallel','Signed parallel blocks'],['feedback','Local feedback'],['merge-sums','Flatten adjacent summers'],['sum-up','Move a summer upstream'],['sum-down','Move a summer downstream'],['pickoff-up','Move a pickoff upstream'],['pickoff-down','Move a pickoff downstream']];
+const guided=['feedback:e2:g2:h2','sum-up:e2:g1:p4','merge-sums:e1:e2:p4','series:g1:g2','feedback:e2:g2:h1'];
+export const mount:ModuleMount=({container,signal:parent})=>{
+  if(parent.aborted)return;
+  const history=new History(fixture('nested')),lifetime=new AbortController(),signal=lifetime.signal,root=el('div');root.dataset.module='CR04';container.append(root);
+  const editors=new Set<EquationInput>();let inspectorLife:AbortController|undefined,portsLife:AbortController|undefined,drawLife:AbortController|undefined,previewLife:AbortController|undefined,channelLife:AbortController|undefined;
+  let drawing:Drawing|undefined,selected='g1',pending=false,gainDirty=false,ready=false,hydrating=false,disposed=false,serial=0,available:readonly Operation[]=[],active:Operation|undefined,checked:Checked|undefined;
+  let blockEditor:EquationInput|undefined,ports:PortControl[]=[],originalPorts:readonly Port[]=[],releaseDrag:(restore:boolean)=>void=()=>{},drag:undefined|{life:AbortController;group:SVGGElement;pointer:number;node:DiagramNode;offsetX:number;offsetY:number;x:number;y:number};
+  const cleanup=()=>{if(disposed)return;disposed=true;parent.removeEventListener('abort',cleanup);releaseDrag(false);lifetime.abort();inspectorLife?.abort();portsLife?.abort();drawLife?.abort();previewLife?.abort();channelLife?.abort();editors.forEach(e=>e.destroy());editors.clear();history.clear();root.remove();};parent.addEventListener('abort',cleanup,{once:true});
+  try{
+    releaseDrag=cancelDrag;
+    const feedback=el('p','Choose a local identity, predict its gain, and check both retained output channels.');feedback.className='cr04-feedback';feedback.setAttribute('role','status');
+    const report=(error:unknown)=>{feedback.textContent=error instanceof Error?error.message:'Check the diagram and inputs.';if(!root.contains(feedback))root.append(feedback);};
+    const invoke=(action:()=>void)=>{if(signal.aborted)return;try{action();}catch(error){report(error);}};
+    const note=(host:HTMLElement,text:string)=>host.append(el('p',text));
+    const section=(title:string)=>{const s=el('section');s.append(el('h2',title));root.append(s);return s;};
+    const grid=(host:HTMLElement)=>{const g=el('div');g.className='cr04-grid';host.append(g);return g;};
+    const button=(host:HTMLElement,label:string,action:()=>void,life=signal)=>{const b=el('button',label);b.type='button';host.append(b);b.addEventListener('click',()=>{if(life.aborted)return;b.after(feedback);invoke(action);},{signal:life});return b;};
+    const select=(host:HTMLElement,label:string,options:readonly(readonly[string,string])[])=>{const l=el('label',label),s=el('select');s.setAttribute('aria-label',label);l.append(s);host.append(l);options.forEach(([value,text])=>{const o=el('option',text);o.value=value;s.append(o);});return s;};
+    const mathInput=(host:HTMLElement,label:string,value:string,onChange:()=>void,life=signal)=>{const e=createEquationInput({label,value,signal:life,onChange});editors.add(e);host.append(e.element);return e;};
+    const read=(e:EquationInput,optional=false)=>{const d=e.getValue();if(optional&&d.empty&&!d.hasPlaceholders&&!d.syntaxIssues.length)return null;if(d.empty||d.hasPlaceholders||d.syntaxIssues.length)throw new Error('Complete every required math box, including fractions and powers.');return d.latex;};
+    const number=(host:HTMLElement,label:string,min:string,max:string)=>{const l=el('label',label),e=el('input');e.type='number';e.min=min;e.max=max;e.step='1';e.setAttribute('aria-label',label);l.append(e);host.append(l);return e;};
+    const source=section('1. Build and inspect the structured diagram');
+    note(source,'Blocks multiply, signed summer ports add, and explicit junctions copy a signal. Connections come from ports; moving a drawing or crossing wires cannot connect signals. Direct edits define a new model. Checked transformations must preserve both reference and disturbance transfers.');
+    note(source,'This is scalar zero-state Laplace algebra: s is in s⁻¹, with compatible chosen signal/gain units. There is no sample period. Formal inverse gains may be improper; a reduced transfer does not certify realizability or internal stability.');
+    const presets=el('div');presets.className='cr04-actions';source.append(presets);
+    for(const[key,label]of[['nested','Load nested example'],['changed','Load H2=3 variation'],['series','Load series exercise'],['parallel','Load signed parallel exercise']]as const)button(presets,label,()=>loadPreset(key));
+    const undoButton=button(presets,'Undo last diagram change',()=>{ensureIdle();if(!history.undo())throw new Error('There is no earlier diagram in this visit.');refresh();feedback.textContent='The previous complete diagram snapshot is restored.';}),historyNote=el('p');source.append(historyNote);
+    const addControls=grid(source),addKind=select(addControls,'New node kind',[['block','Transfer block'],['sum','Signed summer'],['junction','Explicit junction']]),addButton=button(addControls,'Add node',()=>{ensureIdle();const next=addNode(history.graph,addKind.value as 'block'|'sum'|'junction');selected=next.id;commit(next.graph,'New node added. Connect its input port before calculating.');});
+    const canvasHost=el('div');source.append(canvasHost);note(source,'Focus a node and use arrows to move it (20 layout units; Shift: 80), or use its numeric position controls. Dragging creates one undo step. Escape or loss of focus cancels an active drag. Focus the canvas frame to scroll.');
+    const gains=el('details');gains.append(el('summary','Current diagram block gains'));const gainList=el('div');gainList.className='cr04-grid';gains.append(gainList);source.append(gains);
+    const inspector=el('div');inspector.className='cr04-inspector';source.append(inspector);inspector.append(el('h3','Selected node and signed input ports'));
+    const nodeSelect=select(inspector,'Selected node',[]),kindText=el('p');inspector.append(kindText);
+    const labelWrap=el('label','Node label'),labelInput=el('input');labelInput.type='text';labelInput.maxLength=12;labelInput.setAttribute('aria-label','Node label');labelWrap.append(labelInput);inspector.append(labelWrap);
+    const gainHost=el('div');inspector.append(gainHost);const coordinates=grid(inspector),xInput=number(coordinates,'Node x (layout units)','40','1460'),yInput=number(coordinates,'Node y (layout units)','40','860');
+    const portHost=el('div');inspector.append(portHost);const portButtons=el('div');inspector.append(portButtons);
+    const addPortButton=button(portButtons,'Add summer input port',()=>{if(drag)throw new Error('Finish or cancel the drag first.');const n=selectedNode();if(n.kind!=='sum'||ports.length>=4)throw new Error('A summer supports one to four input ports.');const draft=readPorts(),id=nextPortId(history.graph,draft);renderPorts([...draft,{id,source:null,sign:1}]);markPending();});
+    const applyEditsButton=button(inspector,'Apply selected node edits',applyEdits),discardButton=button(inspector,'Discard pending node edits',()=>{pending=false;renderInspector();sync();feedback.textContent='Pending edits discarded; the current diagram is unchanged.';}),deleteButton=button(inspector,'Delete selected node',()=>{ensureIdle();commit(deleteNode(history.graph,selected),'Node removed. Its former consumers have unconnected ports; reconnect them before calculating.');});
+
+    const local=section('2. Check a local identity before applying it');
+    note(local,'A summer moved upstream needs 1/G on every side input; downstream needs G. A pickoff moved upstream needs G on its side paths; downstream needs 1/G. Only supported self-contained motifs are listed, so retained fanout branches and zero inverses can prevent a move.');
+    const choices=grid(local),family=select(choices,'Rule family',familyOptions),motif=select(choices,'Local motif',[]),identity=el('div');local.append(identity);
+    const proposal=mathInput(local,'Proposed local block or side-path gain','',()=>{if(!ready||hydrating)return;clearPreview();feedback.textContent='Local prediction changed. Check it again before applying.';});
+    const checkButton=button(local,'Check proposed local change',checkLocal),revealButton=button(local,'Reveal required local gain',()=>{ensureIdle();if(!active)throw new Error('Choose a supported local motif.');required.replaceChildren(mathDisplay(`G_{\\mathrm{required}}(s)=${gainText(active.expected)}`,'Required local gain'));feedback.textContent='The required local gain is shown. Enter and check your proposal to enable application.';}),required=el('div');local.append(required);
+    const applyButton=button(local,'Apply checked transformation',applyChecked),previewHost=el('div');local.append(previewHost);
+    const guide=el('details');guide.append(el('summary','A route through the nested example'));note(guide,'Reduce the inner G2/H2 feedback. Move E2 upstream of G1 and compensate every side input, including the proposed disturbance, by 1/G1. Flatten E1/E2, combine the series blocks, then reduce the outer feedback. Internal signal names can change their meaning; the retained output channels must agree at every step.');local.append(guide);
+
+    const channels=section('3. Select a scalar input/output channel');
+    const channelSelect=select(channels,'Channel to predict',[['r','Reference r → Y, with d=0'],['d','Disturbance d → Y, with r=0']]);
+    const channelPrediction=mathInput(channels,'Predicted selected transfer (optional)','',()=>{if(!ready||hydrating)return;clearChannels();feedback.textContent='Channel prediction changed. Reveal and check it again.';});
+    const channelButton=button(channels,'Reveal and check selected transfer',checkChannels),channelHost=el('div');channels.append(channelHost);
+    const limits=el('details');limits.className='cr04-source';limits.append(el('summary','Supported diagrams and exact-calculation limits'));
+    note(limits,'Keep r, d and retained Y. At most 12 non-source nodes, 24 input ports, and 1–4 signed ports per summer; other non-source nodes have one positive port. Positions x=40…1460, y=40…860 affect layout only. Visible labels are distinct, at most 12 letters/digits starting with a letter. Undo retains 40 snapshots; visit identity range ≤100000.');
+    note(limits,'Visual blocks accept bounded real rational expressions in s, complete fractions, visible parentheses and powers 0–12; no other variables/functions/e notation, hidden grouping or mixed numbers. Raw input ≤600 characters, 256 expanded tokens and 16 nested groups. Manual blocks: numerator/denominator degree ≤3, coefficient parts ≤10¹², magnitudes ≤10⁶, literals 12 digits/8 decimal places. Answers allow reduced degree ≤12, literals 60 digits/40 decimal places. Unchanged derived block gains are preserved when editing other properties.');
+    note(limits,'Exact coefficients ≤4096 bits, polynomial work degree ≤24, reduced degree ≤12. Block display/editor notation ≤600 characters; each read-only equation ≤8192. Missing ports, singular equations, zero inverses and exhausted bounds receive feedback. Exact rational cancellation describes zero-state scalar transfer, without a stability certificate or preservation of unsimplified removable points.');root.append(limits);
+    const provenance=el('details');provenance.className='cr04-source';provenance.append(el('summary','Source anchors and preserved partial-core history'));
+    note(provenance,'The recorded course-audit topology is E1=R−H1Y, U=G1E1, E2=U−H2Y, Y=G2E2, with G1=1/(s+1), G2=1/(s+2), H2=2, H1=1. The positive disturbance added at E2 is a proposed variation. Original Ch2/S03/W03 diagrams remain unavailable and uninspected. The integrated exact core is preserved; the series/parallel fixtures and interface are authored.');root.append(provenance,feedback);
+
+    function selectedNode(){const n=history.graph.nodes.find(n=>n.id===selected);if(!n)throw new Error('Select a current node.');return n;}
+    function ensureIdle(){if(pending)throw new Error('Apply or discard the pending node edits first.');if(drag)throw new Error('Finish or cancel the active drag first.');}
+    function sync(){if(!ready)return;const busy=pending||!!drag;undoButton.disabled=!history.count||busy;addButton.disabled=busy;applyEditsButton.disabled=!pending||!!drag;discardButton.disabled=!pending||!!drag;deleteButton.disabled=busy||['r','d','y'].includes(selected);addPortButton.disabled=!!drag||selectedNode().kind!=='sum'||ports.length>=4;checkButton.disabled=busy||!active;revealButton.disabled=busy||!active;channelButton.disabled=busy;applyButton.disabled=busy||!checked?.preview.correct;historyNote.textContent=`Undo snapshots: ${history.count}/40. Each applied model edit, transformation or completed drag is one step.`;}
+    function clearPreview(){previewLife?.abort();previewLife=undefined;checked=undefined;previewHost.replaceChildren();if(!root.contains(feedback))root.append(feedback);if(ready){applyButton.disabled=true;drawCurrent();}}
+    function clearChannels(){channelLife?.abort();channelLife=undefined;channelHost.replaceChildren();if(!root.contains(feedback))root.append(feedback);}
+    function invalidate(){clearPreview();clearChannels();required.replaceChildren();}
+    function markPending(){if(!ready||hydrating)return;pending=true;invalidate();feedback.textContent='Node edits are pending. Apply or discard them before calculating, selecting another node or dragging.';sync();}
+    function readPorts():Port[]{return ports.map(p=>({id:p.id,source:p.source.value||null,sign:p.sign.value==='-1'?-1:1}));}
+    function renderPorts(draft:readonly Port[]){
+      portsLife?.abort();portsLife=new AbortController();ports=[];portHost.replaceChildren();const n=selectedNode(),life=portsLife.signal;
+      for(const[pIndex,p]of draft.entries()){const host=el('div');host.className='cr04-port-row';const from=select(host,`Input ${pIndex+1} source`,[['','Unconnected'],...history.graph.nodes.map(node=>[node.id,`${node.label} (${node.kind})`]as const)]),s=select(host,`Input ${pIndex+1} sign`,[['1','+'],['-1','−']]);from.value=p.source??'';s.value=String(p.sign);s.disabled=n.kind!=='sum';ports.push({id:p.id,source:from,sign:s});portHost.append(host);from.addEventListener('change',markPending,{signal:life});s.addEventListener('change',markPending,{signal:life});
+        if(n.kind==='sum')button(host,`Remove input ${pIndex+1}`,()=>{if(ports.length<=1)throw new Error('A summer needs at least one input.');const next=readPorts().filter((_,i)=>i!==pIndex);renderPorts(next);markPending();},life);
+      }
+    }
+    function renderInspector(){
+      inspectorLife?.abort();if(blockEditor){blockEditor.destroy();editors.delete(blockEditor);blockEditor=undefined;}inspectorLife=new AbortController();const n=selectedNode();hydrating=true;
+      try{nodeSelect.replaceChildren();for(const node of history.graph.nodes){const o=el('option',`${node.label} · ${node.kind}`);o.value=node.id;nodeSelect.append(o);}nodeSelect.value=selected;labelInput.value=n.label;labelInput.disabled=['r','d','y'].includes(n.id);kindText.textContent=`${n.kind==='sum'?'Signed summer':n.kind==='junction'?'Explicit copying junction':n.kind==='block'?'Scalar transfer block':n.kind==='source'?'Independent source':'Retained scalar output'}. ${n.kind==='block'&&degree(n.gain.n)>degree(n.gain.d)?'This is a formal improper gain.':''}`;
+        xInput.value=String(n.x);yInput.value=String(n.y);gainHost.replaceChildren();if(n.kind==='block')blockEditor=mathInput(gainHost,'Selected block gain in s',gainText(n.gain),()=>{if(hydrating||!ready)return;gainDirty=true;markPending();},inspectorLife.signal);originalPorts=n.inputs;renderPorts(n.inputs);gainDirty=false;pending=false;
+      }finally{hydrating=false;}
+    }
+    function applyEdits(){
+      if(drag)throw new Error('Finish or cancel the drag first.');const n=selectedNode(),draft=readPorts(),gain=n.kind==='block'&&gainDirty?parseTransfer(read(blockEditor!)!,'block'):n.gain;
+      const patch={label:labelInput.value.trim(),gain,x:readNumericInput(xInput,'node x'),y:readNumericInput(yInput,'node y'),inputs:draft};const next=editNode(history.graph,n.id,patch,draft.some(p=>!originalPorts.some(old=>old.id===p.id)));
+      if(unchanged(n,next.nodes.find(node=>node.id===n.id)!)){pending=false;renderInspector();sync();feedback.textContent='These edits leave the current node unchanged.';return;}pending=false;commit(next,'Node edits applied. Reveal the new channels or check a local identity.');
+    }
+    function chooseNode(id:string){if(pending){nodeSelect.value=selected;throw new Error('Apply or discard the pending node edits before selecting another node.');}if(drag)return;if(!history.graph.nodes.some(n=>n.id===id))return;selected=id;renderInspector();drawing?.paint(history.graph,selected);sync();}
+    function commit(graph:Diagram,message:string,nextRule=false){checkEditable(graph);history.commit(graph);refresh(nextRule);feedback.textContent=message;}
+    function loadPreset(kind:Parameters<typeof fixture>[0]){cancelDrag(false);pending=false;history.commit(fixture(kind));selected=kind==='changed'?'h2':'g1';if(!history.graph.nodes.some(n=>n.id===selected))selected='a';hydrating=true;proposal.setValue('');channelPrediction.setValue('');hydrating=false;refresh(true);feedback.textContent='Exercise loaded. Both scalar channels use the other independent input set to zero.';}
+    function refresh(nextRule=false){
+      pending=false;invalidate();if(!history.graph.nodes.some(n=>n.id===selected))selected=history.graph.nodes.find(n=>n.kind==='block')?.id??'r';renderInspector();gainList.replaceChildren();for(const n of history.graph.nodes.filter(node=>node.kind==='block'))gainList.append(mathDisplay(`\\mathrm{${n.label}}(s)=${gainText(n.gain)}`,`Current gain of block ${n.label}`));refreshOperations(nextRule?'':active?.id);drawCurrent();sync();
+    }
+    function refreshOperations(preferred?:string){
+      const previous=active?.id;available=operations(history.graph);const next=available.find(o=>o.id===preferred)??guided.map(id=>available.find(o=>o.id===id)).find(Boolean)??available[0];if(next)family.value=next.kind;fillMotifs(next?.id);if(active?.id!==previous){hydrating=true;proposal.setValue('');hydrating=false;}
+    }
+    function fillMotifs(preferred?:string){
+      motif.replaceChildren();const list=available.filter(o=>o.kind===family.value);for(const o of list){const option=el('option',o.title);option.value=o.id;motif.append(option);}if(preferred&&list.some(o=>o.id===preferred))motif.value=preferred;active=list.find(o=>o.id===motif.value);identity.replaceChildren();if(active)identity.append(mathDisplay(active.identity,'Selected local scalar identity'));else note(identity,'No supported self-contained motif of this kind is available. Inspect the ports, fanout and bounds, or choose another rule.');
+    }
+    function changeRule(){clearPreview();required.replaceChildren();hydrating=true;proposal.setValue('');hydrating=false;fillMotifs();drawCurrent();sync();}
+    function drawCurrent(){
+      if(!ready&&(!nodeSelect||!family))return;const oldLeft=canvasHost.querySelector('.cr04-canvas-scroll')?.scrollLeft??0;drawLife?.abort();drawLife=new AbortController();drawing=drawDiagram(history.graph,{title:'Current block diagram',id:`cr04-arrow-${++serial}`,selected,focus:active?.focus,changed:checked?.preview.changedSignals,removed:checked?.preview.removedSignals,signal:drawLife.signal,select:id=>invoke(()=>chooseNode(id)),nudge:(id,dx,dy)=>invoke(()=>{ensureIdle();const n=history.graph.nodes.find(node=>node.id===id)!;selected=id;const x=Math.min(1460,Math.max(40,n.x+dx)),y=Math.min(860,Math.max(40,n.y+dy));if(x===n.x&&y===n.y)return;commit(positioned(history.graph,id,x,y),'Node moved; port connectivity is unchanged.');}),startDrag:(id,e,g)=>invoke(()=>startDrag(id,e,g))});canvasHost.replaceChildren(drawing.element);drawing.element.querySelector('.cr04-canvas-scroll')!.scrollLeft=oldLeft;
+    }
+    function startDrag(id:string,e:PointerEvent,group:SVGGElement){
+      if(e.button!==0||e.isPrimary===false)return;ensureIdle();chooseNode(id);const rect=drawing!.svg.getBoundingClientRect();if(!rect.width||!rect.height)throw new Error('Use numeric position controls until the canvas is laid out.');const n=selectedNode(),world={x:-90+(e.clientX-rect.left)/rect.width*1680,y:-60+(e.clientY-rect.top)/rect.height*1020},life=new AbortController();drag={life,group,pointer:e.pointerId,node:n,offsetX:n.x-world.x,offsetY:n.y-world.y,x:n.x,y:n.y};
+      try{group.setPointerCapture?.(e.pointerId);}catch{/* Window listeners also cover browsers without pointer capture. */}
+      window.addEventListener('pointermove',event=>{if(!drag||event.pointerId!==drag.pointer)return;const r=drawing!.svg.getBoundingClientRect();if(!r.width||!r.height){cancelDrag(true);return;}drag.x=Math.round(Math.min(1460,Math.max(40,-90+(event.clientX-r.left)/r.width*1680+drag.offsetX)));drag.y=Math.round(Math.min(860,Math.max(40,-60+(event.clientY-r.top)/r.height*1020+drag.offsetY)));drawing!.paint(positioned(history.graph,id,drag.x,drag.y),selected);xInput.value=String(drag.x);yInput.value=String(drag.y);},{signal:life.signal});
+      window.addEventListener('pointerup',event=>{if(!drag||event.pointerId!==drag.pointer)return;const ended=drag;cancelDrag(false);if(Math.hypot(ended.x-ended.node.x,ended.y-ended.node.y)>2)invoke(()=>commit(positioned(history.graph,id,ended.x,ended.y),'Drag applied as one undo step; port connectivity is unchanged.'));else{drawing?.paint(history.graph,selected);xInput.value=String(ended.node.x);yInput.value=String(ended.node.y);sync();}},{signal:life.signal});
+      window.addEventListener('pointercancel',()=>cancelDrag(true),{signal:life.signal});window.addEventListener('blur',()=>cancelDrag(true),{signal:life.signal});window.addEventListener('keydown',event=>{if(event.key==='Escape')cancelDrag(true);},{signal:life.signal});group.addEventListener('lostpointercapture',()=>cancelDrag(true),{signal:life.signal});sync();
+    }
+    function cancelDrag(restore:boolean){const ended=drag;if(!ended)return;drag=undefined;ended.life.abort();try{if(ended.group.hasPointerCapture?.(ended.pointer))ended.group.releasePointerCapture(ended.pointer);}catch{/* Removed or aborted canvas. */}if(restore&&!disposed){drawing?.paint(history.graph,selected);xInput.value=String(ended.node.x);yInput.value=String(ended.node.y);feedback.textContent='Drag cancelled; the diagram is unchanged.';sync();}}
+    function checkLocal(){
+      ensureIdle();clearPreview();if(!active)throw new Error('Choose a supported local motif.');const raw=read(proposal)!,proposed=parseTransfer(raw,'answer'),preview=previewOperation(active,proposed);checkEditable(preview.diagram);const cache={base:history.graph,operation:active,raw,preview};
+      try{renderPreview(cache,proposed);checked=cache;drawCurrent();sync();}catch(error){clearPreview();throw error;}
+      feedback.textContent=preview.correct?'The local gain and both retained output channels agree exactly. You may apply this transformation.':preview.referenceEqual&&!preview.disturbanceEqual?'The reference channel agrees, but the disturbance channel changes. This proposal cannot be applied.':'This proposal is not a checked equivalent local identity. Inspect the local gain and both output channels.';
+    }
+    function applyChecked(){ensureIdle();const c=checked;if(!c||!c.preview.correct||history.graph!==c.base||active?.id!==c.operation.id||read(proposal)!==c.raw)throw new Error('Check the current proposal against this exact diagram before applying.');commit(c.preview.diagram,'Checked transformation applied; both retained output channels are preserved.',true);}
+    function signalName(graph:Diagram,id:string){if(id==='r')return'R(s)';if(id==='d')return'D(s)';if(id==='y')return'Y(s)';const n=graph.nodes.find(node=>node.id===id);return`x_{\\mathrm{${n?.label??id}}}(s)`;}
+    function nodeEquation(graph:Diagram,n:DiagramNode){const terms=n.inputs.map((p,i)=>`${p.sign<0?'-':i?'+':''}${n.kind==='block'?`\\left(${latexTF(n.gain)}\\right)`:''}${signalName(graph,p.source!)}`);return`${signalName(graph,n.id)}=${terms.join('')||'0'}`;}
+    function equations(host:HTMLElement,graph:Diagram,title:string){const details=el('details');details.append(el('summary',title));for(const n of graph.nodes.filter(node=>node.kind!=='source'))details.append(mathDisplay(nodeEquation(graph,n),`Signal equation at ${n.label}`));host.append(details);}
+    function transfer(host:HTMLElement,value:TF,input:'r'|'d',tag:string){host.append(mathDisplay(`\\frac{Y(s)}{${input==='r'?'R(s)':'D(s)'}}=${latexTF(value)}`,`${tag}: ${input==='r'?'reference':'disturbance'} output transfer`));}
+    function renderPreview(c:Checked,proposed:TF){
+      previewLife=new AbortController();const p=c.preview,host=el('div');host.append(el('h3',p.correct?'Checked equivalent candidate':'Tentative candidate — not applied'));
+      note(host,`Local gain: ${equalTF(proposed,c.operation.expected)?'equal':'different'}. Reference channel: ${p.referenceEqual?'equal':'CHANGED'}. Disturbance channel: ${p.disturbanceEqual?'equal':'CHANGED'}. All three checks must pass.`);
+      host.append(mathDisplay(`G_{\\mathrm{required}}(s)=${gainText(c.operation.expected)}`,'Required local gain after prediction'));
+      transfer(host,p.before.reference,'r','Before');transfer(host,p.after.reference,'r','Tentative after');transfer(host,p.before.disturbance,'d','Before');transfer(host,p.after.disturbance,'d','Tentative after');
+      const labels=(ids:readonly string[],graph:Diagram)=>ids.map(id=>graph.nodes.find(n=>n.id===id)?.label??id).join(', ')||'none';note(host,`Redefined signals: ${labels(p.changedSignals,c.base)}. Removed signals: ${labels(p.removedSignals,c.base)}. These internal names can change while the retained scalar channels stay equal.`);
+      const diagrams=el('details');diagrams.append(el('summary','View the before and tentative after diagrams'));const pair=el('div');pair.className='cr04-preview-pair';const added=p.diagram.nodes.filter(n=>!c.base.nodes.some(old=>old.id===n.id)).map(n=>n.id);
+      pair.append(drawDiagram(c.base,{title:'Before local change',id:`cr04-arrow-${++serial}`,focus:c.operation.focus,changed:p.changedSignals,removed:p.removedSignals}).element,drawDiagram(p.diagram,{title:'Tentative after local change',id:`cr04-arrow-${++serial}`,changed:p.changedSignals,added}).element);diagrams.append(pair);note(diagrams,'Amber marks redefined signals; dashed red marks removed nodes; blue marks added compensation. The current diagram changes only after Apply.');host.append(diagrams);
+      equations(host,c.base,'Before: signal equations');equations(host,p.diagram,'Tentative after: signal equations');previewHost.append(host);
+    }
+    function checkChannels(){
+      ensureIdle();clearChannels();const guess=read(channelPrediction,true),predicted=guess===null?null:parseTransfer(guess,'answer'),answer=solveDiagram(history.graph),chosen=channelSelect.value==='r'?answer.reference:answer.disturbance;
+      try{renderChannels(answer);}catch(error){clearChannels();throw error;}feedback.textContent=predicted===null?'Exact scalar channels are shown, each with the other independent input zero.':equalTF(predicted,chosen)?'Your selected-channel prediction is exactly equivalent.':'Your selected-channel prediction differs. Inspect the original node equations and both retained channels.';
+    }
+    function renderChannels(answer:Solution){channelLife=new AbortController();channelHost.append(el('h3',channelSelect.value==='r'?'Selected: reference r → Y, d=0':'Selected: disturbance d → Y, r=0'));transfer(channelHost,answer.reference,'r','Current diagram');transfer(channelHost,answer.disturbance,'d','Current diagram');note(channelHost,'Both channels are retained for every local-equivalence check. Reductions may redefine internal signals; this is not an internal-stability certificate.');equations(channelHost,history.graph,'Current signal equations');}
+    for(const input of[labelInput,xInput,yInput])input.addEventListener('input',markPending,{signal});nodeSelect.addEventListener('change',()=>invoke(()=>chooseNode(nodeSelect.value)),{signal});family.addEventListener('change',changeRule,{signal});motif.addEventListener('change',()=>{clearPreview();required.replaceChildren();active=available.find(o=>o.id===motif.value);hydrating=true;proposal.setValue('');hydrating=false;identity.replaceChildren();if(active)identity.append(mathDisplay(active.identity,'Selected local scalar identity'));drawCurrent();sync();},{signal});
+    channelSelect.addEventListener('change',()=>{clearChannels();hydrating=true;channelPrediction.setValue('');hydrating=false;},{signal});
+    refresh(true);ready=true;sync();return cleanup;
+  }catch(error){cleanup();throw error;}
+};
