@@ -49,6 +49,12 @@ The drag now consumes Escape in its signal-owned capture listener only while a d
 
 Validation with Node 24.22.1: CR04 plus application/session suites **79/79 tests in 12 files**, TypeScript checking and `git diff --check` pass. Existing abort/disposal, pointer cancellation and late-mount tests remain passing. No browser session, preview, new mathematical review, CI approval, release or deployment is claimed by this narrow correction; the coordinator retains the combined browser and acceptance gates.
 
+### Keyboard movement focus follow-up
+
+The module reviewer also reproduced keyboard focus falling back to the page after an arrow move replaced the focused SVG node. The next arrow therefore did not move that node. The keyboard move now records whether its original node held focus and restores focus to that same node's replacement after the committed redraw, without scrolling. Numeric edits, preset changes and mouse-driven redraws receive no focus-restoration behavior.
+
+New regressions move focused G1 right twice (x=420→440→460), then down with Shift (y=220→300), dispatching each key to the current active element and checking three undo snapshots. A separate regression retains focus on native position controls and preset buttons through their redraws. The repeated-arrow focus assertion failed against the preceding drag-only correction. Final focused validation: **81/81 tests in 12 files**, TypeScript checking and diff checks pass; the combined shell/Escape regressions remain passing. These are DOM tests with mocked equation widgets, without a new browser claim.
+
 ---
 # CR04 implementation status
 
