@@ -90,3 +90,16 @@ The independently derived fixtures include `G=(s+3)/((s−2)(s+1)), C=3, H=2`, g
 **Nonblocking workflow follow-up:** the initial view has no computed plot and exposes four equation editors, ten preset buttons and R/ε before the first construction. The coordinator clarified that the external contribution predates the new baseline-first feedback. Keep simplifying that presentation as a prioritized UX follow-up, rather than treating it alone as a TASK correctness rejection. Shared palette-token alignment is also a later presentation follow-up.
 
 No fresh browser control is available in this review session, and no unsupported Firefox route was retried. Full combined tests/build, final desktop/narrow-browser gates and fork CI approval remain with the coordinator. The earlier contributor browser/full-suite evidence above is not claimed as a new reviewer run. The mistakenly reserved local implementation claim was released as unstarted; its clean setup and the separate review worktree were preserved, with no competing implementation started.
+
+### Follow-up: unresolved mapped samples retain gaps
+
+The coordinator authorized correction of the distinct plotted-gap finding on the **same** isolated local fix branch, extending `663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f`. The earlier "not corrected" note describes that first checkpoint and is superseded by this follow-up.
+
+`plot.ts` now provides caller-owned `contourSeries` data: source points remain on the complete source contour, while each uninterrupted run of finite mapped responses becomes a separate image series. An undefined or nonfinite mapped response ends its current run. A subsequent valid response starts without a seed across that gap; ordinary valid kind transitions retain their previous endpoint and styling. `view.ts` uses this helper. The numerical analysis and P/N/Z calculations are unchanged.
+
+- A view regression for `G=1/(s−10)³`, C=4, H=1, R=10.001, ε=0.05 failed before the correction (one joined outer-arc image series). It now checks two separate mapped runs, no edge joining the valid neighbors across the missing sample, finite rendered coordinates, a complete source contour and no mapped cursor marker at the undefined sample. The result remains unresolved and its N table entry remains "Not reported".
+- The ordinary baseline control preserves all finite mapped samples and connected segment-kind joins, and still reveals P=0/N=0/Z=0. Three pure plotting controls cover undefined, NaN/Infinity, consecutive/boundary/edge omissions and unchanged ordinary joins.
+- `npm exec vitest run src/modules/cs04`: **107 tests / 5 files pass**. `npm run check` and `git diff --check`: pass.
+- Browser-control tools reappeared, but the actual inventory returned **no connected browsers**. No private browser identity could be verified, so no new real-browser check is claimed. No preview process, tab, viewport override, Firefox action or QA reservation was started. Final browser/combined-build/CI acceptance remains coordinator-owned.
+
+The final local branch contains both focused corrections and only CS04 view/plot code, their local tests and this evidence. No external fork branch, PR metadata, primary source, shared code, dependency or release file is changed. The local commits are not pushed; the coordinator will independently recheck and integrate their lineage.

@@ -5,7 +5,7 @@ import { analyze, compose, type Analysis, type Loop } from './criterion';
 import { parsePolynomial } from './expression';
 import { numeric, polynomialLatex } from './exact';
 import type { Point, Kind } from './nyquist';
-import { plot, type Series, type XY } from './plot';
+import { contourSeries, plot } from './plot';
 import './style.css';
 const fmt = (v: number) => v === 0 ? '0' : v.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 7 });
 const complex = (z: { re: number; im: number }) => `${fmt(z.re)} ${z.im < 0 ? '−' : '+'} j${fmt(Math.abs(z.im))}`;
@@ -89,11 +89,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     function samples(): readonly Point[] { return analysis ? 'winding' in analysis ? analysis.winding.points : analysis.contour.points : []; }
     function paint() {
       if (!analysis || !loop) return; const points = samples(), selectedIndex = integer(index, 'contour sample index', 0, points.length - 1); slider.value = String(selectedIndex); const point = points[selectedIndex];
-      const source: Series[] = [], image: Series[] = []; let previous: Point | null = null;
-      for (const p of points) {
-        if (!previous || previous.kind !== p.kind) { source.push({ name: p.kind, points: previous ? [{ x: previous.source.re, y: previous.source.im }] : [], color: colors[p.kind], dashed: p.kind === 'negative-axis' }); image.push({ name: p.kind, points: previous?.response.kind === 'value' ? [{ x: previous.response.value.re, y: previous.response.value.im }] : [], color: colors[p.kind], dashed: p.kind === 'negative-axis' }); }
-        (source.at(-1)!.points as XY[]).push({ x: p.source.re, y: p.source.im }); if (p.response.kind === 'value') (image.at(-1)!.points as XY[]).push({ x: p.response.value.re, y: p.response.value.im }); previous = p;
-      }
+      const { source, image } = contourSeries(points, colors);
       figures.replaceChildren(plot('Clockwise RHP source contour', source, [...loop.openRoots.map(z => ({ x: z.re, y: z.im, label: '', cross: true })), { x: point.source.re, y: point.source.im, label: 's', color: '#192b45' }], ['Re(s) (s⁻¹)', 'Im(s) (s⁻¹)']), plot(zoom.value === 'critical' ? 'L(s) near −1: clipped Cartesian window' : 'L(s): complete finite mapped contour', image, [{ x: -1, y: 0, label: '−1', cross: true }, ...(point.response.kind === 'value' ? [{ x: point.response.value.re, y: point.response.value.im, label: 'L(s)', color: '#192b45' }] : [])], ['Re(L), dimensionless', 'Im(L), dimensionless'], zoom.value === 'critical'));
       inspector.textContent = `Sample ${selectedIndex}/${points.length - 1}, ${point.kind}: s=${complex(point.source)} s⁻¹; ${point.response.kind === 'value' ? `L(s)=${complex(point.response.value)}` : point.response.message}. Indent samples evaluate L(s) off the imaginary axis, rather than L(jω).`;
       paintedView = zoom.value;

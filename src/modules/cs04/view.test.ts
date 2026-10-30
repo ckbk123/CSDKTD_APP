@@ -1,4 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+const rendered = vi.hoisted(() => ({ series: new Map<string, readonly { name: string; points: readonly { x: number; y: number }[] }[]>() }));
+vi.mock('./plot', async importOriginal => {
+  const original = await importOriginal<typeof import('./plot')>();
+  return { ...original, plot: (...args: Parameters<typeof original.plot>) => { rendered.series.set(args[0], args[1]); return original.plot(...args); } };
+});
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (value: string, label: string) => { const e = document.createElement('div'); e.textContent = value; e.setAttribute('aria-label', label); return e; },
   createEquationInput: ({ label, value, signal, onChange }: { label: string; value: string; signal: AbortSignal; onChange: () => void }) => {
@@ -7,8 +12,11 @@ vi.mock('../../shared/equations/input', () => ({
   },
 }));
 import { mount } from './view';
+import { analyze, compose } from './criterion';
+import { parsePolynomial } from './expression';
+import { one, rat } from './exact';
 let clean: (() => void) | undefined;
-afterEach(() => { clean?.(); clean = undefined; document.body.replaceChildren(); });
+afterEach(() => { clean?.(); clean = undefined; document.body.replaceChildren(); rendered.series.clear(); });
 function visit() { const container = document.createElement('div'), parent = new AbortController(); document.body.append(container); clean = mount({ container, signal: parent.signal }) || undefined; return { container, parent }; }
 function field(label: string): HTMLInputElement { return [...document.querySelectorAll('input')].find(e => e.getAttribute('aria-label') === label || e.closest('label')?.firstChild?.textContent === label)!; }
 function set(label: string, value: string) { const input = field(label); input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); }
@@ -68,6 +76,37 @@ describe('staged Nyquist flow (mocked editors; actual browser checked separately
     expect(zoom.value).toBe(nextView); expect(figures.querySelectorAll('figcaption')[1].textContent).toBe(nextView === 'critical' ? 'L(s) near −1: clipped Cartesian window' : 'L(s): complete finite mapped contour');
   });
   it('revokes a checked P when the attempt changes', () => { visit(); build(); checkP('0'); reveal(); set('Your open-loop RHP pole count P', '1'); expect(table()).toBe(''); expect(field('Your counterclockwise winding N').disabled).toBe(true); });
+  it('splits an unresolved mapped outer arc without cutting the valid source contour or reporting N', () => {
+    visit(); set('Plant denominator D_G(s)', '(s-10)^3'); set('Contour radius R (s⁻¹)', '10.001'); build();
+    const loop = compose(parsePolynomial('1'), parsePolynomial('(s-10)^3'), rat(4), one), analysis = analyze(loop, 10.001, .05);
+    expect(analysis.kind).toBe('unresolved'); const arc = analysis.contour.segments.find(s => s.kind === 'outer-arc')!;
+    const gap = arc.points.findIndex(point => point.response.kind === 'undefined'); expect(gap).toBeGreaterThan(0); expect(gap).toBeLessThan(arc.points.length - 1);
+    const before = arc.points[gap - 1].response, after = arc.points[gap + 1].response;
+    expect(before.kind).toBe('value'); expect(after.kind).toBe('value');
+    const mapped = rendered.series.get('L(s): complete finite mapped contour')!.filter(s => s.name === 'outer-arc'); expect(mapped).toHaveLength(2);
+    if (before.kind === 'value' && after.kind === 'value') {
+      expect(mapped[0].points.at(-1)).toEqual({ x: before.value.re, y: before.value.im }); expect(mapped[1].points[0]).toEqual({ x: after.value.re, y: after.value.im });
+      expect(mapped.some(s => s.points.some((point, i) => point.x === before.value.re && point.y === before.value.im && s.points[i + 1]?.x === after.value.re && s.points[i + 1]?.y === after.value.im))).toBe(false);
+    }
+    expect(mapped.flatMap(s => s.points).every(point => Number.isFinite(point.x) && Number.isFinite(point.y))).toBe(true);
+    const source = rendered.series.get('Clockwise RHP source contour')!.filter(s => s.name === 'outer-arc'); expect(source).toHaveLength(1);
+    expect(source[0].points).toContainEqual({ x: arc.points[gap].source.re, y: arc.points[gap].source.im });
+    const sampleIndex = analysis.contour.points.findIndex(point => point === arc.points[gap]); set('Contour sample index', String(sampleIndex));
+    expect(document.querySelectorAll('.cs04-plots svg')[1].querySelectorAll('circle')).toHaveLength(0);
+    checkP('3'); reveal(); expect(table()).toContain('Not reported'); expect(document.querySelector('.cs04-answer')!.textContent).toContain('Contour count unresolved');
+  });
+  it('keeps ordinary valid curves connected and their independently checked Nyquist result unchanged', () => {
+    visit(); build(); const loop = compose(parsePolynomial('1'), parsePolynomial('(s+1)(s+2)'), rat(4), one), analysis = analyze(loop, 20, .05);
+    expect(analysis.kind).toBe('stable'); expect('winding' in analysis).toBe(true);
+    if ('winding' in analysis) {
+      const mapped = rendered.series.get('L(s): complete finite mapped contour')!;
+      expect(mapped.map(s => s.name)).toEqual(['negative-axis', 'positive-axis', 'outer-arc']);
+      for (const point of analysis.winding.points) {
+        expect(point.response.kind).toBe('value'); if (point.response.kind === 'value') expect(mapped.find(s => s.name === point.kind)!.points).toContainEqual({ x: point.response.value.re, y: point.response.value.im });
+      }
+    }
+    checkP('0'); reveal('0'); expect(table()).toContain('0−(0)=0'); expect(document.querySelector('.cs04-answer')!.textContent).toContain('Strictly stable');
+  });
   it('reopens from the metadata baseline after cleanup and releases old controls', () => {
     const first = visit(); button('Two RHP poles').click(); build(); const oldButton = button('Build the selected loop and contour'); first.parent.abort(); oldButton.click(); expect(first.container.children).toHaveLength(0);
     clean?.(); visit(); expect(field('Controller gain C').value).toBe('4'); expect(field('Sensor gain H').value).toBe('1'); expect(field('Plant denominator D_G(s)').value).toBe('(s+1)(s+2)'); expect(table()).toBe('');

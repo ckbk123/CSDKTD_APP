@@ -1,6 +1,29 @@
+import type { Kind, Point } from './nyquist';
+
 export interface XY { x: number; y: number }
 export interface Series { name: string; points: readonly XY[]; color: string; dashed?: boolean }
 export interface Mark extends XY { label: string; cross?: boolean; color?: string }
+/** Keep the complete source path while each finite mapped run owns its own series. */
+export function contourSeries(points: readonly Point[], colors: Readonly<Record<Kind, string>>): { source: Series[]; image: Series[] } {
+  const source: Series[] = [], image: Series[] = []; let previous: Point | undefined, mappedRun: XY[] | undefined;
+  const mapped = (point?: Point): XY | undefined => point?.response.kind === 'value' && Number.isFinite(point.response.value.re) && Number.isFinite(point.response.value.im) ? { x: point.response.value.re, y: point.response.value.im } : undefined;
+  for (const point of points) {
+    const changedKind = !previous || previous.kind !== point.kind;
+    if (changedKind) source.push({ name: point.kind, points: previous ? [{ x: previous.source.re, y: previous.source.im }] : [], color: colors[point.kind], dashed: point.kind === 'negative-axis' });
+    (source.at(-1)!.points as XY[]).push({ x: point.source.re, y: point.source.im });
+    const value = mapped(point);
+    if (!value) mappedRun = undefined;
+    else {
+      if (changedKind || !mappedRun) {
+        const prior = changedKind ? mapped(previous) : undefined; mappedRun = prior ? [prior] : [];
+        image.push({ name: point.kind, points: mappedRun, color: colors[point.kind], dashed: point.kind === 'negative-axis' });
+      }
+      mappedRun.push(value);
+    }
+    previous = point;
+  }
+  return { source, image };
+}
 const ns = 'http://www.w3.org/2000/svg';
 const fmt = (v: number) => Math.abs(v) < 1e-12 ? '0' : Number(v.toPrecision(3)).toString();
 function node<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, text?: string) {
