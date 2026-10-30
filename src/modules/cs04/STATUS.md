@@ -71,3 +71,35 @@ Cursor arrow keys changed the paired source/image sample. The clipped view retai
 The coordination-helper suite had already passed 32/32 earlier in this contribution goal and was not rerun for unchanged scripts. Its unchanged blobs are `64bd6ba343a7e0e4c8c2837539e6fd278c95de07` (agent-claim.mjs) and `3f0ee4448a38d39d8d0c9661d0047e03e1fca6f2` (agent-claim.node-test.mjs). That reused evidence is separate from the module/full Vitest counts above.
 
 Upstream CI execution needs the repository's fork-workflow approval, and independent maintainer review remains pending. Keep the PR draft until those gates are resolved. No merge, release or deployment is performed.
+
+## Independent review and focused local correction — 30 October 2026
+
+Reviewer chat: `01a186d1-f1f0-7393-88e7-377fbac7299a`. Reviewed frozen PR #54 source **`1d5e04586b8ba5315bef963b515d8fb96f89e6cf`** in a separate review worktree. The original 94 module tests passed. Ten temporary independent probes passed, including 155 factored degree-1–3 Routh/multiplicity cases, four additional complete-contour fixtures (mixed RHP/axis poles and a nonunit sensor), a closed-axis boundary, TeX argument controls and the UI reproductions below. These are source/math/jsdom checks, not fresh browser evidence.
+
+The independently derived fixtures include `G=(s+3)/((s−2)(s+1)), C=3, H=2`, giving `Q=s²+5s+16`, P=1/N=1/Z=0; `G=1/(s²−2s+2), C=−3, H=2`, giving roots `1±√5`, P=2/N=1/Z=1; and `G=1/[s²(s−1)], C=2`, giving `Q=(s+1)(s²−2s+2)`, P=1/N=−1/Z=2. The declared clockwise-source/CCW-image convention, sensor inclusion, boundary separation and stateless contour calculation agree with these checks.
+
+**Confirmed and corrected locally:** build the baseline, clear the native Contour sample index (or enter `1e-999`), then select the other mapped-curve view. The original unguarded zoom listener threw an uncaught validation error and left the old plot under the new selector value. The focused correction routes index/slider/zoom redraws through a guarded handler, remembers the last successfully painted view, restores that selector after validation failure and preserves the displayed plots with useful recovery feedback. It does not change Nyquist mathematics or the accepted input bounds.
+
+- Eight new regressions failed before the correction and pass afterward: empty, nonzero-underflow, negative and excessive indices from both whole/critical views. Each checks no uncaught event, unchanged valid figures, matching selector and successful recovery after entering index 0.
+- `npm exec vitest run src/modules/cs04`: **102 tests / 5 files pass**.
+- `npm run check`: pass. `git diff --check`: pass.
+- This correction is confined to `view.ts`, `view.test.ts` and this record on local branch `codex/cs04-pr54-zoom-fix-7393`, rooted at the frozen PR source. It is not pushed and does not change the external PR. The coordinator owns its independent check and integration.
+
+**Distinct finding, not corrected in this focused commit:** for `G=1/(s−10)³`, C=4, H=1, R=10.001 and ε=0.05, the outer-arc midpoint is explicitly numerically undefined. The analysis correctly reports an insufficient-radius/unresolved result and does not invent N. However, the view drops that point from its single image series and the plot draws a chord between its neighboring valid responses. The mapped series should split at the missing response so the unresolved part stays a gap. This was reproduced by the real math helper and captured series in a mocked-editor view; actual browser verification remains a coordinator gate.
+
+**Nonblocking workflow follow-up:** the initial view has no computed plot and exposes four equation editors, ten preset buttons and R/ε before the first construction. The coordinator clarified that the external contribution predates the new baseline-first feedback. Keep simplifying that presentation as a prioritized UX follow-up, rather than treating it alone as a TASK correctness rejection. Shared palette-token alignment is also a later presentation follow-up.
+
+No fresh browser control is available in this review session, and no unsupported Firefox route was retried. Full combined tests/build, final desktop/narrow-browser gates and fork CI approval remain with the coordinator. The earlier contributor browser/full-suite evidence above is not claimed as a new reviewer run. The mistakenly reserved local implementation claim was released as unstarted; its clean setup and the separate review worktree were preserved, with no competing implementation started.
+
+### Follow-up: unresolved mapped samples retain gaps
+
+The coordinator authorized correction of the distinct plotted-gap finding on the **same** isolated local fix branch, extending `663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f`. The earlier "not corrected" note describes that first checkpoint and is superseded by this follow-up.
+
+`plot.ts` now provides caller-owned `contourSeries` data: source points remain on the complete source contour, while each uninterrupted run of finite mapped responses becomes a separate image series. An undefined or nonfinite mapped response ends its current run. A subsequent valid response starts without a seed across that gap; ordinary valid kind transitions retain their previous endpoint and styling. `view.ts` uses this helper. The numerical analysis and P/N/Z calculations are unchanged.
+
+- A view regression for `G=1/(s−10)³`, C=4, H=1, R=10.001, ε=0.05 failed before the correction (one joined outer-arc image series). It now checks two separate mapped runs, no edge joining the valid neighbors across the missing sample, finite rendered coordinates, a complete source contour and no mapped cursor marker at the undefined sample. The result remains unresolved and its N table entry remains "Not reported".
+- The ordinary baseline control preserves all finite mapped samples and connected segment-kind joins, and still reveals P=0/N=0/Z=0. Three pure plotting controls cover undefined, NaN/Infinity, consecutive/boundary/edge omissions and unchanged ordinary joins.
+- `npm exec vitest run src/modules/cs04`: **107 tests / 5 files pass**. `npm run check` and `git diff --check`: pass.
+- Browser-control tools reappeared, but the actual inventory returned **no connected browsers**. No private browser identity could be verified, so no new real-browser check is claimed. No preview process, tab, viewport override, Firefox action or QA reservation was started. Final browser/combined-build/CI acceptance remains coordinator-owned.
+
+The final local branch contains both focused corrections and only CS04 view/plot code, their local tests and this evidence. No external fork branch, PR metadata, primary source, shared code, dependency or release file is changed. The local commits are not pushed; the coordinator will independently recheck and integrate their lineage.
