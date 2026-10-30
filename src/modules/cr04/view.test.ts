@@ -63,6 +63,21 @@ describe('complete block-diagram student flow (mock math; actual browser separat
   it('keeps channel mathematics invariant under numeric and keyboard moves',()=>{
     visit();set('Node x (layout units)','520');set('Node y (layout units)','270');button('Apply selected node edits').click();channel();expect(channels()).toContain('s^{2}+5s+5');const node=document.querySelector('g[data-node-id="g1"]')!;node.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));expect(field('Node x (layout units)').value).toBe('540');button('Undo last diagram change').click();expect(field('Node x (layout units)').value).toBe('520');channel();expect(channels()).toContain('s^{2}+5s+5');
   });
+  it('retains the focused node across repeated arrow moves and a shifted move',()=>{
+    visit();const current=()=>document.querySelector<SVGGElement>('.cr04-canvas-scroll g[data-node-id="g1"]')!;
+    current().focus();expect(document.activeElement).toBe(current());
+    for(const x of['440','460']){
+      document.activeElement!.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));
+      expect(field('Node x (layout units)').value).toBe(x);expect(document.activeElement).toBe(current());
+    }
+    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',shiftKey:true,bubbles:true,cancelable:true}));
+    expect(field('Node y (layout units)').value).toBe('300');expect(document.activeElement).toBe(current());expect(document.body.textContent).toContain('Undo snapshots: 3/40');
+  });
+  it('does not move focus from editing controls or preset buttons on other redraws',()=>{
+    visit();const x=field('Node x (layout units)');x.focus();set('Node x (layout units)','520');
+    expect(document.activeElement).toBe(x);button('Apply selected node edits').click();expect(document.activeElement).toBe(x);
+    const preset=button('Load H2=3 variation');preset.focus();preset.click();expect(document.activeElement).toBe(preset);
+  });
   it('commits exactly one drag snapshot and releases pointer capture',()=>{
     visit();const {capture,release}=startDrag();window.dispatchEvent(event('pointermove',{pointerId:7,clientX:610,clientY:330}));expect(field('Node x (layout units)').value).toBe('520');expect(field('Node y (layout units)').value).toBe('270');window.dispatchEvent(event('pointerup',{pointerId:7}));expect(capture).toHaveBeenCalledWith(7);expect(release).toHaveBeenCalledExactlyOnceWith(7);expect(document.body.textContent).toContain('Undo snapshots: 1/40');button('Undo last diagram change').click();expect(field('Node x (layout units)').value).toBe('420');window.dispatchEvent(event('pointermove',{pointerId:7,clientX:700,clientY:400}));expect(field('Node x (layout units)').value).toBe('420');
   });
