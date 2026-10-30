@@ -1,3 +1,45 @@
+# CR04 current teaching workspace — 30 October 2026
+
+- **Stage:** implemented; local validation complete; independent technical review and upstream CI approval pending.
+- **Base:** `a43989def918052cc969cbee8691ce79d8824ec9` (v0.3.14).
+- **Owner:** external contributor `ckbk456`, branch `codex/cr04-block-diagram-editor-20261030`.
+- **Worker chat:** `01a188d9-ee2e-7c20-bdf2-0725a50f5406`.
+- **Public reservation / delivery:** [PR #57](https://github.com/ckbk123/CSDKTD_APP/pull/57), reserved before substantial implementation and kept draft for the remaining repository gates.
+- **Scope:** `src/modules/cr04/**` only. Metadata/TASK, the exact algebra/model/operations/parser, their mathematical tests, shared/global/dependency/version/release/deployment files remain unchanged. The obsolete blank-mount assertion is replaced by working-entry and lifecycle coverage; the integration test's independent channel and parser checks remain.
+
+The latest FINAL_HANDOFF permits this fresh-branch completion of the integrated partial. Former PR #45 and its branch remain preserved. Upstream and all open PRs/issues were audited before reservation: no competing CR04 reservation was found. The public reservation, exact tested final head, private local claim and remote head are tracked separately; no private claim credential belongs in this file.
+
+## Completed exercise and declared meaning
+
+Students can add/delete transfer blocks, signed summers and explicit copying junctions; edit unique labels, visual block gains, source/sign ports and positions; or load the declared nested, changed-H2, series and signed-parallel fixtures. The two independent sources r,d and retained Y are protected. Missing consumer ports after deletion remain visibly unconnected. Connectivity comes from ports, never line crossings or geometry.
+
+Every supported series/parallel/feedback, adjacent-summer flattening, compensated summer move and compensated pickoff move requires an entered local gain and an explicit check. A tentative candidate shows the local identity, before/after reference and disturbance transfers, signal equations, removed/redefined signals and optional highlighted diagrams. Apply requires the exact current graph, motif and proposal to pass all three checks: local gain, reference channel, disturbance channel. A candidate preserving only the reference channel is refused. Direct node edits are new models and explicitly invalidate prior results.
+
+The selected r→Y or d→Y prediction is optional; reveal solves and labels both scalar channels with the other input zero. This is zero-state Laplace algebra with real rational gains, s in inverse seconds and compatible chosen signal units. Formal inverse gains may be improper. Exact cancellation and external equivalence do not certify standalone realizability or internal stability, or retain unsimplified removable singularities.
+
+Independent core oracles retained from main establish the nested baseline inner 1/(s+4), R→Y=1/(s²+5s+5), D→Y=(s+1)/(s²+5s+5); H2=3 changes the inner block to 1/(s+5) and the common denominator to s²+6s+6. The completed five-step route keeps the disturbance compensation s+1. The authored series fixture gives R→Y=1/((s+1)(s+2)), D→Y=0. Its signed-parallel counterpart gives that same R channel and D→Y=1.
+
+## Bounds, editing and resource lifetime
+
+The interface enforces the preserved core limits: 12 non-source nodes, 24 total ports, 1–4 signed ports per summer, x=40…1460 and y=40…860. Visible labels are distinct, start with a letter and have at most 12 letters/digits. History stores at most 40 immutable diagram snapshots, with a bounded visit identity range. A completed pointer drag creates one snapshot; Escape, pointer cancellation, lost capture or blur restores the committed layout. Numeric controls and 20-unit arrows (Shift:80) provide alternatives. Each canvas frame pans horizontally on narrow screens.
+
+Manual gains accept the preserved bounded rational grammar: 600 raw characters, 256 tokens, 16 nested groups, powers 0–12, numerator/denominator degree ≤3, coefficient parts ≤10¹² and magnitude ≤10⁶, literals 12 digits/8 decimal places. Answers allow reduced degree ≤12 and literals 60 digits/40 decimal places. Exact arithmetic retains the 4096-bit, work-degree24 and reduced-degree12 limits. Display/editor gain notation is bounded to 600 characters; each read-only equation to 8192. Unchanged derived gains survive edits to other properties. Unsupported functions/variables/e notation, mixed numbers, malformed argument grouping, zero inverses, missing ports, singular equations and exhausted bounds receive feedback rather than partial/stale answers.
+
+All history, editors and controllers are caller-owned. A private synchronous loading wrapper guards late success/failure and owns the child abort signal. Inspector/port rerenders abort their old listeners. Each drag owns and releases its pointer capture/window listeners once. Abort, reset, partial initialization failure and re-entry dispose editors, canvases, history, pending candidates and active drag resources. No timer, observer, worker, persistence, API or external solver is introduced.
+
+## Verification on this completion
+
+- Supported Node24; `npm test -- src/modules/cr04`: **57/57 tests, 9 files**.
+- `npm run check`: passed. `npm test`: **4723/4723 tests, 223 files**. `npm run build`: passed, with the pre-existing shared MathLive chunk-size advisory. `git diff --check`: passed.
+- New coverage checks editor bounds, geometry/channel invariance, signed ports and incomplete models, bounded undo, the full nested route, wrong disturbance compensation, both move directions, stale candidates, native numeric failures, pointer commit/capture/cancellation, obsolete controls, partial setup failure and deferred/cached teardown. Existing pure mathematical tests are preserved.
+- Actual production-browser checks at 1280×900 and 390×844: pointer dragging/undo; junction selection; numeric and keyboard positioning; H2=3 and manual H2=4 outputs; all five nested transformations; both pickoff directions and downstream summer movement; signed parallel channels; add/remove signed ports, new nodes, deletion/undo; missing/singular equations and recovery; exact selected disturbance prediction; fractions, powers and parenthesis templates; rejected malformed grouping/z entry, real native incomplete `e` and nonzero underflow; stale-Apply blocking; Numeric/Systems keyboards; reset while open; native horizontal canvas panning and contained page width; immediate exit after fresh entry and cached exit while keyboard open; fresh remount with exactly three editors. No browser warning/error was observed.
+- Sanitized desktop/phone/diagram/wrong-compensation captures are local delivery evidence outside Git. The unchanged coordination-helper suite had separately passed 32/32 checks; its reuse is qualified by unchanged script blobs in the PR, not claimed as a fresh run for this source-only completion.
+
+Original Ch2/S03/W03 image assets remain unavailable and uninspected. The recorded audit topology is explicit; the positive E2 disturbance and additional series/parallel fixtures are authored variations. No new transcription claim or independent-review certification is made. Upstream fork-workflow approval, required CI and independent technical review remain merge gates; no merge, release or deployment has occurred. A coordinated variable-agnostic exact-rational/lifecycle helper may reduce duplication later; no shared API is requested as a blocker to this isolated contribution.
+
+The historical partial-core and integration records follow unchanged and describe their own earlier checkpoints.
+
+---
 # CR04 implementation status
 
 - **Stage:** in-progress
