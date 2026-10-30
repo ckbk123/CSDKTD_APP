@@ -1,8 +1,8 @@
 # Coordinator: ten-worker delivery and handoff
 
-## Resumed effort — 30 October 2026
+## Completed resumed effort — v0.3.15 / 30 October 2026
 
-The human has resumed coordination and authorized work toward the remaining accepted exercises, review/merge of new submissions, and subsequent iterative interface refinement. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) is the current local assignment and review record. Its named assignments supersede the completed wind-down below. The v0.3.14 delivery and earlier reviews remain historical evidence; friends on other computers still submit one task and stop. Do not restart unassigned work, change budgets or deploy. The coordinator keeps the accepted preview on 8787 available and integrates reviewed passing revisions serially with patch releases.
+The human resumed coordination, and the eight remaining external contributions now complete all 56 bounded tools in v0.3.15. [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md) records current delivery. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) preserves the completed assignment/review history; its named workers do not have active implementation assignments. Friends on other computers still submit one task and stop. Future work requires an explicit actual issue/refinement scope; [INTERFACE_REFINEMENT.md](INTERFACE_REFINEMENT.md) records candidates for human-guided iterations. Do not restart unassigned work, change budgets or deploy. Keep the accepted preview on 8787 available.
 
 ## Current human instruction — stop after current work
 

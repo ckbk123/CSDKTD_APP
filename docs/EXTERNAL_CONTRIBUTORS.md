@@ -16,6 +16,8 @@ If GitHub authentication or public reservation is unavailable, inspect and propo
 
 ## Scope, evidence and delivery
 
+Keep the owned `STATUS.md` stage line machine-readable: `- **Stage:** implemented` with no trailing prose. Put remaining gates and qualifications on separate lines. Only independent acceptance can change it to `verified`.
+
 Follow AGENTS and [START_HERE.md](START_HERE.md). Portable contributors read the latest instructions in **their upstream-main checkout**; they are not required to access the owner's primary directory. Public TASK/atlas/research records are available in Git. Original course slides remain outside Git and may be unavailable: preserve inspected/proposed distinctions, use cited public sources when appropriate, and report any source-dependent acceptance gap instead of inventing slide evidence.
 
 Own one `src/modules/<id>/**` tree or an explicitly assigned shared correction. Preserve lazy immutable metadata, stateless shared helpers, per-visit state and abort/disposal behavior. Use existing visual equation and native-number APIs. Check actual mathematical meaning before removing TeX tokens; readable input is part of correctness. Keep the compact Indigo/slate interface and author/version identity. Do not alter dependencies, global configuration, versions, tags, main or hosting under a module assignment.

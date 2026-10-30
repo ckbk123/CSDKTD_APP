@@ -2,6 +2,13 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.15 — 30 October 2026
+
+- Complete CD02/CD04 root-locus lead and lead-lag design, CD06 frequency lag/lead-lag, CD07 response-curve tuning, CS04 Nyquist stability, DD02 direct discrete lead/lag, DR04 sampled diagrams/discrete Mason, and CR04 interactive block reduction. All 56 accepted bounded tools are now verified; original fork histories from PRs #50–57 are preserved in the [release map](docs/releases/v0.3.15.json).
+- Correct CR04 significant Unicode input boundaries, active-drag Escape ownership and repeated-arrow focus; CD07 tangent precision; CS04 invalid-cursor recovery and mapped contour gaps; CD02 deadline grading within sampling uncertainty; and DR04 signed-zero exponents. Preserve full modes, both diagram channels, exact/numerical distinctions, finite-horizon qualifications and all previous safeguards.
+- All **5,562 application tests in 257 files**, **32 coordination tests**, TypeScript, build and coordinator desktop/390px browser gates pass. Original exact-head fork CI is green. [Batch evidence](docs/INTEGRATION_BATCHES.md) distinguishes mathematical, renderer/DOM and actual-browser checks.
+- Record the instructor's next [interface refinement](docs/INTERFACE_REFINEMENT.md): useful baseline visuals, fewer initial controls and optional depth. No broad redesign or deployment is included in this release.
+
 ## 0.3.14 — 30 October 2026
 
 - Integrate the final 25 worker PRs: 24 working tools and CR04's explicitly partial exact diagram core. The complete catalogue now contains 48 verified tools, one in-progress core and seven scaffolds; [the handoff](docs/FINAL_HANDOFF.md) provides the remaining tasks and portable contributor prompt.

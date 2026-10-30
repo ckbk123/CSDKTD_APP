@@ -1,6 +1,6 @@
 # Start here: implement a Control Studio goal
 
-**Local work resumed, 30 October 2026:** the latest human instruction and [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) govern named local workers. Finish the remaining accepted tools with a simple baseline-first workflow and optional detail. Preserve the earlier v0.3.14 handoff as dated evidence. Friends contributing from other computers continue using the finite external-contributor prompt.
+**Current delivery: v0.3.15 completes all 56 bounded tools.** Use [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md). The [resumed review assignments](RESUMED_COORDINATION.md) below are completed history; do not restart workers or choose a verified module at random. A future issue/refinement needs explicit scope. [INTERFACE_REFINEMENT.md](INTERFACE_REFINEMENT.md) records candidates for the instructor's next iterations. Friends on other computers retain the finite external-contributor prompt.
 
 **Current handoff:** the owner ended the ten-worker continuous batch with a stop-after-current instruction. Contributors on another computer should start with [EXTERNAL_CONTRIBUTORS.md](EXTERNAL_CONTRIBUTORS.md) and [CONTRIBUTOR_PROMPT.txt](CONTRIBUTOR_PROMPT.txt), which define one finite task and portable setup. An explicit finite user assignment overrides the historical loop described below. Check open upstream PRs before treating a scaffold as unclaimed.
 

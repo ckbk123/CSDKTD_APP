@@ -14,7 +14,7 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 
 ## Read before editing
 
-**Resumed local coordination, 30 October 2026:** the human explicitly resumed the coordinator and authorized completing the remaining exercises. Read [RESUMED_COORDINATION](docs/RESUMED_COORDINATION.md) for current assigned local owners, review gates and the baseline-first student workflow. This supersedes the previous batch's stop-after-current rule only for these resumed local assignments. External friends keep their finite one-task-and-stop prompt. Do not infer a budget increase, deployment permission or ownership of other modules.
+**Exercise batch completed in v0.3.15:** all 56 bounded tools are verified. Read [COMPLETION_HANDOFF](docs/COMPLETION_HANDOFF.md) for current delivery and [INTERFACE_REFINEMENT](docs/INTERFACE_REFINEMENT.md) for candidate human-guided iterations. The named assignments in [RESUMED_COORDINATION](docs/RESUMED_COORDINATION.md) are historical completed reviews; do not reserve another module or restart them. Future work needs an explicit actual issue/refinement scope. External friends keep their finite one-task-and-stop prompt. Do not infer a budget increase or deployment permission.
 
 The human ended the current ten-worker continuous batch with a stop-after-current instruction; see [COORDINATION](docs/COORDINATION.md). Honor explicit finite assignments. Friends contributing from separate computers use [EXTERNAL_CONTRIBUTORS](docs/EXTERNAL_CONTRIBUTORS.md) and its portable one-task prompt; the owner's absolute local path and local claim registry do not coordinate other clones.
 
@@ -27,6 +27,8 @@ On the owner's computer, linked worktrees read the current AGENTS, START_HERE, A
 3. Check the current working tree and existing shared helpers. Course slides remain outside Git; audits distinguish inspected examples from proposed fixtures. Preserve those distinctions.
 
 ## Autonomous delivery
+
+Keep exactly one machine-readable status line, for example `- **Stage:** implemented` or `- **Stage:** verified`. Put qualifications, pending gates and provenance on separate lines; label preserved older states as historical prose. Trailing prose or multiple Stage fields makes the claim helper classify it as unknown. Current stage must be supported by evidence, not merely normalized for the queue.
 
 Compare the assigned TASK's requirements with current behavior before editing. Preserve working features, record missing requirements and evidence in the owned `STATUS.md`, then complete the accepted scope through implementation and verification. Make routine local implementation decisions without repeated approval questions. Do not stop at a plan, silently shrink a full-tool goal into a baseline-only demonstration, or mark unfinished requirements complete. Shared changes outside assigned ownership require coordination; explicit broader user authorization takes precedence. Continue useful independent work while resolving a dependency.
 

@@ -1,6 +1,6 @@
 # CR04 current teaching workspace — 30 October 2026
 
-- **Stage:** implemented; local validation complete; independent technical review and upstream CI approval pending.
+- **Stage:** verified
 - **Base:** `a43989def918052cc969cbee8691ce79d8824ec9` (v0.3.14).
 - **Owner:** external contributor `ckbk456`, branch `codex/cr04-block-diagram-editor-20261030`.
 - **Worker chat:** `01a188d9-ee2e-7c20-bdf2-0725a50f5406`.
@@ -66,7 +66,7 @@ New regressions move focused G1 right twice (x=420→440→460), then down with 
 ---
 # CR04 implementation status
 
-- **Stage:** in-progress
+- **Historical stage (v0.3.14 partial core):** in-progress
 - **Last assessed:** 2026-10-29
 - **Worker chat:** `01a186d2-2175-7122-ad9f-c01694059c6c`
 - **Contract / ownership:** [TASK.md](TASK.md), `src/modules/cr04/**` only
@@ -158,3 +158,14 @@ Stage remains IN-PROGRESS. workspace.ts remains the original blank mount, import
 Frozen source `ef360b4ad9da8182090eb04484f94edf7d23727e`, [PR #45](https://github.com/ckbk123/CSDKTD_APP/pull/45), is preserved in the integration history. Accepted as a partial core only. The workspace remains blank and displays Implementation pending. The complete interactive TASK, UI/lifecycle/browser exercise and missing steps above remain unfinished; no implemented/verified teaching-tool claim is made. A future contributor can resume the core from current main on a fresh branch/PR.
 
 All **4,692 application tests, 32 coordination tests, type checking and production build pass** for the final combined candidate. [The final handoff](../../../docs/FINAL_HANDOFF.md) and [batch evidence](../../../docs/INTEGRATION_BATCHES.md) distinguish complete tools, this partial core and remaining scaffolds. Numerical qualification and supported-domain limitations remain explicit; independent checks of corrected propagation/phase are recorded there. No deployment occurred.
+
+
+## Independent coordinator acceptance — 0.3.15 / 30 October 2026
+
+Accepted [PR #57](https://github.com/ckbk123/CSDKTD_APP/pull/57) at frozen source `117ff30db6d7a1669d26c3ff8cad672e83b9f845`, with original contribution history preserved. Reviewed correction commits: `e7cd51449a18e908ebbc0fae621893406579503f`, `1522339f0620338535e2ab167a82fdbe7f1d2088`, `b6ef1599ea74612034ec9df05e985e5c0ec28a8c`. The current verified stage supersedes earlier pending/partial snapshots in this record; those snapshots remain dated evidence.
+
+144 changed nested models and1920 local transformation previews; renderer-backed Unicode validation plus real-shell drag Escape and focused-arrow regressions. Module tests: 87. The combined corrected candidate passes **5,562 application tests in 257 files**, TypeScript and production build. The unchanged coordination helper suite passed **32 tests** in this resumed integration. Exact original fork-head CI is green; the release commit receives its own main CI run after publication.
+
+Coordinator production-browser checks: Reference1/(s^2+5s+5), disturbance(s+1)/(s^2+5s+5), real fraction entry1/(s+4) accepted/reduced with both channels preserved; H2=3 denominator s^2+6s+6. Actual repeated arrow focus retained; desktop/390px/reset. Unicode rejection and active-drag Escape use renderer/DOM integration tests, not a claimed fresh browser paste/drag-Escape reproduction. Browser warning/error logs are checked separately at final integration. These checks supplement the contributor's attributed browser evidence; they do not establish every input, engine, theme, future settling or uninspected course-source answer.
+
+Retain all declared mathematical/input/work bounds and numerical qualifications. Source and authored-fixture distinctions remain. Busy initial controls and optional-detail improvements are tracked in [INTERFACE_REFINEMENT](../../../docs/INTERFACE_REFINEMENT.md); this acceptance does not certify that interface refinement is finished. No deployment occurred.

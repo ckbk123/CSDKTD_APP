@@ -1,6 +1,6 @@
 # DR04 implementation status
 
-- **Stage:** implemented; independent maintainer verification pending.
+- **Stage:** verified
 - **Last assessed:** 2026-10-30.
 - **Base:** `a43989def918052cc969cbee8691ce79d8824ec9`.
 - **Contract:** [TASK.md](TASK.md), unchanged; index metadata unchanged.
@@ -89,3 +89,14 @@ Caller-state UI regressions start from a solved baseline, edit either branch b1 
 Before the production fix the new tests reproduced **five failures**: three pure signed-zero cases and the graph/source signed-zero UI cases. After the fix, `npm test -- src/modules/dr04` passes **100 tests / four files**, and `npm run check` passes. `git diff --check` passes. The earlier 88-test/build/browser evidence above belongs to the external source revision; no full application/build or fresh browser run is claimed for this focused correction. The coordinator owns final inspection, combined integration checks and browser/release gates.
 
 This is a local committed correction handoff only: no push, new PR, PR metadata change, version change or deployment. Its exact commit is reported in the worker chat for the coordinator to inspect and stage while preserving source history.
+
+
+## Independent coordinator acceptance — 0.3.15 / 30 October 2026
+
+Accepted [PR #56](https://github.com/ckbk123/CSDKTD_APP/pull/56) at frozen source `3125905de603454b2b43916a861d85f86a8fc56d`, with original contribution history preserved. Reviewed correction commits: `f9f291b18367e29075e96f099f9817520a0b1217`. The current verified stage supersedes earlier pending/partial snapshots in this record; those snapshots remain dated evidence.
+
+576 independent exact coefficient comparisons across36 physical cases; signed-zero exponent check normalized and stale results tested. Module tests: 100. The combined corrected candidate passes **5,562 application tests in 257 files**, TypeScript and production build. The unchanged coordination helper suite passed **32 tests** in this resumed integration. Exact original fork-head CI is green; the release commit receives its own main CI run after publication.
+
+Coordinator production-browser checks: Baseline Mason/direct equations agree at z2=1.18942731; exact step samples0,0,1,19/5,81/10. Intermediate hold gives0,0,0,2,28/5. Real power-button0^(-0) rejects, clears tables and recovers; desktop/390px/reset. Browser warning/error logs are checked separately at final integration. These checks supplement the contributor's attributed browser evidence; they do not establish every input, engine, theme, future settling or uninspected course-source answer.
+
+Retain all declared mathematical/input/work bounds and numerical qualifications. Source and authored-fixture distinctions remain. Busy initial controls and optional-detail improvements are tracked in [INTERFACE_REFINEMENT](../../../docs/INTERFACE_REFINEMENT.md); this acceptance does not certify that interface refinement is finished. No deployment occurred.

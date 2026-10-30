@@ -8,7 +8,9 @@ Control Studio is a browser application for learning **SISO LTI control theory**
 
 ## Current milestone
 
-**v0.3.14: 48 working tools, one partial diagram core and seven remaining scaffolds.** The ten-worker batch has stopped, with all 49 contribution PRs preserved in the merged history. Read [FINAL_HANDOFF.md](docs/FINAL_HANDOFF.md) for the remaining tasks and the finite contributor prompt. The final combined checks pass 4,692 application tests, 32 coordination tests, type checking and production build; browser/review scope and numerical limits are recorded per module and in the [batch evidence](docs/INTEGRATION_BATCHES.md).
+**v0.3.15: all 56 accepted teaching tools are implemented and independently verified within their declared bounds.** The resumed review integrates eight external contributions, preserving all 57 PR histories and correcting eight input, interaction, plotting and sampled-deadline defects before acceptance. Combined checks pass **5,562 application tests, 32 coordination tests, type checking and production build**. Read [COMPLETION_HANDOFF.md](docs/COMPLETION_HANDOFF.md), the [release source map](docs/releases/v0.3.15.json) and [batch evidence](docs/INTEGRATION_BATCHES.md) for exact scope and limitations. No Cloudflare deployment occurred.
+
+The next phase is a simpler student interface, refined one tool at a time with the instructor. [INTERFACE_REFINEMENT.md](docs/INTERFACE_REFINEMENT.md) records a baseline visual, a few primary controls, one meaningful experiment/check and optional deeper reasoning. Functional verification does not mean the draft interface is finished.
 
 At the **v0.3.0 assessment on 29 October 2026**, the application provided a responsive catalogue and **56 independent module scaffolds**. A module opened inside the same browser page, with its title, typeset baseline equations and an empty workspace ready for implementation. **Edit equations** provides visual fraction/power entry and a math keyboard; these preview edits do not update the workspace. This milestone did not deliver 56 mathematical solvers. Check the [module progress records](docs/AGENT_TASKS.md) for work completed after the assessment.
 

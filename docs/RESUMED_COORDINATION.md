@@ -1,5 +1,7 @@
 # Resumed Control Studio coordination — 30 October 2026
 
+**Completed in v0.3.15:** all 56 accepted bounded exercises are verified. [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md) is current delivery; [INTERFACE_REFINEMENT.md](INTERFACE_REFINEMENT.md) records the next human-guided candidates. The assignments and resumption instructions below are preserved history. Do not reserve their IDs, restart reviews or launch a continuous loop; future work needs an explicit actual issue/refinement scope.
+
 The human explicitly resumed the coordinator's goal: monitor the existing local workers, review new submissions, merge passing work, and try to complete the accepted exercises before iterating together on a simpler student interface. This is a new effort after the completed v0.3.14 wind-down. It does not authorize deployment, budget changes, management of friends' remote agents, or an unreviewed application-wide redesign.
 
 ## Starting evidence
@@ -10,7 +12,7 @@ The human explicitly resumed the coordinator's goal: monitor the existing local 
 - Fresh origin fetch found no newer main commits or unmerged upstream branches. The initial empty-query PR search was incomplete: direct checks and an explicit `repo:ckbk123/CSDKTD_APP is:pr is:open` query found eight external fork PRs, #50–57, covering every remaining tool. Do not treat the earlier empty search as ownership evidence.
 - The ten original worker chats were not active at the initial inventory. A dispatched assignment is not proof of resumed execution; confirm with chat/claim/checkpoint evidence.
 
-## Named local assignments
+## Historical local assignments and reviewed sources
 
 | Task | Worker chat ID, local host | Initial scope |
 |---|---|---|

@@ -1,6 +1,6 @@
 # Run independent agents with the same continuous goal
 
-**Resumed local assignments, 30 October 2026:** follow [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) and your explicit coordinator assignment. The former stop-after-current batch is complete; the human has now authorized finishing the remaining exercises. Reserve only your assigned module, preserve earlier work, submit it for review, and prioritize returned corrections. Do not take a second module without checking the current assignment table and coordination. External one-task prompts remain finite.
+**Completed exercise batch, v0.3.15:** all 56 bounded tools are verified; see [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md). The resumed local assignments became read-only reviews and focused corrections, and are now complete. Do not reserve their IDs or restart the historical loop below. Future work needs an explicit actual issue/refinement assignment; [INTERFACE_REFINEMENT.md](INTERFACE_REFINEMENT.md) lists candidates for human discussion. External one-task prompts remain finite.
 
 **Batch ended:** the human instructed the current ten workers to finish only their ongoing task, push a checked contribution or honest partial, and stop without new claims. [COORDINATION.md](COORDINATION.md) records this amendment. The continuous loop below is historical/opt-in; use [the finite external-contributor guide](EXTERNAL_CONTRIBUTORS.md) for friends on other computers.
 

@@ -2,9 +2,9 @@
 
 **Coordination resumed, 30 October 2026:** the human authorized finishing the eight remaining tools and reviewing new contributions. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) records current local assignments. The released delivery counts below change only after checked integration; assignment or active work is not verification. The completed ten-worker batch and finite external prompt remain valid historical/external workflows.
 
-## Current delivery — v0.3.14 / 30 October 2026
+## Current delivery — v0.3.15 / 30 October 2026
 
-The stopped ten-worker batch delivered **48 verified tools, one in-progress core (CR04) and seven scaffolds**. All 49 contribution PRs are retained in the integration history. [FINAL_HANDOFF.md](FINAL_HANDOFF.md) names the remaining tasks and portable one-task prompt; [DELIVERY_STATUS.json](DELIVERY_STATUS.json) records current stages. Final combined validation passes 4,692 application tests, 32 coordination tests, type checking and build. Per-module/batch records distinguish independent mathematical review, actual browser checks and numerical qualifications. The dated v0.3.0 scaffold baseline below remains historical evidence, not the current delivered count.
+The resumed review accepted the eight remaining external contributions: **56 verified bounded teaching tools, zero partials and zero scaffolds**. All 57 PR histories are preserved. [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md) records delivery, [DELIVERY_STATUS.json](DELIVERY_STATUS.json) records stages, and [v0.3.15](releases/v0.3.15.json) maps the frozen sources and corrective commits. Combined validation passes **5,562 application tests in 257 files, 32 coordination tests, type checking and build**. Verification retains each module's supported mathematical/input/work limits and source provenance; it is not an all-input, all-browser or canonical-slide-answer certificate. [Interface refinement](INTERFACE_REFINEMENT.md) remains a separate iterative follow-up. The v0.3.14 handoff and v0.3.0 scaffold assessment below remain historical evidence.
 
 Use [START_HERE.md](START_HERE.md) to begin an assignment. This page separates available application foundations from individual teaching-tool implementation. Module progress belongs in each module's `STATUS.md`, linked from the [56-module index](AGENT_TASKS.md).
 

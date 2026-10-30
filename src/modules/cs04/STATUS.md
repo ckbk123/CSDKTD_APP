@@ -1,6 +1,6 @@
 # CS04 implementation status
 
-- **Stage:** implemented; independent technical review pending.
+- **Stage:** verified
 - **Last assessed:** 2026-10-30.
 - **Base:** `a43989def918052cc969cbee8691ce79d8824ec9` (upstream v0.3.14).
 - **Delivery/reservation:** [PR #54](https://github.com/ckbk123/CSDKTD_APP/pull/54), branch `codex/cs04-nyquist-pole-count-20261030`; reservation checkpoint `b9be543` preceded implementation. Current tested revision and upstream CI state are recorded in that PR and the private submission record.
@@ -103,3 +103,14 @@ The coordinator authorized correction of the distinct plotted-gap finding on the
 - Browser-control tools reappeared, but the actual inventory returned **no connected browsers**. No private browser identity could be verified, so no new real-browser check is claimed. No preview process, tab, viewport override, Firefox action or QA reservation was started. Final browser/combined-build/CI acceptance remains coordinator-owned.
 
 The final local branch contains both focused corrections and only CS04 view/plot code, their local tests and this evidence. No external fork branch, PR metadata, primary source, shared code, dependency or release file is changed. The local commits are not pushed; the coordinator will independently recheck and integrate their lineage.
+
+
+## Independent coordinator acceptance — 0.3.15 / 30 October 2026
+
+Accepted [PR #54](https://github.com/ckbk123/CSDKTD_APP/pull/54) at frozen source `1d5e04586b8ba5315bef963b515d8fb96f89e6cf`, with original contribution history preserved. Reviewed correction commits: `663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f`, `bbf0accda5e488665bd5ed7ba1224dc13ec3e3da`. The current verified stage supersedes earlier pending/partial snapshots in this record; those snapshots remain dated evidence.
+
+155 independent factored pole-count fixtures; guarded view recovery and nonfinite mapped-series gaps corrected. Module tests: 107. The combined corrected candidate passes **5,562 application tests in 257 files**, TypeScript and production build. The unchanged coordination helper suite passed **32 tests** in this resumed integration. Exact original fork-head CI is green; the release commit receives its own main CI run after publication.
+
+Coordinator production-browser checks: P0,N0,Z0 baseline; wrong P blocks reveal; nonunit sensor P1,N0,Z1. Empty cursor+zoom preserves matching plot/selector; (s-10)^3/R10.001 withholds winding. Desktop/390px/reset. Browser warning/error logs are checked separately at final integration. These checks supplement the contributor's attributed browser evidence; they do not establish every input, engine, theme, future settling or uninspected course-source answer.
+
+Retain all declared mathematical/input/work bounds and numerical qualifications. Source and authored-fixture distinctions remain. Busy initial controls and optional-detail improvements are tracked in [INTERFACE_REFINEMENT](../../../docs/INTERFACE_REFINEMENT.md); this acceptance does not certify that interface refinement is finished. No deployment occurred.

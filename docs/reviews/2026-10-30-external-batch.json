@@ -2,7 +2,7 @@
   "date": "2026-10-30",
   "baselineVersion": "0.3.14",
   "baselineCommit": "a43989def918052cc969cbee8691ce79d8824ec9",
-  "integrationAccepted": false,
+  "integrationAccepted": true,
   "notes": [
     "Initial empty-query search was incomplete; use an explicit repository/open-PR query and exact PR metadata.",
     "All eight fork workflow runs were approved after inspecting unchanged read-only CI configuration, owned file scope and submitted source. Approval is not a successful check or acceptance.",
@@ -17,12 +17,18 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/cd07-response-curve-20261030",
       "sourceSha": "b160305816ac5b7f10b65a2ff3a64b653308a990",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40939275387,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a18700-78e9-7a80-af1b-4436e25b10ff"
+      "reviewerThread": "01a18700-78e9-7a80-af1b-4436e25b10ff",
+      "corrections": [
+        "0a139a2314636e91002aca2d78c95f51f443de88"
+      ],
+      "moduleTests": 128,
+      "browser": "Default tuning versus manual Kp=2.4,Ti=2, actual fraction-button tau=L=2/3, full-precision tangent, comparison, 390px width and reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "CD02",
@@ -31,12 +37,18 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/cd02-lead-root-locus-20261030",
       "sourceSha": "e7becdcbc50a2d0a06932707624639019f5178f9",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40938335048,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a18701-3f40-7572-9a49-7dc0103c9161"
+      "reviewerThread": "01a18701-3f40-7572-9a49-7dc0103c9161",
+      "corrections": [
+        "1dbeef655ac888b2ea631dc9353a0042cea1e4ec"
+      ],
+      "moduleTests": 128,
+      "browser": "Baseline K=12, third pole-4, ramp error.375; chosen pole-8 gives K16/third pole-6/ramp1/3. Deadline2.067 is unresolved; desktop/390px and reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "CD06",
@@ -45,12 +57,16 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/cd06-lag-frequency-20261030",
       "sourceSha": "e2576366ba1f3863cf65673a7134f765e936af5b",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40955182268,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a186d1-e192-7e11-a9da-294fb7ec7b78"
+      "reviewerThread": "01a186d1-e192-7e11-a9da-294fb7ec7b78",
+      "corrections": [],
+      "moduleTests": 125,
+      "browser": "Lag PM48.882 degrees; auto lead PM57 and13.0278percent overshoot; nearer lag corners PM37.3507 and38.9282percent overshoot. Desktop/390px and reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "CD04",
@@ -59,12 +75,16 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/cd04-lead-lag-allocation-20261030",
       "sourceSha": "e2decbf570dfd3bf5311d7ec7d9cfa1f75cd0e3e",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40954234184,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a18700-cc48-7482-ba96-f9aab107f802"
+      "reviewerThread": "01a18700-cc48-7482-ba96-f9aab107f802",
+      "corrections": [],
+      "moduleTests": 106,
+      "browser": "Baseline combined lag overshoot11.0552percent fails10percent while ramp error.1 passes; lag zero.02 preserves ramp.1 and reduces overshoot8.56835percent. Desktop/390px and reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "CS04",
@@ -73,12 +93,19 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/cs04-nyquist-pole-count-20261030",
       "sourceSha": "1d5e04586b8ba5315bef963b515d8fb96f89e6cf",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40964964488,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a186d1-f1f0-7393-88e7-377fbac7299a"
+      "reviewerThread": "01a186d1-f1f0-7393-88e7-377fbac7299a",
+      "corrections": [
+        "663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f",
+        "bbf0accda5e488665bd5ed7ba1224dc13ec3e3da"
+      ],
+      "moduleTests": 107,
+      "browser": "P0,N0,Z0 baseline; wrong P blocks reveal; nonunit sensor P1,N0,Z1. Empty cursor+zoom preserves matching plot/selector; (s-10)^3/R10.001 withholds winding. Desktop/390px/reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "DD02",
@@ -87,12 +114,16 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/dd02-direct-z-lead-lag-20261030",
       "sourceSha": "c6ced5ee38f5af8cdfa25afe3bca82424d3ba791",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40974363018,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a186d1-a367-78f1-98f5-e1cf147ef306"
+      "reviewerThread": "01a186d1-a367-78f1-98f5-e1cf147ef306",
+      "corrections": [],
+      "moduleTests": 115,
+      "browser": "Stable lead retains root.6065306597; manual pole-.95 exposes root-1.020493031 and withholds stable tracking. Physical target100 gives beta10,p.995; sample target100 gives beta100,p.9995. Desktop/390px/reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "DR04",
@@ -101,12 +132,18 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/dr04-sampled-mason-20261030",
       "sourceSha": "3125905de603454b2b43916a861d85f86a8fc56d",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40980000958,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a186d2-0050-7de0-aa3f-c6616623f222"
+      "reviewerThread": "01a186d2-0050-7de0-aa3f-c6616623f222",
+      "corrections": [
+        "f9f291b18367e29075e96f099f9817520a0b1217"
+      ],
+      "moduleTests": 100,
+      "browser": "Baseline Mason/direct equations agree at z2=1.18942731; exact step samples0,0,1,19/5,81/10. Intermediate hold gives0,0,0,2,28/5. Real power-button0^(-0) rejects, clears tables and recovers; desktop/390px/reset.",
+      "draftAtDiscovery": true
     },
     {
       "module": "CR04",
@@ -115,25 +152,34 @@
       "sourceRepository": "ckbk456/CSDKTD_APP",
       "sourceBranch": "codex/cr04-block-diagram-editor-20261030",
       "sourceSha": "117ff30db6d7a1669d26c3ff8cad672e83b9f845",
-      "disposition": "under-independent-review",
-      "draft": true,
+      "disposition": "accepted-with-declared-limits",
+      "draft": false,
       "workflowRun": 40987377809,
       "workflowApproval": "approved-for-exact-head",
       "requiredCi": "success-on-frozen-head",
-      "reviewerThread": "01a186d2-2175-7122-ad9f-c01694059c6c"
+      "reviewerThread": "01a186d2-2175-7122-ad9f-c01694059c6c",
+      "corrections": [
+        "e7cd51449a18e908ebbc0fae621893406579503f",
+        "1522339f0620338535e2ab167a82fdbe7f1d2088",
+        "b6ef1599ea74612034ec9df05e985e5c0ec28a8c"
+      ],
+      "moduleTests": 87,
+      "browser": "Reference1/(s^2+5s+5), disturbance(s+1)/(s^2+5s+5), real fraction entry1/(s+4) accepted/reduced with both channels preserved; H2=3 denominator s^2+6s+6. Actual repeated arrow focus retained; desktop/390px/reset. Unicode rejection and active-drag Escape use renderer/DOM integration tests, not a claimed fresh browser paste/drag-Escape reproduction.",
+      "draftAtDiscovery": true
     }
   ],
   "candidate": {
     "branch": "codex/integration-external-20261030",
     "worktree": "C:\\Users\\baokh\\AppData\\Local\\ControlStudio\\worktrees\\coordinator-20261029",
-    "head": "d8a55d8",
-    "published": false,
     "applicationTestsBeforeCorrections": 5499,
     "coordinationTests": 32,
     "typeCheck": "passed-before-corrections",
     "build": "passed-before-corrections",
     "primaryPreviewSession": 36531,
-    "temporaryPreview26702": "stopped-before-rebuild"
+    "temporaryPreview26702": "stopped-before-rebuild",
+    "finalChecks": "passed-after-all-corrections",
+    "sourceCheckpoint": "def64951cd7d64b7f28d9e038c2d69ed84d66932",
+    "publication": "Ready for reviewed atomic main/tag publication"
   },
   "corrections": [
     {
@@ -141,7 +187,7 @@
       "finding": "Renderer-significant Unicode whitespace silently fused numeric tokens",
       "source": "117ff30db6d7a1669d26c3ff8cad672e83b9f845",
       "fix": "e7cd51449a18e908ebbc0fae621893406579503f",
-      "status": "reviewed-and-staged-locally"
+      "status": "corrected-in-checked-release-candidate"
     },
     {
       "module": "CR04",
@@ -150,20 +196,32 @@
         "1522339f0620338535e2ab167a82fdbe7f1d2088",
         "b6ef1599ea74612034ec9df05e985e5c0ec28a8c"
       ],
-      "status": "reviewed-and-staged-locally"
+      "status": "corrected-in-checked-release-candidate"
     },
     {
       "module": "CD07",
       "finding": "Rounded model tangent markers rejected valid tau=L=2/3",
       "fix": "0a139a2314636e91002aca2d78c95f51f443de88",
-      "status": "reviewed-and-staged-locally"
+      "status": "corrected-in-checked-release-candidate"
     },
     {
       "module": "CS04",
       "finding": "Invalid index with plot view change escaped validation; unresolved mapped sample bridged by false chord",
       "fix": "663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f",
-      "status": "zoom-fix-reviewed-gap-fix-in-progress",
+      "status": "corrected-in-checked-release-candidate",
       "worker": "01a186d1-f1f0-7393-88e7-377fbac7299a"
+    },
+    {
+      "module": "CD02",
+      "finding": "Deadline within sampled band-crossing interval was labeled failure",
+      "fix": "1dbeef655ac888b2ea631dc9353a0042cea1e4ec",
+      "status": "corrected-in-checked-release-candidate"
+    },
+    {
+      "module": "DR04",
+      "finding": "Signed zero exponent bypassed zero-base rejection",
+      "fix": "f9f291b18367e29075e96f099f9817520a0b1217",
+      "status": "corrected-in-checked-release-candidate"
     }
   ],
   "coordinatorBrowserBeforeCorrections": {
@@ -172,5 +230,13 @@
     "CD06": "desktop and390px default auto-lead and changed-lag checks",
     "DD02": "desktop and390px stable lead, unstable-extra-mode, physical-vs-sample ramp checks",
     "DR04": "desktop and390px baseline exact Mason/direct equations and intermediate-hold first samples"
-  }
+  },
+  "releaseVersion": "0.3.15",
+  "applicationTests": 5562,
+  "applicationTestFiles": 257,
+  "coordinationTests": 32,
+  "typeCheck": "passed",
+  "build": "passed",
+  "releaseTag": "v0.3.15",
+  "localWorkers": "All10 resumed local workers completed their bounded review/audit/corrections and stopped; no active module/QA claims remain."
 }

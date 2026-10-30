@@ -1,5 +1,7 @@
 # Control Studio handoff — 30 October 2026
 
+**Historical v0.3.14 handoff:** the human subsequently resumed coordination. The eight remaining tools were completed in v0.3.15; use [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md) and [DELIVERY_STATUS.json](DELIVERY_STATUS.json) for current delivery. The stopped-batch evidence and remaining-work table below describe the earlier checkpoint.
+
 The ten original workers have stopped under the human's stop-after-current instruction. Their 49 contribution PRs are preserved in the integration history: **48 working tools, one partial core and seven remaining scaffolds**, out of 56 catalogue entries. The final release is **v0.3.14**. [DELIVERY_STATUS.json](DELIVERY_STATUS.json) records the module stages; [release records](releases/v0.3.14.json) and [batch evidence](INTEGRATION_BATCHES.md) preserve source revisions and review scope. Historical scaffold assessments and pending notes are superseded only by these explicit later dispositions.
 
 The worker-monitor automation has been removed. No new worker/module loop is running. The owner's primary preview on port 8787 is intentionally retained; temporary coordinator and worker previews/tabs have been closed. Source branches, worktrees and evidence remain recoverable. No Cloudflare deployment was performed.
