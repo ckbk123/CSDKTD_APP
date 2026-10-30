@@ -6,6 +6,11 @@ type Token = Readonly<{ kind: 'number' | 's' | 'power' | '+' | '-' | '*' | '/' |
 function tokensOf(latex: string): readonly Token[] {
   if (!latex.trim() || latex.length > 600) throw new Error('Enter a transfer using at most 600 characters.');
   rejectSpacingArguments(latex);
+  // MathLive renders these blank-looking Unicode characters as separate symbol
+  // atoms. Erasing them would turn e.g. 1 U+2009 2 into the different number 12.
+  if (/[\u1680\u2000-\u200A\u202F\u205F\u3000\uFEFF]/.test(latex)) {
+    throw new Error('Blank-looking Unicode symbols are unsupported. Remove them or use an explicit + or × between terms.');
+  }
   function rawArgument(start: number, fraction: boolean): number {
     let at = start; while (at < latex.length && /\s/.test(latex[at])) at++;
     if (latex[at] === '{') {
@@ -22,7 +27,7 @@ function tokensOf(latex: string): readonly Token[] {
   }
   if (/[0-9.](?:(?:\\[,!; ]|\\(?:qquad|quad)(?![A-Za-z]))\s*)+[0-9.]/.test(latex)) throw new Error('Use an explicit × between separated numbers; spacing cannot join numeric tokens.');
   const source = latex.replace(/\\(?:left|right)\b/g, '').replace(/\\(?:cdot|times)/g, '*').replace(/\\div/g, '/')
-    .replace(/\\(?:qquad|quad)(?![A-Za-z])/g, '').replace(/\\[,!; ]/g, '').replace(/\s/g, '').replace(/^[A-Z][A-Za-z0-9]{0,11}(?:\(s\))?=/, '');
+    .replace(/\\(?:qquad|quad)(?![A-Za-z])/g, '').replace(/\\[,!; ]/g, '').replace(/[\t-\r \u00A0\u2028\u2029]/g, '').replace(/^[A-Z][A-Za-z0-9]{0,11}(?:\(s\))?=/, '');
   let at = 0;
   function argument(depth: number): readonly Token[] {
     if (source[at] === '{') { at++; return read(true, depth + 1); }
