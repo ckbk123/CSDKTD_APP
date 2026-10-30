@@ -148,7 +148,7 @@ An unstarted reservation may be released with `release --module <ID> --token <to
 
 The integration owner inspects `agents:list`, reviews submitted branches and resolves them **one at a time**. It checks the full TASK, mathematical evidence, scope, dependencies and current-main integration, then merges/cherry-picks the intended commits, reruns combined checks, updates review evidence and pushes `main` under the project's authorized delivery scope. Shared API improvements are integrated deliberately rather than independently by every worker.
 
-The current review batch and coordinator-owned versioning rules are in [COORDINATION.md](COORDINATION.md). Workers do not bump package versions or create release tags. The coordinator assigns one patch increment per accepted integration after review and combined checks.
+The current review batch and coordinator-owned versioning rules are in [COORDINATION.md](COORDINATION.md) and [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md). Workers do not bump package versions or create release tags. The coordinator assigns one serial patch increment per accepted integration or checked integration batch after review and combined checks. Documentation-only coordination updates do not consume a release version.
 
 **Coordinator review returns take priority.** Checkpoint the newer active module, update its claim/STATUS honestly, release QA and suspend its implementation. Preserve its reservation/worktree. Read the current primary guides and exact review request. The coordinator can reopen the older contribution's existing reservation without an unclaimed interval:
 

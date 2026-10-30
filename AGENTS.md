@@ -50,7 +50,7 @@ Each contribution needs its own fresh worktree/branch from the latest committed 
 
 Do not merge `main`, change versions, deploy, rebase submitted branches or spawn additional agents under that worker prompt. The integration owner reviews and integrates submissions separately. Respect the chat's configured budget and checkpoint early; a budget stop, partial handoff or temporarily fully reserved queue is not successful completion. Generic goal success requires no eligible unfinished backlog work and resolution of the worker's own reviews. Await actionable coordination without busy polling when all remaining work is reserved; report actual blockers and obey the goal lifecycle rather than inventing a budget or claiming completion.
 
-The current ten-worker review batch and coordinator-owned release policy are recorded in [docs/COORDINATION.md](docs/COORDINATION.md). Module workers leave package/lockfile versions, changelog, tags and primary `main` to that coordinator. Each accepted integration receives a patch increment after review and combined checks; worker checkpoints do not receive release versions.
+The coordinator-owned release policy is recorded in [docs/COORDINATION.md](docs/COORDINATION.md) and the current [resumed assignment](docs/RESUMED_COORDINATION.md). Module workers leave package/lockfile versions, changelog, tags and primary `main` to that coordinator. Each accepted integration or checked integration batch receives a serial patch increment after review and combined checks; worker checkpoints and documentation-only coordination updates do not receive release versions.
 
 ## Mathematics and student interface
 
