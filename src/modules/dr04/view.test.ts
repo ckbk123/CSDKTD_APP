@@ -60,6 +60,21 @@ describe('sampled conversion and editable Mason exercise (mock editors; browser 
   it('invalidates converted data and rejects fractional transport delays without rounding',()=>{
     visit();build();solve();set('Physical transport delay τ (s)','0.3');expect(section(1).hidden).toBe(true);expect(document.querySelector('table')).toBeNull();build();expect(feedback()).toContain('integer τ/T');expect(section(1).hidden).toBe(true);button('Source inputs').click();solve();expect(row(2)).toBe('211');
   });
+  it.each(['0^0','0^{-0}'])('revokes a solved graph for undefined branch power %s and recovers',value=>{
+    visit();build();solve();expect(row(2)).toBe('211');
+    set('b1 gain in z',value);expect(document.querySelector('table')).toBeNull();solve();
+    expect(feedback()).toContain('Zero to the zeroth power');expect(section(2).textContent).not.toContain('Exact zero-state transfer');
+    button('Check original equations at z').click();expect(feedback()).toContain('Apply Mason');
+    set('b1 gain in z','2^{-1}');solve();expect(row(2)).toBe('21/21/2');
+    set('b1 gain in z','2^{-0}');solve();expect(row(2)).toBe('211');
+  });
+  it.each(['0^0','0^{-0}'])('revokes a converted source for undefined parameter power %s and recovers',value=>{
+    visit();build();solve();expect(row(2)).toBe('211');
+    set('Plant gain g (s⁻²)',value);expect(section(1).hidden).toBe(true);expect(document.querySelector('table')).toBeNull();build();
+    expect(feedback()).toContain('Zero to the zeroth power');expect(section(1).hidden).toBe(true);expect(section(2).hidden).toBe(true);
+    set('Plant gain g (s⁻²)','2^{-1}');build();solve();expect(row(2)).toBe('21/101/10');
+    set('Plant gain g (s⁻²)','2^{-0}');build();solve();expect(row(2)).toBe('21/51/5');
+  });
   it('edits node names/endpoints while protecting the externally imposed source',()=>{
     visit();build();set('Signal names (2–7, separated by commas)','R,E,U,D,Y');button('Apply signal names').click();expect(feedback()).toContain('Reconnect');
     set('Signal names (2–7, separated by commas)','R,E,U,D,Y,B,X');button('Apply signal names').click();expect((document.querySelector('select[aria-label="b1 to"]') as HTMLSelectElement).options).toHaveLength(7);

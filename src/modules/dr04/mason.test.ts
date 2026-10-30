@@ -28,7 +28,16 @@ describe('bounded exact gain algebra and notation', () => {
     expect(() => same(constant(1n), constant(1n), new Work(0))).toThrow(/work limit/);
     expect(() => evaluate(parseGain(String.raw`\frac1{z+1}`), { re: -1, im: 0 })).toThrow(/pole/);
   });
-  it.each(['1 2', String.raw`1\,2`, '1.2.3', String.raw`\frac{1}{z^{2}2+1}`, '0^0', '(z-z)^0'])('rejects ambiguous adjacency or undefined power %s', value => expect(() => parseGain(value)).toThrow());
+  it.each(['1 2', String.raw`1\,2`, '1.2.3', String.raw`\frac{1}{z^{2}2+1}`, '0^0', '(z-z)^0', '0^{-0}', '(z-z)^{-0}', String.raw`\frac{0^{-0}}{z+1}`])('rejects ambiguous adjacency or undefined power %s', value => expect(() => parseGain(value)).toThrow());
+  it.each([
+    ['2^{-0}', ['1'], ['1']],
+    ['2^{-1}', ['1'], ['2']],
+    ['(-2)^{-3}', ['-1'], ['8']],
+    ['z^{-2}', ['1'], ['0', '0', '1']],
+    ['0^2', ['0'], ['1']],
+  ] as const)('preserves the defined power %s', (value, numerator, denominator) => {
+    expect(coefficients(parseGain(value))).toEqual({ numerator, denominator });
+  });
 });
 
 describe('Mason and original signal equations', () => {
