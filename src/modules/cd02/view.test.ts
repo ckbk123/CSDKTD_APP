@@ -64,6 +64,22 @@ describe('lead exercise flow (mocked editors, not browser evidence)', () => {
   it('hides old verification on horizon/limits changes and reports an unresolved short run', () => {
     visit(); reveal(); check(); set('Response horizon (s)', '.5'); expect(document.querySelector('table')).toBeNull(); check(); expect(document.querySelector('table')!.textContent).toContain('Unresolved in horizon');
   });
+  it.each([
+    ['2.067', 'Unresolved'], ['2.05', 'Fails deadline'], ['2.08', 'Observed pass'],
+  ])('does not grade an unresolved sampled crossing as a definite deadline failure: %s s', (deadline, expected) => {
+    visit(); reveal(); set('Additional 2% entry deadline (s)', deadline); check();
+    const row = document.querySelector('tbody tr:nth-child(3)')!;
+    expect(row.children[2].textContent).toBe(expected);
+    if (deadline === '2.067') expect(document.body.textContent).toContain('between the last out-of-band sample');
+  });
+  it('preserves horizon and observed-tail qualifications near the entry deadline', () => {
+    visit(); reveal(); set('Additional 2% entry deadline (s)', '2.067'); set('Response horizon (s)', '2.4'); check();
+    expect(document.querySelector('tbody tr:nth-child(3)')!.textContent).toContain('Unresolved in horizon');
+    set('Response horizon (s)', '12.003'); check();
+    expect(document.querySelector('tbody tr:nth-child(3)')!.children[2].textContent).not.toBe('Fails deadline');
+    set('Response horizon (s)', '3'); set('Additional 2% entry deadline (s)', '4'); check();
+    expect(document.querySelector('tbody tr:nth-child(3)')!.children[2].textContent).toBe('Unresolved');
+  });
   it('starts a fresh visit at baseline with no prediction/results', () => {
     visit(); button('Change pole to −8').click(); set('Predicted controller gain K (optional)', '16'); reveal(); check(); release?.(); visit(); expect(input('Compensator pole distance p (1/s)').value).toBe('6'); expect(input('Predicted controller gain K (optional)').value).toBe(''); expect(button('Verify full compensated model').disabled).toBe(true);
   });

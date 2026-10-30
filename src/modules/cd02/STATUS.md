@@ -1,6 +1,6 @@
 # CD02 implementation status
 
-- **Stage:** implemented; independent review remains, not claimed verified.
+- **Stage:** implemented; independent-review deadline correction checked locally, coordinator integration/verification remains.
 - **Assessed:** 30 October 2026, from upstream `a43989def918052cc969cbee8691ce79d8824ec9` (fetched again and unchanged before delivery).
 - **Worker chat:** `01a188d9-ee2e-7c20-bdf2-0725a50f5406`.
 - **Branch:** `codex/cd02-lead-root-locus-20261030`; ownership only `src/modules/cd02/**`.
@@ -36,7 +36,7 @@ PR stays limited to CD02 and excludes the unmerged CD07 implementation.
 - Cubic coefficients are descending `[1,a₂,a₁,a₀]`. The scaled real cubic formula requires normalized residual ≤10⁻⁸. Geometric angle residual is checked within 10⁻⁹ rad and magnitude gain within 10⁻⁹×max(1,K). Selected roots must resolve strictly in the LHP as well as satisfying cubic Routh; a numerical root residual is not an interval error bound.
 - Locus maximum gain input 0.01…10,000; 402 samples and permutation-based matching retain all three roots per sample. A requested range below the design expands to at least 1.2K. The finite sample sweep is a visualization, not an exhaustive proof for every gain. The high-gain limits are one branch approaching −z and two vertical asymptotes through −(a+p−z)/2.
 - Step horizon 0.5…200 s. The full step expression `1+A exp(−rt)+exp(−σt)[B cos(ωt)+D sin(ωt)]` is evaluated from residues, with initial y=y′=0 and final y=1. At most 60,000 samples; scales, output magnitudes >1,000 and midpoint/coarse interpolation discrepancies >0.001 withhold results. Some valid designs need a shorter horizon to fit this bound.
-- Overshoot and 2% entry are sampled, finite-horizon observations relative to final output 1. Entry requires remaining in [0.98,1.02] through the horizon with at least max(1/σ,1/r) of observed tail, otherwise unresolved. Ending error is not used as a steady-state proof. Unit-ramp error is the analytic final-value result ap/(Kg z) after strict full-cubic stability. No nonlinear, delay, noise or actuator model is claimed.
+- Overshoot and 2% entry are sampled, finite-horizon observations relative to final output 1. Entry requires remaining in [0.98,1.02] through the horizon with at least max(1/σ,1/r) of observed tail, otherwise unresolved. A deadline between the last observed out-of-band sample and the next in-band sample is also unresolved; the checklist does not round that crossing up into a definite failure. The crossing bracket does not exclude unseen intersample or later excursions. Ending error is not used as a steady-state proof. Unit-ramp error is the analytic final-value result ap/(Kg z) after strict full-cubic stability. No nonlinear, delay, noise or actuator model is claimed.
 
 ## Source provenance and independent fixtures
 
@@ -92,13 +92,61 @@ tab on a temporary local preview, dark system theme, **1280×900** and **390×84
 ## Remaining gates and scope
 
 No known accepted bounded CD02 exercise requirement remains unimplemented.
-Maintainer independent technical review remains before `verified` status.
-Fork upstream workflows require maintainer action; keep PR #51 draft until
-the exact head's required CI gates pass. Approve the fork run, let the complete
-Web checks finish and review this same PR; no workflow bypass or remote green
-claim is made. Original-slide visual inspection and broader browser/theme
-coverage remain explicitly unclaimed, with documented fixtures verified independently.
+The independent review and its focused deadline correction are recorded below;
+coordinator integration/verification remains before `verified` status.
+The frozen source head `e7becdc` has a successful exact-head [Web checks run](https://github.com/ckbk123/CSDKTD_APP/actions/runs/40938335048),
+independently read on 30 October 2026. The local correction still requires
+coordinator combined integration checks. Original-slide visual inspection and
+broader browser/theme coverage remain explicitly unclaimed, with documented
+fixtures verified independently.
 
 There is no shared API request. No sibling/shared/global files, dependencies,
 versions, tags, main, merge or deployment are changed. Subsequent goal cycles
 use different module branches/PRs and preserve this submission and local claim.
+
+## Independent-review correction — 30 October 2026
+
+The coordinator assigned the confirmed near-deadline sampling misgrade to
+reviewer chat `01a18701-3f40-7572-9a49-7dc0103c9161`. This focused local branch,
+`codex/cd02-entry-deadline-3f40-20261030`, starts at the frozen PR #51 head
+`e7becdcbc50a2d0a06932707624639019f5178f9` in the preserved review worktree.
+The coordinator owns source/correction integration and final browser checks;
+this assignment calls for a local commit and handoff without a push or new PR.
+
+Confirmed defect: with baseline inputs, a 12 s horizon and a 2.067 s entry
+deadline, the original checklist reported `Fails deadline` from the first
+in-band sample at 2.06875 s. Independently solving the documented inverse
+transform gives the final 2% crossing at 2.0665872605835336 s. Thus the sampling
+rounding alone caused a false failure.
+
+The trace now retains the last observed crossing bracket: baseline
+[2.0625, 2.06875] s. `checkEntryDeadline` returns `Unresolved` for a deadline
+inside that bracket, and the view explains both sample times. A deadline at or
+before the last outside-band sample fails; a deadline at or after the next
+in-band sample has an observed pass. Existing finite-window, minimum observed
+tail, horizon-before-deadline and resolution/work guards remain in force.
+The full cubic and all three response modes are retained. This bracket is a
+sampling qualification, not a certified continuous-time settling interval.
+
+Correction checks in this worktree, Node 24.19.0 / npm 10.9.3:
+
+- Before the fix, the new targeted checklist regression failed at 2.067 s
+  (`Fails deadline` versus expected `Unresolved`); its clear 2.05 s failure and
+  2.08 s observed-pass controls passed.
+- `npm test -- src/modules/cd02`: **128 passed in 5 files** after the fix.
+- `npm run check`: passed.
+- `git diff --check`: passed; changes are confined to the five owned CD02
+  math/view/test/status files.
+- Independent analytic crossing fixture brackets the baseline inverse
+  transform, checks the crossing to 10⁻¹² s and bounds the later error envelope
+  below 2%. Horizon/sample-spacing variations cover 2.58, 3, 5.019, 12, 12.003,
+  30.007 and 200 s; a 2.4 s horizon remains unresolved for insufficient tail.
+- Mocked-editor view regressions check the displayed unresolved explanation,
+  clear pass/fail controls, changed horizon and a deadline beyond the horizon.
+- Actual browser checks for this correction remain coordinator-owned. This
+  review session exposed no browser in its inventory, and the supported `iab`
+  connection was unavailable; no Firefox retry or browser evidence is claimed.
+
+The earlier full-suite/build/author-browser evidence above belongs to the
+frozen source review. The correction received the focused checks requested by
+the coordinator; combined integration/release checks remain with that owner.

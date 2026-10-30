@@ -2,7 +2,7 @@ import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationInput } from '../../shared/equations/input';
 import { readNumericInput } from '../../shared/numeric-input';
 import { parseNumber } from './number-expression';
-import { bound, cubicRoots, design, polynomialResidual, responseCoefficients, rootLocus, stepTrace, targetFromSpecs, type Design } from './math';
+import { bound, checkEntryDeadline, cubicRoots, design, polynomialResidual, responseCoefficients, rootLocus, stepTrace, targetFromSpecs, type Design } from './math';
 import { plot, type Mark } from './plot';
 import './style.css';
 
@@ -67,7 +67,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     const verify = button(verification, 'Verify full compensated model', check); verify.disabled = true;
     const results = el('div'); verification.append(results);
     note(verification, 'The gain sweep computes all three branches at 402 gain samples, including the designed gain. Its range extends if needed to include that gain. Paths are numerical illustrations; root residuals and the complete cubic Routh check verify the selected design. Stable canceled modes are retained.');
-    note(verification, 'The zero-state step formula retains all three modes. Metrics use up to 60,000 samples; midpoint-versus-coarse interpolation differences must be ≤0.001 output units. Overshoot and 2% entry are sampled observations through the chosen horizon; entry requires at least max(1/σ,1/r) of observed tail. A short horizon is unresolved. Final ramp error is analytic only after strict full-cubic stability is checked.');
+    note(verification, 'The zero-state step formula retains all three modes. Metrics use up to 60,000 samples; midpoint-versus-coarse interpolation differences must be ≤0.001 output units. Overshoot and 2% entry are sampled observations through the chosen horizon; entry requires at least max(1/σ,1/r) of observed tail. A short horizon or a deadline between the final outside-band sample and the next inside-band sample is unresolved. Final ramp error is analytic only after strict full-cubic stability is checked.');
     root.append(feedback);
     function scalar(index: number): number { const d = editors[index].getValue(); if (d.empty || d.hasPlaceholders || d.syntaxIssues.length) throw new Error('Complete the model equation boxes and check their notation.'); return parseNumber(d.latex); }
     function readDesign(): Design {
@@ -122,13 +122,17 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       const wrap = el('div', undefined, 'cd02-table-wrap'), table = el('table', undefined, 'cd02-table');
       const header = el('thead'), tr = el('tr'); for (const name of ['Full-model requirement', 'Computed result', 'Check']) tr.append(el('th', name)); header.append(tr); table.append(header);
       const body = el('tbody');
+      const entryCheck = checkEntryDeadline(trace, tsLimit);
       const rows = [
         ['Strict stability, all three modes', 'Routh and all roots in LHP', 'Pass'],
         [`Overshoot ≤ ${fmt(osLimit)}%`, `${fmt(trace.overshoot)}%`, trace.overshoot <= osLimit ? 'Observed pass' : 'Fails limit'],
-        [`2% entry ≤ ${fmt(tsLimit)} s`, trace.entry === null ? 'Unresolved in horizon' : `${fmt(trace.entry)} s`, trace.entry === null || h < tsLimit ? 'Unresolved' : trace.entry <= tsLimit ? 'Observed pass' : 'Fails deadline'],
+        [`2% entry ≤ ${fmt(tsLimit)} s`, trace.entry === null ? 'Unresolved in horizon' : `${fmt(trace.entry)} s (sampled)`, entryCheck],
         [`Unit-ramp error ≤ ${fmt(rampLimit)}`, fmt(d.rampError), d.rampError <= rampLimit ? 'Pass' : 'Fails limit'],
       ];
       for (const values of rows) { const row = el('tr'); values.forEach((v, i) => row.append(el(i ? 'td' : 'th', v))); body.append(row); } table.append(body); wrap.append(table); results.append(wrap);
+      if (entryCheck === 'Unresolved' && trace.entryBracket !== null && tsLimit > trace.entryBracket[0] && tsLimit < trace.entryBracket[1]) {
+        note(results, `The deadline lies between the last out-of-band sample (${fmt(trace.entryBracket[0])} s) and the next in-band sample (${fmt(trace.entryBracket[1])} s). Sampling cannot decide this deadline.`);
+      }
       results.append(createEquationDisplay(String.raw`K_v=\frac{Kg z}{ap},\qquad e_{\mathrm{ramp}}=\frac{1}{K_v}\approx ${fmt(d.rampError)}`, 'Final value ramp error after full stability verification'));
       note(results, `Ending step error at ${fmt(h)} s: ${fmt(trace.endError)}. Midpoint resolution discrepancy: ${fmt(trace.refinement)} output units. This ending sample is not used as a proof of steady-state error.`);
       feedback.textContent = 'Complete model checked. Compare the full response with the target-pair estimate, then move the compensator pole and repeat.';
