@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cubicRoots, design, polynomialResidual, responseCoefficients, rootLocus, stepTrace, stepValue, targetFromSpecs } from './math';
+import { checkEntryDeadline, cubicRoots, design, polynomialResidual, responseCoefficients, rootLocus, stepTrace, stepValue, targetFromSpecs } from './math';
 const base = { g: 1, a: 2, sigma: 2, omega: 2, pole: 6 };
 const near = (a: number, b: number, tolerance = 1e-9) => expect(Math.abs(a - b)).toBeLessThan(tolerance);
 
@@ -84,5 +84,41 @@ describe('full model and second-order approximation', () => {
     expect(stepTrace(design(base), .5).entry).toBeNull();
     expect(() => stepTrace(design({ ...base, pole: 50 }), 200)).toThrow(/60,000/);
     expect(() => stepTrace(design(base), NaN)).toThrow();
+  });
+  it('does not fail a deadline inside the independently derived final band-crossing bracket', () => {
+    // Independent inverse transform, not stepValue or the production residues.
+    const y = (t: number) => 1 + .5 * Math.exp(-4 * t) - Math.exp(-2 * t) * (1.5 * Math.cos(2 * t) + .5 * Math.sin(2 * t));
+    let lo = 2, hi = 2.2;
+    for (let n = 0; n < 60; n++) { const t = (lo + hi) / 2; if (y(t) > 1.02) lo = t; else hi = t; }
+    const crossing = (lo + hi) / 2;
+    near(crossing, 2.0665872605835336, 1e-12);
+    // The response decreases through this bracket; beyond 2.2 s its complete
+    // exponential envelope is <2%, excluding any later departure in this fixture.
+    expect(.5 * Math.exp(-4 * 2.2) + Math.sqrt(2.5) * Math.exp(-2 * 2.2)).toBeLessThan(.02);
+    expect(crossing).toBeLessThan(2.067);
+    const trace = stepTrace(design(base), 12), bracket = trace.entryBracket!;
+    near(bracket[0], 2.0625); near(bracket[1], 2.06875);
+    expect(y(bracket[0])).toBeGreaterThan(1.02); expect(y(bracket[1])).toBeLessThan(1.02);
+    expect(bracket[0]).toBeLessThan(crossing); expect(bracket[1]).toBeGreaterThan(crossing);
+    expect(checkEntryDeadline(trace, 2.067)).toBe('Unresolved');
+    expect(checkEntryDeadline(trace, 2.05)).toBe('Fails deadline');
+    expect(checkEntryDeadline(trace, 2.08)).toBe('Observed pass');
+    expect(checkEntryDeadline(trace, bracket[0])).toBe('Fails deadline');
+    expect(checkEntryDeadline(trace, bracket[1])).toBe('Observed pass');
+  });
+  it('keeps deadline results qualified across horizon and sample-spacing variations', () => {
+    const steps = new Set<number>();
+    for (const horizon of [2.58, 3, 5.019, 12, 12.003, 30.007, 200]) {
+      const trace = stepTrace(design(base), horizon);
+      steps.add(trace.time[1]);
+      expect(trace.entryBracket).not.toBeNull();
+      expect(checkEntryDeadline(trace, 2.067)).not.toBe('Fails deadline');
+      expect(checkEntryDeadline(trace, 2.05)).toBe('Fails deadline');
+      expect(checkEntryDeadline(trace, 2.08)).toBe('Observed pass');
+    }
+    expect(steps.size).toBeGreaterThan(1);
+    const short = stepTrace(design(base), 2.4);
+    expect(short.entryBracket).toBeNull(); expect(checkEntryDeadline(short, 2.067)).toBe('Unresolved');
+    expect(checkEntryDeadline(stepTrace(design(base), 3), 4)).toBe('Unresolved');
   });
 });

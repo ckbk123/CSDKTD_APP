@@ -4,7 +4,7 @@ export interface Design extends Inputs {
   gain: number; zero: number; remaining: number; q: number; coefficients: number[];
   deficiency: number; poleAngle: number; zeroAngle: number; angleResidual: number; magnitudeGain: number; rampError: number;
 }
-export interface Trace { time: number[]; full: number[]; pair: number[]; overshoot: number; entry: number | null; endError: number; refinement: number }
+export interface Trace { time: number[]; full: number[]; pair: number[]; overshoot: number; entry: number | null; entryBracket: [number, number] | null; endError: number; refinement: number }
 const abs = (s: Complex) => Math.hypot(s.re, s.im);
 const mul = (s: Complex, t: Complex): Complex => ({ re: s.re * t.re - s.im * t.im, im: s.re * t.im + s.im * t.re });
 const add = (s: Complex, n: number): Complex => ({ re: s.re + n, im: s.im });
@@ -102,5 +102,15 @@ export function stepTrace(d: Design, horizon: number): Trace {
   full.forEach((v, i) => { peak = Math.max(peak, v); if (Math.abs(v - 1) > .02) lastOutside = i; });
   const candidate = time[lastOutside + 1];
   const entry = candidate !== undefined && horizon - candidate >= Math.max(1 / d.sigma, 1 / d.remaining) ? candidate : null;
-  return { time, full, pair, overshoot: Math.max(0, peak - 1) * 100, entry, endError: 1 - full.at(-1)!, refinement };
+  // Bracket the last observed band crossing, without claiming unseen excursions
+  // between samples or after the finite horizon have been excluded.
+  const entryBracket: [number, number] | null = entry === null ? null : [time[lastOutside], entry];
+  return { time, full, pair, overshoot: Math.max(0, peak - 1) * 100, entry, entryBracket, endError: 1 - full.at(-1)!, refinement };
+}
+export function checkEntryDeadline(trace: Trace, deadline: number): 'Observed pass' | 'Fails deadline' | 'Unresolved' {
+  bound(deadline, .1, 200, 'Entry deadline (s)');
+  if (trace.entry === null || trace.entryBracket === null || trace.time.at(-1)! < deadline) return 'Unresolved';
+  if (trace.entry <= deadline) return 'Observed pass';
+  // Only an out-of-band sample at/after the deadline establishes a failure.
+  return deadline <= trace.entryBracket[0] ? 'Fails deadline' : 'Unresolved';
 }
