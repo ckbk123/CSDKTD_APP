@@ -21,7 +21,7 @@
       "draft": true,
       "workflowRun": 40939275387,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a18700-78e9-7a80-af1b-4436e25b10ff"
     },
     {
@@ -35,7 +35,7 @@
       "draft": true,
       "workflowRun": 40938335048,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a18701-3f40-7572-9a49-7dc0103c9161"
     },
     {
@@ -49,7 +49,7 @@
       "draft": true,
       "workflowRun": 40955182268,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a186d1-e192-7e11-a9da-294fb7ec7b78"
     },
     {
@@ -63,7 +63,7 @@
       "draft": true,
       "workflowRun": 40954234184,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a18700-cc48-7482-ba96-f9aab107f802"
     },
     {
@@ -77,7 +77,7 @@
       "draft": true,
       "workflowRun": 40964964488,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a186d1-f1f0-7393-88e7-377fbac7299a"
     },
     {
@@ -91,7 +91,7 @@
       "draft": true,
       "workflowRun": 40974363018,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a186d1-a367-78f1-98f5-e1cf147ef306"
     },
     {
@@ -105,7 +105,7 @@
       "draft": true,
       "workflowRun": 40980000958,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a186d2-0050-7de0-aa3f-c6616623f222"
     },
     {
@@ -119,8 +119,58 @@
       "draft": true,
       "workflowRun": 40987377809,
       "workflowApproval": "approved-for-exact-head",
-      "requiredCi": "pending-recheck",
+      "requiredCi": "success-on-frozen-head",
       "reviewerThread": "01a186d2-2175-7122-ad9f-c01694059c6c"
     }
-  ]
+  ],
+  "candidate": {
+    "branch": "codex/integration-external-20261030",
+    "worktree": "C:\\Users\\baokh\\AppData\\Local\\ControlStudio\\worktrees\\coordinator-20261029",
+    "head": "d8a55d8",
+    "published": false,
+    "applicationTestsBeforeCorrections": 5499,
+    "coordinationTests": 32,
+    "typeCheck": "passed-before-corrections",
+    "build": "passed-before-corrections",
+    "primaryPreviewSession": 36531,
+    "temporaryPreview26702": "stopped-before-rebuild"
+  },
+  "corrections": [
+    {
+      "module": "CR04",
+      "finding": "Renderer-significant Unicode whitespace silently fused numeric tokens",
+      "source": "117ff30db6d7a1669d26c3ff8cad672e83b9f845",
+      "fix": "e7cd51449a18e908ebbc0fae621893406579503f",
+      "status": "reviewed-and-staged-locally"
+    },
+    {
+      "module": "CR04",
+      "finding": "Active drag Escape escaped to shell navigation; arrow redraw lost node focus",
+      "fixes": [
+        "1522339f0620338535e2ab167a82fdbe7f1d2088",
+        "b6ef1599ea74612034ec9df05e985e5c0ec28a8c"
+      ],
+      "status": "reviewed-and-staged-locally"
+    },
+    {
+      "module": "CD07",
+      "finding": "Rounded model tangent markers rejected valid tau=L=2/3",
+      "fix": "0a139a2314636e91002aca2d78c95f51f443de88",
+      "status": "reviewed-and-staged-locally"
+    },
+    {
+      "module": "CS04",
+      "finding": "Invalid index with plot view change escaped validation; unresolved mapped sample bridged by false chord",
+      "fix": "663f9c7c2909d3f9026aafc3c7dd7ede4e77d24f",
+      "status": "zoom-fix-reviewed-gap-fix-in-progress",
+      "worker": "01a186d1-f1f0-7393-88e7-377fbac7299a"
+    }
+  ],
+  "coordinatorBrowserBeforeCorrections": {
+    "CD02": "desktop baseline and pole-minus8 full response/ramp check",
+    "CD04": "desktop and390px baseline/refined-lag complete checks",
+    "CD06": "desktop and390px default auto-lead and changed-lag checks",
+    "DD02": "desktop and390px stable lead, unstable-extra-mode, physical-vs-sample ramp checks",
+    "DR04": "desktop and390px baseline exact Mason/direct equations and intermediate-hold first samples"
+  }
 }
