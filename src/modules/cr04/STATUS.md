@@ -1,3 +1,19 @@
+# CR04 current external reservation — 30 October 2026
+
+- **Stage:** in-progress; reserve completion of the missing teaching interface.
+- **Base:** `a43989def918052cc969cbee8691ce79d8824ec9` (v0.3.14).
+- **Owner:** external contributor `ckbk456`, branch `codex/cr04-block-diagram-editor-20261030`.
+- **Scope:** `src/modules/cr04/**`; preserve the integrated exact core and its mathematical tests.
+
+The latest FINAL_HANDOFF explicitly permits resuming CR04 on a fresh branch/PR. The former worker's PR #45 and branch remain preserved. Current upstream still has the partial core and a blank workspace. All open PR bodies and issues were checked: no competing CR04 reservation and no returned correction to this contributor's earlier submissions was found. This checkpoint changes only this audit, before substantial new implementation.
+
+Complete the full TASK: structured block/port/signed-summer/junction editing, selected reference/disturbance channels, local series/parallel/feedback and compensated summer/pickoff transformations, checked prediction/application with before/after equations and changed-signal highlighting, undo plus dragging/numeric coordinates, lifecycle isolation and actual desktop/phone validation. Every accepted transformation must preserve both retained scalar output channels. Do not weaken the core or discard the proposed disturbance channel to make a reduction work.
+
+Original Ch2/S03/W03 image assets remain unavailable and uninspected. Preserve the existing source/audit/proposed distinctions. This is a new public reservation for completing the current-main partial; it does not take over the stopped worker's branch or claim the previous partial was a completed exercise. All new implementation and validation gates remain pending. Metadata/TASK, shared/global/dependency/version/release/deployment files remain outside ownership.
+
+The historical partial-core and integration records follow unchanged.
+
+---
 # CR04 implementation status
 
 - **Stage:** in-progress
