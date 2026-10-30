@@ -45,8 +45,9 @@ export function parseGain(raw: string, kind: 'branch'|'transfer'|'scalar'='branc
       if (raw[i] === '{') { i++; const end = raw.indexOf('}', i); if (end < 0) return fail('Complete the power box.'); power = raw.slice(i, end).trim(); i = end + 1; }
       else { power = raw[i++] ?? ''; if (/[\d.]/.test(raw[i] ?? '') || !/^[0-6]$/.test(power)) return fail('Use the power button; negative exponents belong inside its box.'); }
       if (!/^-?[0-6]$/.test(power)) return fail('Only integer powers −6…6 are supported.');
-      if (power === '0' && isZero(value)) return fail('Zero to the zeroth power is undefined here.');
-      const base=value, exponent=Number(power); value=constant(1n); for(let k=0;k<Math.abs(exponent);k++)value=mul(value,base,w); if(exponent<0)value=div(constant(1n),value,w);
+      const base=value, exponent=Number(power);
+      if (exponent === 0 && isZero(base)) return fail('Zero to the zeroth power is undefined here.');
+      value=constant(1n); for(let k=0;k<Math.abs(exponent);k++)value=mul(value,base,w); if(exponent<0)value=div(constant(1n),value,w);
     }
     return value;
   }
