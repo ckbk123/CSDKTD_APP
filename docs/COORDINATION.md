@@ -1,5 +1,9 @@
 # Coordinator: ten-worker delivery and handoff
 
+## Resumed effort — 30 October 2026
+
+The human has resumed coordination and authorized work toward the remaining accepted exercises, review/merge of new submissions, and subsequent iterative interface refinement. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) is the current local assignment and review record. Its named assignments supersede the completed wind-down below. The v0.3.14 delivery and earlier reviews remain historical evidence; friends on other computers still submit one task and stop. Do not restart unassigned work, change budgets or deploy. The coordinator keeps the accepted preview on 8787 available and integrates reviewed passing revisions serially with patch releases.
+
 ## Current human instruction — stop after current work
 
 On 29 October 2026 the human ended the continuous loop to conserve tokens. All ten registered workers were directly instructed to finish only their current module or priority correction, validate and push its branch/PR (or preserve an honest partial checkpoint), release only their own temporary resources, and stop without claiming another module. This supersedes the historical loop below. The coordinator finishes the checked integration already in progress, preserves remaining contributions and review findings in GitHub/handoff records, and stops after the workers have stopped. Pending review is not acceptance, and failing work must not be merged merely to empty the queue. No replacement agents, budget increases or deployment are authorized.

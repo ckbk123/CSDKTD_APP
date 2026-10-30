@@ -1,5 +1,7 @@
 # Project status and completion evidence
 
+**Coordination resumed, 30 October 2026:** the human authorized finishing the eight remaining tools and reviewing new contributions. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) records current local assignments. The released delivery counts below change only after checked integration; assignment or active work is not verification. The completed ten-worker batch and finite external prompt remain valid historical/external workflows.
+
 ## Current delivery — v0.3.14 / 30 October 2026
 
 The stopped ten-worker batch delivered **48 verified tools, one in-progress core (CR04) and seven scaffolds**. All 49 contribution PRs are retained in the integration history. [FINAL_HANDOFF.md](FINAL_HANDOFF.md) names the remaining tasks and portable one-task prompt; [DELIVERY_STATUS.json](DELIVERY_STATUS.json) records current stages. Final combined validation passes 4,692 application tests, 32 coordination tests, type checking and build. Per-module/batch records distinguish independent mathematical review, actual browser checks and numerical qualifications. The dated v0.3.0 scaffold baseline below remains historical evidence, not the current delivered count.

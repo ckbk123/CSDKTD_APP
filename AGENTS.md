@@ -14,6 +14,8 @@ The repository stays `CSDKTD_APP`, and package/Cloudflare identifiers stay `csdk
 
 ## Read before editing
 
+**Resumed local coordination, 30 October 2026:** the human explicitly resumed the coordinator and authorized completing the remaining exercises. Read [RESUMED_COORDINATION](docs/RESUMED_COORDINATION.md) for current assigned local owners, review gates and the baseline-first student workflow. This supersedes the previous batch's stop-after-current rule only for these resumed local assignments. External friends keep their finite one-task-and-stop prompt. Do not infer a budget increase, deployment permission or ownership of other modules.
+
 The human ended the current ten-worker continuous batch with a stop-after-current instruction; see [COORDINATION](docs/COORDINATION.md). Honor explicit finite assignments. Friends contributing from separate computers use [EXTERNAL_CONTRIBUTORS](docs/EXTERNAL_CONTRIBUTORS.md) and its portable one-task prompt; the owner's absolute local path and local claim registry do not coordinate other clones.
 
 If the user gives the generic worker goal without a module ID, follow [docs/AUTONOMOUS_WORKERS.md](docs/AUTONOMOUS_WORKERS.md): repeatedly choose and atomically claim a tractable unfinished module, implement it in its own worktree/branch, verify it, open or update its one pull request and submit its exact tested revision, then immediately select the next eligible module. Do not ask the user to choose IDs or stop after the first submission. Implement only one module at a time; preserve prior submitted claims/worktrees for asynchronous review. Explicit single-module assignments can remain finite, but concurrent workers must still reserve ownership.

@@ -1,5 +1,7 @@
 # Run independent agents with the same continuous goal
 
+**Resumed local assignments, 30 October 2026:** follow [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) and your explicit coordinator assignment. The former stop-after-current batch is complete; the human has now authorized finishing the remaining exercises. Reserve only your assigned module, preserve earlier work, submit it for review, and prioritize returned corrections. Do not take a second module without checking the current assignment table and coordination. External one-task prompts remain finite.
+
 **Batch ended:** the human instructed the current ten workers to finish only their ongoing task, push a checked contribution or honest partial, and stop without new claims. [COORDINATION.md](COORDINATION.md) records this amendment. The continuous loop below is historical/opt-in; use [the finite external-contributor guide](EXTERNAL_CONTRIBUTORS.md) for friends on other computers.
 
 Copy [WORKER_GOAL.txt](WORKER_GOAL.txt) into each local worker chat unchanged. No module ID, agent number or numeric token budget needs editing. Each worker repeatedly selects and delivers tractable unfinished modules, one implementation at a time, with one pull request per module. After PR and claim submission, immediately choose the next eligible module while the coordinator reviews earlier work. An explicit user assignment for one particular module can remain finite. Reading this guide does not start chats, create a goal, change a budget or schedule background work.

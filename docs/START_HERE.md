@@ -1,5 +1,7 @@
 # Start here: implement a Control Studio goal
 
+**Local work resumed, 30 October 2026:** the latest human instruction and [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) govern named local workers. Finish the remaining accepted tools with a simple baseline-first workflow and optional detail. Preserve the earlier v0.3.14 handoff as dated evidence. Friends contributing from other computers continue using the finite external-contributor prompt.
+
 **Current handoff:** the owner ended the ten-worker continuous batch with a stop-after-current instruction. Contributors on another computer should start with [EXTERNAL_CONTRIBUTORS.md](EXTERNAL_CONTRIBUTORS.md) and [CONTRIBUTOR_PROMPT.txt](CONTRIBUTOR_PROMPT.txt), which define one finite task and portable setup. An explicit finite user assignment overrides the historical loop described below. Check open upstream PRs before treating a scaffold as unclaimed.
 
 This is the entry point for an agent receiving either the [generic worker goal](WORKER_GOAL.txt) or an explicit assignment such as **"Implement CD02"**. The generic goal continuously selects, reserves, completes and submits modules, one implementation at a time, with one pull request per module. After each submission, choose the next eligible module while the coordinator reviews previous work. An explicit single-module assignment can retain its finite scope. Assess current code first; do not stop at a proposal or replace an existing implementation without checking it.
