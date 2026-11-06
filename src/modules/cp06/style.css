@@ -39,3 +39,26 @@
 [data-module="CP06"] details { border-top: 1px solid var(--line); padding: .7rem 0; }
 [data-module="CP06"] summary { cursor: pointer; font-weight: 600; }
 [data-module="CP06"] :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+[data-module="CP06"] .cp-mode-workspace, [data-module="CP06"] .cp-explore { display: grid; gap: 1rem; min-width: 0; }
+[data-module="CP06"] .cp-mode-switch { margin: 0; }
+[data-module="CP06"] .cp-mode-switch [aria-pressed="true"] { background: var(--tint); border-color: var(--accent); }
+[data-module="CP06"] .cp-explore-layout { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(15rem, 1fr); gap: 1rem; align-items: start; }
+[data-module="CP06"] .cp-explore-head p { margin: .4rem 0; }
+[data-module="CP06"] .cp-model-state { font-size: .85rem; color: var(--muted); }
+[data-module="CP06"] .cp-inspector .cp-controls { grid-template-columns: 1fr; }
+[data-module="CP06"] .cp-interactive-plane { touch-action: pan-y; }
+[data-module="CP06"] .cp-interactive-plane > svg { min-width: 0; max-width: none; }
+[data-module="CP06"] .cp-interactive-plane input[type="range"] { padding-inline: 0; }
+[data-module="CP06"] .cp-overlays { display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
+[data-module="CP06"] .cp-overlays label { font-size: .85rem; }
+[data-module="CP06"] .cp-edit-marker { cursor: grab; touch-action: none; }
+[data-module="CP06"] .cp-edit-hit { fill: transparent; stroke: transparent; stroke-width: 2; }
+[data-module="CP06"] .cp-edit-active { stroke: var(--accent); fill: var(--tint); fill-opacity: .45; }
+[data-module="CP06"] .cp-edit-symbol { stroke: var(--text); stroke-width: 1.8; fill: none; pointer-events: none; }
+[data-module="CP06"] .cp-drag-ghost { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 3 3; }
+[data-module="CP06"] .cp-root-summary { font-size: .9rem; overflow-wrap: anywhere; }
+[data-module="CP06"] .cp-root-summary ul { padding-left: 1.2rem; }
+@media (max-width: 900px) {
+  [data-module="CP06"] .cp-explore-layout { grid-template-columns: minmax(0, 1fr); }
+  [data-module="CP06"] .cp-inspector .cp-controls { grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+}

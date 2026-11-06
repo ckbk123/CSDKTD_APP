@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
-import { mountView } from './view';
+import { mountView } from './practice';
 const state = vi.hoisted(() => ({ count: 0, failAt: 0, releases: 0 }));
 // Flow/lifecycle wiring only. Real MathLive editing, fonts and plot geometry require browser checks.
 vi.mock('../../shared/equations/input', () => ({
