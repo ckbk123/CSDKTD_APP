@@ -64,10 +64,10 @@ export function moveFactor(model: Model, id: string, real: number, imaginary: nu
   else {
     approximate = true;
     const source = selected.kind === 'pole' ? model.plantD : model.plantN;
-    p = list.filter(f => f.kind === selected.kind).reduce<Polynomial>((result, f) => product(result, f.id === id ? replacement : factorAt(f.re, f.im, f.pair, f.multiplicity)), [source.at(-1)!]);
+    p = list.filter(f => f.kind === selected.kind).reduce<Polynomial>((result, f) => product(result, f.id === id ? replacement : f.exact ?? factorAt(f.re, f.im, f.pair, f.multiplicity)), [source.at(-1)!]);
   }
   const next = changed(model, selected.kind, p);
-  return { model: next, note: approximate ? 'Applied on the 0.01 grid. Other irrational roots in this polynomial were also rounded to that grid; the displayed equation is the resulting model.' : 'Applied on the 0.01 grid. Untouched exact factors and the polynomial leading scale are preserved.' };
+  return { model: next, note: approximate ? 'Applied on the 0.01 grid. Other roots without an exact split in this polynomial were also rounded to that grid; untouched exact factors are preserved. The displayed equation is the resulting model.' : 'Applied on the 0.01 grid. Untouched exact factors and the polynomial leading scale are preserved.' };
 }
 export function removeFactor(model: Model, id: string): EditedModel {
   const list = editableFactors(model), selected = list.find(f => f.id === id);
@@ -75,9 +75,9 @@ export function removeFactor(model: Model, id: string): EditedModel {
   let p = selected.remainder;
   if (!p) {
     const source = selected.kind === 'pole' ? model.plantD : model.plantN;
-    p = list.filter(f => f.kind === selected.kind && f.id !== id).reduce<Polynomial>((result, f) => product(result, factorAt(f.re, f.im, f.pair, f.multiplicity)), [source.at(-1)!]);
+    p = list.filter(f => f.kind === selected.kind && f.id !== id).reduce<Polynomial>((result, f) => product(result, f.exact ?? factorAt(f.re, f.im, f.pair, f.multiplicity)), [source.at(-1)!]);
   }
-  return { model: changed(model, selected.kind, p), note: selected.remainder ? 'Removed the selected factor group. Untouched factors retain their exact coefficients.' : 'Removed the group; remaining irrational roots in this polynomial were rounded to the 0.01 grid.' };
+  return { model: changed(model, selected.kind, p), note: selected.remainder ? 'Removed the selected factor group. Untouched factors retain their exact coefficients.' : 'Removed the group; remaining roots without an exact split were rounded to the 0.01 grid, while untouched exact factors are preserved.' };
 }
 export function addFactor(model: Model, kind: FactorKind, pair: boolean, re: number, im: number): EditedModel {
   if (!pair && im !== 0) throw new Error('A real factor has zero imaginary coordinate.');

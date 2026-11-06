@@ -24,7 +24,7 @@ function input(root: HTMLElement, label: string, value: string): void { const n 
 function choose(root: HTMLElement, label: string, value: string): void { const n = field<HTMLSelectElement>(root, label); n.value = value; n.dispatchEvent(new Event('change', { bubbles: true })); }
 const Q = (root: HTMLElement) => field(root, 'Complete selected characteristic polynomial').getAttribute('data-latex');
 function pointer(target: Element, type: string, x = 300, y = 204): void { const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 }); Object.defineProperty(event, 'pointerId', { value: 9 }); target.dispatchEvent(event); }
-afterEach(() => { for (const v of visits.splice(0)) { v.controller.abort(); v.cleanup(); v.root.remove(); } vi.useRealTimers(); vi.clearAllMocks(); state.count = state.failAt = state.releases = 0; state.failDisplay = false; });
+afterEach(() => { for (const v of visits.splice(0)) { v.controller.abort(); v.cleanup(); v.root.remove(); } vi.useRealTimers(); vi.clearAllMocks(); vi.unstubAllGlobals(); state.count = state.failAt = state.releases = 0; state.failDisplay = false; });
 
 describe('CP06 immediate exploration and intentional practice', () => {
   it('opens a checked baseline visual and separates a fresh hidden-answer practice attempt', () => {
@@ -64,6 +64,10 @@ describe('CP06 immediate exploration and intentional practice', () => {
     const { root } = visit(); press(root, 'Fixed-Ki PI example'); expect(Q(root)).toBe(String.raw`Q(s,\frac{27}{20})=s^{3}+2s^{2}+\frac{27}{20}s+\frac{27}{10}`);
     choose(root, 'Selected plant factor', 'pole-0'); input(root, 'Factor real coordinate (s⁻¹)', '-3'); press(root, 'Apply coordinates');
     expect(Q(root)).toContain(String.raw`s^{3}+3s^{2}+\frac{27}{20}s+\frac{27}{10}`); expect(root.textContent).toContain('plant factor, not an independently editable effective PI factor');
+  });
+  it('does not validate a hidden irrelevant Ki draft after switching back to gain mode', () => {
+    const { root } = visit(); press(root, 'Fixed-Ki PI example'); input(root, 'Fixed Ki (Kp per second)', ''); choose(root, 'Varying parameter', 'gain'); press(root, 'Apply equations');
+    expect(Q(root)).toBe(String.raw`Q(s,\frac{27}{20})=s^{2}+2s+\frac{27}{20}`); expect(field<HTMLInputElement>(root, 'Live gain cursor').disabled).toBe(false);
   });
   it('shows retained fixed modes after equation edits', () => {
     const { root } = visit(); input(root, 'Numerator polynomial N(s)', 's-1'); input(root, 'Denominator polynomial D(s)', '(s-1)(s+2)'); press(root, 'Apply equations'); expect(root.textContent).toContain('Retained common-factor modes: 1'); expect(root.textContent).toContain('right half-plane');
@@ -122,6 +126,24 @@ describe('CP06 immediate exploration and intentional practice', () => {
     vi.spyOn(SVGElement.prototype, 'getBoundingClientRect').mockReturnValue({ x: 0, y: 0, left: 0, top: 0, width: 480, height: 440, right: 480, bottom: 440, toJSON() {} });
     pointer(marker, 'pointerdown'); pointer(host, 'pointermove', 280); press(root, 'Practice'); const calls = vi.mocked(trace).mock.calls.length; vi.advanceTimersByTime(100); expect(vi.mocked(trace).mock.calls).toHaveLength(calls);
     controller.abort(); cleanup(); vi.runAllTimers(); expect(root.children).toHaveLength(0); expect(state.releases).toBe(4);
+  });
+  it('adapts to the measured plot width without retracing and owns resize/window resources on direct disposal', () => {
+    let resized: ResizeObserverCallback; const disconnect = vi.fn(), observe = vi.fn();
+    vi.stubGlobal('ResizeObserver', class { constructor(callback: ResizeObserverCallback) { resized = callback; } observe = observe; disconnect = disconnect; });
+    const removeListener = vi.spyOn(window, 'removeEventListener'), { root, cleanup, controller } = visit(), before = Q(root), calls = vi.mocked(trace).mock.calls.length;
+    resized!([{ contentRect: { width: 276 } } as ResizeObserverEntry], {} as ResizeObserver);
+    expect(root.querySelector('svg')!.style.getPropertyValue('--cp-plane-font')).toBe(`${12 * 480 / 276}px`); expect(Q(root)).toBe(before); expect(vi.mocked(trace).mock.calls).toHaveLength(calls);
+    cleanup(); cleanup(); expect(controller.signal.aborted).toBe(false); expect(disconnect).toHaveBeenCalledOnce(); expect(observe).toHaveBeenCalledOnce(); expect(removeListener).toHaveBeenCalledWith('keydown', expect.any(Function), true);
+    resized!([{ contentRect: { width: 500 } } as ResizeObserverEntry], {} as ResizeObserver); expect(root.children).toHaveLength(0); expect(vi.mocked(trace).mock.calls).toHaveLength(calls);
+  });
+  it('cancels an active preview safely if its measured plot width changes', () => {
+    vi.useFakeTimers(); let resized: ResizeObserverCallback;
+    vi.stubGlobal('ResizeObserver', class { constructor(callback: ResizeObserverCallback) { resized = callback; } observe() {} disconnect() {} });
+    const { root } = visit(), before = Q(root), host = root.querySelector('.cp-interactive-plane')!;
+    vi.spyOn(SVGElement.prototype, 'getBoundingClientRect').mockReturnValue({ x: 0, y: 0, left: 0, top: 0, width: 480, height: 440, right: 480, bottom: 440, toJSON() {} });
+    pointer(root.querySelector('[data-edit-id="pole-2"]')!, 'pointerdown'); expect(document.activeElement).toBe(host); pointer(host, 'pointermove', 280); vi.advanceTimersByTime(80); expect(root.querySelector('svg')!.dataset.preview).toBe('true');
+    const calls = vi.mocked(trace).mock.calls.length; resized!([{ contentRect: { width: 276 } } as ResizeObserverEntry], {} as ResizeObserver);
+    expect(Q(root)).toBe(before); expect(root.querySelector('svg')!.dataset.preview).toBe('false'); expect(root.textContent).toContain('Drag cancelled because the plot resized'); expect(vi.mocked(trace).mock.calls).toHaveLength(calls);
   });
   it('releases an editor created before partial mount failure with the parent still active', () => {
     state.failAt = 2; const root = document.createElement('div'), parent = new AbortController(); expect(() => mountView({ container: root, signal: parent.signal })).toThrow('Synthetic'); expect(parent.signal.aborted).toBe(false); expect(state.releases).toBe(1); expect(root.children).toHaveLength(0);

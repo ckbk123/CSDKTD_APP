@@ -53,8 +53,10 @@
 [data-module="CP06"] .cp-overlays label { font-size: .85rem; }
 [data-module="CP06"] .cp-edit-marker { cursor: grab; touch-action: none; }
 [data-module="CP06"] .cp-edit-hit { fill: transparent; stroke: transparent; stroke-width: 2; }
-[data-module="CP06"] .cp-edit-active { stroke: var(--accent); fill: var(--tint); fill-opacity: .45; }
+[data-module="CP06"] .cp-edit-active { stroke: var(--accent); stroke-width: 1.5; fill: var(--tint); fill-opacity: .45; pointer-events: none; }
 [data-module="CP06"] .cp-edit-symbol { stroke: var(--text); stroke-width: 1.8; fill: none; pointer-events: none; }
+[data-module="CP06"] .cp-interactive-plane .cp-tick, [data-module="CP06"] .cp-interactive-plane .cp-axis-title { font-size: var(--cp-plane-font, 12px); }
+[data-module="CP06"] .cp-interactive-plane .cp-edit-symbol, [data-module="CP06"] .cp-interactive-plane .cp-edit-active, [data-module="CP06"] .cp-interactive-plane .cp-branch, [data-module="CP06"] .cp-interactive-plane .cp-arrow { vector-effect: non-scaling-stroke; }
 [data-module="CP06"] .cp-drag-ghost { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 3 3; }
 [data-module="CP06"] .cp-root-summary { font-size: .9rem; overflow-wrap: anywhere; }
 [data-module="CP06"] .cp-root-summary ul { padding-left: 1.2rem; }
