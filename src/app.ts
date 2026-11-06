@@ -173,7 +173,8 @@ export function createApp(root: HTMLElement): () => void {
     const breadcrumb = element('nav', 'breadcrumb'); breadcrumb.setAttribute('aria-label', 'Breadcrumb');
     breadcrumb.append(link(domainName(domain), libraryHref(domain)), element('span', '', '/'),
       link(categoryName(module.category), libraryHref(domain, module.category)), element('span', '', '/'), element('span', '', module.id));
-    const heading = element('header', 'page-heading');
+    toolbar.replaceChildren(back, breadcrumb, reset);
+    const heading = element('header', 'page-heading module-page-heading');
     heading.append(element('h1', '', module.title), element('p', 'page-description', module.description));
     const exampleReference = element('details', 'default-example');
     exampleReference.append(element('summary', '', 'Reference example · notation preview'));
@@ -210,7 +211,7 @@ export function createApp(root: HTMLElement): () => void {
     const related = element('nav', 'related-tools'); related.setAttribute('aria-label', 'Related tools');
     related.append(element('span', '', 'Continue exploring'));
     for (const item of relatedModules(module.id)) related.append(link(`${item.title} · ${domainName(item.domain)}`, moduleHref(item.id)));
-    main.append(toolbar, breadcrumb, heading, exampleReference, workspaceHeading, workspace, footer, related);
+    main.append(toolbar, heading, exampleReference, workspaceHeading, workspace, footer, related);
 
     async function mount(isReset = false): Promise<void> {
       status.textContent = 'Loading workspace…';
