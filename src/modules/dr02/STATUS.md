@@ -1,12 +1,12 @@
 # DR02 implementation status
 
-- **Stage:** implemented
+- **Stage:** verified
 - **Current refinement:** explicit finite DR02 memory-execution pilot, 6 November 2026; owner `interactivity-dr02-01a1ac7b`, branch `codex/dr02-memory-refinement`, fresh baseline `cf69ad252c34c971c6d81282db9e0a471f40d846`.
 - **Owned worktree:** `C:/Users/baokh/.codex/worktrees/dr02-memory-refinement/CSDKTD APP`.
 - **Refinement acceptance:** open on the operational old-memory, prediction/reveal/commit and committed-trace workspace; put experiment controls beside it; keep full model conversion and initial history accessible as optional sections. Make source selection, products and simultaneous writes clear without exposing the pending output before reveal. Preserve all existing bounded mathematics, independent zero-history comparison, 128-sample limit, validation and per-visit cleanup.
-- **Current evidence:** the corrected interface passes 102 DR02 tests / 4 files, TypeScript checking, production build and diff checks. The earlier c434a6e checkpoint passes all 5,568 application tests / 257 files. Corrected-head combined checks and actual browser acceptance belong to the integration owner; no new browser evidence is claimed here.
+- **Current evidence:** corrected code d16f877 passes 102 DR02 tests / 4 files, TypeScript checking, production build and diff checks. The integration owner independently accepts the corrected real-browser interface as attributed below. The earlier c434a6e checkpoint passes all 5,568 application tests / 257 files; combined-candidate regression and release remain coordinator-owned.
 - **Refinement PR:** [#59](https://github.com/ckbk123/CSDKTD_APP/pull/59), the same finite refinement branch; attached in the parent chat. The historical exercise PR below is separate.
-- **Coordinator browser checkpoint:** parent source c434a6e passes the initial operational view, baseline reveal/commit values and trace inspection without memory advancement. The 390 px check found unreadable scaled SVG labels despite document widths 375/375. The corrected native-axis plot and prediction-feedback fix below await repeated browser acceptance; the earlier checkpoint does not certify these changes.
+- **Coordinator browser checkpoint:** parent source c434a6e passes the initial operational view, baseline reveal/commit values and trace inspection without memory advancement. Its 390 px check found unreadable scaled SVG labels despite document widths 375/375. The corrected native-axis plot and prediction-feedback fix pass the repeated, independently attributed gate below.
 
 ## Current interface refinement — 6 November 2026
 
@@ -29,7 +29,7 @@ Local verification uses bundled Node v24.22.1 and the installed npm CLI, with th
 
 The first full-suite attempt reached the default 5-second test timeout only in the added test exercising all 128 real reveal/commit transitions. That bounded UI test now declares a 15-second limit; the complete suite passes. No product bound or mathematical validation was relaxed.
 
-**Pending acceptance:** coordinator real-browser inspection of actual MathLive entry/fonts/keyboard, source and trace interaction, reset/reopen/navigation, and narrow layout. Mocked-editor/jsdom checks are caller-state evidence, not browser evidence. The integration owner will record its observed browser disposition separately before accepting the refinement. No version, global/shared files, dependencies, primary checkout, deployment or historical research assets were changed.
+**Independent acceptance:** the integration owner accepts the corrected interface following the real-browser gate below. Mocked-editor/jsdom checks remain caller-state evidence; the unchanged equation layer retains its separately attributed historical input/font/keyboard evidence. Combined-candidate regression and release are coordinator-owned. No version, global/shared files, dependencies, primary checkout, deployment or historical research assets were changed by this contribution.
 
 ## Coordinator-returned correction — readable narrow plot and prediction drafts
 
@@ -37,7 +37,18 @@ Parent browser QA confirmed c434a6e's operational behavior but found 13-unit SVG
 
 An additional review found that changing the prediction after Reveal left the old agreement message visible. The owned prediction-input listener now revokes only that grading, asks for another Reveal, and retains the valid frozen calculation and enabled Commit. Its regression independently checks that a changed guess does not shift or invalidate the computed y[0]=0 snapshot.
 
-Affected checks on corrected source: 102 module tests / 4 files pass (2.77 seconds); production build including TypeScript and diff checks pass. The original complete-suite result is explicitly attributed above. Parent repeated narrow-browser and combined acceptance are pending.
+Affected checks on corrected source: 102 module tests / 4 files pass (2.77 seconds); production build including TypeScript and diff checks pass. The original complete-suite result is explicitly attributed above. The repeated narrow-browser gate passes as recorded below; the parent owns combined-candidate regression and release.
+
+## Independent coordinator interface acceptance — 6 November 2026
+
+The integration owner inspected corrected code d16f877 in its private combined candidate and reported these observed real-browser results:
+
+- At the 390 px phone viewport, native axis labels are readable at 12 CSS pixels and document client/scroll widths remain 375/375.
+- Reveal gives baseline y[0]=0. Editing the prediction to 1 revokes the old grade while preserving the valid pending calculation and enabled Commit.
+- Two commits give y[1]=0.09516258 and live sample k=2. Moving the trace cursor Home selects committed k=0 without advancing or resetting that live memory.
+- The nonzero-history experiment gives y[0]=0.90483742. Shell reset and navigation work.
+
+The parent also owns a separate integration adapter limiting parser quick-insert buttons to fraction/power/parentheses and the compact shell toolbar; those changes are not present in this isolated module branch. This acceptance attributes only the observations actually reported, within the preserved mathematical bounds. It does not claim an additional exhaustive browser/theme/input sweep. The same PR #59 and preserved branch receive this documentation-only acceptance record; the claim identifies the exact clean final submission SHA.
 
 ## Historical accepted exercise delivery
 
