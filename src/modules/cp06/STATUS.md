@@ -2,6 +2,7 @@
 
 - **Stage:** implemented
 - **Current finite refinement, 6 November 2026:** CP06 pole/zero exploration pilot, explicitly assigned by the human through the integration owner after the application-wide interactivity review. Isolated branch `codex/cp06-interactivity-pilot`, worktree `C:/Users/baokh/.codex/worktrees/cp06-interactivity-pilot/CSDKTD APP`, exact base `cf69ad252c34c971c6d81282db9e0a471f40d846`. Local ownership is reserved as `interactivity-cp06-01a1ac7b`. Browser acceptance is being performed centrally by the integration owner; this worker does not claim fresh browser evidence yet.
+- **Refinement PR:** [#61 — Make CP06 root-locus exploration immediate and directly editable](https://github.com/ckbk123/CSDKTD_APP/pull/61). The integration owner created and attached this PR after the connected GitHub integration rejected creation with HTTP 403. Corrections stay on this branch and PR.
 - Historical v0.3.15 state: the accepted bounded construction exercise was verified. The coordinator preparation of source `756220aaf8b021741de201aa46895a9218cfd2d4` included 169 independent analytic-root/PI/candidate/rule/continuation checks, 121 module tests and shared notation/lifecycle review. The older detailed delivery record below is retained as historical evidence, not evidence that the new interactive presentation has passed browser acceptance.
 
 ## Current interactivity refinement: scope and evidence
@@ -23,6 +24,8 @@ An irreducible factor that cannot be split exactly is reconstructed from roots r
 The gain cursor rounds to nine decimal places and names a rounding when it occurs; a nonzero value that would become zero is rejected. Native gain input retains the existing exact rational-denominator bound of 10⁹. Neither path silently substitutes zero for a tiny nonzero gain. Candidate checks retain their previous interpretation; the finite trace is not a proof of a complete stable gain region.
 
 Current local checks under bundled Node 24.22.1: `node node_modules/vitest/vitest.mjs run src/modules/cp06 --reporter dot` passes **148 tests in 8 files**; `npm test -- --reporter dot` passes **5,589 tests in 260 files**; `npm run build` passes, including `npm run check`, with the existing MathLive chunk advisory. `git diff --check` passes. Central browser acceptance is pending in this checkpoint. No shared files, dependencies, release version or deployment configuration changed.
+
+Post-check self-review found that moving a negative conjugate handle by keyboard restored focus to its positive partner. The correction preserves the selected side across redraws; the regression presses ArrowUp twice on the negative partner and checks magnitudes 2 → 1.99 → 1.98 with focus retained. All 148 CP06 tests pass after this correction; check/build are repeated for its checkpoint. The full-suite result above belongs to the preceding tested source checkpoint; combined integration checks remain the coordinator's gate.
 
 ## Historical bounded construction delivery
 - **Assessed:** 2026-10-29; primary baseline `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).

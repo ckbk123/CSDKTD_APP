@@ -97,6 +97,9 @@ describe('CP06 immediate exploration and intentional practice', () => {
     const negative = [...root.querySelectorAll<SVGGElement>('[data-edit-id="pole-0"]')].find(n => Number(n.dataset.editIm) < 0)!;
     negative.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true })); expect(Number(field<HTMLInputElement>(root, 'Factor imaginary coordinate (rad/s)').value)).toBeCloseTo(1.99, 9);
     expect(field<HTMLTextAreaElement>(root, 'Denominator polynomial D(s)').value).toBe(String.raw`s^{2}+2s+\frac{49601}{10000}`);
+    expect(Number((document.activeElement as SVGElement).dataset.editIm)).toBeLessThan(0);
+    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true }));
+    expect(Number(field<HTMLInputElement>(root, 'Factor imaginary coordinate (rad/s)').value)).toBeCloseTo(1.98, 9);
   });
   it('previews a drag on fixed axes and cancels without changing the checked model', () => {
     vi.useFakeTimers(); const { root } = visit(), before = Q(root), svg = root.querySelector('svg')!;
