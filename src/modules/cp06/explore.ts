@@ -13,7 +13,7 @@ import { roots, type Root } from './roots';
 import { rules, type RuleSet } from './rules';
 
 interface Snapshot { readonly model: Model; readonly gain: Rational; readonly maximum: number }
-interface Computed extends Snapshot { readonly construction: RuleSet; readonly sampled: Trace; readonly selected: readonly Root[]; readonly issue?: string; readonly factors: readonly EditFactor[] }
+interface Computed extends Snapshot { readonly construction: RuleSet; readonly sampled: Trace; readonly selected: readonly Root[]; readonly issue?: string; readonly factors: readonly EditFactor[]; readonly factorIssue?: string }
 interface Drag { readonly pointer: number; readonly id: string; readonly pair: boolean; re: number; im: number; moved: boolean }
 const equationEntry = { tools: ['fraction', 'power', 'parentheses'] as const,
   description: 'Enter a real polynomial in s with fractions, visible parentheses and integer powers from 0 to 3.' };
@@ -24,7 +24,9 @@ function selectedRoots(model: Model, gain: Rational): { selected: Root[]; issue?
   catch (error) { return { selected: [], issue: error instanceof Error ? error.message : 'Selected roots could not be resolved.' }; }
 }
 function compute(snapshot: Snapshot, preview = false): Computed {
-  return { ...snapshot, construction: rules(snapshot.model), sampled: trace(snapshot.model, snapshot.maximum, preview ? 16 : 64, preview ? 129 : 2049), factors: editableFactors(snapshot.model), ...selectedRoots(snapshot.model, snapshot.gain) };
+  let factors: EditFactor[] = [], factorIssue: string | undefined;
+  try { factors = editableFactors(snapshot.model); } catch (e) { factorIssue = e instanceof Error ? e.message : 'The plant factors could not be resolved for direct editing.'; }
+  return { ...snapshot, construction: rules(snapshot.model), sampled: trace(snapshot.model, snapshot.maximum, preview ? 16 : 64, preview ? 129 : 2049), factors, factorIssue, ...selectedRoots(snapshot.model, snapshot.gain) };
 }
 
 export const mountExplore: ModuleMount = ({ container, signal }) => {
@@ -36,15 +38,16 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   let viewWindow: PlaneWindow | undefined, currentPlane: Plane, selectedId = 'pole-0', draftDirty = false, suppressClick = false, testedPoint = c(0, Math.sqrt(10));
   const history: Snapshot[] = [];
   const status = el('p', 'Drag a pole or zero, or move the gain to see every closed-loop root change.', 'cp-feedback'); status.setAttribute('role', 'status');
-  const overview = el('section', '', 'cp-card cp-explore-head'); overview.append(el('h3', 'Change a pole or zero and watch the locus'), el('p', 'Negative unity feedback: 1 + K L₀(s) = 0. The finite trace is a numerical illustration; every full characteristic root is checked at the selected gain.', 'cp-note'));
-  const equation = el('div'), badge = el('p', 'Checked model', 'cp-model-state'); overview.append(equation, badge); root.append(overview);
+  const overview = el('div', '', 'cp-explore-head'); overview.append(el('h3', 'Current model'));
+  const equation = el('div'), badge = el('p', 'Checked model', 'cp-model-state'); overview.append(equation, el('p', 'The finite trace is a numerical illustration. Every full characteristic root is checked at the selected gain.', 'cp-note'));
   const split = el('div', '', 'cp-explore-layout'), visual = el('section', '', 'cp-card cp-explore-visual'), inspector = el('section', '', 'cp-card cp-inspector'); split.append(visual, inspector); root.append(split);
+  const loopContext = el('p', 'Negative unity feedback: 1 + K L₀(s) = 0.', 'cp-note'); visual.append(loopContext);
   const controls = el('div', '', 'cp-controls');
   function number(label: string, value: number, min: number, max: number) { const wrap = el('label', label), input = el('input'); input.type = 'number'; input.step = 'any'; input.value = String(value); input.min = String(min); input.max = String(max); input.setAttribute('aria-label', label); wrap.append(input); return { wrap, input }; }
   function button(label: string, action: () => void, host: HTMLElement) { const b = el('button', label); b.type = 'button'; b.addEventListener('click', action, { signal }); host.append(b); return b; }
   const gain = number('Selected gain K or Kp', 70, 0, 1000), slider = el('input'); slider.type = 'range'; slider.min = '0'; slider.max = '140'; slider.step = 'any'; slider.value = '70'; slider.setAttribute('aria-label', 'Live gain cursor');
   const sliderLabel = el('label', 'Move the gain'); sliderLabel.append(slider); controls.append(gain.wrap, sliderLabel); visual.append(controls);
-  const plotHost = el('div', '', 'cp-plane-region cp-interactive-plane'); plotHost.tabIndex = 0; plotHost.setAttribute('role', 'region'); plotHost.setAttribute('aria-label', 'Root-locus exploration plot'); visual.append(plotHost);
+  const plotHost = el('div', '', 'cp-plane-region cp-interactive-plane'); plotHost.tabIndex = 0; plotHost.setAttribute('role', 'region'); plotHost.setAttribute('aria-label', 'Root-locus exploration plot'); visual.append(badge, plotHost);
   const plotActions = el('div', '', 'cp-actions'), overlays = el('div', '', 'cp-overlays'), rootSummary = el('div', '', 'cp-root-summary'), plotNote = el('p', '', 'cp-note');
   visual.append(plotActions, overlays, rootSummary, plotNote);
   button('Fit plot', () => { if (draftDirty || drag) return; viewWindow = undefined; draw(current, false); status.textContent = 'Fit to the current finite trace. Axes stay fixed until you fit again.'; }, plotActions);
@@ -55,7 +58,7 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
     const wrap = el('label', '', 'cp-checkbox'), input = el('input'); input.type = 'checkbox'; input.checked = reveals[key]; input.setAttribute('aria-label', label); wrap.append(input, document.createTextNode(label)); overlays.append(wrap);
     input.addEventListener('change', () => { reveals[key] = input.checked; draw(shown, shown !== current); }, { signal });
   }
-  inspector.append(el('h3', 'Poles and zeros'));
+  inspector.append(overview, el('h3', 'Poles and zeros'));
   const selectionLabel = el('label', 'Selected plant factor'), selection = el('select'); selection.setAttribute('aria-label', 'Selected plant factor'); selectionLabel.append(selection); inspector.append(selectionLabel);
   const real = number('Factor real coordinate (s⁻¹)', 0, -100, 100), imaginary = number('Factor imaginary coordinate (rad/s)', 0, 0, 100); real.input.step = imaginary.input.step = '.01';
   const coordinateControls = el('div', '', 'cp-controls'); coordinateControls.append(real.wrap, imaginary.wrap); inspector.append(coordinateControls);
@@ -73,7 +76,7 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   inspector.append(el('p', 'Crosses are poles and rings are zeros. Drag a handle; real roots stay on the real axis and conjugates move together. Arrow keys move a focused handle by 0.01; Shift moves by 0.1. Repeated groups move together. Escape cancels a drag.', 'cp-note'));
   root.append(status);
   const advanced = el('details', '', 'cp-card'), form = el('div', '', 'cp-equation-inputs'); advanced.append(el('summary', 'Edit equations, PI mode and gain range'), form); root.append(advanced);
-  const invalidate = () => { draftDirty = true; cancelDrag(false); badge.textContent = 'Equation draft changed — plot shows the last checked model'; status.textContent = 'Apply the equation edits to update the plot, or discard them before moving a factor.'; refreshEnabled(); };
+  const invalidate = () => { draftDirty = true; cancelDrag(false); badge.textContent = 'Draft changed — plot shows the last checked model'; status.textContent = 'Apply the equation edits to update the plot, or discard them before moving a factor.'; refreshEnabled(); };
   const numerator = createEquationInput({ ...equationEntry, label: 'Numerator polynomial N(s)', value: '1', signal, onChange: invalidate }); editors.push(numerator);
   const denominator = createEquationInput({ ...equationEntry, label: 'Denominator polynomial D(s)', value: 's(s+2)(s+5)', signal, onChange: invalidate }); editors.push(denominator); form.append(numerator.element, denominator.element);
   const settings = el('div', '', 'cp-controls'), modeLabel = el('label', 'Varying parameter'), mode = el('select'); mode.setAttribute('aria-label', 'Varying parameter');
@@ -112,7 +115,7 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   function syncSelection(): void {
     const factor = selectedFactor(); selection.value = selectedId;
     if (factor) { real.input.value = String(factor.re); imaginary.input.value = String(factor.pair ? factor.im : 0); selectedNote.textContent = `${factorLabel(factor)}. ${Math.max(Math.abs(factor.re), factor.im) > 100 ? 'This accepted root is outside the ±100 coordinate-edit window. Enter a position inside that window or edit the equation; selection does not change the root. ' : ''}${current.model.mode === 'pi' ? 'This is a plant factor, not an independently editable effective PI factor. ' : ''}${factor.exact ? 'Untouched exact factors remain exact when this group moves.' : 'Roots without an exact split will be rounded to the 0.01 grid during a coordinate edit; untouched exact factors remain exact.'}`; }
-    else selectedNote.textContent = 'Select a handle on the plot or a factor above.';
+    else selectedNote.textContent = current.factorIssue ? `Direct factor inspection is unavailable for this valid model: ${current.factorIssue} The equation, locus and full-root checks remain available; use equation editing for this case.` : 'Select a handle on the plot or a factor above.';
     refreshEnabled();
   }
   function refreshFactors(preferred?: Complex, kind?: 'pole' | 'zero'): void {
@@ -163,7 +166,8 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
     // Publish only after every mathematical/readout operation succeeds.
     shown = value; currentPlane = nextPlane; viewWindow = nextWindow;
     plotHost.replaceChildren(nextPlane.element); equation.replaceChildren(...nextEquation.childNodes); rootSummary.replaceChildren(...nextSummary.childNodes); candidateReadout.replaceChildren(...nextReadout.childNodes); plotNote.textContent = nextNote;
-    badge.textContent = preview ? 'Drag preview — lower-resolution finite trace; release to check' : draftDirty ? 'Draft changed — plot shows the last checked model' : 'Checked model';
+    loopContext.textContent = value.model.mode === 'pi' ? 'Negative unity feedback: 1 + Kp L₀,eff(s) = 0. Handles edit plant factors with Ki fixed.' : 'Negative unity feedback: 1 + K L₀(s) = 0.';
+    badge.textContent = preview ? 'Drag preview · lower resolution · release to check' : draftDirty ? 'Draft changed — plot shows the last checked model' : 'Checked model';
   }
   function updateGain(fromRange: boolean): void {
     if (!ready()) return;

@@ -1,6 +1,6 @@
 import { buildModel, type Model } from './model';
-import { degree, divide, evaluateExact, monic, product, zero, type Polynomial } from './polynomial';
-import { add, decimal, mul, neg, ONE, rational, type Rational } from './rational';
+import { degree, divide, evaluateExact, gcd, monic, product, quotient, zero, type Polynomial } from './polynomial';
+import { add, decimal, div, mul, neg, ONE, rational, toNumber, type Rational } from './rational';
 import { roots } from './roots';
 
 export type FactorKind = 'pole' | 'zero';
@@ -22,6 +22,9 @@ function factorAt(re: number, im: number, pair: boolean, count = 1): Polynomial 
 }
 /** Continued fractions only propose rationals; exact substitution decides whether a root is rational. */
 function exactReal(p: Polynomial, value: number): Rational | undefined {
+  const n = degree(p);
+  const mean = div(neg(p[n - 1]), mul(rational(BigInt(n)), p[n]));
+  if (!evaluateExact(p, mean).n && Math.abs(toNumber(mean) - value) <= 1e-12 * Math.max(1, Math.abs(value))) return mean;
   let x = Math.abs(value), h0 = 0, h1 = 1, k0 = 1, k1 = 0;
   for (let step = 0; step < 32; step++) {
     const a = Math.floor(x), h = a * h1 + h0, k = a * k1 + k0;
@@ -49,8 +52,26 @@ function groups(p: Polynomial, kind: FactorKind): EditFactor[] {
     return { id: `${kind}-${index}`, kind, index, re: root.re, im: Math.abs(root.im), pair: root.im !== 0, multiplicity: root.multiplicity, exact, remainder: exact ? division!.quotient : undefined };
   });
 }
+/** Inspect exact common and remaining factors separately, just as the accepted model keeps fixed modes separate. */
+function fullGroups(p: Polynomial, kind: FactorKind, common: Polynomial): EditFactor[] {
+  const separated = degree(common) ? [...groups(common, kind), ...groups(quotient(p, common), kind)] : groups(p, kind);
+  const merged: EditFactor[] = [], exactRealGroups = new Map<string, number>();
+  for (const group of separated) {
+    const n = group.exact && degree(group.exact);
+    const real = !group.pair && n ? div(neg(group.exact![n - 1]), rational(BigInt(n))) : undefined;
+    const key = real && `${real.n}/${real.d}`, previousIndex = key ? exactRealGroups.get(key) : undefined;
+    if (previousIndex !== undefined) {
+      const previous = merged[previousIndex], multiplicity = previous.multiplicity + group.multiplicity;
+      merged[previousIndex] = { ...previous, re: toNumber(real!), multiplicity, exact: power([neg(real!), ONE], multiplicity) };
+    } else { if (key) exactRealGroups.set(key, merged.length); merged.push(group); }
+  }
+  return merged.sort((a, b) => a.re - b.re || a.im - b.im).map((group, index) => ({ ...group, id: `${kind}-${index}`, index, remainder: group.exact ? quotient(p, group.exact) : undefined }));
+}
 /** Full plant factors include exact pole/zero cancellations; effective PI factors are derived separately. */
-export function editableFactors(model: Model): EditFactor[] { return [...groups(model.plantD, 'pole'), ...groups(model.plantN, 'zero')]; }
+export function editableFactors(model: Model): EditFactor[] {
+  const common = gcd(model.plantD, model.plantN);
+  return [...fullGroups(model.plantD, 'pole', common), ...fullGroups(model.plantN, 'zero', common)];
+}
 function changed(model: Model, kind: FactorKind, polynomial: Polynomial): Model {
   return buildModel(kind === 'zero' ? polynomial : model.plantN, kind === 'pole' ? polynomial : model.plantD, model.mode, model.integral);
 }
