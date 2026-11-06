@@ -44,12 +44,26 @@ function searchWords(value: string): string {
   return value.normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase().replace(/đ/g, 'd').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 }
 
+// Search synonyms describe what a tool actually supports. Related-topic
+// groups are broader and must not make every state tool an observer designer.
+const searchGroups: readonly { terms: string; ids: readonly string[] }[] = [
+  conceptGroups[0],
+  { terms: 'bode frequency response', ids: ['CP04', 'CF04', 'CD05', 'CD06', 'DP03', 'DF03', 'DD03'] },
+  { terms: 'nyquist contour mapping', ids: ['CP05', 'CF04', 'CS04', 'DS05'] },
+  { terms: 'state space realization', ids: ['CR03', 'DR03'] },
+  { terms: 'zero order hold zoh sampling', ids: ['DR05'] },
+  { terms: 'sampling period aliasing pole mapping', ids: ['DP02'] },
+  { terms: 'sampling period redesign policy', ids: ['DF04'] },
+  { terms: 'differential equation ode laplace', ids: ['CR02'] },
+  { terms: 'difference equation recurrence delay memory', ids: ['DR02'] },
+];
+
 /** Undefined domain searches the whole catalogue; caller explicitly owns scope. */
 export function filterModules(domain: Domain | undefined, category?: Category, query = ''): ModuleManifest[] {
   const words = searchWords(query).split(/\s+/).filter(Boolean);
   return modules.filter(module => {
     if ((domain && module.domain !== domain) || (category && module.category !== category)) return false;
-    const aliases = conceptGroups.filter(group => group.ids.includes(module.id)).map(group => group.terms).join(' ');
+    const aliases = searchGroups.filter(group => group.ids.includes(module.id)).map(group => group.terms).join(' ');
     const text = searchWords(`${module.id} ${module.title} ${module.description} ${categoryName(module.category)} ${aliases}`);
     return words.every(word => text.includes(word));
   });

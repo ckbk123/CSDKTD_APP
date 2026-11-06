@@ -24,6 +24,12 @@ describe('module catalog', () => {
     expect(relatedModules('CP06').map(item => item.id)).toEqual(['CS05', 'CD02', 'DP04', 'DS04']);
   });
 
+  it('does not turn related subjects into unsupported search capabilities', () => {
+    expect(filterModules(undefined, undefined, 'jury').map(item => item.id)).toEqual(['DS02']);
+    expect(filterModules(undefined, undefined, 'observer').map(item => item.id)).toEqual(['CD09', 'DD07']);
+    expect(filterModules(undefined, undefined, 'zoh').map(item => item.id)).toEqual(['DR05']);
+  });
+
   it('discovers all 56 unique exercise routes with populated metadata', () => {
     expect(modules).toHaveLength(56);
     expect(new Set(modules.map((module) => module.id)).size).toBe(56);
