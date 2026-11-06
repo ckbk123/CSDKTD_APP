@@ -7,15 +7,19 @@ import type { Root } from './roots';
 import { vectors, type RuleSet } from './rules';
 
 export interface Reveals { readonly segments: boolean; readonly asymptotes: boolean; readonly tangents: boolean; readonly vectors: boolean }
-export interface Plane { readonly element: SVGSVGElement; readonly pointFromEvent: (event: MouseEvent) => Complex | undefined; readonly description: string }
+export interface PlaneWindow { readonly center: number; readonly extent: number }
+export interface EditMarker { readonly id: string; readonly kind: 'pole' | 'zero'; readonly point: Complex; readonly label: string; readonly selected: boolean }
+export interface PlaneOptions { readonly window?: PlaneWindow; readonly markers?: readonly EditMarker[]; readonly ghost?: Complex }
+export interface Plane { readonly element: SVGSVGElement; readonly pointFromEvent: (event: MouseEvent) => Complex | undefined; readonly description: string; readonly window: PlaneWindow }
 const ns = 'http://www.w3.org/2000/svg';
 function svg<K extends keyof SVGElementTagNameMap>(tag: K, attributes: Record<string, string | number> = {}, text?: string): SVGElementTagNameMap[K] {
   const node = document.createElementNS(ns, tag); for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value)); if (text !== undefined) node.textContent = text; return node;
 }
-export function plane(model: Model, trace: Trace, construction: RuleSet, selected: readonly Root[], point: Complex, reveals: Reveals): Plane {
+export function plane(model: Model, trace: Trace, construction: RuleSet, selected: readonly Root[], point: Complex, reveals: Reveals, options: PlaneOptions = {}): Plane {
   const values = [...trace.frames.flatMap(frame => frame.points), ...model.poles, ...model.zeros, ...model.fixed, ...selected, point, c(0)];
-  const min = Math.min(...values.map(p => p.re)), max = Math.max(...values.map(p => p.re)), center = (min + max) / 2;
-  const extent = Math.max(1, (max - min) / 2, ...values.map(p => Math.abs(p.im))) * 1.15;
+  const min = Math.min(...values.map(p => p.re)), max = Math.max(...values.map(p => p.re)), center = options.window?.center ?? (min + max) / 2;
+  const extent = options.window?.extent ?? Math.max(1, (max - min) / 2, ...values.map(p => Math.abs(p.im))) * 1.15;
+  if (!Number.isFinite(center) || !Number.isFinite(extent) || extent <= 0) throw new Error('Use a finite positive plot window.');
   const lower = center - extent, upper = center + extent;
   const x = (v: number): number => 360 * (v - lower) / (2 * extent), y = (v: number): number => 180 - 180 * v / extent;
   const root = svg('svg', { viewBox: '0 0 480 440', role: 'img', 'aria-label': 'Computed root locus in the s plane; gain increases along each arrow' });
@@ -67,12 +71,22 @@ export function plane(model: Model, trace: Trace, construction: RuleSet, selecte
   for (const value of model.zeros) data.append(svg('circle', { cx: x(value.re), cy: y(value.im), r: 5.5, class: 'cp-zero' }));
   for (const value of model.fixed) { const px = x(value.re), py = y(value.im); data.append(svg('path', { d: `M${px},${py - 7}L${px + 7},${py}L${px},${py + 7}L${px - 7},${py}Z`, class: 'cp-fixed' })); }
   for (const value of selected) data.append(svg('circle', { cx: x(value.re), cy: y(value.im), r: 3, class: 'cp-selected' }));
+  for (const marker of options.markers ?? []) {
+    const px = x(marker.point.re), py = y(marker.point.im);
+    const group = svg('g', { 'data-edit-id': marker.id, 'data-edit-im': marker.point.im, tabindex: 0, role: 'button', 'aria-label': marker.label, class: 'cp-edit-marker' });
+    group.append(svg('circle', { cx: px, cy: py, r: 14, class: marker.selected ? 'cp-edit-hit cp-edit-active' : 'cp-edit-hit' }));
+    if (marker.kind === 'pole') group.append(svg('path', { d: `M${px - 6},${py - 6}L${px + 6},${py + 6}M${px - 6},${py + 6}L${px + 6},${py - 6}`, class: 'cp-edit-symbol' }));
+    else group.append(svg('circle', { cx: px, cy: py, r: 7, class: 'cp-edit-symbol' }));
+    data.append(group);
+  }
+  if (options.ghost) { const px = x(options.ghost.re), py = y(options.ghost.im); data.append(svg('circle', { cx: px, cy: py, r: 10, class: 'cp-drag-ghost' })); }
   const px = x(point.re), py = y(point.im);
   data.append(svg('path', { d: `M${px - 8},${py}L${px + 8},${py}M${px},${py - 8}L${px},${py + 8}`, class: 'cp-candidate' }));
   root.append(data, svg('text', { x: 240, y: 430, 'text-anchor': 'middle', class: 'cp-axis-title' }, 'Real part σ (s⁻¹)'), svg('text', { transform: 'translate(14 204) rotate(-90)', 'text-anchor': 'middle', class: 'cp-axis-title' }, 'Imaginary part ω (rad/s)'));
-  return { element: root, description, pointFromEvent: event => {
+  return { element: root, description, window: { center, extent }, pointFromEvent: event => {
     const box = root.getBoundingClientRect(); if (!box.width || !box.height) return undefined;
-    const sx = (event.clientX - box.left) * 480 / box.width - 60, sy = (event.clientY - box.top) * 440 / box.height - 24;
+    const scale = Math.min(box.width / 480, box.height / 440), left = (box.width - 480 * scale) / 2, top = (box.height - 440 * scale) / 2;
+    const sx = (event.clientX - box.left - left) / scale - 60, sy = (event.clientY - box.top - top) / scale - 24;
     if (sx < 0 || sx > 360 || sy < 0 || sy > 360) return undefined;
     return c(lower + sx * 2 * extent / 360, extent - sy * 2 * extent / 360);
   } };
