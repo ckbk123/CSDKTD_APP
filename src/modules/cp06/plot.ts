@@ -10,7 +10,7 @@ export interface Reveals { readonly segments: boolean; readonly asymptotes: bool
 export interface PlaneWindow { readonly center: number; readonly extent: number }
 export interface EditMarker { readonly id: string; readonly kind: 'pole' | 'zero'; readonly point: Complex; readonly label: string; readonly selected: boolean }
 export interface PlaneOptions { readonly window?: PlaneWindow; readonly markers?: readonly EditMarker[]; readonly ghost?: Complex }
-export interface Plane { readonly element: SVGSVGElement; readonly pointFromEvent: (event: MouseEvent) => Complex | undefined; readonly description: string; readonly window: PlaneWindow }
+export interface Plane { readonly element: SVGSVGElement; readonly pointFromEvent: (event: MouseEvent) => Complex | undefined; readonly description: string; readonly window: PlaneWindow; readonly resize: (width: number) => void }
 const ns = 'http://www.w3.org/2000/svg';
 function svg<K extends keyof SVGElementTagNameMap>(tag: K, attributes: Record<string, string | number> = {}, text?: string): SVGElementTagNameMap[K] {
   const node = document.createElementNS(ns, tag); for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, String(value)); if (text !== undefined) node.textContent = text; return node;
@@ -22,7 +22,9 @@ export function plane(model: Model, trace: Trace, construction: RuleSet, selecte
   if (!Number.isFinite(center) || !Number.isFinite(extent) || extent <= 0) throw new Error('Use a finite positive plot window.');
   const lower = center - extent, upper = center + extent;
   const x = (v: number): number => 360 * (v - lower) / (2 * extent), y = (v: number): number => 180 - 180 * v / extent;
-  const root = svg('svg', { viewBox: '0 0 480 440', role: 'img', 'aria-label': 'Computed root locus in the s plane; gain increases along each arrow' });
+  const root = svg('svg', { viewBox: '0 0 480 440', role: options.markers?.length ? 'group' : 'img', 'aria-label': 'Computed root locus in the s plane; gain increases along each arrow' });
+  const tickLabels: { element: SVGTextElement; value: number; index: number }[] = [];
+  const editSymbols: { element: SVGElement; x: number; y: number; kind: 'pole' | 'zero' }[] = [];
   const description = `Finite trace 0 ≤ ${model.mode === 'pi' ? 'Kp' : 'K'} ≤ ${numeric(trace.maxGain)}; ${trace.evaluations} root evaluations, ${trace.gaps} omitted connections. Square axes use s⁻¹. Crosses are effective poles, rings effective zeros, diamonds retained fixed modes, filled circles selected-gain roots and a plus the candidate.`;
   root.append(svg('desc', {}, description));
   const data = svg('svg', { x: 60, y: 24, width: 360, height: 360, viewBox: '0 0 360 360', overflow: 'hidden' });
@@ -30,7 +32,8 @@ export function plane(model: Model, trace: Trace, construction: RuleSet, selecte
   for (let i = 0; i <= 4; i++) {
     const pixel = i * 90, real = lower + i * extent / 2, imaginary = extent - i * extent / 2;
     data.append(svg('line', { x1: pixel, x2: pixel, y1: 0, y2: 360, class: 'cp-grid' }), svg('line', { x1: 0, x2: 360, y1: pixel, y2: pixel, class: 'cp-grid' }));
-    root.append(svg('text', { x: 60 + pixel, y: 404, 'text-anchor': 'middle', class: 'cp-tick' }, numeric(real)), svg('text', { x: 52, y: 28 + pixel, 'text-anchor': 'end', class: 'cp-tick' }, numeric(imaginary)));
+    const realLabel = svg('text', { x: 60 + pixel, y: 404, 'text-anchor': 'middle', class: 'cp-tick' }, numeric(real)), imaginaryLabel = svg('text', { x: 52, y: 28 + pixel, 'text-anchor': 'end', class: 'cp-tick' }, numeric(imaginary));
+    tickLabels.push({ element: realLabel, value: real, index: i }, { element: imaginaryLabel, value: imaginary, index: i }); root.append(realLabel, imaginaryLabel);
   }
   data.append(svg('line', { x1: 0, x2: 360, y1: y(0), y2: y(0), class: 'cp-axis' }), svg('line', { x1: x(0), x2: x(0), y1: 0, y2: 360, class: 'cp-axis' }));
   if (reveals.segments) for (const segment of construction.segments.filter(s => s.onLocus)) data.append(svg('line', { x1: x(Math.max(lower, segment.lower)), x2: x(Math.min(upper, segment.upper)), y1: y(0), y2: y(0), class: 'cp-real-segment' }));
@@ -74,16 +77,35 @@ export function plane(model: Model, trace: Trace, construction: RuleSet, selecte
   for (const marker of options.markers ?? []) {
     const px = x(marker.point.re), py = y(marker.point.im);
     const group = svg('g', { 'data-edit-id': marker.id, 'data-edit-im': marker.point.im, tabindex: 0, role: 'button', 'aria-label': marker.label, class: 'cp-edit-marker' });
-    group.append(svg('circle', { cx: px, cy: py, r: 14, class: marker.selected ? 'cp-edit-hit cp-edit-active' : 'cp-edit-hit' }));
-    if (marker.kind === 'pole') group.append(svg('path', { d: `M${px - 6},${py - 6}L${px + 6},${py + 6}M${px - 6},${py + 6}L${px + 6},${py - 6}`, class: 'cp-edit-symbol' }));
-    else group.append(svg('circle', { cx: px, cy: py, r: 7, class: 'cp-edit-symbol' }));
+    group.append(svg('circle', { cx: px, cy: py, r: 22, class: 'cp-edit-hit' }));
+    if (marker.selected) group.append(svg('circle', { cx: px, cy: py, r: 10, class: 'cp-edit-active' }));
+    const symbol = marker.kind === 'pole' ? svg('path', { d: `M${px - 5},${py - 5}L${px + 5},${py + 5}M${px - 5},${py + 5}L${px + 5},${py - 5}`, class: 'cp-edit-symbol' }) : svg('circle', { cx: px, cy: py, r: 6, class: 'cp-edit-symbol' });
+    group.append(symbol); editSymbols.push({ element: symbol, x: px, y: py, kind: marker.kind });
     data.append(group);
   }
   if (options.ghost) { const px = x(options.ghost.re), py = y(options.ghost.im); data.append(svg('circle', { cx: px, cy: py, r: 10, class: 'cp-drag-ghost' })); }
   const px = x(point.re), py = y(point.im);
   data.append(svg('path', { d: `M${px - 8},${py}L${px + 8},${py}M${px},${py - 8}L${px},${py + 8}`, class: 'cp-candidate' }));
   root.append(data, svg('text', { x: 240, y: 430, 'text-anchor': 'middle', class: 'cp-axis-title' }, 'Real part σ (s⁻¹)'), svg('text', { transform: 'translate(14 204) rotate(-90)', 'text-anchor': 'middle', class: 'cp-axis-title' }, 'Imaginary part ω (rad/s)'));
-  return { element: root, description, window: { center, extent }, pointFromEvent: event => {
+  /** Presentation only: preserve every world coordinate, branch path and equal-scale axis window. */
+  const resize = (width: number): void => {
+    if (!Number.isFinite(width) || width <= 0) return;
+    const scale = 480 / width, compact = width < 420;
+    root.style.setProperty('--cp-plane-font', `${12 * scale}px`); root.dataset.compact = String(compact);
+    for (const tick of tickLabels) {
+      tick.element.style.display = compact && tick.index % 2 ? 'none' : '';
+      const short = Math.abs(tick.value) >= 100 || (tick.value !== 0 && Math.abs(tick.value) < .01);
+      tick.element.textContent = compact ? Number(tick.value.toPrecision(short ? 1 : 3)).toString().replace('e+', 'e') : numeric(tick.value);
+    }
+    root.querySelectorAll('.cp-edit-hit').forEach(n => n.setAttribute('r', String(22 * scale)));
+    root.querySelectorAll('.cp-edit-active').forEach(n => n.setAttribute('r', String(10 * scale)));
+    root.querySelectorAll('.cp-selected').forEach(n => n.setAttribute('r', String(3 * scale)));
+    for (const symbol of editSymbols) {
+      if (symbol.kind === 'zero') symbol.element.setAttribute('r', String(6 * scale));
+      else { const r = 5 * scale, { x, y } = symbol; symbol.element.setAttribute('d', `M${x - r},${y - r}L${x + r},${y + r}M${x - r},${y + r}L${x + r},${y - r}`); }
+    }
+  };
+  return { element: root, description, window: { center, extent }, resize, pointFromEvent: event => {
     const box = root.getBoundingClientRect(); if (!box.width || !box.height) return undefined;
     const scale = Math.min(box.width / 480, box.height / 440), left = (box.width - 480 * scale) / 2, top = (box.height - 440 * scale) / 2;
     const sx = (event.clientX - box.left - left) / scale - 60, sy = (event.clientY - box.top - top) / scale - 24;

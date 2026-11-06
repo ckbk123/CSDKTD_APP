@@ -13,7 +13,7 @@ import { roots, type Root } from './roots';
 import { rules, type RuleSet } from './rules';
 
 interface Snapshot { readonly model: Model; readonly gain: Rational; readonly maximum: number }
-interface Computed extends Snapshot { readonly construction: RuleSet; readonly sampled: Trace; readonly selected: readonly Root[]; readonly issue?: string }
+interface Computed extends Snapshot { readonly construction: RuleSet; readonly sampled: Trace; readonly selected: readonly Root[]; readonly issue?: string; readonly factors: readonly EditFactor[] }
 interface Drag { readonly pointer: number; readonly id: string; readonly pair: boolean; re: number; im: number; moved: boolean }
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', className = ''): HTMLElementTagNameMap[K] { const n = document.createElement(tag); n.textContent = text; if (className) n.className = className; return n; }
 const pointText = (p: Complex): string => `${numeric(p.re)}${p.im ? ` ${p.im < 0 ? '−' : '+'} j${numeric(Math.abs(p.im))}` : ''}`;
@@ -22,13 +22,14 @@ function selectedRoots(model: Model, gain: Rational): { selected: Root[]; issue?
   catch (error) { return { selected: [], issue: error instanceof Error ? error.message : 'Selected roots could not be resolved.' }; }
 }
 function compute(snapshot: Snapshot, preview = false): Computed {
-  return { ...snapshot, construction: rules(snapshot.model), sampled: trace(snapshot.model, snapshot.maximum, preview ? 16 : 64, preview ? 129 : 2049), ...selectedRoots(snapshot.model, snapshot.gain) };
+  return { ...snapshot, construction: rules(snapshot.model), sampled: trace(snapshot.model, snapshot.maximum, preview ? 16 : 64, preview ? 129 : 2049), factors: editableFactors(snapshot.model), ...selectedRoots(snapshot.model, snapshot.gain) };
 }
 
 export const mountExplore: ModuleMount = ({ container, signal }) => {
   if (signal.aborted) return;
   const root = el('div', '', 'cp-explore'); container.append(root);
   const editors: EquationInput[] = []; let disposed = false, timer: ReturnType<typeof setTimeout> | undefined, drag: Drag | undefined;
+  let observer: ResizeObserver | undefined, measuredWidth: number | undefined;
   let current = compute({ model: baseline(), gain: gainValue('70'), maximum: 140 }), shown = current;
   let viewWindow: PlaneWindow | undefined, currentPlane: Plane, selectedId = 'pole-0', draftDirty = false, suppressClick = false, testedPoint = c(0, Math.sqrt(10));
   const history: Snapshot[] = [];
@@ -80,7 +81,7 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   button('Apply equations', () => {
     try {
       const read = (input: EquationInput, label: string) => { const d = input.getValue(); if (d.empty || d.hasPlaceholders || d.syntaxIssues.length) throw new Error(`Complete ${label} using the visual equation controls.`); return d.latex; };
-      const model = parseModel(read(numerator, 'the numerator'), read(denominator, 'the denominator'), mode.value === 'pi' ? 'pi' : 'gain', String(readNumericInput(ki.input, 'Fixed Ki')));
+      const model = parseModel(read(numerator, 'the numerator'), read(denominator, 'the denominator'), mode.value === 'pi' ? 'pi' : 'gain', mode.value === 'pi' ? String(readNumericInput(ki.input, 'Fixed Ki')) : '2.7');
       const max = readNumericInput(maximum.input, 'Trace maximum gain');
       if (!(max > 0 && max <= 1000) || toNumber(current.gain) > max) throw new Error('Use a gain maximum above zero and at least as large as the selected gain, up to 1000.');
       publish(model, 'Equation edits checked. Plant factors, full characteristic and trace now use this model.', undefined, max);
@@ -98,7 +99,7 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   function ready(): boolean { if (draftDirty) { status.textContent = 'Apply or discard the equation draft before changing the checked model.'; return false; } if (drag) { status.textContent = 'Finish or cancel the current drag first.'; return false; } return true; }
   function fail(error: unknown, draft = false): void { if (draft) draftDirty = true; badge.textContent = draftDirty ? 'Invalid or unapplied draft — plot shows the last checked model' : 'Change rejected — last checked model retained'; status.textContent = `${error instanceof Error ? error.message : 'This change could not be checked.'} The last checked model remains visible.`; refreshEnabled(); }
   function syncInputs(): void { numerator.setValue(polynomial(current.model.plantN)); denominator.setValue(polynomial(current.model.plantD)); mode.value = current.model.mode; ki.input.value = String(toNumber(current.model.integral)); ki.wrap.hidden = mode.value !== 'pi'; maximum.input.value = String(current.maximum); gain.input.value = String(toNumber(current.gain)); slider.max = String(current.maximum); slider.value = gain.input.value; }
-  function selectedFactor(): EditFactor | undefined { return editableFactors(current.model).find(f => f.id === selectedId); }
+  function selectedFactor(): EditFactor | undefined { return current.factors.find(f => f.id === selectedId); }
   function refreshEnabled(): void {
     const selected = selectedFactor(); apply.disabled = remove.disabled = !selected || draftDirty || !!drag; selection.disabled = draftDirty || !!drag; real.input.disabled = !selected || draftDirty || !!drag; imaginary.input.disabled = !selected?.pair || draftDirty || !!drag;
     gain.input.disabled = slider.disabled = draftDirty || !!drag; pair.disabled = draftDirty || !!drag;
@@ -108,12 +109,12 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   }
   function syncSelection(): void {
     const factor = selectedFactor(); selection.value = selectedId;
-    if (factor) { real.input.value = String(factor.re); imaginary.input.value = String(factor.pair ? factor.im : 0); selectedNote.textContent = `${factorLabel(factor)}. ${Math.max(Math.abs(factor.re), factor.im) > 100 ? 'This accepted root is outside the ±100 coordinate-edit window. Enter a position inside that window or edit the equation; selection does not change the root. ' : ''}${current.model.mode === 'pi' ? 'This is a plant factor, not an independently editable effective PI factor. ' : ''}${factor.exact ? 'Untouched exact factors remain exact when this group moves.' : 'This polynomial has irrational factors that will be rounded to the 0.01 grid during a coordinate edit.'}`; }
+    if (factor) { real.input.value = String(factor.re); imaginary.input.value = String(factor.pair ? factor.im : 0); selectedNote.textContent = `${factorLabel(factor)}. ${Math.max(Math.abs(factor.re), factor.im) > 100 ? 'This accepted root is outside the ±100 coordinate-edit window. Enter a position inside that window or edit the equation; selection does not change the root. ' : ''}${current.model.mode === 'pi' ? 'This is a plant factor, not an independently editable effective PI factor. ' : ''}${factor.exact ? 'Untouched exact factors remain exact when this group moves.' : 'Roots without an exact split will be rounded to the 0.01 grid during a coordinate edit; untouched exact factors remain exact.'}`; }
     else selectedNote.textContent = 'Select a handle on the plot or a factor above.';
     refreshEnabled();
   }
   function refreshFactors(preferred?: Complex, kind?: 'pole' | 'zero'): void {
-    const factors = editableFactors(current.model); selection.replaceChildren();
+    const factors = current.factors; selection.replaceChildren();
     factors.forEach(f => { const o = el('option', factorLabel(f)); o.value = f.id; selection.append(o); });
     if (preferred) selectedId = [...factors].filter(f => !kind || f.kind === kind).sort((a, b) => Math.hypot(a.re - preferred.re, a.im - preferred.im) - Math.hypot(b.re - preferred.re, b.im - preferred.im))[0]?.id ?? factors[0]?.id ?? '';
     else if (!factors.some(f => f.id === selectedId)) selectedId = factors[0]?.id ?? '';
@@ -122,7 +123,6 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   function install(next: Computed, preferred?: Complex, kind = selectedFactor()?.kind): void {
     const previous = current, previousId = selectedId, previousDirty = draftDirty, previousWindow = viewWindow;
     // Validate the full factor list before publishing, even if those roots are outside the coordinate-edit window.
-    editableFactors(next.model);
     current = next; draftDirty = false;
     try { syncInputs(); refreshFactors(preferred, kind); draw(current, false); }
     catch (e) { current = previous; selectedId = previousId; draftDirty = previousDirty; viewWindow = previousWindow; syncInputs(); refreshFactors(); throw e; }
@@ -137,9 +137,10 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
     if (!ready()) return; try { const reason = additionLimit(current.model, kind, pair.checked); if (reason) throw new Error(reason); const edited = addFactor(current.model, kind, pair.checked, -1, pair.checked ? 1 : 0); publish(edited.model, edited.note, c(-1, pair.checked ? 1 : 0), current.maximum, current.gain, kind); } catch (e) { fail(e); }
   }
   function draw(value: Computed, preview: boolean): void {
-    const factors = editableFactors(value.model), markers = factors.flatMap(f => [f.im, ...(f.pair && f.im ? [-f.im] : [])].map(im => ({ id: f.id, kind: f.kind, point: c(f.re, im), label: `${factorLabel(f)}; arrow keys move this group`, selected: f.id === selectedId })));
+    const markers = value.factors.flatMap(f => [f.im, ...(f.pair && f.im ? [-f.im] : [])].map(im => ({ id: f.id, kind: f.kind, point: c(f.re, im), label: `${factorLabel(f)}; arrow keys move this group`, selected: f.id === selectedId })));
     const nextPlane = plane(value.model, value.sampled, value.construction, value.selected, testedPoint, reveals, { window: viewWindow, markers }), nextWindow = viewWindow ?? nextPlane.window;
     nextPlane.element.dataset.preview = String(preview);
+    nextPlane.resize(measuredWidth ?? (plotHost.getBoundingClientRect().width || 480));
     const nextEquation = el('div'), nextSummary = el('div'), nextReadout = el('div');
     nextEquation.append(createEquationDisplay(`${value.model.mode === 'pi' ? 'G' : 'L_0'}(s)=\\frac{${polynomial(value.model.plantN)}}{${polynomial(value.model.plantD)}}${value.model.mode === 'pi' ? `,\\quad C(s)=K_p+\\frac{${fraction(value.model.integral)}}{s}` : ''}`, value.model.mode === 'pi' ? 'Plant and fixed integral controller' : 'Applied loop factor'));
     if (value.model.mode === 'pi') nextEquation.append(createEquationDisplay(`L_{0,eff}(s)=\\frac{${polynomial(value.model.numerator)}}{${polynomial(value.model.denominator)}},\\quad 1+K_pL_{0,eff}(s)=0`, 'Effective fixed Ki locus'));
@@ -181,6 +182,10 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
     if (previous) { draw(current, false); syncSelection(); if (announce) status.textContent = 'Drag cancelled. The checked model is unchanged.'; }
   }
   container.addEventListener('cp06-suspend', () => cancelDrag(), { signal });
+  // The persistent host and window capture own Escape even after a preview replaces the SVG.
+  const cancelOnEscape = (event: KeyboardEvent) => { if (event.key !== 'Escape' || !drag) return; event.preventDefault(); event.stopPropagation(); cancelDrag(); };
+  const cancelOnBlur = () => { if (drag) cancelDrag(); };
+  window.addEventListener('keydown', cancelOnEscape, { capture: true, signal }); window.addEventListener('blur', cancelOnBlur, { signal });
   function queuePreview(): void {
     if (timer !== undefined) return;
     timer = setTimeout(() => {
@@ -191,9 +196,9 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   }
   plotHost.addEventListener('pointerdown', event => {
     const target = (event.target as Element).closest<SVGGElement>('[data-edit-id]'); if (!target || !ready() || event.button !== 0) return;
-    const factor = editableFactors(current.model).find(f => f.id === target.dataset.editId); if (!factor) return;
+    const factor = current.factors.find(f => f.id === target.dataset.editId); if (!factor) return;
     selectedId = factor.id; syncSelection();
-    drag = { pointer: event.pointerId, id: factor.id, pair: factor.pair, re: factor.re, im: factor.im, moved: false }; plotHost.setPointerCapture?.(event.pointerId); event.preventDefault(); refreshEnabled();
+    drag = { pointer: event.pointerId, id: factor.id, pair: factor.pair, re: factor.re, im: factor.im, moved: false }; plotHost.setPointerCapture?.(event.pointerId); event.preventDefault(); plotHost.focus({ preventScroll: true }); refreshEnabled();
   }, { signal });
   plotHost.addEventListener('pointermove', event => {
     if (!drag || drag.pointer !== event.pointerId) return; const point = currentPlane.pointFromEvent(event); if (!point) return;
@@ -209,7 +214,7 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
     if (event.key === 'Escape' && drag) { event.preventDefault(); event.stopPropagation(); cancelDrag(); return; }
     const target = (event.target as Element).closest<SVGGElement>('[data-edit-id]'); if (!target || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
     event.preventDefault(); event.stopPropagation(); if (!ready()) return;
-    const f = editableFactors(current.model).find(value => value.id === target.dataset.editId); if (!f) return;
+    const f = current.factors.find(value => value.id === target.dataset.editId); if (!f) return;
     const step = event.shiftKey ? .1 : .01; selectedId = f.id;
     try {
       const re = snapCoordinate(f.re + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0));
@@ -225,8 +230,21 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
     const target = (event.target as Element).closest<SVGGElement>('[data-edit-id]'); if (target) { selectedId = target.dataset.editId!; syncSelection(); draw(current, false); return; }
     if (!ready()) return; const point = currentPlane.pointFromEvent(event); if (!point || Math.hypot(point.re, point.im) > 100) return; testedPoint = point; candidateReal.input.value = String(point.re); candidateImaginary.input.value = String(point.im); draw(current, false);
   }, { signal });
-  function cleanup(): void { if (disposed) return; disposed = true; clearTimer(); const previous = drag; drag = undefined; if (previous && plotHost.hasPointerCapture?.(previous.pointer)) plotHost.releasePointerCapture(previous.pointer); editors.forEach(editor => editor.destroy()); root.remove(); }
+  function cleanup(): void { if (disposed) return; disposed = true; clearTimer(); observer?.disconnect(); window.removeEventListener('keydown', cancelOnEscape, true); window.removeEventListener('blur', cancelOnBlur); const previous = drag; drag = undefined; if (previous && plotHost.hasPointerCapture?.(previous.pointer)) plotHost.releasePointerCapture(previous.pointer); editors.forEach(editor => editor.destroy()); root.remove(); }
   signal.addEventListener('abort', cleanup, { once: true });
   if (signal.aborted) { cleanup(); return cleanup; }
-  try { syncInputs(); refreshFactors(); draw(current, false); return cleanup; } catch (e) { cleanup(); throw e; }
+  try {
+    syncInputs(); refreshFactors(); draw(current, false);
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(entries => {
+        if (disposed || signal.aborted) return; const width = entries[0]?.contentRect.width;
+        if (!width || width <= 0 || Math.abs(width - (measuredWidth ?? 0)) <= .5) return;
+        measuredWidth = width;
+        if (drag) { cancelDrag(false); status.textContent = 'Drag cancelled because the plot resized. The checked model is unchanged.'; }
+        currentPlane.resize(width);
+      });
+      observer.observe(plotHost);
+    }
+    return cleanup;
+  } catch (e) { cleanup(); throw e; }
 };

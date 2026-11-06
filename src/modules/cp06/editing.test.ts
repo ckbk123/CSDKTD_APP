@@ -56,9 +56,19 @@ describe('bounded full-plant pole and zero editing', () => {
     const original = parseModel('1', 's^3+s+1'), factors = editableFactors(original);
     expect(factors[0].exact).toBeUndefined();
     const edited = moveFactor(original, factors.find(f => !f.pair)!.id, -1, 0);
-    expect(edited.note).toContain('Other irrational roots');
+    expect(edited.note).toContain('Other roots without an exact split');
     expect(degree(edited.model.plantD)).toBe(3);
     expect(polynomial(edited.model.plantD)).toBe(String.raw`s^{3}+\frac{8}{25}s^{2}+\frac{1953}{2500}s+\frac{3653}{2500}`);
+  });
+  it('preserves an untouched exact common factor when another irrational real group moves or is removed', () => {
+    const source = parseModel(String.raw`s-\frac{1}{3}`, String.raw`(s-\frac{1}{3})(s^2-2)`);
+    const moved = moveFactor(source, 'pole-0', -1, 0).model;
+    expect(polynomial(moved.plantD)).toBe(String.raw`s^{3}-\frac{223}{300}s^{2}-\frac{191}{150}s+\frac{47}{100}`);
+    expect(polynomial(moved.common)).toBe(String.raw`s-\frac{1}{3}`);
+    const removed = removeFactor(source, 'pole-0').model;
+    expect(polynomial(removed.plantD)).toBe(String.raw`s^{2}-\frac{523}{300}s+\frac{47}{100}`);
+    expect(polynomial(removed.common)).toBe(String.raw`s-\frac{1}{3}`);
+    expect(moved.fixed[0].re).toBeCloseTo(1 / 3, 15); expect(removed.fixed[0].re).toBeCloseTo(1 / 3, 15);
   });
   it('edits the PI plant and derives its effective characteristic with fixed Ki', () => {
     const source = parseModel('1', 's(s+2)', 'pi', '2.7'), changed = moveFactor(source, 'pole-0', -3, 0).model;
