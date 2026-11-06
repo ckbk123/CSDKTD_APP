@@ -1,6 +1,39 @@
 # DR02 implementation status
 
-- **Stage:** verified
+- **Stage:** implemented
+- **Current refinement:** explicit finite DR02 memory-execution pilot, 6 November 2026; owner `interactivity-dr02-01a1ac7b`, branch `codex/dr02-memory-refinement`, fresh baseline `cf69ad252c34c971c6d81282db9e0a471f40d846`.
+- **Owned worktree:** `C:/Users/baokh/.codex/worktrees/dr02-memory-refinement/CSDKTD APP`.
+- **Refinement acceptance:** open on the operational old-memory, prediction/reveal/commit and committed-trace workspace; put experiment controls beside it; keep full model conversion and initial history accessible as optional sections. Make source selection, products and simultaneous writes clear without exposing the pending output before reveal. Preserve all existing bounded mathematics, independent zero-history comparison, 128-sample limit, validation and per-visit cleanup.
+- **Current evidence:** the finite refinement is implemented; 100 DR02 tests / 4 files, all 5,568 application tests / 257 files, TypeScript checking and production build pass. The integration owner owns actual browser acceptance; no new browser evidence is claimed here.
+- **Refinement PR:** pending creation by the integration owner from this preserved branch; the historical exercise PR below is separate.
+
+## Current interface refinement — 6 November 2026
+
+The first workspace is the active recurrence and old-memory execution view. Transfer-function entry/conversion and initial delay history remain editable in collapsed, labeled sections. Input shape, amplitude/slope, physical sample period, prediction, reveal, commit and restart/history experiments are beside the execution view on wide screens and follow the register view on narrow screens.
+
+Every current-input/old-delay slot is directly selectable with a native button. The selected source, signed coefficient and product are linked; the product and pending output remain question marks/hidden until Reveal arithmetic. A three-phase indicator distinguishes reading the old snapshot from the completed calculation awaiting commit. Reveal shows every pending write as old value → new value with its source, while all actual slots remain unchanged. Commit validates both supplied-history and zero-history next states before recording either, then shows the completed simultaneous write at the next sample. No new solver, automatic answer mode or timed execution was introduced.
+
+Only committed samples appear in the output trace. A range cursor, numeric sample control, plot-point selection and table buttons inspect the same committed record without advancing live memory. Numeric inspection errors retain the last valid view with local feedback. Native slot/table buttons retain focus through redraws; the slider and number control provide keyboard access without adding 128 plot points to the tab order. Edits immediately clear pending products, write previews and committed comparisons; restart/reset/reopen preserve the baseline per-visit contract. All added events use the owned signal, and there are no new timers, observers or animation resources.
+
+Six added UI/state tests check first-visit answer hiding, direct source selection/focus, independent second-order simultaneous writes, range/number/plot/table inspection without memory advancement, stale-result clearing and the complete 128-sample boundary. The independently calculated changed-history fixture uses (0.5z+0.25)/(z²−0.5z+0.125), old y=[2,3], u=[4,5] and current input 1: y[0]=3.875, then u=[1,4], y=[3.875,2]. Existing parser/math/error/lifecycle tests are preserved; math.ts, metadata and deferred wrapper are unchanged.
+
+Local verification uses bundled Node v24.22.1 and the installed npm CLI, with that Node directory first in the per-command PATH:
+
+- npm ci: passes with unchanged lockfile/dependencies.
+- npm run check: passes.
+- node node_modules/vitest/vitest.mjs run src/modules/dr02: 100 / 4 pass.
+- npm test: 5,568 / 257 pass (80.82 seconds).
+- npm run build: passes, including TypeScript; the existing MathLive large-chunk advisory remains.
+- git diff --check: passes.
+
+The first full-suite attempt reached the default 5-second test timeout only in the added test exercising all 128 real reveal/commit transitions. That bounded UI test now declares a 15-second limit; the complete suite passes. No product bound or mathematical validation was relaxed.
+
+**Pending acceptance:** coordinator real-browser inspection of actual MathLive entry/fonts/keyboard, source and trace interaction, reset/reopen/navigation, and narrow layout. Mocked-editor/jsdom checks are caller-state evidence, not browser evidence. The integration owner will record its observed browser disposition separately before accepting the refinement. No version, global/shared files, dependencies, primary checkout, deployment or historical research assets were changed.
+
+## Historical accepted exercise delivery
+
+The v0.3.15 exercise was independently verified. The earlier worker/coordinator records below are preserved history; they do not certify the new interface refinement.
+
 - **Integration action:** the coordinator explicitly approved the tested local native-number reader and owns adapting all native controls to the shared API before acceptance. Worker exercise/browser checks are complete; independent coordinator review is pending.
 - **Last assessed:** 2026-10-29
 - **Owned scope:** `src/modules/dr02/**` only
