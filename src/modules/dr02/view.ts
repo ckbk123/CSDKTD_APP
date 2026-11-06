@@ -45,7 +45,8 @@ export const mount: ModuleMount = ({ container, signal }) => {
   }
   const currentRecurrence = el('div', '', 'current-recurrence');
   modelSection.append(el('p', 'Edit a scalar transfer function, then divide numerator and denominator by the highest denominator power of z. This exposes one coefficient for each delay.'));
-  const equation = createEquationInput({ label: 'Transfer function G(z)', value: BASELINE, signal, onChange: next => {
+  const equation = createEquationInput({ label: 'Transfer function G(z)', value: BASELINE, signal,
+    tools: ['fraction', 'power', 'parentheses'], description: 'Enter a scalar transfer function in z using fractions, powers and visible parentheses. The exercise checks its order and delays.', onChange: next => {
     draft = next; modelDirty = true; derived.replaceChildren(); currentRecurrence.replaceChildren(); invalidate('Equation changed. Apply the transfer function to rebuild the recurrence and memory slots.');
   } });
   equation.element.addEventListener('keydown', event => {

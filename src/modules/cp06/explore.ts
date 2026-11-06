@@ -15,6 +15,8 @@ import { rules, type RuleSet } from './rules';
 interface Snapshot { readonly model: Model; readonly gain: Rational; readonly maximum: number }
 interface Computed extends Snapshot { readonly construction: RuleSet; readonly sampled: Trace; readonly selected: readonly Root[]; readonly issue?: string }
 interface Drag { readonly pointer: number; readonly id: string; readonly pair: boolean; re: number; im: number; moved: boolean }
+const equationEntry = { tools: ['fraction', 'power', 'parentheses'] as const,
+  description: 'Enter a real polynomial in s with fractions, visible parentheses and integer powers from 0 to 3.' };
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', className = ''): HTMLElementTagNameMap[K] { const n = document.createElement(tag); n.textContent = text; if (className) n.className = className; return n; }
 const pointText = (p: Complex): string => `${numeric(p.re)}${p.im ? ` ${p.im < 0 ? '−' : '+'} j${numeric(Math.abs(p.im))}` : ''}`;
 function selectedRoots(model: Model, gain: Rational): { selected: Root[]; issue?: string } {
@@ -71,8 +73,8 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
   root.append(status);
   const advanced = el('details', '', 'cp-card'), form = el('div', '', 'cp-equation-inputs'); advanced.append(el('summary', 'Edit equations, PI mode and gain range'), form); root.append(advanced);
   const invalidate = () => { draftDirty = true; cancelDrag(false); badge.textContent = 'Equation draft changed — plot shows the last checked model'; status.textContent = 'Apply the equation edits to update the plot, or discard them before moving a factor.'; refreshEnabled(); };
-  const numerator = createEquationInput({ label: 'Numerator polynomial N(s)', value: '1', signal, onChange: invalidate }); editors.push(numerator);
-  const denominator = createEquationInput({ label: 'Denominator polynomial D(s)', value: 's(s+2)(s+5)', signal, onChange: invalidate }); editors.push(denominator); form.append(numerator.element, denominator.element);
+  const numerator = createEquationInput({ ...equationEntry, label: 'Numerator polynomial N(s)', value: '1', signal, onChange: invalidate }); editors.push(numerator);
+  const denominator = createEquationInput({ ...equationEntry, label: 'Denominator polynomial D(s)', value: 's(s+2)(s+5)', signal, onChange: invalidate }); editors.push(denominator); form.append(numerator.element, denominator.element);
   const settings = el('div', '', 'cp-controls'), modeLabel = el('label', 'Varying parameter'), mode = el('select'); mode.setAttribute('aria-label', 'Varying parameter');
   for (const [value, label] of [['gain', 'K multiplying the plant'], ['pi', 'Kp with fixed Ki']]) { const option = el('option', label); option.value = value; mode.append(option); } modeLabel.append(mode);
   const ki = number('Fixed Ki (Kp per second)', 2.7, 0, 1000), maximum = number('Trace maximum gain', 140, 1e-9, 1000); ki.wrap.hidden = true; settings.append(modeLabel, ki.wrap, maximum.wrap); advanced.append(settings);

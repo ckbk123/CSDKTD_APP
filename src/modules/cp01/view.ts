@@ -54,6 +54,8 @@ function table(parent: HTMLElement, caption: string, headings: string[], rows: s
   const body = element('tbody'); for (const row of rows) { const tr = element('tr'); row.forEach(text => tr.append(element('td', text))); body.append(tr); } node.append(body); scroll.append(node); parent.append(scroll);
 }
 const vector = (values: readonly Rational[]): string => `\\begin{bmatrix}${values.map(fraction).join('\\\\')}\\end{bmatrix}`;
+const equationEntry = { tools: ['fraction', 'power', 'parentheses'] as const,
+  description: 'Enter a real polynomial in s with fractions, visible parentheses and powers through 2.' };
 
 export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
   const lifetime = new AbortController(), signal = lifetime.signal;
@@ -138,8 +140,8 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
             : 'Input is exactly zero. Only the initial state produces motion; amplitude and pulse width are inactive.';
   }
   let numerator: EquationInput, denominator: EquationInput;
-  numerator = createEquationInput({ label: 'Numerator N(s)', value: '1', signal, onChange: () => changed() }); editors.push(numerator); equations.append(numerator.element);
-  denominator = createEquationInput({ label: 'Denominator D(s)', value: '(s+1)(s+2)', signal, onChange: () => changed() }); editors.push(denominator); equations.append(denominator.element);
+  numerator = createEquationInput({ ...equationEntry, label: 'Numerator N(s)', value: '1', signal, onChange: () => changed() }); editors.push(numerator); equations.append(numerator.element);
+  denominator = createEquationInput({ ...equationEntry, label: 'Denominator D(s)', value: '(s+1)(s+2)', signal, onChange: () => changed() }); editors.push(denominator); equations.append(denominator.element);
   function loadPreset(index: number): void {
     const p = presets[index]; if (!p) return;
     numerator.setValue(p.n); denominator.setValue(p.d); parallel.value = p.direct; kind.value = p.kind;
