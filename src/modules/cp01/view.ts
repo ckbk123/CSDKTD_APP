@@ -63,7 +63,6 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
   function dispose(): void { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); lifetime.abort(); cancelPreview(); stopResult(); for (const editor of editors) editor.destroy(); }
   parent.addEventListener('abort', dispose, { once: true });
   if (parent.aborted) { dispose(); return dispose; }
-  paragraph(root, 'How much motion comes from the input, and how much comes from the initial state? Change either one and compare the free, forced and total response.');
   const form = element('form'); form.noValidate = true; root.append(form);
   const toolbar = element('div', undefined, 'cp-toolbar'); form.append(toolbar);
   const mode = select(toolbar, 'Learning mode', [['explore', 'Explore — changes preview immediately'], ['practice', 'Practice — predict before revealing']], 'explore');
@@ -77,7 +76,9 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
   const sliders = new Map<HTMLInputElement, HTMLInputElement>();
   function slider(input: HTMLInputElement, title: string): HTMLInputElement {
     const range = element('input'); range.type = 'range'; range.min = input.min; range.max = input.max; range.step = '.05'; range.value = input.value;
-    range.setAttribute('aria-label', title); input.parentElement!.append(range); sliders.set(input, range);
+    range.setAttribute('aria-label', title);
+    const numericLabel = input.parentElement!, pair = element('div', undefined, 'cp-parameter-pair'), rangeLabel = element('label', undefined, 'cp-range-label');
+    numericLabel.before(pair); pair.append(numericLabel); rangeLabel.append(element('span', title, 'cp-visually-hidden'), range); pair.append(rangeLabel); sliders.set(input, range);
     range.addEventListener('input', event => { event.stopPropagation(); input.value = range.value; input.dispatchEvent(new Event('input', { bubbles: true })); }, { signal });
     return range;
   }
@@ -87,7 +88,7 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
   const x1 = number(icControls, 'Initial x₁ = w(0−)', '0', '-10', '10');
   const x2 = number(icControls, 'Initial x₂ = w′(0−), order 2 only', '0', '-10', '10');
   slider(x1, 'Slide initial phase state x₁'); slider(x2, 'Slide initial phase state x₂');
-  paragraph(source, 'Free motion comes from the phase state at 0−; forced motion comes from the input. These state values do not automatically mean y(0) and y′(0).', true);
+  paragraph(source, 'Free motion starts from the phase state at 0−. These coordinates do not automatically mean y(0) and y′(0).', true);
   const attempt = card(source, 'Predict the ordinary output'); attempt.hidden = true;
   const predictionControls = element('div', undefined, 'cp-controls'); attempt.append(predictionControls);
   const predictionTime = number(predictionControls, 'Prediction time (s), right-hand value', '1', '0', '60');
@@ -123,7 +124,7 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
     const previousPreview = mode.value === 'explore' && (results.dataset.state === 'preview' || results.dataset.state === 'draft') && results.children.length > 0;
     if (!previousPreview) clearResults();
     else results.querySelector('h3')!.textContent = 'Previous preview — updating';
-    results.dataset.state = 'draft'; feedback.textContent = mode.value === 'practice' ? 'Draft changed. The output stays hidden until you reveal it.' : previousPreview ? 'Draft changed. The previous preview is shown while the current inputs update…' : 'Draft changed. Updating the live preview…';
+    results.dataset.state = 'draft'; feedback.textContent = mode.value === 'practice' ? 'Draft changed · output hidden until Reveal.' : previousPreview ? 'Updating current draft · previous preview shown.' : 'Updating the live preview…';
     sliders.forEach((range, input) => { const value = input.valueAsNumber; if (Number.isFinite(value) && value >= Number(input.min) && value <= Number(input.max)) range.value = input.value; });
     if (event && event.target !== preset && event.target !== predictionTime) preset.value = 'custom';
     if (previewTimer === undefined) previewTimer = window.setTimeout(() => { previewTimer = undefined; if (!disposed && !signal.aborted) compute(false); }, 32);
@@ -188,21 +189,25 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
       x2.disabled = m.order === 1; sliders.get(x2)!.disabled = x2.disabled;
       results.dataset.state = checked ? 'checked' : mode.value === 'practice' ? 'awaiting-prediction' : 'preview';
       const plots = card(results, checked ? 'Current checked response' : mode.value === 'practice' ? 'Input for your prediction' : 'Live response preview');
-      display(plots, `G(s)=${fraction(m.parallel)}+\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}`, 'Current model for this response');
+      plots.classList.add('cp-current-response');
+      const modelSummary = element('div', undefined, 'cp-model-summary');
+      display(modelSummary, `G(s)=${m.parallel.n ? `${fraction(m.parallel)}+` : ''}\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}`, 'Current model for this response');
       const inputPlot = responsePlot(run.points, true, 'Active input on its own scale', input.kind === 'impulse' && areas.input.n ? exactText(areas.input) : undefined, local);
+      inputPlot.element.classList.add('cp-input-plot');
       const warning = (message: string): void => { plots.append(element('p', message, 'cp-warning')); };
       if (run.truncated) warning(`Trace stopped early: ${run.reason}`);
       if (run.resolutionLimited) warning('The 20,000 base-interval budget was reached. Fast modes may be under-resolved; shorten the horizon. The analytic terms remain separate from the sampled curve.');
       if (run.pulseEndsAfterHorizon) warning('The pulse ends after this horizon. Increase the horizon to inspect its turn-off and the subsequent response.');
       if (!checked && mode.value === 'practice') {
-        plots.append(inputPlot.element);
+        plots.append(inputPlot.element, modelSummary);
         paragraph(plots, 'The input is visible for orientation. Output curves, output impulse area, cursor values and analytic answers stay hidden until Reveal. Predict the ordinary total output at the chosen time, or sketch its shape first.');
-        feedback.textContent = 'Practice: make a prediction, then reveal the response. No output answer is shown.';
+        feedback.textContent = 'Practice · output hidden until Reveal.';
         return;
       }
-      const legend = element('div', undefined, 'cp-legend'); legend.append(element('span', 'Free — dashed'), element('span', 'Forced — dotted'), element('span', 'Total — solid')); plots.append(legend);
+      const legend = element('div', undefined, 'cp-legend'); legend.append(element('span', 'Free — dashed'), element('span', 'Forced — dotted'), element('span', 'Total — solid'));
       const outputPlot = responsePlot(run.points, false, 'Free, forced and total ordinary output', input.kind === 'impulse' && areas.output.n ? exactText(areas.output) : undefined, local);
-      plots.append(outputPlot.element, inputPlot.element);
+      outputPlot.element.classList.add('cp-output-plot');
+      plots.append(outputPlot.element, legend, inputPlot.element, modelSummary);
       const previewTime = Math.min(t, run.points.at(-1)!.t), previewPoint = sample(m, input, x, previewTime);
       outputPlot.cursor(previewTime); inputPlot.cursor(previewTime);
       const readout = element('p', `At ${numeric(previewTime)} s (right-hand ordinary value): free ${numeric(previewPoint.free)} + forced ${numeric(previewPoint.forced)} = total ${numeric(previewPoint.total)}.`, 'cp-readout'); readout.dataset.previewReadout = ''; plots.append(readout);
@@ -213,7 +218,7 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
         if (Math.abs(end.total - expected) > .01 * Math.max(1, Math.abs(expected))) warning('The endpoint is still more than 1% of max(1, |asymptotic value|) away from the asymptotic polynomial. Increase the horizon. This is a horizon heuristic, not a settling-time calculation.');
       }
       if (!checked) {
-        feedback.textContent = 'Live preview of the current model, input and initial state. Check current response for one-sided cursor values, analytic terms and long-time reasoning.';
+        feedback.textContent = 'Live preview · current model, input and initial state.';
         return;
       }
       const derivation = depth(results, 'Model, initial state and Laplace transforms');
@@ -238,6 +243,7 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
       paragraph(analytic, 'These are exact identities for the entered rational coefficients. Exponential and trigonometric values and the curves are numerical approximations. Radical frequencies remain exact; repeated roots use their polynomial-times-exponential limit. The formulas apply for t ≥ 0, with one-sided values at input jumps.', true);
       const end = run.points.at(-1)!;
       const cursorSection = card(results, 'Inspect a time and a side');
+      cursorSection.classList.add('cp-inspection');
       cursorSection.addEventListener('keydown', event => { if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault(); }, { signal: local });
       const cursorControls = element('div', undefined, 'cp-controls'); cursorSection.append(cursorControls);
       const cursor = number(cursorControls, 'Cursor time (s)', String(Math.min(t, end.t)), '0', String(end.t));
@@ -274,7 +280,7 @@ export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
       else if (predicted !== undefined) {
         const actual = sample(m, input, x, t).total, agrees = Math.abs(predicted - actual) <= 1e-4 * Math.max(1, Math.abs(actual));
         feedback.textContent = `${agrees ? 'Your prediction agrees' : 'Compare your prediction'}: at ${numeric(t)} s on the right, ordinary y ≈ ${numeric(actual)}; prediction ${numeric(predicted)}. Tolerance: 10⁻⁴ × max(1, |y|).`;
-      } else feedback.textContent = 'Response revealed. Try a changed model, a different source or nonzero initial state and predict again.';
+      } else feedback.textContent = 'Response revealed. Inspect a time or open the reasoning below.';
     } catch (error) { clearResults(); results.dataset.state = 'invalid'; feedback.textContent = error instanceof Error ? error.message : 'Unable to compute this bounded exercise. Check the inputs.'; }
   }
   form.addEventListener('submit', event => { event.preventDefault(); compute(true); }, { signal });

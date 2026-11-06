@@ -119,6 +119,20 @@ describe('complete response exercise flow', () => {
 });
 
 describe('visual-first exploration and optional prediction', () => {
+  it('gives each numeric control and its range a separate label so values do not enter the numeric accessible name', () => {
+    const { root } = open('explore');
+    for (const [numberLabel, rangeLabel] of [
+      ['Amplitude / slope / area A', 'Slide input amplitude, slope or signed area'],
+      ['Initial x₁ = w(0−)', 'Slide initial phase state x₁'],
+      ['Initial x₂ = w′(0−), order 2 only', 'Slide initial phase state x₂'],
+    ]) {
+      const numeric = field(root, numberLabel), range = root.querySelector<HTMLInputElement>(`[aria-label="${rangeLabel}"]`)!;
+      expect(numeric.parentElement!.querySelectorAll('input')).toHaveLength(1);
+      expect(range.closest('label')).not.toBe(numeric.closest('label'));
+      expect(numeric.parentElement!.firstChild!.textContent).toBe(numberLabel);
+    }
+  });
+
   it('opens with a computed baseline and an independently known ordinary value, without exposing a derivation wall', () => {
     const { root } = open('explore');
     expect(result(root).dataset.state).toBe('preview');
