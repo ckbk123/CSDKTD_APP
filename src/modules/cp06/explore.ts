@@ -215,7 +215,9 @@ export const mountExplore: ModuleMount = ({ container, signal }) => {
       const re = snapCoordinate(f.re + (event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0));
       const side = Number(target.dataset.editIm) < 0 ? -1 : 1;
       const im = f.pair ? Math.max(0, snapCoordinate(f.im + side * (event.key === 'ArrowDown' ? -step : event.key === 'ArrowUp' ? step : 0))) : 0;
-      const edited = moveFactor(current.model, f.id, re, im); publish(edited.model, edited.note, c(re, im)); plotHost.querySelector<SVGGElement>(`[data-edit-id="${selectedId}"]`)?.focus();
+      const edited = moveFactor(current.model, f.id, re, im); publish(edited.model, edited.note, c(re, im));
+      const handles = [...plotHost.querySelectorAll<SVGGElement>(`[data-edit-id="${selectedId}"]`)];
+      (handles.find(handle => Math.sign(Number(handle.dataset.editIm)) === side) ?? handles[0])?.focus();
     } catch (e) { fail(e); }
   }, { capture: true, signal });
   plotHost.addEventListener('click', event => {
