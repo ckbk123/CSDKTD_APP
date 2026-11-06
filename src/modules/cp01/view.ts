@@ -29,6 +29,9 @@ const paragraph = (parent: HTMLElement, text: string, note = false): void => { p
 const card = (parent: HTMLElement, title: string): HTMLElement => {
   const node = element('section', undefined, 'cp-card'); node.append(element('h3', title)); parent.append(node); return node;
 };
+const depth = (parent: HTMLElement, title: string): HTMLElement => {
+  const node = element('details', undefined, 'cp-depth'); node.append(element('summary', title)); parent.append(node); return node;
+};
 const label = (parent: HTMLElement, title: string, control: HTMLElement): void => { const node = element('label', title); node.append(control); parent.append(node); };
 const select = (parent: HTMLElement, title: string, entries: readonly (readonly [string, string])[], value: string): HTMLSelectElement => {
   const node = element('select'); for (const [key, text] of entries) { const option = element('option', text); option.value = key; node.append(option); }
@@ -52,52 +55,83 @@ function table(parent: HTMLElement, caption: string, headings: string[], rows: s
 }
 const vector = (values: readonly Rational[]): string => `\\begin{bmatrix}${values.map(fraction).join('\\\\')}\\end{bmatrix}`;
 
-export const mountView: ModuleMount = ({ container: root, signal }) => {
-  const editors: EquationInput[] = []; let resultEvents: AbortController | undefined, disposed = false;
+export const mountView: ModuleMount = ({ container: root, signal: parent }) => {
+  const lifetime = new AbortController(), signal = lifetime.signal;
+  const editors: EquationInput[] = []; let resultEvents: AbortController | undefined, disposed = false, previewTimer: number | undefined;
+  const cancelPreview = (): void => { if (previewTimer !== undefined) { window.clearTimeout(previewTimer); previewTimer = undefined; } };
   const stopResult = (): void => { resultEvents?.abort(); resultEvents = undefined; };
-  function dispose(): void { if (disposed) return; disposed = true; stopResult(); for (const editor of editors) editor.destroy(); }
-  signal.addEventListener('abort', dispose, { once: true });
-  if (signal.aborted) { dispose(); return dispose; }
-  paragraph(root, 'Predict a response value, then separate the free and forced motion. Change the model, excitation or initial state and compare the new result.');
+  function dispose(): void { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); lifetime.abort(); cancelPreview(); stopResult(); for (const editor of editors) editor.destroy(); }
+  parent.addEventListener('abort', dispose, { once: true });
+  if (parent.aborted) { dispose(); return dispose; }
   const form = element('form'); form.noValidate = true; root.append(form);
-  const setup = card(form, '1. Choose the model and excitation');
-  const preset = select(setup, 'Experiment', [...presets.map((p, i) => [String(i), p.label] as const), ['custom', 'Custom inputs']], '0');
-  paragraph(setup, 'G(s) = N(s)/D(s) + dₚ. Enter real polynomials in s, using visible parentheses, fractions and powers up to 2. The denominator has order 1 or 2; the numerator must be proper.', true);
-  const equations = element('div', undefined, 'cp-equations'); setup.append(equations);
-  const controls = element('div', undefined, 'cp-controls'); setup.append(controls);
-  const parallel = number(controls, 'Parallel direct gain dₚ', '0', '-10', '10');
+  const toolbar = element('div', undefined, 'cp-toolbar'); form.append(toolbar);
+  const mode = select(toolbar, 'Learning mode', [['explore', 'Explore — changes preview immediately'], ['practice', 'Practice — predict before revealing']], 'explore');
+  const preset = select(toolbar, 'Experiment', [...presets.map((p, i) => [String(i), p.label] as const), ['custom', 'Custom inputs']], '0');
+  const workbench = element('div', undefined, 'cp-workbench'); form.append(workbench);
+  const source = card(workbench, 'Change the input and initial state'); source.classList.add('cp-source');
+  const controls = element('div', undefined, 'cp-controls'); source.append(controls);
   const kind = select(controls, 'Input shape', [['step', 'Step — u = A'], ['ramp', 'Ramp — u = A t'], ['impulse', 'Ideal impulse — area A'], ['pulse', 'Rectangular pulse — area A'], ['free', 'Free response — u = 0']], 'step');
   const amplitude = number(controls, 'Amplitude / slope / area A', '1', '-10', '10');
   const width = number(controls, 'Pulse width W (s)', '.1', '.001', '10');
-  const horizon = number(controls, 'Trace horizon (s)', '10', '.1', '60');
-  const inputNote = element('p', undefined, 'cp-note'); setup.append(inputNote);
-  const initial = card(form, '2. Set the initial state');
-  paragraph(initial, 'Initial values are the phase states at 0−. They describe the dynamic realization, rather than automatically meaning y(0) and y′(0). An ideal impulse changes the forced state at 0; the free state still starts from these values.');
-  const icControls = element('div', undefined, 'cp-controls'); initial.append(icControls);
+  const sliders = new Map<HTMLInputElement, HTMLInputElement>();
+  function slider(input: HTMLInputElement, title: string): HTMLInputElement {
+    const range = element('input'); range.type = 'range'; range.min = input.min; range.max = input.max; range.step = '.05'; range.value = input.value;
+    range.setAttribute('aria-label', title);
+    const numericLabel = input.parentElement!, pair = element('div', undefined, 'cp-parameter-pair'), rangeLabel = element('label', undefined, 'cp-range-label');
+    numericLabel.before(pair); pair.append(numericLabel); rangeLabel.append(element('span', title, 'cp-visually-hidden'), range); pair.append(rangeLabel); sliders.set(input, range);
+    range.addEventListener('input', event => { event.stopPropagation(); input.value = range.value; input.dispatchEvent(new Event('input', { bubbles: true })); }, { signal });
+    return range;
+  }
+  slider(amplitude, 'Slide input amplitude, slope or signed area');
+  const inputNote = element('p', undefined, 'cp-note'); source.append(inputNote);
+  const icControls = element('div', undefined, 'cp-controls'); source.append(icControls);
   const x1 = number(icControls, 'Initial x₁ = w(0−)', '0', '-10', '10');
   const x2 = number(icControls, 'Initial x₂ = w′(0−), order 2 only', '0', '-10', '10');
-  paragraph(initial, 'Realization: w′ + a₀w = u (order 1), or w″ + a₁w′ + a₀w = u (order 2). Output y = b₀w + b₁w′ + d u; order 1 omits b₁w′. Time is seconds. For denominator order m, w has input-units·sᵐ and w′ has input-units·sᵐ⁻¹; output units are normalized.', true);
-  const attempt = card(form, '3. Predict, then reveal');
+  slider(x1, 'Slide initial phase state x₁'); slider(x2, 'Slide initial phase state x₂');
+  paragraph(source, 'Free motion starts from the phase state at 0−. These coordinates do not automatically mean y(0) and y′(0).', true);
+  const attempt = card(source, 'Predict the ordinary output'); attempt.hidden = true;
   const predictionControls = element('div', undefined, 'cp-controls'); attempt.append(predictionControls);
   const predictionTime = number(predictionControls, 'Prediction time (s), right-hand value', '1', '0', '60');
   const guess = number(predictionControls, 'Predicted total y (normalized units)', '.2', '-10000000000', '10000000000');
   const compare = element('input'); compare.type = 'checkbox'; label(attempt, 'Compare my numerical prediction (optional)', compare);
   paragraph(attempt, 'Before revealing, sketch the expected shape on paper: initial value or jump, growing or decaying modes, and a possible long-time value. The numerical prediction is checked at the chosen time, to 10⁻⁴ × max(1, |y|).', true);
-  const actions = element('div', undefined, 'cp-actions'); attempt.append(actions);
-  const reveal = element('button', 'Compute and reveal'); reveal.type = 'submit';
+  const actions = element('div', undefined, 'cp-actions'); source.append(actions);
+  const reveal = element('button', 'Check current response'); reveal.type = 'submit';
   const reset = element('button', 'Restore baseline'); reset.type = 'button'; actions.append(reveal, reset);
-  const feedback = element('p', 'Make a prediction, then compute the response.', 'cp-feedback'); feedback.setAttribute('role', 'status'); root.append(feedback);
-  const results = element('div'); results.setAttribute('aria-label', 'Checked response'); root.append(results);
+  const visual = element('div', undefined, 'cp-visual'); workbench.append(visual);
+  const feedback = element('p', 'Live preview of the current inputs.', 'cp-feedback'); feedback.setAttribute('role', 'status'); visual.append(feedback);
+  const results = element('div'); results.setAttribute('aria-label', 'Response workspace'); visual.append(results);
+  const setup = depth(form, 'Edit the model, timing and coordinate view');
+  paragraph(setup, 'G(s) = N(s)/D(s) + dₚ. Enter real polynomials in s, using visible parentheses, fractions and powers up to 2. The denominator has order 1 or 2; the numerator must be proper.', true);
+  const equations = element('div', undefined, 'cp-equations'); setup.append(equations);
+  const advancedControls = element('div', undefined, 'cp-controls'); setup.append(advancedControls);
+  const parallel = number(advancedControls, 'Parallel direct gain dₚ', '0', '-10', '10');
+  const horizon = number(advancedControls, 'Trace horizon (s)', '10', '.1', '60');
+  const initial = depth(setup, 'Initial-state meaning and change of coordinates');
+  paragraph(initial, 'Realization: w′ + a₀w = u (order 1), or w″ + a₁w′ + a₀w = u (order 2). Output y = b₀w + b₁w′ + d u; order 1 omits b₁w′. Time is seconds. For denominator order m, w has input-units·sᵐ and w′ has input-units·sᵐ⁻¹; output units are normalized. An ideal impulse changes the forced state at 0; the free state still starts from the entered values.');
   let represented: { m: Model; x: readonly Rational[]; target: HTMLElement } | undefined;
   const representation = select(initial, 'Coordinate view (preserves the initial state)', [['phase', 'Phase state x = [w, w′]'], ['centered', 'Centered state z = [w, w′ + αw]']], 'phase');
   function clearResults(): void { stopResult(); represented = undefined; results.replaceChildren(); }
   function changed(event?: Event): void {
     if (disposed || signal.aborted || event?.target === representation) return;
-    clearResults(); feedback.textContent = 'Inputs changed. Predict and compute the new response.';
-    if (event && event.target !== preset) preset.value = 'custom';
+    if (event && results.contains(event.target as Node)) return;
+    if (event?.target === mode) return;
+    if (event?.target === guess || event?.target === compare) {
+      if (mode.value === 'practice') feedback.textContent = results.dataset.state === 'checked' ? 'Prediction edited; reveal again to check it. The shown response remains the last checked model.' : 'Prediction edited. The output stays hidden until you reveal it.';
+      return;
+    }
+    if (event?.target === predictionTime && mode.value === 'explore') return;
+    const previousPreview = mode.value === 'explore' && (results.dataset.state === 'preview' || results.dataset.state === 'draft') && results.children.length > 0;
+    if (!previousPreview) clearResults();
+    else results.querySelector('h3')!.textContent = 'Previous preview — updating';
+    results.dataset.state = 'draft'; feedback.textContent = mode.value === 'practice' ? 'Draft changed · output hidden until Reveal.' : previousPreview ? 'Updating current draft · previous preview shown.' : 'Updating the live preview…';
+    sliders.forEach((range, input) => { const value = input.valueAsNumber; if (Number.isFinite(value) && value >= Number(input.min) && value <= Number(input.max)) range.value = input.value; });
+    if (event && event.target !== preset && event.target !== predictionTime) preset.value = 'custom';
+    if (previewTimer === undefined) previewTimer = window.setTimeout(() => { previewTimer = undefined; if (!disposed && !signal.aborted) compute(false); }, 32);
   }
   function sourceControls(): void {
     width.disabled = kind.value !== 'pulse'; amplitude.disabled = kind.value === 'free';
+    width.parentElement!.hidden = kind.value !== 'pulse'; sliders.get(amplitude)!.disabled = amplitude.disabled;
     inputNote.textContent = kind.value === 'step' ? 'A is input units. The input begins at t = 0; a direct term can make y jump.'
       : kind.value === 'ramp' ? 'A is input units/s. A ramp can produce polynomial output growth, even with stable dynamics.'
         : kind.value === 'impulse' ? 'A is signed area in input-units·s. A delta is a distribution: its area is reported separately from the ordinary curve. No finite peak height is assigned.'
@@ -118,6 +152,7 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
   kind.addEventListener('change', sourceControls, { signal });
   form.addEventListener('input', changed, { signal }); form.addEventListener('change', changed, { signal });
   representation.addEventListener('change', () => { if (represented) renderRepresentation(represented.m, represented.x, represented.target); }, { signal });
+  mode.addEventListener('change', () => { attempt.hidden = mode.value !== 'practice'; reveal.textContent = mode.value === 'practice' ? 'Reveal and check prediction' : 'Check current response'; changed(); }, { signal });
   sourceControls();
 
   function renderRepresentation(m: Model, x: readonly Rational[], target: HTMLElement): void {
@@ -136,26 +171,63 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
       paragraph(target, centered ? 'Only the coordinates change. The phase initial values, input and all response curves stay the same.' : 'x = [w, w′]ᵀ. Change to centered coordinates to see the same physical initial state in a different basis.', true);
     }
   }
-  form.addEventListener('submit', event => {
-    event.preventDefault(); if (disposed || signal.aborted) return;
+  function compute(checked: boolean): void {
+    if (disposed || signal.aborted) return;
+    cancelPreview();
     clearResults();
     try {
       const m = makeModel(parsed(numerator, 'the numerator'), parsed(denominator, 'the denominator'), exactNumber(parallel, 'Parallel direct gain'));
       const input = excitation(kind.value as InputKind, kind.value === 'free' ? ZERO : exactNumber(amplitude, 'Amplitude / slope / area'), kind.value === 'pulse' ? exactNumber(width, 'Pulse width') : decimal('.1'));
       const x = initialState(m, m.order === 1 ? [exactNumber(x1, 'Initial x₁')] : [exactNumber(x1, 'Initial x₁'), exactNumber(x2, 'Initial x₂')]);
-      const h = readNumericInput(horizon, 'Trace horizon'), t = readNumericInput(predictionTime, 'Prediction time');
+      const practicing = mode.value === 'practice';
+      const h = readNumericInput(horizon, 'Trace horizon'), t = checked && practicing ? readNumericInput(predictionTime, 'Prediction time') : Math.min(1, h);
       if (t < 0 || t > h) throw new Error('Prediction time must be between zero and the requested horizon.');
-      const predicted = compare.checked ? readNumericInput(guess, 'Predicted total y') : undefined;
+      const predicted = checked && practicing && compare.checked ? readNumericInput(guess, 'Predicted total y') : undefined;
       if (predicted !== undefined && Math.abs(predicted) > 1e10) throw new Error('The prediction must have magnitude at most 10¹⁰.');
       const run = trace(m, input, x, h), free = freeTerms(m, x), forced = forcedTerms(m, input), areas = impulseAreas(m, input);
       resultEvents = new AbortController(); const local = resultEvents.signal;
-      const derivation = card(results, '4. Connect the model, initial state and transform');
+      x2.disabled = m.order === 1; sliders.get(x2)!.disabled = x2.disabled;
+      results.dataset.state = checked ? 'checked' : mode.value === 'practice' ? 'awaiting-prediction' : 'preview';
+      const plots = card(results, checked ? 'Current checked response' : mode.value === 'practice' ? 'Input for your prediction' : 'Live response preview');
+      plots.classList.add('cp-current-response');
+      const modelSummary = element('div', undefined, 'cp-model-summary');
+      display(modelSummary, `G(s)=${m.parallel.n ? `${fraction(m.parallel)}+` : ''}\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}`, 'Current model for this response');
+      const inputPlot = responsePlot(run.points, true, 'Active input on its own scale', input.kind === 'impulse' && areas.input.n ? exactText(areas.input) : undefined, local);
+      inputPlot.element.classList.add('cp-input-plot');
+      const warning = (message: string): void => { plots.append(element('p', message, 'cp-warning')); };
+      if (run.truncated) warning(`Trace stopped early: ${run.reason}`);
+      if (run.resolutionLimited) warning('The 20,000 base-interval budget was reached. Fast modes may be under-resolved; shorten the horizon. The analytic terms remain separate from the sampled curve.');
+      if (run.pulseEndsAfterHorizon) warning('The pulse ends after this horizon. Increase the horizon to inspect its turn-off and the subsequent response.');
+      if (!checked && mode.value === 'practice') {
+        plots.append(inputPlot.element, modelSummary);
+        paragraph(plots, 'The input is visible for orientation. Output curves, output impulse area, cursor values and analytic answers stay hidden until Reveal. Predict the ordinary total output at the chosen time, or sketch its shape first.');
+        feedback.textContent = 'Practice · output hidden until Reveal.';
+        return;
+      }
+      const legend = element('div', undefined, 'cp-legend'); legend.append(element('span', 'Free — dashed'), element('span', 'Forced — dotted'), element('span', 'Total — solid'));
+      const outputPlot = responsePlot(run.points, false, 'Free, forced and total ordinary output', input.kind === 'impulse' && areas.output.n ? exactText(areas.output) : undefined, local);
+      outputPlot.element.classList.add('cp-output-plot');
+      plots.append(outputPlot.element, legend, inputPlot.element, modelSummary);
+      const previewTime = Math.min(t, run.points.at(-1)!.t), previewPoint = sample(m, input, x, previewTime);
+      outputPlot.cursor(previewTime); inputPlot.cursor(previewTime);
+      const readout = element('p', `At ${numeric(previewTime)} s (right-hand ordinary value): free ${numeric(previewPoint.free)} + forced ${numeric(previewPoint.forced)} = total ${numeric(previewPoint.total)}.`, 'cp-readout'); readout.dataset.previewReadout = ''; plots.append(readout);
+      paragraph(plots, 'Input and output use separate scales. Curves show ordinary values; an ideal impulse arrow denotes signed area, never a finite peak. Exact one-sided inspection is available when you check the response.', true);
+      if (m.behavior === 'stable') {
+        const asymptote = input.kind === 'step' || input.kind === 'ramp' ? forced.polynomial : [], end = run.points.at(-1)!;
+        const expected = asymptote.reduceRight((sum, coefficient) => sum * end.t + toNumber(coefficient, true), 0);
+        if (Math.abs(end.total - expected) > .01 * Math.max(1, Math.abs(expected))) warning('The endpoint is still more than 1% of max(1, |asymptotic value|) away from the asymptotic polynomial. Increase the horizon. This is a horizon heuristic, not a settling-time calculation.');
+      }
+      if (!checked) {
+        feedback.textContent = 'Live preview · current model, input and initial state.';
+        return;
+      }
+      const derivation = depth(results, 'Model, initial state and Laplace transforms');
       display(derivation, `G(s)=${fraction(m.parallel)}+\\frac{${polynomial(m.numerator)}}{${polynomial(m.denominator)}}=${fraction(m.direct)}+\\frac{${polynomial(m.b)}}{${polynomial(m.denominator)}}`, 'Normalized transfer and direct-path decomposition');
       paragraph(derivation, 'Coefficients are displayed in descending powers. The monic denominator and strict remainder define the retained phase realization, even when transfer poles cancel. Transfer functions describe zero initial state; free motion is added separately.');
       const repTarget = element('div'); derivation.append(repTarget); represented = { m, x, target: repTarget }; renderRepresentation(m, x, repTarget);
       display(derivation, `Y_{\\mathrm{free}}(s)=\\frac{${polynomial(initialTransformNumerator(m, x))}}{${polynomial(m.denominator)}},\\quad U(s)=${inputTransform(input)}`, 'Initial-condition and input transforms');
       display(derivation, 'Y(s)=Y_{\\mathrm{free}}(s)+G(s)U(s)', 'Superposition in the unilateral Laplace transform');
-      const analytic = card(results, '5. Read the computed response terms');
+      const analytic = depth(results, 'Exact response terms and impulse interpretation');
       display(analytic, `y_{\\mathrm{free}}(t)=${termsLatex(free)}`, 'Exact free response terms');
       if (input.kind === 'pulse') {
         display(analytic, `W=${fraction(input.width)},\\quad A=${fraction(input.amplitude)},\\quad A/W=${fraction(div(input.amplitude, input.width))}`, 'Pulse width, signed area and height');
@@ -169,17 +241,10 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
         paragraph(analytic, `Signed impulse areas: input ${exactText(areas.input)} input-units·s; output ${exactText(areas.output)} output-units·s. The curve contains only the regular response. The arrow is an area symbol, not a finite peak. At 0− the forced state is zero; at 0+ its last phase state has jumped by A.`);
       }
       paragraph(analytic, 'These are exact identities for the entered rational coefficients. Exponential and trigonometric values and the curves are numerical approximations. Radical frequencies remain exact; repeated roots use their polynomial-times-exponential limit. The formulas apply for t ≥ 0, with one-sided values at input jumps.', true);
-      const plots = card(results, '6. Compare free, forced and total motion');
-      const legend = element('div', undefined, 'cp-legend'); legend.append(element('span', 'Free — dashed'), element('span', 'Forced — dotted'), element('span', 'Total — solid')); plots.append(legend);
-      const outputPlot = responsePlot(run.points, false, 'Free, forced and total ordinary output', input.kind === 'impulse' && areas.output.n ? exactText(areas.output) : undefined);
-      const inputPlot = responsePlot(run.points, true, 'Active input on its own scale', input.kind === 'impulse' && areas.input.n ? exactText(areas.input) : undefined);
-      plots.append(outputPlot.element, inputPlot.element);
-      paragraph(plots, 'Separate input and output scales keep a narrow pulse readable. Scroll a plot horizontally on a small screen. Axis labels use four significant digits; cursor tables use seven. Cursor values are computed directly at the requested time and side, without interpolating across jumps.', true);
-      if (run.truncated) paragraph(plots, `Trace stopped early: ${run.reason}`);
-      if (run.resolutionLimited) paragraph(plots, 'The 20,000 base-interval budget was reached. Fast modes may be under-resolved; shorten the horizon. The analytic terms remain separate from the sampled curve.');
-      if (run.pulseEndsAfterHorizon) paragraph(plots, 'The pulse ends after this horizon. Increase the horizon to inspect its turn-off and the subsequent response.');
       const end = run.points.at(-1)!;
-      const cursorSection = card(results, '7. Inspect a time and a side');
+      const cursorSection = card(results, 'Inspect a time and a side');
+      cursorSection.classList.add('cp-inspection');
+      cursorSection.addEventListener('keydown', event => { if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault(); }, { signal: local });
       const cursorControls = element('div', undefined, 'cp-controls'); cursorSection.append(cursorControls);
       const cursor = number(cursorControls, 'Cursor time (s)', String(Math.min(t, end.t)), '0', String(end.t));
       const side = select(cursorControls, 'One-sided value', [['right', 'Right — at / just after the time'], ['left', 'Left — just before the time']], 'right');
@@ -201,7 +266,8 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
       cursor.addEventListener('input', drawCursor, { signal: local }); side.addEventListener('change', drawCursor, { signal: local });
       slider.addEventListener('input', () => { try { cursor.value = String(readNumericInput(slider, 'Time slider')); drawCursor(); } catch (error) { cursorValues.replaceChildren(); cursorFeedback.textContent = String(error); } }, { signal: local });
       drawCursor();
-      const interpretation = card(results, '8. Check the long-time interpretation');
+      plots.after(cursorSection);
+      const interpretation = depth(results, 'Long-time interpretation and horizon checks');
       paragraph(interpretation, `Retained denominator modes: ${m.behavior === 'stable' ? 'strictly stable' : m.behavior === 'integrator' ? 'one origin integrator' : m.behavior === 'double-integrator' ? 'double origin integrator' : m.behavior === 'oscillator' ? 'undamped oscillation' : 'unstable'}. A finite or flat portion of a trace is not a settling certificate.`);
       if (m.behavior === 'stable') {
         const asymptote = input.kind === 'step' || input.kind === 'ramp' ? forced.polynomial : [];
@@ -209,20 +275,21 @@ export const mountView: ModuleMount = ({ container: root, signal }) => {
         paragraph(interpretation, asymptote.slice(1).some(c => c.n) ? 'The nonzero polynomial slope means there is no finite final value. Stable modes alone do not make a ramp response settle.' : 'All retained transient modes decay. The remaining constant, or zero, is the final ordinary output value.');
         const expected = asymptote.reduceRight((sum, coefficient) => sum * end.t + toNumber(coefficient, true), 0);
         paragraph(interpretation, `At the retained endpoint ${numeric(end.t)} s: y ≈ ${numeric(end.total)}, asymptotic polynomial ≈ ${numeric(expected)}, difference ≈ ${numeric(end.total - expected)}.`, true);
-        if (Math.abs(end.total - expected) > .01 * Math.max(1, Math.abs(expected))) paragraph(interpretation, 'The endpoint is still more than 1% of max(1, |asymptotic value|) away from that polynomial. Increase the horizon. This comparison is a horizon heuristic, not a settling-time calculation.');
       } else paragraph(interpretation, 'No general settling claim is made for this retained realization. Inspect the computed polynomial/exponential/oscillatory terms: particular inputs, initial states or output cancellations may remove a mode. Integrators can grow; oscillators can persist; unstable modes can exceed the plotting range.');
       if (t > end.t) feedback.textContent = 'The trace stopped before your prediction time. Inspect an earlier cursor time; no prediction comparison was made.';
       else if (predicted !== undefined) {
         const actual = sample(m, input, x, t).total, agrees = Math.abs(predicted - actual) <= 1e-4 * Math.max(1, Math.abs(actual));
         feedback.textContent = `${agrees ? 'Your prediction agrees' : 'Compare your prediction'}: at ${numeric(t)} s on the right, ordinary y ≈ ${numeric(actual)}; prediction ${numeric(predicted)}. Tolerance: 10⁻⁴ × max(1, |y|).`;
-      } else feedback.textContent = 'Response revealed. Try a changed model, a different source or nonzero initial state and predict again.';
-    } catch (error) { clearResults(); feedback.textContent = error instanceof Error ? error.message : 'Unable to compute this bounded exercise. Check the inputs.'; }
-  }, { signal });
+      } else feedback.textContent = 'Response revealed. Inspect a time or open the reasoning below.';
+    } catch (error) { clearResults(); results.dataset.state = 'invalid'; feedback.textContent = error instanceof Error ? error.message : 'Unable to compute this bounded exercise. Check the inputs.'; }
+  }
+  form.addEventListener('submit', event => { event.preventDefault(); compute(true); }, { signal });
 
   const limits = element('details'); limits.append(element('summary', 'Supported domain, timing and calculation limits')); root.append(limits);
   paragraph(limits, 'Real continuous-time SISO LTI models only; no feedback loop is assumed here. Proper rational numerator/denominator of order at most 2, denominator order 1–2. Leading coefficient is normalized; a biproper numerator is divided to extract direct gain. Phase realization and its initial state are retained through cancellations. Ideal differentiation (improper transfer) is rejected because distributions cannot be represented by this ordinary state model.');
   paragraph(limits, 'Visual input accepts bounded decimals, visible parentheses, explicit/implicit products, numeric fractions, and integer powers 0–2. Mixed-number adjacency, hidden groups, unsupported symbols, e/E notation and ambiguous bare powers are rejected with guidance. Use fraction/power buttons; students need no programming syntax. Limits: 400 expression characters, 160 primaries, nesting 12, intermediate coefficient magnitude 10⁹, exact fractions at most 4096 bits.');
   paragraph(limits, 'After normalization: |a₀| ≤ 100, |a₁| ≤ 20, strict-remainder |bᵢ| ≤ 50, parallel and effective |d| ≤ 10. Normalized coefficient fraction denominators ≤ 10⁹. Initial phase states and amplitude/area: −10 to 10. Pulse width .001–10 s; horizon .1–60 s. Causal inputs begin at 0; pulse support [0,W); initial state is at 0−. Left/right cursor selects ordinary limits, never a finite ideal-delta value.');
   paragraph(limits, 'Analytic terms use exact rational arithmetic and exact radicals. Numerical state transitions use floating-point scaling and a bounded series (at most four augmented states, 24 scalings, 32 terms). Traces have 600–20,000 base intervals plus pulse/jump points (at most 20,024); transitions are cached locally with finite limits. Any state or signal component above 10¹⁰ stops the trace with feedback. Sampling can miss fast features at its cap; a finite horizon cannot prove settlement. No sample period is assumed for this continuous-time exercise.');
+  compute(false);
   return dispose;
 };
