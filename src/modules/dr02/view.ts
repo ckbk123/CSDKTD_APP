@@ -120,6 +120,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
   stepSection.append(workbench); workbench.append(memoryPane, actionPane);
   const phaseList = el('ol', '', 'phases'), outputPreview = el('div', '', 'output-preview'); phaseList.setAttribute('aria-label', 'Sample execution phases');
   const position = el('p'), registerView = el('div'), prediction = numberInput('Your predicted y[k] (optional)', '');
+  on(prediction.input, 'input', () => {
+    if (!ready) return;
+    status.textContent = calculation ? 'Prediction edited. Reveal again to check it; the calculated snapshot is unchanged and can still be committed.' : 'Prediction edited. Reveal arithmetic to check it against the old snapshot.';
+  });
   const previewButton = button('Reveal arithmetic', () => {
     try {
       calculation = preview(model, memory, sample(kind, amplitude, memory.k, period));
@@ -273,26 +277,28 @@ export const mount: ModuleMount = ({ container, signal }) => {
     }
     table.append(body); if (rows.length) tableView.append(table);
     const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', '0 0 600 220'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Computed output sample stems versus sample index k. Values are in the table.');
+    svg.setAttribute('viewBox', '0 0 510 180'); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Computed output sample stems versus sample index k. Values are in the table.');
+    const chart = el('figure', '', 'sample-chart'), axes = el('div', '', 'sample-axes'), yScale = el('div', '', 'y-scale'), xScale = el('div', '', 'x-scale');
+    chart.append(el('figcaption', 'Output y (arbitrary units)'), axes); axes.append(yScale, svg, xScale, el('p', 'Sample index k', 'x-title'));
     const values = rows.flatMap(r => [r.y, r.zero]);
     const low = Math.min(0, ...values); let high = Math.max(0, ...values); if (high === low) high = low + 1; const span = high - low;
-    const x = (k: number) => 65 + 510 * k / Math.max(1, rows.length - 1), y = (v: number) => 175 - 140 * (v - low) / span;
+    const x = (k: number) => 8 + 494 * k / Math.max(1, rows.length - 1), y = (v: number) => 168 - 156 * (v - low) / span;
+    for (const [value, place] of [[high, 'high'], [(low + high) / 2, 'middle'], [low, 'low']] as const) yScale.append(el('span', Number(value.toPrecision(3)).toString(), place));
+    xScale.append(el('span', '0'), el('span', rows.length > 1 ? String(rows.length - 1) : ''));
     function line(x1: number, y1: number, x2: number, y2: number, dashed = false): void {
       const l = document.createElementNS(ns, 'line');
       for (const [name, v] of Object.entries({ x1, y1, x2, y2 })) l.setAttribute(name, String(v));
-      l.setAttribute('stroke', 'currentColor'); l.setAttribute('stroke-width', '1.5'); if (dashed) l.setAttribute('stroke-dasharray', '3 3'); svg.append(l);
+      l.setAttribute('stroke', 'currentColor'); l.setAttribute('stroke-width', '1.5'); l.setAttribute('vector-effect', 'non-scaling-stroke'); if (dashed) l.setAttribute('stroke-dasharray', '3 3'); svg.append(l);
     }
-    function text(value: string, px: number, py: number): void { const t = document.createElementNS(ns, 'text'); t.textContent = value; t.setAttribute('x', String(px)); t.setAttribute('y', String(py)); svg.append(t); }
-    line(65, y(0), 580, y(0)); line(65, 30, 65, 180);
+    line(8, y(0), 502, y(0)); line(8, 12, 8, 168);
     for (const r of rows) {
       line(x(r.k), y(0), x(r.k), y(r.y));
       const zero = document.createElementNS(ns, 'circle'); zero.setAttribute('cx', String(x(r.k))); zero.setAttribute('cy', String(y(r.zero))); zero.setAttribute('r', '4'); zero.setAttribute('class', 'zero-sample'); svg.append(zero);
       const c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', String(x(r.k))); c.setAttribute('cy', String(y(r.y))); c.setAttribute('r', r.k === inspected ? '6' : '4'); c.setAttribute('class', r.k === inspected ? 'sample-point inspected' : 'sample-point'); c.dataset.sample = String(r.k); c.setAttribute('aria-hidden', 'true'); c.setAttribute('data-description', `Inspect committed sample ${r.k}: output ${fmt(r.y)}`); c.setAttribute('aria-pressed', String(r.k === inspected)); svg.append(c);
       if (r.k) line(x(r.k - 1), y(rows[r.k - 1].zero), x(r.k), y(r.zero), true);
     }
-    text('Output y (arbitrary units)', 65, 18); text(Number(high.toPrecision(3)).toString(), 0, 40); text(Number(low.toPrecision(3)).toString(), 0, 178); text('0', 65, 200); if (rows.length > 1) text(`${rows.length - 1}`, 560, 200); text('Sample index k', 240, 216);
-    if (!rows.length) text('Reveal, then commit to place the first sample.', 115, 95);
-    plot.append(svg, el('p', 'Solid stems and filled points: supplied history. Hollow points and dashed sample connections: zero history. Use the cursor or table buttons to inspect a sample.', 'muted'));
+    if (!rows.length) axes.append(el('p', 'Reveal, then commit to place the first sample.', 'empty-trace'));
+    plot.append(chart, el('p', 'Solid stems and filled points: supplied history. Hollow points and dashed sample connections: zero history. Use the cursor or table buttons to inspect a sample.', 'muted'));
   }
   renderForms(); buildHistory(); restart();
   return () => { equation.destroy(); root.remove(); };

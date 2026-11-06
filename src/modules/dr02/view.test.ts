@@ -106,6 +106,33 @@ describe('DR02 exercise state transitions', () => {
     expect(container.querySelector('[aria-label="Revealed output at current sample"]')).toBeNull();
     close();
   });
+  it('uses sparse native text axes outside the scaled graphic while retaining the true samples', () => {
+    const { container, click, close } = visit();
+    click('Reveal arithmetic'); click('Commit sample & shift memory'); click('Reveal arithmetic'); click('Commit sample & shift memory');
+    const chart = container.querySelector('.sample-chart')!;
+    expect(chart.querySelector('figcaption')?.textContent).toBe('Output y (arbitrary units)');
+    expect(chart.querySelectorAll('svg text')).toHaveLength(0);
+    expect([...chart.querySelectorAll('.y-scale span')].map(node => node.textContent)).toEqual(['0.0952', '0.0476', '0']);
+    expect([...chart.querySelectorAll('.x-scale span')].map(node => node.textContent)).toEqual(['0', '1']);
+    expect(chart.querySelector('svg')?.getAttribute('preserveAspectRatio')).toBe('none');
+    expect(chart.querySelector('[data-sample="1"]')?.getAttribute('cy')).toBe('12');
+    expect(chart.querySelectorAll('[data-sample]')).toHaveLength(2);
+    close();
+  });
+  it('revokes old prediction grading when its draft changes without discarding the frozen calculation', () => {
+    const { container, click, close } = visit();
+    const guess = container.querySelector<HTMLInputElement>('[aria-label="Your predicted y[k] (optional)"]')!;
+    guess.value = '0'; guess.dispatchEvent(new Event('input')); click('Reveal arithmetic');
+    expect(container.querySelector('[role="status"]')?.textContent).toContain('Prediction agrees');
+    guess.value = '1'; guess.dispatchEvent(new Event('input'));
+    expect(container.querySelector('[role="status"]')?.textContent).toContain('Prediction edited. Reveal again to check it');
+    expect(container.querySelector('[role="status"]')?.textContent).not.toContain('Prediction agrees');
+    expect(container.querySelector('[aria-label="Revealed output at current sample"]')?.textContent).toBe('y[0]=0');
+    expect([...container.querySelectorAll('button')].find(button => button.textContent === 'Commit sample & shift memory')?.disabled).toBe(false);
+    click('Commit sample & shift memory');
+    expect(container.textContent).toContain('Current sample k = 1');
+    close();
+  });
   it('finishes at the 128-sample boundary without allowing an extra reveal or write', () => {
     const { container, close } = visit();
     const reveal = [...container.querySelectorAll('button')].find(button => button.textContent === 'Reveal arithmetic')!;
