@@ -91,6 +91,22 @@ test('reports stages and prefers in-progress without claiming implemented or unk
   assert.equal(runCommand('claim', { owner: 'third' }, f.root).claimed, false);
 });
 
+test('explicit finite refinements reserve delivered tools without changing their stages', () => {
+  const f = fixture({ CR01: 'verified', CR02: 'implemented', CR03: 'unexpected' });
+  assert.equal(runCommand('claim', { owner: 'generic' }, f.root).claimed, false);
+  const first = runCommand('claim', { owner: 'refiner', module: 'CR01', purpose: 'Keyboard pole placement' }, f.root);
+  assert.equal(first.claimed, true);
+  assert.equal(first.claim.purpose, 'Keyboard pole placement');
+  assert.equal(first.claim.baseCommit, git(f.root, 'rev-parse', 'HEAD'));
+  assert.equal(runCommand('claim', { owner: 'second', module: 'CR01', purpose: 'Other refinement' }, f.root).claimed, false);
+  assert.equal(runCommand('claim', { owner: 'second', module: 'CR02', purpose: 'Focused preview' }, f.root).claimed, true);
+  assert.equal(runCommand('claim', { owner: 'unknown', module: 'CR03', purpose: 'Unknown stage' }, f.root).claimed, false);
+  assert.equal(runCommand('list', {}, f.root).modules.find(m => m.moduleId === 'CR01').stage, 'verified');
+  for (const extra of [{ purpose: 'Unbounded selection' }, { module: 'CR01', purpose: '' }, { module: 'CR01', purpose: 'x\ninvalid' }]) {
+    assert.throws(() => runCommand('claim', { owner: 'bad', ...extra }, f.root), { code: 'INVALID_PURPOSE' });
+  }
+});
+
 test('simultaneous processes atomically claim different modules', async () => {
   const f = fixture({ CR01: 'scaffold', CR02: 'scaffold', CR03: 'scaffold' });
   const results = await Promise.all([1, 2, 3, 4].map(number => cliResult(f.root, ['claim', '--owner', `worker-${number}`])));

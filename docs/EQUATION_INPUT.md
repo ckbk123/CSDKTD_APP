@@ -18,6 +18,8 @@ When implementing a module, build its actual exercise inputs inside its own work
 
 `createEquationInput({ label, value, signal, onChange? })` returns:
 
+For a bounded module, optional `tools` selects its quick-insert buttons from `fraction`, `power`, `square root`, `subscript`, `parentheses` and `pi`; optional `description` supplies its accessible entry guidance. Omission preserves existing buttons. These affordances do not validate or restrict typing: the module parser still establishes mathematical support. Use only quick symbols that the field can actually accept, while retaining keyboard entry and the math keyboard.
+
 | Member | Purpose |
 |---|---|
 | `element` | Append this wrapper to the workspace; it includes the field, symbol buttons and notation feedback. |

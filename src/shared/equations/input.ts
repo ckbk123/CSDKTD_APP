@@ -29,11 +29,16 @@ export interface EquationDraft {
   readonly syntaxIssues: readonly string[];
 }
 
+export type EquationTool = 'fraction' | 'power' | 'square root' | 'subscript' | 'parentheses' | 'pi';
+
 export interface EquationInputOptions {
   readonly label: string;
   readonly value: string;
   readonly signal: AbortSignal;
   readonly onChange?: (draft: EquationDraft) => void;
+  /** Quick-insert affordances, not a mathematical parser or input restriction. */
+  readonly tools?: readonly EquationTool[];
+  readonly description?: string;
 }
 
 export interface EquationInput {
@@ -82,7 +87,7 @@ export function createEquationInput(options: EquationInputOptions): EquationInpu
   field.mathVirtualKeyboardPolicy = 'manual';
   field.macros = displayOnlyMacros;
   field.setAttribute('aria-label', options.label);
-  field.setAttribute('aria-description', 'Visual equation input. Use the fraction and power buttons, or type with your keyboard.');
+  field.setAttribute('aria-description', options.description ?? 'Visual equation input. Use the available symbol buttons or type with your keyboard.');
   field.value = options.value;
   const tools = document.createElement('div');
   tools.className = 'equation-tools'; tools.setAttribute('role', 'group');
@@ -117,7 +122,8 @@ export function createEquationInput(options: EquationInputOptions): EquationInpu
     field.setAttribute('aria-invalid', String(draft.syntaxIssues.length > 0));
     if (notify) options.onChange?.(draft);
   }
-  function addTool(name: string, text: string, insert: string): void {
+  function addTool(name: EquationTool, text: string, insert: string): void {
+    if (options.tools && !options.tools.includes(name)) return;
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'equation-tool';
     button.textContent = text; button.setAttribute('aria-label', `Insert ${name}`);

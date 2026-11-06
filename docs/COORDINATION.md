@@ -1,5 +1,13 @@
 # Coordinator: ten-worker delivery and handoff
 
+## Authorized interactivity refinement — 6 November 2026
+
+The owner asked chat `01a1ac7b-23ee-7530-bb2d-334ceb1752ec` to implement the reviewed global interaction plan: shared fixes and three contrasting pilots first, then extend demonstrated patterns across all tools. The owner explicitly permits contributing subagents in this chat. This is a new finite refinement programme; the old ten-worker stop remains the history of its completed exercise batch. See [interactivity-progress.json](interactivity-progress.json) for active assignments and honest completion evidence.
+
+Each module refinement still uses a fresh isolated branch/worktree and preserves its accepted TASK/math. A named refinement can reserve an implemented/verified module with `claim --owner <owner> --module <ID> --purpose "Concrete finite refinement"`; a purpose cannot enable generic selection, unknown stages or takeover of existing ownership. Do not downgrade a delivered exercise merely to reserve it. Until this helper is integrated, the coordinator's explicitly shared current helper is in `C:/Users/baokh/.codex/worktrees/interactivity-integration/CSDKTD APP/scripts/agent-claim.mjs`; invoke it from primary so baseline/ownership still use canonical main. All other token/ref/submission/isolation protections apply. Browser QA is centralized in the coordinator because subagents in this chat may share its browser surface.
+
+The coordinator owns the shell/catalogue/shared equation APIs, refinement ledger, integrated regression review and release versions. Module agents own only their named folders, reuse their refinement PR for corrections and never merge main or deploy. New shared helpers require an explicit API and multiple proven consumers; no global mutable model, persistence, UI framework, dependency change or new mathematical solver is included by default.
+
 ## Completed resumed effort — v0.3.15 / 30 October 2026
 
 The human resumed coordination, and the eight remaining external contributions now complete all 56 bounded tools in v0.3.15. [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md) records current delivery. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) preserves the completed assignment/review history; its named workers do not have active implementation assignments. Friends on other computers still submit one task and stop. Future work requires an explicit actual issue/refinement scope; [INTERFACE_REFINEMENT.md](INTERFACE_REFINEMENT.md) records candidates for human-guided iterations. Do not restart unassigned work, change budgets or deploy. Keep the accepted preview on 8787 available.

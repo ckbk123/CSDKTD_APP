@@ -110,7 +110,7 @@ function readReservation(directory, resource = false) {
       || !record.owner || typeof record.token !== 'string' || !record.token
       || typeof record.createdAt !== 'string' || typeof record.updatedAt !== 'string'
       || (resource ? record.resource !== 'browser-qa' : !states.has(record.state))) throw new Error('Invalid record.');
-    for (const key of ['branch', 'worktree', 'commit', 'integratedCommit', 'reason']) {
+    for (const key of ['branch', 'worktree', 'commit', 'integratedCommit', 'reason', 'purpose']) {
       if (record[key] !== undefined && typeof record[key] !== 'string') throw new Error('Invalid field.');
     }
     if (record.reopenHistory !== undefined) {
@@ -253,16 +253,24 @@ export function runCommand(command, options = {}, cwd = process.cwd()) {
     if (typeof options.owner !== 'string' || !options.owner.trim() || options.owner.length > 160 || /[\x00-\x1f]/.test(options.owner)) {
       fail('INVALID_OWNER', 'Provide a unique nonempty owner label of at most 160 characters.');
     }
+    // A named refinement may revisit a delivered tool without falsifying its
+    // exercise stage. Generic workers still select unfinished exercises only.
+    if (options.purpose !== undefined && (!options.module || typeof options.purpose !== 'string'
+      || !options.purpose.trim() || options.purpose.length > 500 || /[\x00-\x1f]/.test(options.purpose))) {
+      fail('INVALID_PURPOSE', 'A finite refinement requires an explicit module and a nonempty purpose of at most 500 characters.');
+    }
     const candidates = options.module ? [moduleById(context, options.module)] : [...context.modules]
       .sort((a, b) => (a.stage === 'in-progress' ? 0 : 1) - (b.stage === 'in-progress' ? 0 : 1) || a.moduleId.localeCompare(b.moduleId));
     registryDirectory(context, 'claims', true);
     for (const module of candidates) {
-      if (!['scaffold', 'in-progress'].includes(module.stage)) continue;
+      if (!['scaffold', 'in-progress'].includes(module.stage)
+        && !(options.purpose && ['implemented', 'verified'].includes(module.stage))) continue;
       const directory = claimPath(context, module.moduleId);
       try { fs.mkdirSync(directory); } catch (error) { if (error.code === 'EEXIST') continue; throw error; }
       const now = new Date().toISOString();
       const record = { version: 1, moduleId: module.moduleId, owner: options.owner.trim(), token: randomUUID(), state: 'active',
-        createdAt: now, updatedAt: now, baseCommit: git(context.canonicalRoot, ['rev-parse', 'HEAD']) };
+        createdAt: now, updatedAt: now, baseCommit: git(context.canonicalRoot, ['rev-parse', 'HEAD']),
+        ...(options.purpose ? { purpose: options.purpose.trim() } : {}) };
       // An interrupted/failed initialization stays reserved, never silently stolen.
       writeRecord(directory, record, true);
       return { ...base, claimed: true, claim: record, moduleFolder: module.folder };
@@ -365,7 +373,7 @@ export function runCommand(command, options = {}, cwd = process.cwd()) {
 }
 
 const allowed = {
-  list: [], claim: ['owner', 'module'], update: ['module', 'token', 'branch', 'worktree', 'commit'],
+  list: [], claim: ['owner', 'module', 'purpose'], update: ['module', 'token', 'branch', 'worktree', 'commit'],
   submit: ['module', 'token', 'branch', 'worktree', 'commit'], handoff: ['module', 'token', 'branch', 'worktree', 'commit', 'reason'],
   reopen: ['module', 'token', 'reason'],
   release: ['module', 'token'], resolve: ['module', 'token', 'resolution', 'reason', 'integrated-commit'], 'qa-claim': ['module', 'token'], 'qa-release': ['module', 'token'],

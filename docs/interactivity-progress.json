@@ -1,0 +1,672 @@
+{
+  "schemaVersion": 1,
+  "authorizedOn": "2026-11-06",
+  "coordinatorChat": "01a1ac7b-23ee-7530-bb2d-334ceb1752ec",
+  "baseline": "cf69ad252c34c971c6d81282db9e0a471f40d846",
+  "scope": "Shared interactivity fixes and CP01/CP06/DR02 pilots, then proven concept-specific refinements across all 56 bounded tools. Preserve existing mathematics/functionality; no deployment.",
+  "state": "in-progress",
+  "shared": {
+    "state": "implemented-awaiting-independent-review",
+    "changes": [
+      "Punctuation/course-synonym concept search with explicit whole-catalogue scope",
+      "Compact optional reference with clearly separate notation preview",
+      "Related-tool links without shared models",
+      "Caller-selected equation quick symbols and guidance",
+      "Explicit finite-refinement ownership support"
+    ],
+    "checks": [
+      "TypeScript passed",
+      "32 affected shared tests passed",
+      "5,567 application tests in 257 files passed",
+      "33 coordination tests passed",
+      "Production build passed (existing large-chunk warning)",
+      "Production Chromium desktop: normalized root-locus search 5 continuous/8 across both domains; reference disclosure/notation keyboard cleanup; related links",
+      "Production Chromium 390x844: compact reference and search submit; document client/scroll 375/375"
+    ],
+    "remaining": [
+      "Independent review",
+      "Pilot integration, combined regression and release"
+    ]
+  },
+  "assignments": [
+    {
+      "id": "CP01",
+      "agent": "/root/design_interactivity",
+      "branch": "codex/cp01-interactive-response",
+      "scope": "Response/excitation exploration pilot",
+      "state": "in-progress"
+    },
+    {
+      "id": "CP06",
+      "agent": "/root/response_interactivity",
+      "branch": "codex/cp06-interactivity-pilot",
+      "scope": "Bounded pole/zero and gain exploration pilot",
+      "state": "in-progress"
+    },
+    {
+      "id": "DR02",
+      "agent": "/root/structure_stability",
+      "branch": "codex/dr02-memory-refinement",
+      "scope": "Read/calculate/commit execution pilot",
+      "state": "in-progress"
+    }
+  ],
+  "modules": [
+    {
+      "id": "CD01",
+      "state": "planned",
+      "target": "Keep gains beside a baseline response/effort view; add synchronized bounded gain sliders and a deliberate exploration/prediction flow; retain required trial reasons in guided exercises and avoid pre-reveal answer leakage.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD02",
+      "state": "planned",
+      "target": "Open with the baseline complex plane; allow constrained real controller-pole drag and conjugate target-pair drag with numeric alternatives; link angle deficiency, full locus and response preview while retaining full-order verified checks.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD03",
+      "state": "planned",
+      "target": "Put near-origin pole/zero handles and a ratio-lock toggle on a persistent placement view; show tracking-error and full-response changes together, with numerical envelope/horizon qualifications preserved.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD04",
+      "state": "planned",
+      "target": "Retain the educational stages but display baseline/lead/combined visual columns throughout; update a clearly marked combined preview during corner motion and expose compact target pass/fail feedback beside it.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD05",
+      "state": "planned",
+      "target": "Promote gain and corner controls beside a live Bode comparison; drag/log-slide zero and pole breakpoints with crossover and phase-margin guides; retain explicit separate corner and magnitude design reasoning.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD06",
+      "state": "planned",
+      "target": "Use this as the design-family reference: bring Bode alongside the corner controls and extend the same bounded live-preview behavior to optional lead; prioritize layout/linked diagnostics over replacing its math.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD07",
+      "state": "planned",
+      "target": "Add on-curve tangent/intercept handles with synchronized numbers and an immediate estimated L/τ readout; keep suggested-versus-manual controller response comparison and heuristic qualification.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD08",
+      "state": "planned",
+      "target": "Show target and actual poles with linked response first; constrained target dragging writes the caller-owned polynomial and recomputes K/N; offer synchronized time scrub and keep matrix derivation expandable.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CD09",
+      "state": "planned",
+      "target": "Start with truth/estimate/error plots and a shared scrub/play control; expose a bounded observer-speed parameter or target-pole handle beside noise/filter controls; preserve full added-filter mode checks.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CF01",
+      "state": "planned",
+      "target": "Compact response+pole-region split view; drag damping/frequency target pair and extra factor within supported family; sliders for settling/overshoot targets and visible measurement handles.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CF02",
+      "state": "planned",
+      "target": "Visible reference/output/error preview with one local gain slider and integrator chips; highlight integrators and selected limit factor while toggling physical vs comparator error.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CF03",
+      "state": "planned",
+      "target": "Scrub directly across error curve to animate shaded accumulated cost; small A/B controller gain sliders; live criterion switching and held baseline keep the same horizon.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CF04",
+      "state": "planned",
+      "target": "Move linked plots/one gain or time-constant knob first; use plot-anchored margin/bandwidth handles; preserve result when only a prediction changes; keep channel selection immediately visible.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CF05",
+      "state": "planned",
+      "target": "Show estimate+actual side by side immediately in Explore, drag optional pole/zero and gain slider to expose heuristic failure; retain a short challenge that hides only the answer being predicted.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CP01",
+      "state": "pilot-in-progress",
+      "target": "Show default response above optional derivation; put excitation shape, amplitude and initial state beside it; one optional prediction check; live bounded parameter preview.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CP02",
+      "state": "planned",
+      "target": "Use as interaction reference; show safe baseline visual immediately, lightly preview response during drag, retain explicit checked commit and cancellation; make the zero-preservation convention obvious.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CP03",
+      "state": "planned",
+      "target": "Drag labeled peak/amplitude handles; keep frequency knob beside time/frequency visual; animate the phase relationship with reduced-motion support and show settled-window status.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CP04",
+      "state": "planned",
+      "target": "Drag corner markers horizontally on log axis; factor chips beside plot; show individual factor contribution on focus/hover; gain slider shifts magnitude and delay slider moves phase.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CP05",
+      "state": "planned",
+      "target": "Drag source cursor along contour and place predicted mapped points directly; synchronize contour/Bode/mapped markers; optional play/pause traversal with speed control.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CP06",
+      "state": "pilot-in-progress",
+      "target": "Pilot immediate baseline locus, live gain slider/all-root cursor, Add pole/Add zero within order budget, drag factors with conjugate coupling, linked equation and angle vectors; retain prediction mode as optional challenge.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CR01",
+      "state": "planned",
+      "target": "Put the root plane beside factor rows; drag deliberately constructed roots and update coefficients, retaining exact chosen-decimal versus approximate solved-root distinction.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CR02",
+      "state": "planned",
+      "target": "Keep a baseline physical-motion/response preview visible beside mass, damping and stiffness; bounded sliders update preview and matched terms while derivation stays optional.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CR03",
+      "state": "planned",
+      "target": "Lead with side-by-side coordinate trajectories; single shear/scale control for a nonsingular coordinate-family experiment; cross-highlight row, state and mapped initial vector.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CR04",
+      "state": "planned",
+      "target": "Use as a positive interaction reference; reduce inspector overload and make a selected local identity preview visually immediate. Dragging here changes layout, not connectivity or dynamics.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CR05",
+      "state": "planned",
+      "target": "Select actual diagram edges/nodes to trace a path; retain branch buttons and keyboard access. Highlight shared-node conflict where clicked and keep the active trace adjacent to diagram.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CR06",
+      "state": "planned",
+      "target": "Show baseline integrator diagram immediately; scrub time directly on linked state/output traces, animate selected signal values, and compare two initial states without rebuilding the whole view.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CS01",
+      "state": "planned",
+      "target": "Provide a constrained pole-exploration preset beside its time mode; drag within a declared modal family to cross imaginary axis and feel decay/growth, without pretending arbitrary eigenvalue edits preserve an entered realization.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CS02",
+      "state": "planned",
+      "target": "Retain this strong practice mode; bring active cell source operands and row arithmetic beside the table, plus compact gain scrub showing where first-column signs change in Explore.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CS03",
+      "state": "planned",
+      "target": "Scrub K directly on the aligned inequality/intersection strip and keep all roots adjacent; boundary snapping should use exact endpoint objects, preserving proof independently of slider samples.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CS04",
+      "state": "planned",
+      "target": "Move linked source/image planes and cursor to first working view; add a bounded trace play/pause to connect orientation with cumulative argument and bring the counting explanation alongside. Keep boundary/unresolved gaps honest.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "CS05",
+      "state": "planned",
+      "target": "First pilot: baseline locus immediately, add/remove/drag open-loop poles/zeros under degree limits, real-axis or conjugate-pair constraints, fixed viewport, keyboard/numeric equivalents and undo; fixed-model K scrub stays distinct from plant editing.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD01",
+      "state": "planned",
+      "target": "Lead with continuous-versus-sampled response and controller pole mapping; add bounded T control with live approximation comparison and synchronized sample/frequency scrubbing; retain hold/controller conversion distinctions.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD02",
+      "state": "planned",
+      "target": "Separate plot/view state from model state first; then add constrained real corner and mapped-target dragging with a persistent unit disk/near-+1 view and full retained-mode feedback.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD03",
+      "state": "planned",
+      "target": "Begin with a linked physical-frequency/unit-circle/warped-frequency view and cursor; keep guided predictions as a deliberate exercise mode; make T comparison visible beside live mapping.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD04",
+      "state": "planned",
+      "target": "Preserve its real state-transition lesson. Put current memory and next sample beside the growing plot; optionally offer a bounded editable error-sequence stem editor and next/previous replay, without hiding calculate-versus-commit timing.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD05",
+      "state": "planned",
+      "target": "Keep candidate/target/matched poles and output side-by-side, add bounded candidate-gain sliders/target handles, and make guided prediction timing explicit; keep nonunit sensor/error conventions visible throughout.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD06",
+      "state": "planned",
+      "target": "Keep the linked sample cursor as a reusable pattern; put the unit-disk target plane and response together, with target dragging and a visible sample-period redesign policy.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DD07",
+      "state": "planned",
+      "target": "Add a read→correct→control→advance stepper synchronized to sample plots, plus linked scrub/play; visualize prior versus corrected estimate immediately and retain current-gain conversion/conditioning checks.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DF01",
+      "state": "planned",
+      "target": "Tap stems to place peak/settling guess; scrub selected sample; band slider and preview comparison, preserving answer-marker reveal.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DF02",
+      "state": "planned",
+      "target": "T slider and immediate paired normalized-reference overlay; show which change is units/reference definition versus loop change; compact step/ramp/parabola switch beside trace.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DF03",
+      "state": "planned",
+      "target": "Immediate linked frequency+sample response, simple gain/T knobs, prediction challenge over one named quantity; direct unit-circle and response sample handles.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DF04",
+      "state": "planned",
+      "target": "Open on baseline comparison; choose one T and drag sample-spacing handle or slider beside common-time-axis output/control; one-click fixed/redesign toggle and pinned comparison.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DP01",
+      "state": "planned",
+      "target": "Drag equal-radius points around unit circle with instantly changing stems; radius/angle sliders and sample-step playback; retain custom sequence inputs as advanced.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DP02",
+      "state": "planned",
+      "target": "Drag s-plane pole and scrub T with continuously linked z-plane and stems; ghost reference map and alias-frequency pair; challenge freezes reference and hides only target until checked.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DP03",
+      "state": "planned",
+      "target": "Draggable unit-circle handle and one immediate linked visual; pin exact versus warped readouts; sample-time knob with clearly stated fixed discrete coefficients vs resampled plant semantics.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DP04",
+      "state": "planned",
+      "target": "Adapt tested CP06 editor pattern to two real/conjugate poles and at most one real zero; immediate baseline and live gain; drag candidate and show vectors; keep modal interpretation and all roots.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DR01",
+      "state": "planned",
+      "target": "Expose sequence-builder controls next to stems; scrub geometric pole/delay/length and immediately compare sequence and transform, with causal/ROC labels retained.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DR02",
+      "state": "pilot-in-progress",
+      "target": "Add optional bounded play/pause and visible memory-shift transition after manual first steps; let students stop on a highlighted multiply-add. Preserve simultaneous update semantics.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DR03",
+      "state": "planned",
+      "target": "Put register/state/output views together and add time scrub or bounded replay with linked highlights; make mapped histories visibly move through each delay.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DR04",
+      "state": "planned",
+      "target": "Make sample/hold boundaries select directly on pipeline and show changed topology/source vs split sampling together; select graph paths in the actual drawing rather than a remote branch list.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DR05",
+      "state": "planned",
+      "target": "A live sample-period slider and draggable sample-clock cursor next to continuous/stem/hold views would make sampling tangible; lock either delay samples m or physical delay tau explicitly when changing T.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DS01",
+      "state": "planned",
+      "target": "Drag a selected pole around/through the unit circle with live z^k stem response; keep hidden-mode and Jordan controls meaningful and show the opposite behavior of +0.8 and -0.8.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DS02",
+      "state": "planned",
+      "target": "Scrub gain on an always-visible unit-circle/root plot linked to mirrored rows and inequalities; avoid rebuilding/hiding the meaningful visual on every local selection; preserve exact proof separate from sample sweep.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DS03",
+      "state": "planned",
+      "target": "Make the point directly draggable in z plane while preserving numeric/angle alternatives; highlight inside/outside correspondence and approach to z=-1 without false finite projection.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DS04",
+      "state": "planned",
+      "target": "Follow CS05 pilot with discrete degree-2 pole/zero editor, gain scrub and clickable exact boundaries; bring graph above long coefficient/sign-partition derivation.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    },
+    {
+      "id": "DS05",
+      "state": "planned",
+      "target": "Expose baseline linked planes earlier and put the cursor with them; animate one complete traversal and accumulated argument while keeping raw principal phase distinct from winding.",
+      "evidence": [],
+      "remaining": [
+        "Implement finite concept-specific refinement",
+        "Relevant regression and real-browser verification",
+        "Independent review and integration"
+      ]
+    }
+  ]
+}

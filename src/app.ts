@@ -1,7 +1,7 @@
 import type { Category, Domain, ModuleManifest } from './core/module';
 import { libraryHref, moduleHref, parseRoute } from './core/router';
 import { WorkspaceSession } from './core/workspace-session';
-import { categories, categoryName, domainName, domains, filterModules, findModule } from './modules/catalog';
+import { categories, categoryName, domainName, domains, filterModules, findModule, relatedModules } from './modules/catalog';
 import { APP_AUTHOR, APP_NAME, APP_VERSION } from './brand';
 
 function element<K extends keyof HTMLElementTagNameMap>(tag: K, className = '', text?: string): HTMLElementTagNameMap[K] {
@@ -24,6 +24,7 @@ export function createApp(root: HTMLElement): () => void {
   let query = '';
   let requestedQuery: string | undefined;
   let libraryVisible = false;
+  let searchEverywhere = false;
   let results: HTMLElement;
   let exampleVisit: AbortController | undefined;
   let disposeExample: (() => void) | undefined;
@@ -110,7 +111,7 @@ export function createApp(root: HTMLElement): () => void {
   }
 
   function renderResults(): void {
-    const items = filterModules(domain, category, query);
+    const items = filterModules(searchEverywhere && query.trim() ? undefined : domain, searchEverywhere && query.trim() ? undefined : category, query);
     const grid = element('div', 'card-grid');
     if (!category && !query.trim()) {
       categories.forEach((item, index) => {
@@ -124,20 +125,32 @@ export function createApp(root: HTMLElement): () => void {
     }
     const count = element('p', 'results-count', `${items.length} module${items.length === 1 ? '' : 's'}${query.trim() ? ' found' : ''}`);
     count.setAttribute('role', 'status');
+    const scope = element('div', 'search-scope');
+    if (query.trim()) {
+      const label = element('label');
+      const all = element('input'); all.type = 'checkbox'; all.checked = searchEverywhere;
+      all.addEventListener('change', () => {
+        const restoreFocus = document.activeElement === all;
+        searchEverywhere = all.checked; renderResults();
+        if (restoreFocus) results.querySelector<HTMLInputElement>('.search-scope input')?.focus();
+      });
+      label.append(all, document.createTextNode(' Search both domains and all topics'));
+      scope.append(element('span', '', searchEverywhere ? 'Searching all 56 tools' : `Searching ${domainName(domain)}${category ? ` / ${categoryName(category)}` : ' systems'}`), label);
+    }
     if (!items.length) {
       const empty = element('div', 'no-results');
       empty.append(element('h2', '', 'No matching modules'), element('p', '', 'Change the search text or select another topic.'));
-      results.replaceChildren(count, empty);
+      results.replaceChildren(count, scope, empty);
       return;
     }
     items.forEach(item => {
       const card = link('', moduleHref(item.id), 'card module-card');
       card.dataset.moduleId = item.id;
-      card.append(element('span', 'card-meta', `${item.id} / ${categoryName(item.category)}`),
+      card.append(element('span', 'card-meta', `${item.id} / ${searchEverywhere && query.trim() ? `${domainName(item.domain)} / ` : ''}${categoryName(item.category)}`),
         element('h2', '', item.title), element('p', '', item.description));
       grid.append(card);
     });
-    results.replaceChildren(count, grid);
+    results.replaceChildren(count, scope, grid);
   }
 
   function libraryPage(): void {
@@ -162,7 +175,13 @@ export function createApp(root: HTMLElement): () => void {
       link(categoryName(module.category), libraryHref(domain, module.category)), element('span', '', '/'), element('span', '', module.id));
     const heading = element('header', 'page-heading');
     heading.append(element('h1', '', module.title), element('p', 'page-description', module.description));
-    const example = element('section', 'default-example'); example.setAttribute('aria-label', 'Default example');
+    const exampleReference = element('details', 'default-example');
+    exampleReference.append(element('summary', '', 'Reference example · notation preview'));
+    exampleReference.addEventListener('toggle', () => {
+      if (!exampleReference.open) window.mathVirtualKeyboard?.hide({ animate: false });
+    });
+    const example = element('section', 'example-reference-body'); example.setAttribute('aria-label', 'Default example');
+    exampleReference.append(example);
     function showExample(): void {
       closeExample();
       const visit = new AbortController(); exampleVisit = visit;
@@ -188,7 +207,10 @@ export function createApp(root: HTMLElement): () => void {
     workspace.setAttribute('aria-label', `${module.title} workspace`);
     workspace.setAttribute('aria-busy', 'true');
     const footer = element('p', 'workspace-note', 'Each visit starts with the default example.');
-    main.append(toolbar, breadcrumb, heading, example, workspaceHeading, workspace, footer);
+    const related = element('nav', 'related-tools'); related.setAttribute('aria-label', 'Related tools');
+    related.append(element('span', '', 'Continue exploring'));
+    for (const item of relatedModules(module.id)) related.append(link(`${item.title} · ${domainName(item.domain)}`, moduleHref(item.id)));
+    main.append(toolbar, breadcrumb, heading, exampleReference, workspaceHeading, workspace, footer, related);
 
     async function mount(isReset = false): Promise<void> {
       status.textContent = 'Loading workspace…';
@@ -219,6 +241,7 @@ export function createApp(root: HTMLElement): () => void {
     query = requestedQuery ?? ''; requestedQuery = undefined;
     search.value = query; search.removeAttribute('aria-controls');
     libraryVisible = false;
+    searchEverywhere = false;
     setSearchOpen(false);
     const route = parseRoute(location.hash);
     currentModule = route.kind === 'module' ? findModule(route.id) : undefined;
