@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MathfieldElement } from 'mathlive';
-import { createEquationInput, type EquationInput } from './input';
+import { createEquationInput, type EquationInput, type EquationInputOptions } from './input';
 
 const keyboard = vi.hoisted(() => ({ hide: vi.fn(), show: vi.fn() }));
 
@@ -27,9 +27,9 @@ afterEach(() => {
   for (const { input, controller } of visits.splice(0)) { input.destroy(); controller.abort(); }
   document.body.replaceChildren(); vi.clearAllMocks();
 });
-function open() {
+function open(options: Partial<EquationInputOptions> = {}) {
   const controller = new AbortController(), onChange = vi.fn();
-  const input = createEquationInput({ label: 'Transfer function', value: 's+1', signal: controller.signal, onChange });
+  const input = createEquationInput({ label: 'Transfer function', value: 's+1', signal: controller.signal, onChange, ...options });
   const shell = document.createElement('div'); shell.append(input.element); document.body.append(shell);
   const field = input.element.querySelector<MathfieldElement>('math-field')!;
   visits.push({ input, controller });
@@ -38,6 +38,19 @@ function open() {
 const keydown = (key: string, modifiers: KeyboardEventInit = {}) => new KeyboardEvent('keydown', { key, bubbles: true, composed: true, cancelable: true, ...modifiers });
 
 describe('equation input keyboard ownership', () => {
+  it('offers only caller-supported quick symbols while preserving keyboard entry and draft notification', () => {
+    const { input, field, onChange } = open({ tools: ['fraction'], description: 'Enter a signed number or simple fraction.' });
+    expect(field.getAttribute('aria-description')).toBe('Enter a signed number or simple fraction.');
+    expect(input.element.querySelector('[aria-label="Insert power"]')).toBeNull();
+    expect(input.element.querySelector('[aria-label="Insert pi"]')).toBeNull();
+    expect(input.element.querySelector('[aria-label^="Toggle math keyboard"]')).not.toBeNull();
+    input.element.querySelector<HTMLButtonElement>('[aria-label="Insert fraction"]')!.click();
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(input.getValue().latex).toContain('\\frac');
+    field.value = '1/2'; field.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(input.getValue().latex).toBe('1/2');
+  });
+
   it('blocks Escape before a field default can switch to LaTeX editing mode', () => {
     const { input, field, shell } = open(); field.dataset.editingMode = 'math';
     const nativeDefault = vi.fn(() => { field.dataset.editingMode = 'latex'; });

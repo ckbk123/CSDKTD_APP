@@ -97,10 +97,10 @@ describe('equation example panel', () => {
     expect(root.querySelector('h2')?.textContent).toBe('Default example');
     expect(displays(root)).toEqual(baseline.map(part => part.latex));
     expect(fields.created).toHaveLength(0);
-    expect(root.querySelector<HTMLParagraphElement>('.equation-preview-note')?.hidden).toBe(true);
+    expect(root.querySelector<HTMLParagraphElement>('.equation-preview-note')?.hidden).toBe(false);
 
     const button = toggle(root);
-    expect(button.textContent).toBe('Done editing');
+    expect(button.textContent).toBe('Done with preview');
     expect(button.getAttribute('aria-expanded')).toBe('true');
     expect(displays(root)).toHaveLength(0);
     expect(fields.created.map(item => item.options.label)).toEqual(baseline.map(part => part.label));
@@ -120,10 +120,10 @@ describe('equation example panel', () => {
     toggle(root);
     const originalInputs = [...fields.created];
     edit(originalInputs[0].field, changedPlant);
-    expect(root.querySelector('h2')?.textContent).toBe('Example input');
+    expect(root.querySelector('h2')?.textContent).toBe('Notation preview');
 
     const button = toggle(root);
-    expect(button.textContent).toBe('Edit equations');
+    expect(button.textContent).toBe('Try notation (preview)');
     expect(button.getAttribute('aria-expanded')).toBe('false');
     expect(displays(root)[0]).toBe(changedPlant);
     expect(root.querySelector<HTMLParagraphElement>('.equation-preview-note')?.hidden).toBe(false);
@@ -145,7 +145,7 @@ describe('equation example panel', () => {
     toggle(root);
     expect(root.querySelector('.equation-context')?.textContent).toBe(prose);
     expect(root.querySelector('h2')?.textContent).toBe('Default example');
-    expect(root.querySelector<HTMLParagraphElement>('.equation-preview-note')?.hidden).toBe(true);
+    expect(root.querySelector<HTMLParagraphElement>('.equation-preview-note')?.hidden).toBe(false);
   });
 
   it('keeps separate panels independent and restores the seed on a fresh visit', () => {

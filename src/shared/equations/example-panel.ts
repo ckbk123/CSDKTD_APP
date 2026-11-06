@@ -17,7 +17,7 @@ export function mountExamplePanel(container: HTMLElement, moduleId: string, fall
     return remove;
   }
   const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'equation-edit';
-  edit.textContent = 'Edit equations'; edit.setAttribute('aria-expanded', 'false'); heading.append(edit);
+  edit.textContent = 'Try notation (preview)'; edit.setAttribute('aria-expanded', 'false'); heading.append(edit);
   const help = document.createElement('p'); help.className = 'equation-help'; help.hidden = true;
   help.textContent = 'Use the buttons to build fractions and powers. Arrow keys move between their parts.';
   panel.append(help);
@@ -37,11 +37,11 @@ export function mountExamplePanel(container: HTMLElement, moduleId: string, fall
     inputs.forEach(input => input.destroy()); inputs = [];
     body.replaceChildren();
     panel.dataset.editing = String(editing);
-    edit.textContent = editing ? 'Done editing' : 'Edit equations';
+    edit.textContent = editing ? 'Done with preview' : 'Try notation (preview)';
     edit.setAttribute('aria-expanded', String(editing));
     help.hidden = !editing;
-    title.textContent = edited ? 'Example input' : 'Default example';
-    note.hidden = !editing && !edited;
+    title.textContent = edited ? 'Notation preview' : 'Default example';
+    note.hidden = false;
     example!.parts.forEach((part, index) => {
       if (part.kind === 'text') {
         const text = document.createElement('p'); text.className = 'equation-context'; text.textContent = part.text;
@@ -49,7 +49,7 @@ export function mountExamplePanel(container: HTMLElement, moduleId: string, fall
       }
       if (editing && part.editable) {
         const input = createEquationInput({ label: part.label, value: values[index], signal,
-          onChange: draft => { values[index] = draft.latex; edited = true; title.textContent = 'Example input'; } });
+          onChange: draft => { values[index] = draft.latex; edited = true; title.textContent = 'Notation preview'; } });
         inputs.push(input); body.append(input.element);
       } else {
         const item = document.createElement('div'); item.className = 'equation-part';

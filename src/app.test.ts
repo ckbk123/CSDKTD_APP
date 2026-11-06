@@ -122,6 +122,33 @@ describe('application header', () => {
     expect(document.title).toBe(`Z transforms · ${APP_NAME}`);
   });
 
+  it('keeps reference notation optional and links to independent related tools', async () => {
+    start('#/module/CP06');
+    await vi.waitFor(() => expect(visit.mount).toHaveBeenCalledOnce());
+    const reference = root.querySelector<HTMLDetailsElement>('details.default-example')!;
+    expect(reference.open).toBe(false);
+    expect(reference.querySelector('summary')?.textContent).toContain('notation preview');
+    const related = root.querySelector('nav[aria-label="Related tools"]')!;
+    expect(related.querySelector('a[href="#/module/DP04"]')).not.toBeNull();
+    expect(root.querySelector('#module-workspace')?.textContent).toContain('Fixture exercise');
+  });
+
+  it('lets a concept search explicitly include both domains without changing its topic route', () => {
+    start('#/continuous/plots');
+    enterQuery('root locus');
+    expect(resultIds()).toEqual(['CP06']);
+    expect(root.textContent).toContain('Searching Continuous / Plots');
+    const all = root.querySelector<HTMLInputElement>('.search-scope input')!;
+    all.checked = true; all.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(resultIds()).toEqual(['CD02', 'CD03', 'CD04', 'CP06', 'CS05', 'DD02', 'DP04', 'DS04']);
+    expect(root.textContent).toContain('Searching all 56 tools');
+    expect(location.hash).toBe('#/continuous/plots');
+    navigate('#/discrete/plots');
+    enterQuery('root locus');
+    expect(resultIds()).toEqual(['DP04']);
+    expect(root.querySelector<HTMLInputElement>('.search-scope input')?.checked).toBe(false);
+  });
+
   it('filters only the current domain and topic, and clears search on navigation', () => {
     start('#/discrete/representation');
     const input = search();
