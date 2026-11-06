@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
 import { trace } from './continuation';
+import * as editing from './editing';
 import { mountView } from './view';
 const state = vi.hoisted(() => ({ count: 0, failAt: 0, releases: 0, failDisplay: false }));
 vi.mock('./continuation', async original => { const actual = await original<typeof import('./continuation')>(); return { ...actual, trace: vi.fn(actual.trace) }; });
@@ -71,6 +72,18 @@ describe('CP06 immediate exploration and intentional practice', () => {
   });
   it('shows retained fixed modes after equation edits', () => {
     const { root } = visit(); input(root, 'Numerator polynomial N(s)', 's-1'); input(root, 'Denominator polynomial D(s)', '(s-1)(s+2)'); press(root, 'Apply equations'); expect(root.textContent).toContain('Retained common-factor modes: 1'); expect(root.textContent).toContain('right half-plane');
+  });
+  it('keeps the accepted close-cancelled family editable without losing its tiny fixed mode', () => {
+    const { root } = visit(); input(root, 'Numerator polynomial N(s)', String.raw`\frac{1000001}{10000}s-\frac{1}{100000000}`); input(root, 'Denominator polynomial D(s)', String.raw`s^3+\frac{100000200}{1000001}s^2-\frac{1}{100000000}s`); press(root, 'Apply equations');
+    expect(field<HTMLSelectElement>(root, 'Selected plant factor').options).toHaveLength(4); expect(root.textContent).toContain('Retained common-factor modes:');
+    expect(field<HTMLInputElement>(root, 'Live gain cursor').disabled).toBe(false); choose(root, 'Selected plant factor', 'pole-1'); press(root, 'Remove selected group');
+    expect(field<HTMLTextAreaElement>(root, 'Denominator polynomial D(s)').value).toBe(String.raw`s^{2}+\frac{100000200}{1000001}s-\frac{1}{100000000}`); expect(root.textContent).toContain('Retained common-factor modes:');
+  });
+  it('limits only direct factor inspection if it cannot resolve a valid model', () => {
+    vi.spyOn(editing, 'editableFactors').mockImplementationOnce(() => { throw new Error('Synthetic local factor inspection bound'); });
+    const { root } = visit(); expect(Q(root)).toBe('Q(s,70)=s^{3}+7s^{2}+10s+70'); expect(root.querySelector('svg')).not.toBeNull(); expect(root.textContent).toContain('Direct factor inspection is unavailable for this valid model');
+    input(root, 'Live gain cursor', '10'); expect(Q(root)).toBe('Q(s,10)=s^{3}+7s^{2}+10s+10');
+    input(root, 'Denominator polynomial D(s)', 's(s+2)'); press(root, 'Apply equations'); expect(Q(root)).toBe('Q(s,10)=s^{2}+2s+10'); expect(root.querySelector('[data-edit-id]')).not.toBeNull();
   });
   it('accepts and selects original roots beyond the drag window without altering or losing them', () => {
     const { root } = visit(); input(root, 'Denominator polynomial D(s)', 's+200'); press(root, 'Apply equations'); expect(Q(root)).toBe('Q(s,70)=s+270');

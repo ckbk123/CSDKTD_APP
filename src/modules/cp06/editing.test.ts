@@ -70,6 +70,23 @@ describe('bounded full-plant pole and zero editing', () => {
     expect(polynomial(removed.common)).toBe(String.raw`s-\frac{1}{3}`);
     expect(moved.fixed[0].re).toBeCloseTo(1 / 3, 15); expect(removed.fixed[0].re).toBeCloseTo(1 / 3, 15);
   });
+  it('inspects accepted close cancelled roots separately without merging them numerically', () => {
+    const source = parseModel(String.raw`\frac{1000001}{10000}s-\frac{1}{100000000}`, String.raw`s^3+\frac{100000200}{1000001}s^2-\frac{1}{100000000}s`);
+    const factors = editableFactors(source), poles = factors.filter(f => f.kind === 'pole');
+    expect(poles).toHaveLength(3); expect(poles.map(f => f.multiplicity)).toEqual([1, 1, 1]);
+    expect(poles[1].re).toBeCloseTo(0, 15); expect(poles[2].re).toBeGreaterThan(0); expect(poles[2].re).toBeLessThan(1e-9);
+    expect(poles.every(f => f.exact !== undefined)).toBe(true);
+    // Removing only the unrelated origin leaves the exact common mode and the other pole.
+    const removed = removeFactor(source, poles[1].id).model;
+    expect(polynomial(removed.plantD)).toBe(String.raw`s^{2}+\frac{100000200}{1000001}s-\frac{1}{100000000}`);
+    expect(removed.common).toEqual(source.common); expect(removed.fixed).toEqual(source.fixed);
+  });
+  it('combines identical exact roots across the common/remaining split with full multiplicity', () => {
+    const source = parseModel('s+1', '(s+1)^3'), poles = editableFactors(source).filter(f => f.kind === 'pole');
+    expect(poles).toHaveLength(1); expect(poles[0].multiplicity).toBe(3);
+    expect(polynomial(moveFactor(source, poles[0].id, -2, 0).model.plantD)).toBe('s^{3}+6s^{2}+12s+8');
+    expect(polynomial(source.plantD)).toBe('s^{3}+3s^{2}+3s+1');
+  });
   it('edits the PI plant and derives its effective characteristic with fixed Ki', () => {
     const source = parseModel('1', 's(s+2)', 'pi', '2.7'), changed = moveFactor(source, 'pole-0', -3, 0).model;
     expect(polynomial(changed.plantD)).toBe('s^{2}+3s');
