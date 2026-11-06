@@ -4,8 +4,9 @@
 - **Current refinement:** explicit finite DR02 memory-execution pilot, 6 November 2026; owner `interactivity-dr02-01a1ac7b`, branch `codex/dr02-memory-refinement`, fresh baseline `cf69ad252c34c971c6d81282db9e0a471f40d846`.
 - **Owned worktree:** `C:/Users/baokh/.codex/worktrees/dr02-memory-refinement/CSDKTD APP`.
 - **Refinement acceptance:** open on the operational old-memory, prediction/reveal/commit and committed-trace workspace; put experiment controls beside it; keep full model conversion and initial history accessible as optional sections. Make source selection, products and simultaneous writes clear without exposing the pending output before reveal. Preserve all existing bounded mathematics, independent zero-history comparison, 128-sample limit, validation and per-visit cleanup.
-- **Current evidence:** the finite refinement is implemented; 100 DR02 tests / 4 files, all 5,568 application tests / 257 files, TypeScript checking and production build pass. The integration owner owns actual browser acceptance; no new browser evidence is claimed here.
-- **Refinement PR:** pending creation by the integration owner from this preserved branch; the historical exercise PR below is separate.
+- **Current evidence:** the corrected interface passes 102 DR02 tests / 4 files, TypeScript checking, production build and diff checks. The earlier c434a6e checkpoint passes all 5,568 application tests / 257 files. Corrected-head combined checks and actual browser acceptance belong to the integration owner; no new browser evidence is claimed here.
+- **Refinement PR:** [#59](https://github.com/ckbk123/CSDKTD_APP/pull/59), the same finite refinement branch; attached in the parent chat. The historical exercise PR below is separate.
+- **Coordinator browser checkpoint:** parent source c434a6e passes the initial operational view, baseline reveal/commit values and trace inspection without memory advancement. The 390 px check found unreadable scaled SVG labels despite document widths 375/375. The corrected native-axis plot and prediction-feedback fix below await repeated browser acceptance; the earlier checkpoint does not certify these changes.
 
 ## Current interface refinement — 6 November 2026
 
@@ -21,14 +22,22 @@ Local verification uses bundled Node v24.22.1 and the installed npm CLI, with th
 
 - npm ci: passes with unchanged lockfile/dependencies.
 - npm run check: passes.
-- node node_modules/vitest/vitest.mjs run src/modules/dr02: 100 / 4 pass.
-- npm test: 5,568 / 257 pass (80.82 seconds).
+- node node_modules/vitest/vitest.mjs run src/modules/dr02: corrected source 102 / 4 pass.
+- npm test: c434a6e source 5,568 / 257 pass (80.82 seconds); corrected-head combined checks remain with the coordinator.
 - npm run build: passes, including TypeScript; the existing MathLive large-chunk advisory remains.
 - git diff --check: passes.
 
 The first full-suite attempt reached the default 5-second test timeout only in the added test exercising all 128 real reveal/commit transitions. That bounded UI test now declares a 15-second limit; the complete suite passes. No product bound or mathematical validation was relaxed.
 
 **Pending acceptance:** coordinator real-browser inspection of actual MathLive entry/fonts/keyboard, source and trace interaction, reset/reopen/navigation, and narrow layout. Mocked-editor/jsdom checks are caller-state evidence, not browser evidence. The integration owner will record its observed browser disposition separately before accepting the refinement. No version, global/shared files, dependencies, primary checkout, deployment or historical research assets were changed.
+
+## Coordinator-returned correction — readable narrow plot and prediction drafts
+
+Parent browser QA confirmed c434a6e's operational behavior but found 13-unit SVG text rendered at about 6 screen pixels on a 390 px viewport. The corrected trace uses three sparse output ticks, two sample-index ticks and unit/axis captions as native HTML at 12 CSS pixels, outside the scaling SVG. The signal drawing fills its available width with a fixed readable height; it does not force page overflow or invent intermediate data. Every committed sample and all cursor/number/table alternatives remain. There is no new observer, media listener or timer to release. A new test checks native axes, true sampled values and their ordinate alignment.
+
+An additional review found that changing the prediction after Reveal left the old agreement message visible. The owned prediction-input listener now revokes only that grading, asks for another Reveal, and retains the valid frozen calculation and enabled Commit. Its regression independently checks that a changed guess does not shift or invalidate the computed y[0]=0 snapshot.
+
+Affected checks on corrected source: 102 module tests / 4 files pass (2.77 seconds); production build including TypeScript and diff checks pass. The original complete-suite result is explicitly attributed above. Parent repeated narrow-browser and combined acceptance are pending.
 
 ## Historical accepted exercise delivery
 
