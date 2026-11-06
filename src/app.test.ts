@@ -139,9 +139,11 @@ describe('application header', () => {
     expect(resultIds()).toEqual(['CP06']);
     expect(root.textContent).toContain('Searching Continuous / Plots');
     const all = root.querySelector<HTMLInputElement>('.search-scope input')!;
+    all.focus();
     all.checked = true; all.dispatchEvent(new Event('change', { bubbles: true }));
     expect(resultIds()).toEqual(['CD02', 'CD03', 'CD04', 'CP06', 'CS05', 'DD02', 'DP04', 'DS04']);
     expect(root.textContent).toContain('Searching all 56 tools');
+    expect(document.activeElement).toBe(root.querySelector('.search-scope input'));
     expect(location.hash).toBe('#/continuous/plots');
     navigate('#/discrete/plots');
     enterQuery('root locus');

@@ -129,7 +129,11 @@ export function createApp(root: HTMLElement): () => void {
     if (query.trim()) {
       const label = element('label');
       const all = element('input'); all.type = 'checkbox'; all.checked = searchEverywhere;
-      all.addEventListener('change', () => { searchEverywhere = all.checked; renderResults(); });
+      all.addEventListener('change', () => {
+        const restoreFocus = document.activeElement === all;
+        searchEverywhere = all.checked; renderResults();
+        if (restoreFocus) results.querySelector<HTMLInputElement>('.search-scope input')?.focus();
+      });
       label.append(all, document.createTextNode(' Search both domains and all topics'));
       scope.append(element('span', '', searchEverywhere ? 'Searching all 56 tools' : `Searching ${domainName(domain)}${category ? ` / ${categoryName(category)}` : ' systems'}`), label);
     }
