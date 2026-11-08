@@ -20,7 +20,7 @@ function press(root: HTMLElement, label: string) { const b = [...root.querySelec
 function input(root: HTMLElement, label: string, value: string) { const n = field<HTMLInputElement>(root, label); n.value = value; n.dispatchEvent(new Event('input', { bubbles: true })); }
 const gainText = (root: HTMLElement) => field(root, 'Selected exact gain').textContent;
 function frames() { let next = 1; const pending = new Map<number, FrameRequestCallback>(); vi.stubGlobal('requestAnimationFrame', vi.fn((callback: FrameRequestCallback) => { const id = next++; pending.set(id, callback); return id; })); const cancel = vi.fn((id: number) => pending.delete(id)); vi.stubGlobal('cancelAnimationFrame', cancel); return { pending, cancel, flush: () => { const callbacks = [...pending.values()]; pending.clear(); callbacks.forEach(callback => callback(0)); } }; }
-function pointer(target: Element, type: string, x = 220): void { const event = new MouseEvent(type, { bubbles: true, cancelable: true, button: 0, clientX: x, clientY: 40 }); Object.defineProperty(event, 'pointerId', { value: 9 }); target.dispatchEvent(event); }
+function pointer(target: Element, type: string, x = 220, id = 9): void { const event = new MouseEvent(type, { bubbles: true, cancelable: true, button: 0, clientX: x, clientY: 40 }); Object.defineProperty(event, 'pointerId', { value: id }); target.dispatchEvent(event); }
 function plotBounds() { vi.spyOn(SVGElement.prototype, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, width: 440, height: 90 } as DOMRect); }
 afterEach(() => { for (const v of visits.splice(0)) { v.controller.abort(); v.cleanup(); v.root.remove(); } vi.clearAllMocks(); vi.unstubAllGlobals(); });
 
@@ -74,6 +74,22 @@ describe('CS05 immediate exact-gain exploration', () => {
     frames(); const { root } = open(); plotBounds(); const host = root.querySelector<HTMLElement>('.cs05-interactive-strip')!;
     pointer(host.querySelector('[data-endpoint="1"]')!, 'pointerdown', 292); pointer(host, 'pointerup', 292); expect(gainText(root)).toBe('K=70'); expect(root.textContent).toContain('Exact endpoint identity retained');
     press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const before = gainText(root); pointer(host.querySelector('.cs05-gain-handle')!, 'pointerdown', 42); pointer(host, 'pointerup', 42); expect(gainText(root)).toBe(before); expect(root.textContent).toContain('Not strictly stable ·');
+  });
+  it('keeps one pointer owner and ignores another pointer\'s down, move and capture-cancellation events', () => {
+    const animation = frames(), { root } = open(); plotBounds(); const host = root.querySelector<HTMLElement>('.cs05-interactive-strip')!, captured = new Set<number>();
+    const capture = vi.fn((id: number) => captured.add(id)), release = vi.fn((id: number) => captured.delete(id)); Object.assign(host, { setPointerCapture: capture, hasPointerCapture: (id: number) => captured.has(id), releasePointerCapture: release });
+    pointer(host.querySelector('svg')!, 'pointerdown', 220, 9); pointer(host, 'pointermove', 300, 9); animation.flush(); const preview = gainText(root);
+    pointer(host.querySelector('svg')!, 'pointerdown', 350, 18); pointer(host, 'pointermove', 380, 18); pointer(host, 'pointercancel', 380, 18); pointer(host, 'lostpointercapture', 380, 18); animation.flush();
+    expect(gainText(root)).toBe(preview); expect(capture).toHaveBeenCalledExactlyOnceWith(9); expect(captured).toEqual(new Set([9]));
+    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })); expect(gainText(root)).toBe('K=20'); expect(captured.size).toBe(0); expect(release).toHaveBeenCalledExactlyOnceWith(9);
+    pointer(host.querySelector('svg')!, 'pointerdown', 220, 9); pointer(host, 'pointermove', 300, 9); animation.flush(); pointer(host, 'pointercancel', 300, 9); expect(gainText(root)).toBe('K=20'); expect(captured.size).toBe(0);
+  });
+  it('preserves an unapplied rational gain draft and its warning through Fit and view-range repaint', () => {
+    const { root } = open(); input(root, 'Exact rational gain K', String.raw`\frac12`); press(root, 'Fit selected roots');
+    expect(field<HTMLTextAreaElement>(root, 'Exact rational gain K').value).toBe(String.raw`\frac12`); expect(gainText(root)).toBe('K=20'); expect(root.querySelector('.cs05-model-state')!.textContent).toContain('Gain draft changed'); expect(root.textContent).toContain('unapplied rational gain draft is preserved');
+    input(root, 'Locus maximum gain', '80'); press(root, 'Apply view range'); expect(field<HTMLTextAreaElement>(root, 'Exact rational gain K').value).toBe(String.raw`\frac12`); expect(gainText(root)).toBe('K=20'); expect(root.querySelector('.cs05-model-state')!.textContent).toContain('Gain draft changed');
+    press(root, 'Apply rational gain'); expect(gainText(root)).toBe('K=\\frac{1}{2}'); expect(root.querySelector('.cs05-model-state')!.textContent).toBe('Checked model');
+    input(root, 'Exact rational gain K', '9'); press(root, 'Apply model'); expect(gainText(root)).toBe('K=\\frac{1}{2}'); expect(field<HTMLTextAreaElement>(root, 'Exact rational gain K').value).toBe(String.raw`\frac{1}{2}`); expect(root.textContent).toContain('Model application replaces an unapplied gain draft');
   });
   it('treats manually edited computed notation as a draft instead of borrowing endpoint identity', () => {
     const { root } = open(); press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const exact = gainText(root), editor = field<HTMLTextAreaElement>(root, 'Exact rational gain K');

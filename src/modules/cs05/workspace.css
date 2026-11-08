@@ -14,7 +14,7 @@
 [data-module="CS05"] .cs05-tool button:hover { background: var(--tint); }
 [data-module="CS05"] .cs05-message { padding: .6rem 0; }
 [data-module="CS05"] .cs05-scroll { overflow-x: auto; min-width: 0; }
-[data-module="CS05"] svg { display: block; width: 100%; min-width: 340px; max-height: 380px; }
+[data-module="CS05"] .cs05-scroll > svg { display: block; width: 100%; min-width: 340px; max-height: 380px; }
 [data-module="CS05"] svg text { fill: var(--muted); font: 11px system-ui; }
 [data-module="CS05"] .cs05-axis { stroke: var(--line); stroke-width: 1; }
 [data-module="CS05"] .cs05-stable, [data-module="CS05"] .cs05-included { fill: var(--tint); stroke: var(--accent); }
@@ -36,7 +36,7 @@
 [data-module="CS05"] .cs05-verdict { display: grid; gap: .5rem; }
 [data-module="CS05"] .cs05-endpoints { display: grid; gap: .6rem; }
 [data-module="CS05"] .cs05-responsive-plane, [data-module="CS05"] .cs05-interactive-strip { min-width: 0; width: 100%; }
-[data-module="CS05"] .cs05-responsive-plane svg, [data-module="CS05"] .cs05-interactive-strip svg { width: 100%; min-width: 0; max-height: none; height: auto; }
+[data-module="CS05"] .cs05-responsive-plane > svg, [data-module="CS05"] .cs05-interactive-strip > svg { display: block; width: 100%; min-width: 0; max-height: none; height: auto; }
 [data-module="CS05"] .cs05-responsive-plane .cs05-axis-label, [data-module="CS05"] .cs05-interactive-strip .cs05-axis-label { font-size: var(--cs05-plot-font, 12px); }
 [data-module="CS05"] .cs05-interactive-strip { touch-action: none; cursor: ew-resize; }
 [data-module="CS05"] .cs05-left-half { fill: var(--tint); opacity: .6; }
