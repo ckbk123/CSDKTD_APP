@@ -1,13 +1,13 @@
 # CP04 implementation status
 
-- **Stage:** implemented
-- **Current review disposition:** coordinator reopened the accepted candidate for native partial-number draft preservation; the correction below is implemented pending independent source and repeated browser checks.
+- **Stage:** verified
+- **Current review disposition:** native partial-number correction independently source-reviewed and accepted after repeated actual-browser checks; no accepted module refinement requirement remains within the declared domain.
 
 ## Interactivity refinement — 8 November 2026
 
 Explicit finite scope: visual-first Bode exploration and preservation of the existing bounded construction exercise. Fresh isolated baseline `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c` (v0.3.16), branch `codex/cp04-factor-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cp04-factor-exploration/CSDKTD APP`; only CP04 is owned. The earlier verified exercise and its historical browser evidence below remain preserved history, not browser evidence for this refinement.
 
-Current refinement pull request: [#65 — CP04 linked Bode exploration](https://github.com/ckbk123/CSDKTD_APP/pull/65), created and attached by the integration owner. Reuse this PR/branch for review corrections. Previously accepted code/test source `e2b97c33db4a61a93c603ce5f8009d9cfc303a70` and submitted documentation `4705f2e53b13bfb0aa94ee9a90525e2a52327546` received the native-draft review return below. The reopened claim records the current correction checkpoint; earlier acceptance is retained as attributed evidence.
+Current refinement pull request: [#65 — CP04 linked Bode exploration](https://github.com/ckbk123/CSDKTD_APP/pull/65), created and attached by the integration owner. Reuse this PR/branch for review corrections. The final accepted native-draft code/test source is `8c351af336eb3ccb789b69085e3f8398b79a18e9`; this acceptance commit changes documentation only. The claim records the exact clean submitted HEAD. Earlier source/acceptance evidence is retained below with its provenance.
 
 Current implementation: Explore computes its useful baseline immediately, links exact/asymptotic magnitude and unwrapped phase, selected-factor contribution, log-corner handles/range/numeric/key controls, signed gain, explicit delay, cursor, view units, fixed axes with Fit and one-step model undo. The original complete raw-factor domain and scalar parsers remain available. Corner/damping transformations preserve a₀, raw K and first-order half-plane sign; generated coefficient strings are reparsed before publication. Unsupported coefficient/precision edits fail with visible feedback rather than clipping or hidden numerical changes. Practice starts independently from its baseline with student curves only before reveal; edited predictions remove old grading. Raw/model errors clear stale answer output. Mode suspension settles/cancels active work; owned timers, pointer listeners, observers and editors are fully released on visit disposal.
 
@@ -15,7 +15,9 @@ Current implementation: Explore computes its useful baseline immediately, links 
 
 The response reviewer identified that serializing `input.value` on rejection destroys native visible partial text such as `-` or `1e-`, for which the browser exposes an empty value with badInput=true. The rejected control is now excluded from every synchronization performed during cancellation or prior-gesture settlement, and rejection performs no value assignment. The invalid control remains the same native element through view/mode actions. A valid edit can recover normally. Damping is read and range-validated before preceding work settles; both malformed damping and a new valid damping value are preserved correctly.
 
-All 106 CP04 tests in 9 files, TypeScript, production build and diff checks pass. New fixtures combine badInput with setter-write spies for idle and preceding-valid-gesture cases, view/unit/mode actions, finite rejected gain, damping and recovery. They require zero module value writes to the rejected control, without pretending jsdom can type a browser's partial-number buffer. The earlier full 5,673-test/267-file run applies to the unchanged mathematics and prior candidate; the final full run is deferred until correction source/browser review settles, as directed by the coordinator. No new actual-browser evidence is claimed for this correction.
+All 106 CP04 tests in 9 files, TypeScript, production build and diff checks pass; the integration owner independently reran all 106 tests. New fixtures combine badInput with setter-write spies for idle and preceding-valid-gesture cases, view/unit/mode actions, finite rejected gain, damping and recovery. They require zero module value writes to the rejected control, without pretending jsdom can type a browser's partial-number buffer. The earlier full 5,673-test/267-file run applies to the unchanged mathematics and prior candidate. The coordinator owns a fresh combined full run containing this final delta and explicitly requires no additional standalone full run here.
+
+Repeated actual-browser evidence is attributed to the integration owner on `8c351af`: keyboard Ctrl+A/Backspace/`-` in the corner field retained visible `-` with badInput=true through Fit, rejected Hz conversion (rad/s retained), Practice and Explore. Appending `2` produced `-2`, proving the browser text survived; the negative corner was then correctly rejected. Replacing it with 2 and Return recovered. Actual gain entry `1e-` remained visible through Fit and the mode round trip; appending `2` yielded native 0.01 with badInput=false, six curves and checked magnitude 0.004 for the current corner-2 experiment. The console warning/error log was empty. Screenshot outside Git: `C:/Users/baokh/.codex/visualizations/2026/11/05/01a1ac7b-23ee-7530-bb2d-334ceb1752ec/cp04-native-draft-recovery.jpg`. Earlier accepted math/phone/focus/visibility checks below remain separately attributed; no latency or actual-touch claim is added.
 
 ### Prior centralized browser acceptance — 8 November 2026
 
@@ -43,7 +45,7 @@ Frozen code/test source `93fd02685f67b415a84069f260af38b86351daed`: `npm test --
 
 Earlier-run qualification: the first concurrent full run had 5,659 passes and one unchanged CF04 async-mount timeout in its existing 1-second wait. CF04's eight tests passed alone, and both bounded-concurrency full runs passed (5,661 tests before the final selection/undo fixture, then 5,662 above). No unrelated module or timeout was edited. The existing bundled MathLive chunk-size advisory remains unchanged.
 
-Current pending work: native partial-number correction source/repeated browser acceptance and final full-suite/submission gate. The historical PR #15 below is the original exercise contribution; its older stage/provenance notes are preserved history.
+No accepted module refinement work remains within the declared domain. Fresh combined integration/release checks belong to the coordinator. The historical PR #15 below is the original exercise contribution; its older stage/provenance notes are preserved history.
 
 ## Prepared coordinator integration — 29 October 2026
 
