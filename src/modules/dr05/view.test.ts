@@ -149,6 +149,13 @@ describe('live sampling clock with deliberate Practice', () => {
     const period = control(root, 'Sample period T (s)'), range = root.querySelector('[aria-label="Slide sample period T (log scale)"]')!;
     expect(period.closest('label')).not.toBe(range.closest('label'));
     expect(root.querySelectorAll('[aria-label="Exact ZOH identity with numerical matrices"]')).toHaveLength(0);
+    const workspace = root.querySelector('[aria-label="Sampling workspace"]')!, periodBar = root.querySelector('[aria-label="Live sample period controls"]')!;
+    const firstPlot = root.querySelector('.zoh-plot')!, secondPlot = root.querySelectorAll('.zoh-plot')[1];
+    expect(periodBar.querySelector('[aria-label="Sample period T (s)"]')).not.toBeNull(); expect(periodBar.querySelector('[aria-label="Inspect sample k"]')).toBeNull();
+    expect(periodBar.compareDocumentPosition(firstPlot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(secondPlot.compareDocumentPosition(control(root, 'Inspect sample k')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(firstPlot.compareDocumentPosition(workspace.querySelector('.zoh-notice')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(root.querySelector('.zoh-visual h3')).toBeNull();
   });
   it('coalesces edits and moves physical clock spacing while retaining the same three-second window', () => {
     vi.useFakeTimers(); const root = open('explore', 'window'), solver = vi.spyOn(mathematics, 'run');
@@ -188,6 +195,7 @@ describe('live sampling clock with deliberate Practice', () => {
     vi.useFakeTimers(); const root = open('explore', 'window');
     change(control(root, 'Sample period T (s)'), '.001'); vi.advanceTimersByTime(60);
     expect(root.textContent).toContain('3001 sample instants'); expect(root.querySelectorAll('.zoh-chart')).toHaveLength(0);
+    expect(root.querySelector('.zoh-visual .zoh-warning')!.textContent).toContain('3001 sample instants');
     change(control(root, 'Time window policy'), 'count'); change(control(root, 'Number of sample instants'), '4'); change(control(root, 'Sample period T (s)'), '10'); change(control(root, 'Physical time window (s)'), ''); vi.advanceTimersByTime(60);
     expect(outputValues(root)).toHaveLength(4); expect(root.textContent).toContain('computed 0–30 s');
     change(control(root, 'Sample period T (s)'), '0.0001'); change(control(root, 'Number of sample instants'), '120'); vi.advanceTimersByTime(60);

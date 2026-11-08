@@ -35,3 +35,15 @@ it('keeps a coincident physical endpoint visible without changing its floating-p
   expect(plot.element.querySelector('.zoh-cursor')?.getAttribute('visibility')).toBe('visible');
   expect(result.samples[3].t).toBe(.1 * 3);
 });
+it('fits only the clipped visible polyline while preserving every computed sample and drawing point', () => {
+  // Integrator step response y=t independently gives y(.1)=.1. The retained
+  // drawing first advances to t=5, which must not determine this window's scale.
+  const result = run(realize(parseModel('1/s')), { ...base, T: 10, count: 4, density: 2 }), before = JSON.stringify(result);
+  expect(result.segments[0][1].t).toBe(5);
+  const plot = trajectoryPlot(result, 'output', 0, .1);
+  expect([...plot.element.querySelectorAll('.zoh-y-scale span')].map(node => node.textContent)).toEqual(['0.2', '0.05', '-0.1']);
+  const path = plot.element.querySelector('path.zoh-line')!.getAttribute('d')!, end = [...path.matchAll(/[ML]([^, ]+),([^ ]+)/g)].at(-1)!;
+  expect(Number(end[1])).toBeCloseTo(502, 12); expect(Number(end[2])).toBeCloseTo(64, 12);
+  expect(plot.element.querySelectorAll('circle.zoh-exact')).toHaveLength(1);
+  expect(JSON.stringify(result)).toBe(before);
+});

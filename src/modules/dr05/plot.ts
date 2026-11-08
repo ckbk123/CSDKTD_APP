@@ -19,7 +19,16 @@ export function trajectoryPlot(result: Result, panel: 'output' | 'input', select
   const withinWindow = (t: number) => t <= visibleEnd || Math.abs(t - visibleEnd) <= 8 * Number.EPSILON * Math.max(1, Math.abs(t), Math.abs(visibleEnd));
   const visible = rows.filter(row => withinWindow(row.t));
   const segments = result.segments.filter(segment => segment[0].t < visibleEnd).map(segment => {
-    const points = []; for (const point of segment) { points.push(point); if (point.t > visibleEnd) break; } return points;
+    const points = [];
+    for (const point of segment) {
+      if (point.t <= visibleEnd) { points.push(point); continue; }
+      const before = points.at(-1);
+      // Clip this existing numerical polyline before fitting, without simulating
+      // a new sample or joining the two sides of a feedthrough discontinuity.
+      if (before && before.t < visibleEnd) points.push({ t: visibleEnd, y: before.y + (point.y - before.y) * (visibleEnd - before.t) / (point.t - before.t), held: before.held });
+      break;
+    }
+    return points;
   });
   const values = panel === 'input' ? visible.map(r => r.held) : segments.flat().map(p => p.y).concat(visible.map(r => r.y), result.comparison?.filter(r => withinWindow(r.t)).map(r => r.y) ?? []);
   const low = Math.min(0, ...values), high = Math.max(0, ...values), padding = Math.max(.1, .1 * (high - low)), minimum = low - padding, maximum = high + padding;

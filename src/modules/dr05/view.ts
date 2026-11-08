@@ -34,25 +34,25 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     const read = (input: HTMLInputElement) => readNumericInput(input, input.getAttribute('aria-label') || 'numeric input');
     const equation = (host: HTMLElement, value: string, title: string) => host.append(createEquationDisplay(value, title));
     const depth = (title: string) => { const node = element('details', '', 'zoh-depth'); node.append(element('summary', title)); root.append(node); return node; };
-    root.append(element('h3', 'Move the sampling clock'), element('p', 'Change T and follow the same physical time window. The continuous trajectory, exact samples and held input share one selected sample.'));
     const workbench = element('div', '', 'zoh-workbench'), visual = element('section', '', 'zoh-visual'), controlsPanel = element('section', '', 'zoh-controls-panel'); root.append(workbench); workbench.append(visual, controlsPanel);
     const notice = element('p', 'Computing the baseline…', 'zoh-notice'); notice.setAttribute('role', 'status');
     const resultHost = element('div'); resultHost.setAttribute('aria-label', 'Sampling workspace');
     const metadata = element('p', '', 'zoh-clock-summary'), modelDisplay = element('div', '', 'zoh-current-model'), feedback = element('p', '', 'zoh-warning');
+    feedback.setAttribute('role', 'status');
     const outputPlot = element('div', '', 'zoh-plot'), inputPlot = element('div', '', 'zoh-plot');
     const cursorControls = element('div', '', 'zoh-controls zoh-cursor-controls'), inspect = number(cursorControls, 'Inspect sample k', '1', 0, 30, '1'), cursor = element('input');
     cursor.type = 'range'; cursor.min = '0'; cursor.max = '30'; cursor.step = '1'; cursor.value = '1'; cursor.setAttribute('aria-label', 'Sampling clock cursor'); label(cursorControls, 'Move the sample cursor (arrow keys)', cursor);
     const arithmetic = element('div', '', 'zoh-arithmetic'), inspectionError = element('p', '', 'zoh-warning'); inspectionError.setAttribute('role', 'status');
-    visual.append(notice, resultHost); resultHost.append(metadata, outputPlot, inputPlot, cursorControls, inspectionError, arithmetic);
-    resultHost.append(element('p', 'Solid paths: source driven by the declared held input. Filled circles: exact ZOH samples. Hollow squares: interval approximation. Shading marks the selected held interval; cursor movement does not change the model.', 'zoh-small'), modelDisplay, feedback);
+    visual.append(resultHost); resultHost.append(feedback, outputPlot, inputPlot, cursorControls, metadata, inspectionError, arithmetic, notice);
+    resultHost.append(element('p', 'Solid paths join numerical drawing points of the held-input source. A clipped window edge uses linear drawing interpolation, not an exact sample. Filled circles: exact ZOH samples. Hollow squares: interval approximation. Shading marks the selected held interval; cursor movement does not change the model.', 'zoh-small'), modelDisplay);
     const mode = select(controlsPanel, 'Learning mode', [['explore', 'Explore — live clock and response'], ['practice', 'Practice — predict before revealing']], 'explore');
     const primary = element('div', '', 'zoh-controls'); controlsPanel.append(primary);
     const T = number(primary, 'Sample period T (s)', '.1', .0001, 10), periodRange = element('input');
     periodRange.type = 'range'; periodRange.min = '-4'; periodRange.max = '1'; periodRange.step = '.01'; periodRange.value = '-1'; periodRange.setAttribute('aria-label', 'Slide sample period T (log scale)');
     label(primary, 'Slide T in seconds (logarithmic scale)', periodRange);
     const clockBar = element('div', '', 'zoh-controls zoh-clock-bar');
-    clockBar.append(T.parentElement!, periodRange.parentElement!, inspect.parentElement!, cursor.parentElement!);
-    resultHost.insertBefore(clockBar, outputPlot); cursorControls.remove();
+    clockBar.setAttribute('aria-label', 'Live sample period controls'); clockBar.append(T.parentElement!, periodRange.parentElement!);
+    resultHost.insertBefore(clockBar, outputPlot);
     const policy = select(primary, 'Time window policy', [['window', 'Fixed physical time window'], ['count', 'Fixed sample count']], 'window');
     const horizon = number(primary, 'Physical time window (s)', '3', .0001, 1190), count = number(primary, 'Number of sample instants', '31', 4, 120, '1');
     const delay = number(primary, 'Input delay m (whole samples)', '0', 0, 12, '1');
@@ -112,7 +112,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       sourceControls();
       const preservePreview = mode.value === 'explore' && (resultHost.dataset.state === 'preview' || resultHost.dataset.state === 'draft') && !!current;
       if (!preservePreview) { current = undefined; clearRendered(); }
-      resultHost.dataset.state = 'draft'; notice.textContent = preservePreview ? 'Draft changed — previous preview shown while the current inputs update.' : mode.value === 'practice' ? 'Draft changed. Output remains hidden until Reveal sampled model.' : 'Updating the current preview…';
+      resultHost.dataset.state = 'draft'; notice.hidden = false; notice.textContent = preservePreview ? 'Draft changed — previous preview shown while the current inputs update.' : mode.value === 'practice' ? 'Draft changed. Output remains hidden until Reveal sampled model.' : 'Updating the current preview…';
       inspect.disabled = cursor.disabled = true;
       if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; compute(false); }, 60);
     }
@@ -158,7 +158,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       table.append(head, body); tableHost.append(table);
     }
     function compute(checked: boolean) {
-      if (disposed || signal.aborted) return; cancel(); current = undefined; clearRendered();
+      if (disposed || signal.aborted) return; cancel(); current = undefined; clearRendered(); notice.hidden = false;
       try {
         const draft = plant!.getValue(); if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error('Complete the plant and check its equation notation.');
         const source = realize(parseModel(draft.latex)), w = samplingWindow(read(T), policy.value as WindowPolicy, policy.value === 'count' ? read(count) : 4, policy.value === 'window' ? read(horizon) : NaN);
@@ -188,7 +188,8 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
           notice.textContent = (Number.isFinite(guess) ? Math.abs(guess - actual) <= 1e-5 * Math.max(1, Math.abs(actual)) ? 'Prediction matched within tolerance. ' : 'Compare your prediction with the state update. ' : '') + 'First sample y[1] = ' + fmt(actual) + '. ' + notice.textContent;
         }
       } catch (error) {
-        current = undefined; clearRendered(); resultHost.dataset.state = 'invalid'; inspect.disabled = cursor.disabled = true; notice.textContent = error instanceof Error ? error.message : 'Check the plant and experiment values.';
+        current = undefined; clearRendered(); resultHost.dataset.state = 'invalid'; inspect.disabled = cursor.disabled = true;
+        feedback.textContent = error instanceof Error ? error.message : 'Check the plant and experiment values.'; notice.hidden = true; notice.textContent = '';
       }
     }
     for (const control of [T, policy, horizon, count, delay, input, amplitude, method, x1, x2, density, mode]) { on(control, 'input', changed); on(control, 'change', changed); }
