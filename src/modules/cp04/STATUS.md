@@ -1,17 +1,23 @@
 # CP04 implementation status
 
-- **Stage:** verified
-- **Current review disposition:** finite interactivity refinement independently reviewed and centrally browser-accepted on 8 November 2026; no accepted refinement requirement remains in the declared domain.
+- **Stage:** implemented
+- **Current review disposition:** coordinator reopened the accepted candidate for native partial-number draft preservation; the correction below is implemented pending independent source and repeated browser checks.
 
 ## Interactivity refinement — 8 November 2026
 
 Explicit finite scope: visual-first Bode exploration and preservation of the existing bounded construction exercise. Fresh isolated baseline `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c` (v0.3.16), branch `codex/cp04-factor-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cp04-factor-exploration/CSDKTD APP`; only CP04 is owned. The earlier verified exercise and its historical browser evidence below remain preserved history, not browser evidence for this refinement.
 
-Current refinement pull request: [#65 — CP04 linked Bode exploration](https://github.com/ckbk123/CSDKTD_APP/pull/65), created and attached by the integration owner. Reuse this PR/branch for review corrections. The final accepted code/test source is `e2b97c33db4a61a93c603ce5f8009d9cfc303a70`, followed by documentation-only `15e4bf4d1b77163072f1e09a860a6a05053cdd30` and this acceptance record. The submitted claim records the exact clean final HEAD.
+Current refinement pull request: [#65 — CP04 linked Bode exploration](https://github.com/ckbk123/CSDKTD_APP/pull/65), created and attached by the integration owner. Reuse this PR/branch for review corrections. Previously accepted code/test source `e2b97c33db4a61a93c603ce5f8009d9cfc303a70` and submitted documentation `4705f2e53b13bfb0aa94ee9a90525e2a52327546` received the native-draft review return below. The reopened claim records the current correction checkpoint; earlier acceptance is retained as attributed evidence.
 
 Current implementation: Explore computes its useful baseline immediately, links exact/asymptotic magnitude and unwrapped phase, selected-factor contribution, log-corner handles/range/numeric/key controls, signed gain, explicit delay, cursor, view units, fixed axes with Fit and one-step model undo. The original complete raw-factor domain and scalar parsers remain available. Corner/damping transformations preserve a₀, raw K and first-order half-plane sign; generated coefficient strings are reparsed before publication. Unsupported coefficient/precision edits fail with visible feedback rather than clipping or hidden numerical changes. Practice starts independently from its baseline with student curves only before reveal; edited predictions remove old grading. Raw/model errors clear stale answer output. Mode suspension settles/cancels active work; owned timers, pointer listeners, observers and editors are fully released on visit disposal.
 
-### Final centralized browser acceptance — 8 November 2026
+### Native partial-number review return — 8 November 2026
+
+The response reviewer identified that serializing `input.value` on rejection destroys native visible partial text such as `-` or `1e-`, for which the browser exposes an empty value with badInput=true. The rejected control is now excluded from every synchronization performed during cancellation or prior-gesture settlement, and rejection performs no value assignment. The invalid control remains the same native element through view/mode actions. A valid edit can recover normally. Damping is read and range-validated before preceding work settles; both malformed damping and a new valid damping value are preserved correctly.
+
+All 106 CP04 tests in 9 files, TypeScript, production build and diff checks pass. New fixtures combine badInput with setter-write spies for idle and preceding-valid-gesture cases, view/unit/mode actions, finite rejected gain, damping and recovery. They require zero module value writes to the rejected control, without pretending jsdom can type a browser's partial-number buffer. The earlier full 5,673-test/267-file run applies to the unchanged mathematics and prior candidate; the final full run is deferred until correction source/browser review settles, as directed by the coordinator. No new actual-browser evidence is claimed for this correction.
+
+### Prior centralized browser acceptance — 8 November 2026
 
 Evidence below is attributed to the integration owner, who performed actual browser QA on accepted code `e2b97c33` / documentation `15e4bf4`; this worker did not operate a browser. Repeated checks confirm first-order damping is excluded from the visible/accessibility interface and phase-handle arrow edits retain phase focus. For the quadratic, corner 3 rad/s with cursor 3 gives magnitude 0.5 at −90°; damping 0.5 gives magnitude 0.25. Invalid corner text `1e-999` survives Explore→Practice→Explore; attempted unit conversion is rejected, rad/s remains selected and no curves are displayed.
 
@@ -37,7 +43,7 @@ Frozen code/test source `93fd02685f67b415a84069f260af38b86351daed`: `npm test --
 
 Earlier-run qualification: the first concurrent full run had 5,659 passes and one unchanged CF04 async-mount timeout in its existing 1-second wait. CF04's eight tests passed alone, and both bounded-concurrency full runs passed (5,661 tests before the final selection/undo fixture, then 5,662 above). No unrelated module or timeout was edited. The existing bundled MathLive chunk-size advisory remains unchanged.
 
-No accepted refinement work remains within the declared domain. The historical PR #15 below is the original exercise contribution; its older stage/provenance notes are preserved history.
+Current pending work: native partial-number correction source/repeated browser acceptance and final full-suite/submission gate. The historical PR #15 below is the original exercise contribution; its older stage/provenance notes are preserved history.
 
 ## Prepared coordinator integration — 29 October 2026
 

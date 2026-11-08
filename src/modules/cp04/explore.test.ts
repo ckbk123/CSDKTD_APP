@@ -22,7 +22,7 @@ const click = (root: HTMLElement, label: string) => [...active(root).querySelect
 function open() { const root = document.createElement('div'); root.dataset.module = 'CP04'; document.body.append(root); const controller = new AbortController(); const cleanup = mountView({ container: root, signal: controller.signal }); return { root, controller, cleanup }; }
 function pointer(node: EventTarget, type: string, x = 350, id = 7) { const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, button: 0 }); Object.defineProperty(event, 'pointerId', { value: id }); node.dispatchEvent(event); return event; }
 function points(root: HTMLElement, index = 0) { return active(root).querySelectorAll('polyline.bode-exact-line')[index]?.getAttribute('points'); }
-afterEach(() => { partial.failAt = 0; partial.abort = undefined; partial.listener.mockClear(); vi.useRealTimers(); vi.unstubAllGlobals(); document.body.replaceChildren(); });
+afterEach(() => { partial.failAt = 0; partial.abort = undefined; partial.listener.mockClear(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); document.body.replaceChildren(); });
 
 describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () => {
   it('opens computed baseline without a submit and keeps each numeric/range name independent', () => {
@@ -80,6 +80,37 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
     const { root, controller } = open(); update(root, 'Raw gain K (signed)', '0'); expect(active(root).querySelectorAll('polyline')).toHaveLength(0);
     update(root, 'Contribution to highlight', 'all', 'change'); expect(active(root).querySelectorAll('polyline')).toHaveLength(0); expect(field<HTMLInputElement>(root, 'Raw gain K (signed)').value).toBe('0'); expect(active(root).textContent).toContain('Correct Raw gain K');
     update(root, 'Raw gain K (signed)', '2'); update(root, 'Raw gain K (signed)', '2', 'change'); expect(active(root).textContent).toContain('|G|=0.6324555'); controller.abort();
+  });
+  it.each([['-', false], ['1e-', false], ['-', true], ['1e-', true]] as const)('preserves native partial %s with zero value writes (preceding gesture: %s)', (_visiblePartial, preceding) => {
+    const { root, controller } = open();
+    if (preceding) { update(root, 'Selected factor', '1', 'change'); update(root, 'Actual corner [rad/s]', '3'); }
+    // Native browsers retain '-' / '1e-' visibly while exposing value='' and
+    // badInput=true. jsdom cannot type that state; spy on all module value writes.
+    const input = field<HTMLInputElement>(root, 'Raw gain K (signed)'); input.value = '';
+    const validity = vi.spyOn(input, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState), writes = vi.spyOn(input, 'value', 'set');
+    input.dispatchEvent(new Event('input', { bubbles: true })); expect(writes).not.toHaveBeenCalled(); expect(active(root).textContent).toContain('finite number');
+    click(root, 'Fit axes'); update(root, 'Contribution to highlight', 'all', 'change'); update(root, 'Frequency unit', 'Hz', 'change');
+    update(root, 'Learning mode', 'practice', 'change'); update(root, 'Learning mode', 'explore', 'change'); window.dispatchEvent(new Event('blur'));
+    expect(field(root, 'Raw gain K (signed)')).toBe(input); expect(input.validity.badInput).toBe(true); expect(writes).not.toHaveBeenCalled(); expect(active(root).querySelectorAll('polyline')).toHaveLength(0);
+    validity.mockRestore(); writes.mockRestore(); update(root, 'Raw gain K (signed)', '2'); field(root, 'Raw gain K (signed)').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); expect(active(root).textContent).toContain('|G|=0.6324555'); controller.abort();
+  });
+  it('does not overwrite a rejected finite gain while settling a preceding valid control', () => {
+    const { root, controller } = open(); update(root, 'Selected factor', '1', 'change'); update(root, 'Actual corner [rad/s]', '3');
+    const input = field<HTMLInputElement>(root, 'Raw gain K (signed)'); input.value = '0'; const writes = vi.spyOn(input, 'value', 'set'); input.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(writes).not.toHaveBeenCalled(); expect(input.value).toBe('0'); expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').valueAsNumber).toBe(3); expect(active(root).querySelectorAll('polyline')).toHaveLength(0);
+    writes.mockRestore(); update(root, 'Raw gain K (signed)', '2'); field(root, 'Raw gain K (signed)').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); expect(active(root).textContent).toContain('|G|=0.6708204'); controller.abort();
+  });
+  it('rejects partial damping before cancellation, preserves its native control and recovers', () => {
+    const { root, controller } = open(); update(root, 'Example', 'quadratic', 'change'); update(root, 'Actual corner [rad/s]', '3');
+    const input = field<HTMLInputElement>(root, 'Damping ratio ζ'); input.value = '';
+    const validity = vi.spyOn(input, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState), writes = vi.spyOn(input, 'value', 'set'); input.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(writes).not.toHaveBeenCalled(); expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').valueAsNumber).toBe(2);
+    update(root, 'Learning mode', 'practice', 'change'); update(root, 'Learning mode', 'explore', 'change'); update(root, 'Contribution to highlight', 'gain', 'change'); expect(writes).not.toHaveBeenCalled(); expect(field(root, 'Damping ratio ζ')).toBe(input);
+    validity.mockRestore(); writes.mockRestore(); update(root, 'Damping ratio ζ', '.5'); update(root, 'Cursor frequency [rad/s]', '2'); expect(active(root).textContent).toContain('|G|=0.25'); expect(active(root).textContent).toContain('-90°'); controller.abort();
+  });
+  it('retains a newly entered valid damping value when a preceding corner edit settles', () => {
+    const { root, controller } = open(); update(root, 'Example', 'quadratic', 'change'); update(root, 'Actual corner [rad/s]', '3'); update(root, 'Damping ratio ζ', '.5'); update(root, 'Cursor frequency [rad/s]', '3');
+    expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').valueAsNumber).toBe(3); expect(field<HTMLInputElement>(root, 'Damping ratio ζ').valueAsNumber).toBe(.5); expect(active(root).textContent).toContain('|G|=0.25'); expect(active(root).textContent).toContain('-90°'); controller.abort();
   });
   it('keeps source-slot selection atomic when a display failure rejects add/remove/undo', () => {
     const { root, controller } = open(); update(root, 'Selected factor', '1', 'change'); update(root, 'Actual corner [rad/s]', '3'); update(root, 'Actual corner [rad/s]', '3', 'change');
