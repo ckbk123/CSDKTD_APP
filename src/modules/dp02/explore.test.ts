@@ -24,7 +24,7 @@ function visit(){
   const text=()=>root.querySelector('.dp-live-readout')!.textContent!;
   return {root,parent,cleanup,field,edit,button,text,flush:()=>vi.advanceTimersByTime(32)};
 }
-function pointer(target:Element,type:string,x=146,y=84){const event=new MouseEvent(type,{bubbles:true,cancelable:true,button:0,clientX:x,clientY:y});Object.defineProperty(event,'pointerId',{value:7});target.dispatchEvent(event);}
+function pointer(target:Element,type:string,x=146,y=84,id=7){const event=new MouseEvent(type,{bubbles:true,cancelable:true,button:0,clientX:x,clientY:y});Object.defineProperty(event,'pointerId',{value:id});target.dispatchEvent(event);}
 function fixedRects(){vi.spyOn(Element.prototype,'getBoundingClientRect').mockImplementation(function(this:Element){return {x:0,y:0,left:0,top:0,right:400,bottom:360,width:400,height:360,toJSON(){return {};}};});}
 
 describe('DP02 direct pole and period exploration',()=>{
@@ -93,6 +93,15 @@ describe('DP02 direct pole and period exploration',()=>{
   it('commits the latest drag on release and ignores the following lost capture',()=>{
     fixedRects();const v=visit(),host=v.root.querySelector('.dp-live-planes')!;pointer(v.root.querySelector('[data-pole-handle="1"]')!,'pointerdown');pointer(host,'pointermove',173,111);pointer(host,'pointerup',173,111);pointer(host,'lostpointercapture');
     expect(v.field('sigma').value).toBe('-1');expect(v.text()).toContain('r ≈ 0.904837418');v.flush();expect(v.field('sigma').value).toBe('-1');
+  });
+  it('keeps the first pointer and cancel baseline when another pointer contacts the plot',()=>{
+    fixedRects();const v=visit(),host=v.root.querySelector('.dp-live-planes')!,captured=new Set<number>();
+    Object.defineProperties(host,{setPointerCapture:{value:(id:number)=>captured.add(id)},hasPointerCapture:{value:(id:number)=>captured.has(id)},releasePointerCapture:{value:(id:number)=>captured.delete(id)}});
+    pointer(v.root.querySelector('[data-pole-handle="1"]')!,'pointerdown');pointer(host,'pointermove',173,111);v.flush();
+    pointer(v.root.querySelector('[data-pole-handle="1"]')!,'pointerdown',173,111,8);pointer(host,'pointermove',200,165,8);pointer(host,'pointercancel',200,165,8);pointer(host,'lostpointercapture',200,165,8);
+    expect(captured).toEqual(new Set([7]));expect(v.field('sigma').value).toBe('-1');expect(v.button('Cancel pole drag').disabled).toBe(false);
+    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    expect(v.field('sigma').value).toBe('-2');expect(v.field('omega').value).toBe('3');expect(captured.size).toBe(0);
   });
   it('releases pending preview, observer and window listeners on direct disposal with parent active',()=>{
     let active=false;vi.stubGlobal('ResizeObserver',class{observe(){active=true;}disconnect(){active=false;}});
