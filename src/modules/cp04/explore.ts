@@ -148,7 +148,7 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
     catch (error) { checked = previous; selected = previousSelected; validDraft = true; synchronize(); redraw(); throw error; }
   }
   function runRaw() { clearTimer(); try { publish(readRaw(), 'Checked raw model. Plots use the displayed coefficients.'); } catch (error) { report(error); } }
-  function queueRaw() { if (!isActive()) { pendingRaw = true; return; } if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; runRaw(); }, 40); }
+  function queueRaw() { if (disposed || signal.aborted) return; if (!isActive()) { pendingRaw = true; return; } if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; runRaw(); }, 40); }
   function begin(kind: 'corner' | 'gain' | 'delay', pointer?: number, factor = selected, source?: HTMLInputElement) {
     if (gesture && (gesture.kind !== kind || gesture.factor !== factor || gesture.pointer !== pointer || gesture.source !== source)) commit();
     if (gesture) return;
@@ -259,7 +259,9 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
     try { publish(snapshot(model), 'Checked example loaded. Proposed variations are labelled in the menu.', true, true, 0); } catch (error) { report(error); }
   }, { signal });
   const resize = () => { if (disposed || !isActive()) return; const next = plots.getBoundingClientRect().width; if (next > 0 && Math.abs(next - width) > 1) { cancelGesture(); width = next; try { redraw(); } catch (error) { report(error); } } };
-  observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); observer?.observe(plots); window.addEventListener('resize', resize, { signal });
+  observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize);
+  if (disposed || signal.aborted) observer?.disconnect(); else observer?.observe(plots);
+  window.addEventListener('resize', resize, { signal });
   function dispose() { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); clearTimer(); releasePointer(); observer?.disconnect(); life.abort(); editors.forEach(e => e.destroy()); root.remove(); }
   if (hooks) {
     hooks.suspend = () => {

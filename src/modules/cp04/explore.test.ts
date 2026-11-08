@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
-const partial = vi.hoisted(() => ({ count: 0, failAt: 0, listener: vi.fn() }));
+const partial = vi.hoisted(() => ({ count: 0, failAt: 0, abort: undefined as undefined | (() => void), listener: vi.fn() }));
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (value: string, label: string) => { const node = document.createElement('div'); node.textContent = value; node.setAttribute('aria-label', label); return node; },
   createEquationInput: (options: EquationInputOptions) => {
     partial.count++;
+    const abort = partial.abort; partial.abort = undefined; abort?.();
     if (partial.count === partial.failAt) { window.addEventListener('cp04-partial', partial.listener, { signal: options.signal }); throw new Error('partial editor failure'); }
     const element = document.createElement('div'), input = document.createElement('textarea'); input.value = options.value; input.setAttribute('aria-label', options.label); element.append(input);
     const getValue = () => ({ latex: input.value, empty: !input.value.trim(), hasPlaceholders: false, syntaxIssues: [] });
@@ -20,7 +21,7 @@ const click = (root: HTMLElement, label: string) => [...active(root).querySelect
 function open() { const root = document.createElement('div'); root.dataset.module = 'CP04'; document.body.append(root); const controller = new AbortController(); const cleanup = mountView({ container: root, signal: controller.signal }); return { root, controller, cleanup }; }
 function pointer(node: EventTarget, type: string, x = 350, id = 7) { const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, button: 0 }); Object.defineProperty(event, 'pointerId', { value: id }); node.dispatchEvent(event); return event; }
 function points(root: HTMLElement, index = 0) { return active(root).querySelectorAll('polyline.bode-exact-line')[index]?.getAttribute('points'); }
-afterEach(() => { partial.failAt = 0; partial.listener.mockClear(); vi.useRealTimers(); vi.unstubAllGlobals(); document.body.replaceChildren(); });
+afterEach(() => { partial.failAt = 0; partial.abort = undefined; partial.listener.mockClear(); vi.useRealTimers(); vi.unstubAllGlobals(); document.body.replaceChildren(); });
 
 describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () => {
   it('opens computed baseline without a submit and keeps each numeric/range name independent', () => {
@@ -132,6 +133,11 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
   it('aborts a partially created editor before displaying recoverable failure', () => {
     partial.failAt = partial.count + 2; const { root, controller, cleanup } = open(); window.dispatchEvent(new Event('cp04-partial'));
     expect(partial.listener).not.toHaveBeenCalled(); expect(controller.signal.aborted).toBe(false); expect(active(root).querySelector('[role="alert"]')?.textContent).toContain('Reset'); expect(active(root).querySelector('textarea')).toBeNull(); cleanup?.(); expect(root.children).toHaveLength(0);
+  });
+  it('releases an observer allocated after reentrant parent abort during a nonthrowing editor mount', () => {
+    const controller = new AbortController(), root = document.createElement('div'), disconnect = vi.fn(), observe = vi.fn();
+    vi.stubGlobal('ResizeObserver', class { disconnect = disconnect; observe = observe; }); partial.abort = () => controller.abort();
+    const cleanup = mountView({ container: root, signal: controller.signal }); expect(root.children).toHaveLength(0); expect(disconnect).toHaveBeenCalledOnce(); expect(observe).not.toHaveBeenCalled(); cleanup?.(); expect(disconnect).toHaveBeenCalledOnce();
   });
   it('owns adaptive plot observation and cancels a pending gesture on resize', () => {
     vi.useFakeTimers(); let callback: (() => void) | undefined; const disconnect = vi.fn();
