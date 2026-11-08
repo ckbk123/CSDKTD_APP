@@ -58,24 +58,83 @@
     {
       "id": "CP04",
       "agent": "/root/design_interactivity",
-      "scope": "Computed Bode exploration with normalization-preserving corner manipulation, linked factor contributions, view-only units and separate Practice.",
-      "state": "assigned",
+      "scope": "Normalization-preserving Bode corner exploration and independent Practice",
+      "state": "review-return",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
-      "wave": 2
+      "wave": 2,
+      "branch": "codex/cp04-factor-exploration",
+      "source": "79cc53b967a21c662818879133f6d1f513f51e79",
+      "pr": 65,
+      "evidence": [
+        "88 local tests, 5662 full tests, type/build pass at frozen candidate",
+        "Source review accepts coefficient serialization, original mathematical domain and responsive plot sizing"
+      ],
+      "remaining": [
+        "Correct late disposer, cross-control gesture ownership, secondary pointer handling and retained mode attempts",
+        "Central real-browser desktop/phone acceptance",
+        "Combined integration and release"
+      ]
     },
     {
       "id": "DR05",
       "agent": "/root/structure_stability",
-      "scope": "Linked sampling clock and held input over a declared physical window, live bounded sampling-period exploration, exact integer-delay timing and separate Practice.",
-      "state": "assigned",
+      "scope": "Physical-window sampling clock, held-input timing and linked exact samples",
+      "state": "review-return",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
-      "wave": 2
+      "wave": 2,
+      "branch": "codex/dr05-sampling-exploration",
+      "source": "b3574a6befbd0dc8d4792fbc4e5edd36d754c15d",
+      "pr": 62,
+      "evidence": [
+        "107 local tests, 5653 full tests, type/build pass at corrected source",
+        "Independent source review accepts original math/domain, Practice hiding, window budgeting and owned cleanup",
+        "Actual browser confirms baseline/changed T, doubled clock spacing, fixed physical delay, budget rejection and phone 12px axes",
+        "Returned initial desktop/phone visual placement and off-window fit; corrected clipping and compact stack reviewed"
+      ],
+      "remaining": [
+        "Keep retained-preview label beside the visible plot during a gesture",
+        "Repeat real-browser gate for the corrected compact stack",
+        "Combined integration and release"
+      ]
     },
     {
       "id": "CS05",
       "agent": "/root/response_interactivity",
-      "scope": "Exact stable-gain set with live gain-strip/root inspection, exact boundary identity, fixed locus geometry and separate Practice.",
-      "state": "assigned",
+      "scope": "Exact stable-gain strip and boundary selection with full-root inspection",
+      "state": "review-return",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 2,
+      "branch": "codex/cs05-gain-exploration",
+      "source": "53be4827d9c15c5484c31a49dcfbe9404e8de354",
+      "pr": 63,
+      "evidence": [
+        "92 local tests, type/build pass; independent review accepts corrected pointer/draft/CSS ownership",
+        "Actual browser verifies K70 crossing, full roots, disjoint/unbounded sets, retained irrational endpoint, rejected native underflow and equal nested plane geometry"
+      ],
+      "remaining": [
+        "Correct rendered characteristic TeX delimiter",
+        "Keep slider and exact-selection accessible values coherent",
+        "Compact phone controls and expose exact stability beside the strip",
+        "Repeat browser gate, combined integration and release"
+      ]
+    },
+    {
+      "id": "DP02",
+      "agent": "/root",
+      "branch": "codex/dp02-linked-exploration",
+      "source": "3bc8591b3553ed21388efdf800bf65364b5133df",
+      "pr": 64,
+      "state": "verified-awaiting-release",
+      "scope": "Linked continuous/discrete pole mapping with direct pole and period exploration",
+      "evidence": [
+        "125 module tests, 5650 full tests, type/build pass at b6ad05e code",
+        "Two independent source reviews accept core refinement and first-pointer ownership correction",
+        "Actual production browser verifies pole drag/arrows, changed T/sample, real fraction entry, native error recovery, Practice, fonts, phone layout, reset/navigation",
+        "Exact clean final claim submitted; preserved source merged into private wave-2 integration candidate"
+      ],
+      "remaining": [
+        "Combined wave regression and release"
+      ],
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
       "wave": 2
     }
@@ -273,16 +332,19 @@
     },
     {
       "id": "CP04",
-      "state": "assigned",
+      "state": "review-return",
       "target": "Drag corner markers horizontally on log axis; factor chips beside plot; show individual factor contribution on focus/hover; gain slider shifts magnitude and delay slider moves phase.",
       "evidence": [
-        "Finite scope assigned after accepted v0.3.16; implementation and central browser acceptance remain pending."
+        "88 local tests, 5662 full tests, type/build pass at frozen candidate",
+        "Source review accepts coefficient serialization, original mathematical domain and responsive plot sizing"
       ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Correct late disposer, cross-control gesture ownership, secondary pointer handling and retained mode attempts",
+        "Central real-browser desktop/phone acceptance",
+        "Combined integration and release"
+      ],
+      "source": "79cc53b967a21c662818879133f6d1f513f51e79",
+      "pr": 65
     },
     {
       "id": "CP05",
@@ -421,16 +483,20 @@
     },
     {
       "id": "CS05",
-      "state": "assigned",
+      "state": "review-return",
       "target": "First pilot: baseline locus immediately, add/remove/drag open-loop poles/zeros under degree limits, real-axis or conjugate-pair constraints, fixed viewport, keyboard/numeric equivalents and undo; fixed-model K scrub stays distinct from plant editing.",
       "evidence": [
-        "Finite scope assigned after accepted v0.3.16; implementation and central browser acceptance remain pending."
+        "92 local tests, type/build pass; independent review accepts corrected pointer/draft/CSS ownership",
+        "Actual browser verifies K70 crossing, full roots, disjoint/unbounded sets, retained irrational endpoint, rejected native underflow and equal nested plane geometry"
       ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Correct rendered characteristic TeX delimiter",
+        "Keep slider and exact-selection accessible values coherent",
+        "Compact phone controls and expose exact stability beside the strip",
+        "Repeat browser gate, combined integration and release"
+      ],
+      "source": "53be4827d9c15c5484c31a49dcfbe9404e8de354",
+      "pr": 63
     },
     {
       "id": "DD01",
@@ -566,14 +632,19 @@
     },
     {
       "id": "DP02",
-      "state": "planned",
+      "state": "verified-awaiting-release",
       "target": "Drag s-plane pole and scrub T with continuously linked z-plane and stems; ghost reference map and alias-frequency pair; challenge freezes reference and hides only target until checked.",
-      "evidence": [],
+      "evidence": [
+        "125 module tests, 5650 full tests, type/build pass at b6ad05e code",
+        "Two independent source reviews accept core refinement and first-pointer ownership correction",
+        "Actual production browser verifies pole drag/arrows, changed T/sample, real fraction entry, native error recovery, Practice, fonts, phone layout, reset/navigation",
+        "Exact clean final claim submitted; preserved source merged into private wave-2 integration candidate"
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Combined wave regression and release"
+      ],
+      "source": "3bc8591b3553ed21388efdf800bf65364b5133df",
+      "pr": 64
     },
     {
       "id": "DP03",
@@ -647,16 +718,21 @@
     },
     {
       "id": "DR05",
-      "state": "assigned",
+      "state": "review-return",
       "target": "A live sample-period slider and draggable sample-clock cursor next to continuous/stem/hold views would make sampling tangible; lock either delay samples m or physical delay tau explicitly when changing T.",
       "evidence": [
-        "Finite scope assigned after accepted v0.3.16; implementation and central browser acceptance remain pending."
+        "107 local tests, 5653 full tests, type/build pass at corrected source",
+        "Independent source review accepts original math/domain, Practice hiding, window budgeting and owned cleanup",
+        "Actual browser confirms baseline/changed T, doubled clock spacing, fixed physical delay, budget rejection and phone 12px axes",
+        "Returned initial desktop/phone visual placement and off-window fit; corrected clipping and compact stack reviewed"
       ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Keep retained-preview label beside the visible plot during a gesture",
+        "Repeat real-browser gate for the corrected compact stack",
+        "Combined integration and release"
+      ],
+      "source": "b3574a6befbd0dc8d4792fbc4e5edd36d754c15d",
+      "pr": 62
     },
     {
       "id": "DS01",
@@ -719,7 +795,9 @@
   "nextWave": [
     "CP04",
     "DR05",
-    "CS05"
+    "CS05",
+    "DP02"
   ],
-  "currentWave": 2
+  "currentWave": 2,
+  "verifiedCandidates": 1
 }
