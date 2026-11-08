@@ -109,6 +109,17 @@ describe('CS05 immediate exact-gain exploration', () => {
     press(root, 'Apply rational gain'); expect(gainText(root)).toBe('K=\\frac{1}{2}'); expect(root.querySelector('.cs05-model-state')!.textContent).toBe('Checked model');
     input(root, 'Exact rational gain K', '9'); press(root, 'Apply model'); expect(gainText(root)).toBe('K=\\frac{1}{2}'); expect(field<HTMLTextAreaElement>(root, 'Exact rational gain K').value).toBe(String.raw`\frac{1}{2}`); expect(root.textContent).toContain('Model application replaces an unapplied gain draft');
   });
+  it('preserves a rejected native nonzero-underflow draft and explicit last-checked feedback through view-only actions', () => {
+    const { root } = open(), native = field<HTMLInputElement>(root, 'Numeric gain K'); input(root, 'Numeric gain K', '1e-999'); const writes = vi.spyOn(native, 'value', 'set');
+    press(root, 'Fit selected roots'); expect(field(root, 'Numeric gain K')).toBe(native); expect(native.value).toBe('1e-999'); expect(gainText(root)).toBe('K=20'); expect(root.querySelector('.cs05-model-state')!.textContent).toBe('Native gain draft rejected · last checked gain shown'); expect(root.textContent).toContain('nonzero but too small'); expect(root.textContent).toContain('The last checked gain is shown');
+    input(root, 'Locus maximum gain', '50'); press(root, 'Apply view range'); expect(field(root, 'Numeric gain K')).toBe(native); expect(native.value).toBe('1e-999'); expect(writes).not.toHaveBeenCalled(); expect(gainText(root)).toBe('K=20'); expect(field<HTMLInputElement>(root, 'Live gain cursor').max).toBe('50'); expect(root.querySelector('.cs05-model-state')!.textContent).toContain('Native gain draft rejected'); expect(root.textContent).toContain('nonzero but too small');
+    press(root, 'Apply rational gain'); expect(native.value).toBe('20'); expect(root.querySelector('.cs05-model-state')!.textContent).toBe('Checked model'); expect(root.textContent).not.toContain('native gain draft remains unapplied');
+  });
+  it('leaves the actual browser-owned badInput element untouched rather than reconstructing it from its empty value', () => {
+    const { root } = open(), native = field<HTMLInputElement>(root, 'Numeric gain K'); native.value = ''; const validity = vi.spyOn(native, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState); native.dispatchEvent(new Event('input', { bubbles: true })); const writes = vi.spyOn(native, 'value', 'set');
+    press(root, 'Fit selected roots'); input(root, 'Locus maximum gain', '50'); press(root, 'Apply view range');
+    expect(field(root, 'Numeric gain K')).toBe(native); expect(writes).not.toHaveBeenCalled(); expect(native.validity.badInput).toBe(true); expect(native.value).toBe(''); expect(gainText(root)).toBe('K=20'); expect(root.querySelector('.cs05-model-state')!.textContent).toContain('Native gain draft rejected'); expect(root.textContent).toContain('Enter Numeric gain K as a finite number'); validity.mockRestore();
+  });
   it('treats manually edited computed notation as a draft instead of borrowing endpoint identity', () => {
     const { root } = open(); press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const exact = gainText(root), editor = field<HTMLTextAreaElement>(root, 'Exact rational gain K');
     input(root, 'Exact rational gain K', editor.value); press(root, 'Apply rational gain'); expect(gainText(root)).toBe(exact); expect(root.textContent).toContain('last checked result is retained');
