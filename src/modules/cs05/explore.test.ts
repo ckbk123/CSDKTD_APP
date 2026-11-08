@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
-import { locus, solveRegions } from './gains';
+import { locus, numericRoots, solveRegions } from './gains';
 import { mountView } from './view';
-vi.mock('./gains', async original => { const actual = await original<typeof import('./gains')>(); return { ...actual, solveRegions: vi.fn(actual.solveRegions), locus: vi.fn(actual.locus) }; });
+vi.mock('./gains', async original => { const actual = await original<typeof import('./gains')>(); return { ...actual, solveRegions: vi.fn(actual.solveRegions), locus: vi.fn(actual.locus), numericRoots: vi.fn(actual.numericRoots) }; });
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (value: string, label: string) => { const n = document.createElement('div'); n.textContent = value; n.setAttribute('aria-label', label); return n; },
   createEquationInput: (options: EquationInputOptions) => {
@@ -19,6 +19,9 @@ function field<T extends HTMLElement = HTMLInputElement>(root: HTMLElement, labe
 function press(root: HTMLElement, label: string) { const b = [...root.querySelectorAll('button')].find(n => n.textContent === label); expect(b).toBeDefined(); b!.click(); }
 function input(root: HTMLElement, label: string, value: string) { const n = field<HTMLInputElement>(root, label); n.value = value; n.dispatchEvent(new Event('input', { bubbles: true })); }
 const gainText = (root: HTMLElement) => field(root, 'Selected exact gain').textContent;
+function frames() { let next = 1; const pending = new Map<number, FrameRequestCallback>(); vi.stubGlobal('requestAnimationFrame', vi.fn((callback: FrameRequestCallback) => { const id = next++; pending.set(id, callback); return id; })); const cancel = vi.fn((id: number) => pending.delete(id)); vi.stubGlobal('cancelAnimationFrame', cancel); return { pending, cancel, flush: () => { const callbacks = [...pending.values()]; pending.clear(); callbacks.forEach(callback => callback(0)); } }; }
+function pointer(target: Element, type: string, x = 220): void { const event = new MouseEvent(type, { bubbles: true, cancelable: true, button: 0, clientX: x, clientY: 40 }); Object.defineProperty(event, 'pointerId', { value: 9 }); target.dispatchEvent(event); }
+function plotBounds() { vi.spyOn(SVGElement.prototype, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, width: 440, height: 90 } as DOMRect); }
 afterEach(() => { for (const v of visits.splice(0)) { v.controller.abort(); v.cleanup(); v.root.remove(); } vi.clearAllMocks(); vi.unstubAllGlobals(); });
 
 describe('CS05 immediate exact-gain exploration', () => {
@@ -59,5 +62,44 @@ describe('CS05 immediate exact-gain exploration', () => {
     const { root } = open(); press(root, 'Changed cubic'); press(root, 'Practice'); const practice = root.querySelector<HTMLElement>('[data-learning-mode="practice"]')!;
     expect(practice.querySelector('svg')).toBeNull(); expect(practice.querySelector<HTMLElement>('.cs05-output')!.hidden).toBe(true); press(practice, 'Derive intervals and reveal'); expect(practice.textContent).toContain('K\\in(0,70)');
     press(root, 'Explore'); const explore = root.querySelector<HTMLElement>('[data-learning-mode="explore"]')!; expect(field(explore, 'Complete exact stable gain set').textContent).toBe('K\\in(0,48)');
+  });
+  it('coalesces a gain scrub, keeps all roots/axes, then restores the exact prior gain on Escape from stable focus', () => {
+    const animation = frames(), { root } = open(); plotBounds(); const host = root.querySelector<HTMLElement>('.cs05-interactive-strip')!, ticks = [...root.querySelectorAll('.cs05-responsive-plane text')].map(n => n.textContent), solves = vi.mocked(solveRegions).mock.calls.length, traces = vi.mocked(locus).mock.calls.length, roots = vi.mocked(numericRoots).mock.calls.length;
+    pointer(host.querySelector('svg')!, 'pointerdown'); pointer(host, 'pointermove', 300); pointer(host, 'pointermove', 350); expect(animation.pending.size).toBe(1); animation.flush();
+    expect(vi.mocked(numericRoots).mock.calls).toHaveLength(roots + 1); expect(root.textContent).toContain('Not strictly stable ·'); expect(root.querySelectorAll('.cs05-inspector li')).toHaveLength(3); expect(document.activeElement).toBe(host);
+    expect([...root.querySelectorAll('.cs05-responsive-plane text')].map(n => n.textContent)).toEqual(ticks); expect(vi.mocked(solveRegions).mock.calls).toHaveLength(solves); expect(vi.mocked(locus).mock.calls).toHaveLength(traces);
+    const escape = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }); document.activeElement!.dispatchEvent(escape); expect(escape.defaultPrevented).toBe(true); expect(gainText(root)).toBe('K=20'); expect(root.textContent).toContain('Gain drag cancelled'); expect(animation.pending.size).toBe(0);
+  });
+  it('selects exact strip endpoints on click and keeps a clicked surd thumb exact until it actually moves', () => {
+    frames(); const { root } = open(); plotBounds(); const host = root.querySelector<HTMLElement>('.cs05-interactive-strip')!;
+    pointer(host.querySelector('[data-endpoint="1"]')!, 'pointerdown', 292); pointer(host, 'pointerup', 292); expect(gainText(root)).toBe('K=70'); expect(root.textContent).toContain('Exact endpoint identity retained');
+    press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const before = gainText(root); pointer(host.querySelector('.cs05-gain-handle')!, 'pointerdown', 42); pointer(host, 'pointerup', 42); expect(gainText(root)).toBe(before); expect(root.textContent).toContain('Not strictly stable ·');
+  });
+  it('treats manually edited computed notation as a draft instead of borrowing endpoint identity', () => {
+    const { root } = open(); press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const exact = gainText(root), editor = field<HTMLTextAreaElement>(root, 'Exact rational gain K');
+    input(root, 'Exact rational gain K', editor.value); press(root, 'Apply rational gain'); expect(gainText(root)).toBe(exact); expect(root.textContent).toContain('last checked result is retained');
+    input(root, 'Exact rational gain K', String.raw`\frac12`); press(root, 'Apply rational gain'); expect(gainText(root)).toBe('K=\\frac{1}{2}'); expect(root.textContent).not.toContain('Exact endpoint identity retained');
+  });
+  it('retains the exact selected gain across a model edit without claiming it is a boundary of the new model', () => {
+    const { root } = open(); press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const before = gainText(root);
+    input(root, 'Fixed numerator N(s)', '1'); input(root, 'Fixed denominator D(s)', 's+1'); press(root, 'Apply model');
+    expect(gainText(root)).toBe(before); expect(field(root, 'Complete exact stable gain set').textContent).toBe('K\\in[0,\\infty)'); expect(root.textContent).toContain('Strictly stable ·'); expect(root.textContent).toContain('Exact algebraic gain retained from the earlier model'); expect(root.textContent).not.toContain('Exact endpoint identity retained');
+  });
+  it('keeps a common full characteristic mode instead of cancelling it in the root list', () => {
+    const { root } = open(); input(root, 'Fixed numerator N(s)', 's+1'); input(root, 'Fixed denominator D(s)', '(s+1)(s+2)'); press(root, 'Apply model'); input(root, 'Numeric gain K', '50');
+    const values = [...root.querySelectorAll('.cs05-inspector li')].map(node => node.textContent); expect(values).toHaveLength(2); expect(values.some(value => value?.includes(': -1 + j0'))).toBe(true); expect(values.some(value => value?.includes(': -52 + j0'))).toBe(true); expect(root.textContent).toContain('Strictly stable ·');
+  });
+  it('owns pending animation/resize resources and cancels a scrub when the measured plot width changes', () => {
+    const animation = frames(); let resized: ResizeObserverCallback; const disconnect = vi.fn(); vi.stubGlobal('ResizeObserver', class { constructor(callback: ResizeObserverCallback) { resized = callback; } observe() {} disconnect = disconnect; });
+    const { root, cleanup, controller } = open(); plotBounds(); const host = root.querySelector<HTMLElement>('.cs05-interactive-strip')!, solves = vi.mocked(solveRegions).mock.calls.length, traces = vi.mocked(locus).mock.calls.length, roots = vi.mocked(numericRoots).mock.calls.length;
+    resized!([{ contentRect: { width: 276 } } as ResizeObserverEntry], {} as ResizeObserver); expect(vi.mocked(numericRoots).mock.calls).toHaveLength(roots); expect(root.querySelector('.cs05-responsive-plane svg')!.getAttribute('style')).toContain('--cs05-plot-font');
+    pointer(host.querySelector('svg')!, 'pointerdown'); pointer(host, 'pointermove', 350); animation.flush(); resized!([{ contentRect: { width: 300 } } as ResizeObserverEntry], {} as ResizeObserver); expect(gainText(root)).toBe('K=20'); expect(root.textContent).toContain('Gain drag cancelled');
+    pointer(host.querySelector('svg')!, 'pointerdown'); pointer(host, 'pointermove', 350); const late = [...animation.pending.values()][0]; cleanup(); expect(controller.signal.aborted).toBe(false); expect(disconnect).toHaveBeenCalledOnce(); late(0); resized!([{ contentRect: { width: 500 } } as ResizeObserverEntry], {} as ResizeObserver);
+    expect(root.children).toHaveLength(0); expect(vi.mocked(solveRegions).mock.calls).toHaveLength(solves); expect(vi.mocked(locus).mock.calls).toHaveLength(traces);
+  });
+  it('clears a revealed Practice grade when a prediction changes', () => {
+    const { root } = open(); press(root, 'Practice'); const practice = root.querySelector<HTMLElement>('[data-learning-mode="practice"]')!; input(practice, 'Your selected-gain prediction', 'Strictly stable'); press(practice, 'Derive intervals and reveal'); expect(practice.textContent).toContain('Gain prediction matches');
+    input(practice, 'Your selected-gain prediction', 'Not strictly stable'); expect(practice.textContent).toContain('Gain prediction differs'); expect(practice.textContent).not.toContain('Gain prediction matches');
+    input(practice, 'Your number of stable intervals', '1e-999'); expect(practice.textContent).not.toContain('Gain prediction differs'); expect(practice.textContent).toContain('nonzero but too small');
   });
 });

@@ -55,7 +55,7 @@ export function gainStrip(region: Region, maximum: number, selected: Cut): Strip
   region.cuts.forEach((cut, i) => { const gain = cutNumber(cut); if (gain > maximum) return; const mark = svg('circle', { cx: x(gain), cy: 40, r: 4, class: isStable(region, cut) ? 'cs05-included' : 'cs05-excluded', 'data-endpoint': i }); root.append(mark); endpoints.push(mark); });
   const value = cutNumber(selected);
   if (value <= maximum) root.append(svg('line', { x1: x(value), x2: x(value), y1: 18, y2: 62, class: 'cs05-selected' }), svg('circle', { cx: x(value), cy: 40, r: 8, class: 'cs05-gain-handle' }));
-  root.append(svg('text', { x: 40, y: 82, class: 'cs05-axis-label' }, '0'), svg('text', { x: 400, y: 82, 'text-anchor': 'end', class: 'cs05-axis-label' }, `K = ${axisNumber(maximum)}`));
+  root.append(svg('text', { x: 40, y: 82, class: 'cs05-axis-label' }, '0'), svg('text', { x: 400, y: 82, 'text-anchor': 'end', class: 'cs05-axis-label' }, `K ≈ ${formatNumber(maximum)}`));
   return { element: root, resize(width) {
     if (!Number.isFinite(width) || width <= 0) return; const scale = 440 / width; root.style.setProperty('--cs05-plot-font', `${12 * scale}px`);
     endpoints.forEach(mark => mark.setAttribute('r', String(4 * scale))); root.querySelector('.cs05-gain-handle')?.setAttribute('r', String(8 * scale));
