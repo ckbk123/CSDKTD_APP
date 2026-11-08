@@ -1,0 +1,41 @@
+{
+  "version": "0.3.16",
+  "date": "2026-11-08",
+  "kind": "shared-interactivity-and-three-pilots",
+  "applicationTests": 5633,
+  "applicationTestFiles": 263,
+  "coordinationTests": 33,
+  "sharedPr": 58,
+  "modules": [
+    {
+      "id": "CP01",
+      "source": "ed06ef17227dc9753866ebedf2a6a2336473f8ec",
+      "pr": 60,
+      "moduleTests": 225,
+      "behavior": "Computed baseline response, synchronized amplitude/initial-state exploration, optional prediction/reveal and responsive output-first plots.",
+      "decision": "accepted"
+    },
+    {
+      "id": "CP06",
+      "source": "1e2a38d450909e534a27c629ea527f820736ee58",
+      "pr": 61,
+      "moduleTests": 162,
+      "behavior": "Bounded pole/zero direct editing with undo, fixed equal axes, cached gain exploration, retained full modes and independent Practice.",
+      "decision": "accepted"
+    },
+    {
+      "id": "DR02",
+      "source": "0c97e0dece42ada97b9f50ca29e81b61a0204452",
+      "pr": 59,
+      "moduleTests": 102,
+      "behavior": "Visible register arithmetic and explicit simultaneous commit, linked committed-sample inspection and readable phone axes.",
+      "decision": "accepted"
+    }
+  ],
+  "remainingRefinements": 53,
+  "limits": [
+    "Existing bounded mathematics and original Practice flows remain.",
+    "Actual touch, measured sub100ms latency, all-browser/theme coverage and learning-outcome studies are not claimed.",
+    "No deployment."
+  ]
+}

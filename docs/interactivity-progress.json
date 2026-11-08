@@ -6,7 +6,7 @@
   "scope": "Shared interactivity fixes and CP01/CP06/DR02 pilots, then proven concept-specific refinements across all 56 bounded tools. Preserve existing mathematics/functionality; no deployment.",
   "state": "in-progress",
   "shared": {
-    "state": "implemented-awaiting-independent-review",
+    "state": "accepted",
     "changes": [
       "Punctuation/course-synonym concept search with explicit whole-catalogue scope",
       "Compact optional reference with clearly separate notation preview",
@@ -15,18 +15,14 @@
       "Explicit finite-refinement ownership support"
     ],
     "checks": [
-      "TypeScript passed",
-      "32 affected shared tests passed",
-      "5,567 application tests in 257 files passed",
+      "5633 application tests in 263 files passed",
       "33 coordination tests passed",
-      "Production build passed (existing large-chunk warning)",
-      "Production Chromium desktop: normalized root-locus search 5 continuous/8 across both domains; reference disclosure/notation keyboard cleanup; related links",
-      "Production Chromium 390x844: compact reference and search submit; document client/scroll 375/375"
+      "TypeScript and production build passed",
+      "Independent shared review accepted after search-scope focus correction and separation of synonyms from related-tool groups",
+      "Coordinator production-browser desktop and phone search, notation-preview cleanup, related links and compact workspace checks passed"
     ],
-    "remaining": [
-      "Independent review",
-      "Pilot integration, combined regression and release"
-    ]
+    "remaining": [],
+    "release": "0.3.16"
   },
   "assignments": [
     {
@@ -34,21 +30,30 @@
       "agent": "/root/design_interactivity",
       "branch": "codex/cp01-interactive-response",
       "scope": "Response/excitation exploration pilot",
-      "state": "in-progress"
+      "state": "accepted",
+      "source": "ed06ef17227dc9753866ebedf2a6a2336473f8ec",
+      "pr": 60,
+      "release": "0.3.16"
     },
     {
       "id": "CP06",
       "agent": "/root/response_interactivity",
       "branch": "codex/cp06-interactivity-pilot",
       "scope": "Bounded pole/zero and gain exploration pilot",
-      "state": "in-progress"
+      "state": "accepted",
+      "source": "1e2a38d450909e534a27c629ea527f820736ee58",
+      "pr": 61,
+      "release": "0.3.16"
     },
     {
       "id": "DR02",
       "agent": "/root/structure_stability",
       "branch": "codex/dr02-memory-refinement",
       "scope": "Read/calculate/commit execution pilot",
-      "state": "in-progress"
+      "state": "accepted",
+      "source": "0c97e0dece42ada97b9f50ca29e81b61a0204452",
+      "pr": 59,
+      "release": "0.3.16"
     }
   ],
   "modules": [
@@ -208,14 +213,17 @@
     },
     {
       "id": "CP01",
-      "state": "pilot-in-progress",
+      "state": "accepted",
       "target": "Show default response above optional derivation; put excitation shape, amplitude and initial state beside it; one optional prediction check; live bounded parameter preview.",
-      "evidence": [],
-      "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+      "evidence": [
+        "Computed baseline response, synchronized amplitude/initial-state exploration, optional prediction/reveal and responsive output-first plots.",
+        "Independent source review and centrally attributed actual browser acceptance in owned STATUS.md",
+        "5633 combined application tests; TypeScript, coordination and build checks passed"
+      ],
+      "remaining": [],
+      "release": "0.3.16",
+      "source": "ed06ef17227dc9753866ebedf2a6a2336473f8ec",
+      "pr": 60
     },
     {
       "id": "CP02",
@@ -263,14 +271,17 @@
     },
     {
       "id": "CP06",
-      "state": "pilot-in-progress",
+      "state": "accepted",
       "target": "Pilot immediate baseline locus, live gain slider/all-root cursor, Add pole/Add zero within order budget, drag factors with conjugate coupling, linked equation and angle vectors; retain prediction mode as optional challenge.",
-      "evidence": [],
-      "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+      "evidence": [
+        "Bounded pole/zero direct editing with undo, fixed equal axes, cached gain exploration, retained full modes and independent Practice.",
+        "Independent source review and centrally attributed actual browser acceptance in owned STATUS.md",
+        "5633 combined application tests; TypeScript, coordination and build checks passed"
+      ],
+      "remaining": [],
+      "release": "0.3.16",
+      "source": "1e2a38d450909e534a27c629ea527f820736ee58",
+      "pr": 61
     },
     {
       "id": "CR01",
@@ -571,14 +582,18 @@
     },
     {
       "id": "DR02",
-      "state": "pilot-in-progress",
-      "target": "Add optional bounded play/pause and visible memory-shift transition after manual first steps; let students stop on a highlighted multiply-add. Preserve simultaneous update semantics.",
-      "evidence": [],
-      "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+      "state": "accepted",
+      "target": "Visible source registers, multiply-add arithmetic and simultaneous write preview with explicit Reveal/Commit; inspect any committed sample without advancing the live memory.",
+      "evidence": [
+        "Visible register arithmetic and explicit simultaneous commit, linked committed-sample inspection and readable phone axes.",
+        "Independent source review and centrally attributed actual browser acceptance in owned STATUS.md",
+        "5633 combined application tests; TypeScript, coordination and build checks passed"
+      ],
+      "remaining": [],
+      "release": "0.3.16",
+      "source": "0c97e0dece42ada97b9f50ca29e81b61a0204452",
+      "pr": 59,
+      "scopeDecision": "Pilot review selected direct source/product inspection and deliberate simultaneous commits. The earlier optional autoplay candidate was not adopted; retaining explicit timing makes the memory semantics inspectable."
     },
     {
       "id": "DR03",
@@ -668,5 +683,12 @@
         "Independent review and integration"
       ]
     }
+  ],
+  "completedModuleRefinements": 3,
+  "remainingModuleRefinements": 53,
+  "nextWave": [
+    "CP04",
+    "DR05",
+    "CS05"
   ]
 }

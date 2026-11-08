@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.16 — 8 November 2026
+
+- Improve catalogue search across course terms and punctuation, make whole-catalogue scope explicit, compact the reference/notation preview and add related-tool links. Equation fields can select appropriate quick symbols while retaining the math keyboard.
+- Add three reviewed interactivity pilots: CP01 opens with a computed response and live amplitude/initial-state controls; CP06 supports adding, moving and removing bounded pole/zero groups with gain exploration and undo; DR02 links memory arithmetic, explicit commit and sample inspection. Preserve existing mathematics, full modes, prediction/reveal flows and input/lifecycle safeguards.
+- All **5633 application tests in 263 files**, **33 coordination tests**, TypeScript, production build and centrally attributed desktop/phone browser checks pass. [Release evidence](docs/releases/v0.3.16.json) preserves exact source/PR history; [the refinement ledger](docs/interactivity-progress.json) keeps the remaining **53 module refinements** explicit. No deployment.
+
 ## 0.3.15 — 30 October 2026
 
 - Complete CD02/CD04 root-locus lead and lead-lag design, CD06 frequency lag/lead-lag, CD07 response-curve tuning, CS04 Nyquist stability, DD02 direct discrete lead/lag, DR04 sampled diagrams/discrete Mason, and CR04 interactive block reduction. All 56 accepted bounded tools are now verified; original fork histories from PRs #50–57 are preserved in the [release map](docs/releases/v0.3.15.json).
