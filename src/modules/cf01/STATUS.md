@@ -1,6 +1,21 @@
 # CF01 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement:** linked transient response, target-pair controls and constrained pole exploration, 8 November 2026; owner interactivity-cf01-01a1ac7b; baseline aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c (released v0.3.16).
+- **Current branch/worktree:** codex/cf01-transient-exploration; C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cf01-transients-01a1ac7b. Fresh ordinary Git fallback, own locked npm ci installation (109 packages).
+- **Owned finite scope:** src/modules/cf01/** only. Preserve response.ts, measure.ts, input.ts, index.ts and the existing mathematical/conditioning/horizon domain. No shared/dependency/deployment changes. Central browser acceptance belongs to the integration owner.
+
+## Current interaction requirement audit
+
+The actual released view computes the baseline immediately, but places its response/pole plots after the full equation, requirements, factors, horizon and refinement form. Inputs clear the plots and require Calculate again. Inspection redraws the entire response SVG; target changes recompute both responses. The answer table is revealable, while detected response markers and full settling text currently appear before Reveal. Prediction-selector edits have no grading invalidation listener. Both plots require an 820 px local canvas. Existing response/measurement/parser/lifecycle tests and the accepted mathematical domain will be preserved.
+
+The finite refinement will lead with real linked response and pole region, numeric/range damping and natural-frequency controls plus a constrained conjugate-pair handle, real-axis optional factor handles, cached target/cursor updates, coalesced full runs with an adjacent pending label, clear reveal/grading semantics, readable native axes and one owned pointer with cancellation. The original arbitrary supported equation remains accessible and authoritative; critical/overdamped cases retain their full numeric path. Pair changes explicitly preserve positive DC gain and reject unsupported resulting numerators atomically.
+
+Initial checkpoint: presentation-only parameters.ts serializes full Number round-trip decimal coefficients, independently parses them with the existing parser, checks them with the existing response builder and rejects changes outside accepted bounds before writing UI state. Four tests pass: known DC gain preservation, actual conjugate geometry, critical/overdamped numeric paths, coefficient digit round-trip and rejected DC-preserving overflow without source mutation. No new UI, full-suite, type/build or browser verification is claimed at this checkpoint. Implementation remains in progress.
+
+## Historical accepted bounded exercise
+
+The v0.3.16 implementation below is preserved historical verification; it does not certify the current interface refinement.
 - **Coordinator preparation:** frozen source `9ba4b376f5a0f3427976933e2689e3ab7f2349da` passed a bounded independent review of the zero-state normalized step, retained pole/zero factors, repeated-pole residues, derivative/crossing definitions, numerical future envelope and guideline qualifications.46 independent ODE/closed-form/crossing/target checks passed. Shared TeX preflight now precedes normalization, with explicit/Unicode argument blanks, malformed nested delimiters and valid-box/fence regressions. Native fields already use `readNumericInput`. Deferred cleanup now releases a disposer returned after reentrant abort, with pending-disposal coverage.50 module tests plus179 shared-preflight tests pass (229 total), with type checking and diff validation. Mathematical scope/bounds are preserved; coordinator browser acceptance of this integration remains pending.
 - **Assessed:** 2026-10-29; fresh primary main9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86 (v0.3.9)
 - **Owned scope:** src/modules/cf01/**; [accepted contract](TASK.md)
