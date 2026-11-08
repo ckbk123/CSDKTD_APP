@@ -109,6 +109,14 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
     expect(capture.mock.calls).toEqual([[7]]); expect(points(root)).toBe(preview); expect(field<HTMLSelectElement>(root, 'Selected factor').value).toBe('0');
     pointer(window, 'pointercancel', 420, 7); expect(points(root)).toBe(original); controller.abort();
   });
+  it('retains the originating phase handle and avoids scrolling across repeated keyboard edits', () => {
+    const { root, controller } = open(); const phaseHandle = () => active(root).querySelector<SVGElement>('svg[aria-label="Phase response"] [data-factor="1"]')!;
+    phaseHandle().focus(); const focus = vi.spyOn(SVGElement.prototype, 'focus');
+    for (let i = 0; i < 2; i++) {
+      phaseHandle().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })); expect(document.activeElement).toBe(phaseHandle()); expect(focus).toHaveBeenLastCalledWith({ preventScroll: true });
+    }
+    expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').valueAsNumber).toBeCloseTo(2 * 10 ** .04, 11); focus.mockRestore(); controller.abort();
+  });
   it('starts Practice without Explore answers and revokes a previous matched grade on prediction edits', () => {
     const { root, controller } = open(); update(root, 'Learning mode', 'practice', 'change'); expect(active(root).querySelectorAll('polyline')).toHaveLength(0); expect(active(root).textContent).not.toContain('normalization gain Kₙ='); expect(active(root).querySelector('.bode-verdict')).toBeNull();
     update(root, 'Your corner for factor 2 [rad/s]', '2'); update(root, 'Your normalization gain magnitude |Kₙ|', '.5'); click(root, 'Draw my asymptote'); expect(active(root).querySelectorAll('polyline')).toHaveLength(2); expect(active(root).querySelectorAll('.bode-checked-marker')).toHaveLength(0); expect(active(root).textContent).not.toContain('Exact numerical');

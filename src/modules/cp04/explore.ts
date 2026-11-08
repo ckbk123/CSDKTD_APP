@@ -247,10 +247,12 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
   plots.addEventListener('keydown', event => {
     if (!isActive()) return;
     const target = (event.target as Element).closest('[data-factor]'); if (!target || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+    const originPlot = target.closest('svg[aria-label]')?.getAttribute('aria-label');
     event.preventDefault(); try {
       cancelGesture(); checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); const f = normalizeFactor(checked.model.factors[selected]), bounds = viewValues();
       begin('corner'); propose(event.key === 'Home' ? bounds.low : event.key === 'End' ? bounds.high : Math.max(bounds.low, Math.min(bounds.high, f.corner * 10 ** ((event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? .1 : .02))))); commit();
-      plots.querySelector<SVGElement>(`[data-factor="${selected}"]`)?.focus();
+      const samePlot = [...plots.querySelectorAll('svg[aria-label]')].find(plot => plot.getAttribute('aria-label') === originPlot);
+      samePlot?.querySelector<SVGElement>(`[data-factor="${selected}"]`)?.focus({ preventScroll: true });
     } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'This corner edit is unsupported.'; }
   }, { signal });
   examples.addEventListener('change', () => {
