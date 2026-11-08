@@ -72,4 +72,14 @@ describe('disk/half-plane point controls',()=>{
     const v=open(),input=field(v.root,'Selected Re z (−5 to 5)'),readout=v.root.querySelector('.ds-map-readout')!;
     v.destroy(); v.destroy(); expect(v.life.signal.aborted).toBe(false); edit(input,'.5'); expect(readout.textContent).toContain('Selected z = 0 + 1j;'); expect(disconnected).toHaveBeenCalledOnce(); expect(v.root.childElementCount).toBe(0);
   });
+  it('uses the measured phone width for 12px labels and 44px point targets, and disconnects an observer allocated during abort',()=>{
+    let resize: (()=>void) | undefined; const disconnect=vi.fn();
+    vi.stubGlobal('ResizeObserver',class {constructor(callback:()=>void){resize=callback;} observe(){} disconnect(){disconnect();}});
+    const v=open(); vi.spyOn(v.root.querySelector('figure')!,'getBoundingClientRect').mockReturnValue({width:329} as DOMRect); resize!();
+    expect(v.root.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 307 307'); expect(v.root.querySelector('.ds-point-hit')?.getAttribute('r')).toBe('22');
+    v.destroy(); expect(disconnect).toHaveBeenCalledOnce();
+    const root=document.createElement('div'),life=new AbortController(),late=vi.fn();
+    vi.stubGlobal('ResizeObserver',class {constructor(){life.abort();} observe(){} disconnect(){late();}});
+    createMapping(root,life.signal); expect(late).toHaveBeenCalledOnce(); expect(root.childElementCount).toBe(0);
+  });
 });

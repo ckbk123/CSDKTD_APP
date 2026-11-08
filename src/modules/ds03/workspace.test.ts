@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
 import { mount } from './workspace';
 import * as ui from './ui';
+import * as equations from '../../shared/equations/input';
 
 // Tests caller-owned drafts and lifecycle only. Interactive MathLive needs browser QA.
 vi.mock('../../shared/equations/input', () => ({
@@ -36,6 +37,30 @@ const selected = (root: HTMLElement) => root.querySelector('.ds-map-readout')!.t
 function edit(field: HTMLInputElement | HTMLTextAreaElement, value: string) { field.value = value; field.dispatchEvent(new Event('input', { bubbles: true })); }
 
 describe('DS03 exercise and visit state', () => {
+  it('opens on independent linked point views while keeping polynomial answers behind the exercise', async () => {
+    const { container } = await open();
+    expect(container.querySelector('.ds-exercise')?.hasAttribute('open')).toBe(false);
+    expect(container.querySelectorAll('.ds-mapping svg')).toHaveLength(2);
+    expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
+    expect(container.querySelector('.ds-root')).toBeNull();
+    expect(container.textContent).toContain('Selected z = 0 + 1j');
+  });
+  it('revokes an old prediction grade without changing the checked polynomial or revealing a new grade', async () => {
+    const { container } = await open(); const prediction = container.querySelector('select')!;
+    prediction.value = 'strictly stable'; click(container, 'Check and reveal'); expect(container.textContent).toContain('Your prediction agrees');
+    prediction.value = 'unstable'; prediction.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(container.textContent).not.toContain('Your prediction agrees'); expect(container.textContent).not.toContain('Compare your prediction');
+    expect(container.textContent).toContain('Computed check: at K = 1');
+    click(container, 'Check and reveal'); expect(container.textContent).toContain('Compare your prediction');
+  });
+  it('releases its own partially mounted resources when equation setup throws with the parent still active', () => {
+    const controller = new AbortController(), container = document.createElement('div'), listener = vi.fn(); document.body.append(container);
+    let child: AbortSignal | undefined;
+    vi.spyOn(equations, 'createEquationInput').mockImplementationOnce(options => { child = options.signal; window.addEventListener('ds03-ui-partial', listener, { signal: child }); throw new Error('partial editor'); });
+    expect(() => ui.mountUI({ container, signal: controller.signal })).toThrow('partial editor');
+    expect(controller.signal.aborted).toBe(false); expect(child?.aborted).toBe(true); expect(container.childElementCount).toBe(0);
+    window.dispatchEvent(new Event('ds03-ui-partial')); expect(listener).not.toHaveBeenCalled(); controller.abort(); container.remove();
+  });
   it('keeps the derivation hidden until checking, then reveals a computed strict interval', async () => {
     const { container } = await open();
     expect(container.textContent).not.toContain('0 < K < 2.5');
