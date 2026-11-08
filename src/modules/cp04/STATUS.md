@@ -1,13 +1,23 @@
 # CP04 implementation status
 
+## Interactivity refinement — 8 November 2026
+
+Explicit finite scope: visual-first Bode exploration and preservation of the existing bounded construction exercise. Fresh isolated baseline `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c` (v0.3.16), branch `codex/cp04-factor-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cp04-factor-exploration/CSDKTD APP`; only CP04 is owned. The earlier verified exercise and its historical browser evidence below remain preserved history, not browser evidence for this refinement.
+
+Current implementation: Explore computes its useful baseline immediately, links exact/asymptotic magnitude and unwrapped phase, selected-factor contribution, log-corner handles/range/numeric/key controls, signed gain, explicit delay, cursor, view units, fixed axes with Fit and one-step model undo. The original complete raw-factor domain and scalar parsers remain available. Corner/damping transformations preserve a₀, raw K and first-order half-plane sign; generated coefficient strings are reparsed before publication. Unsupported coefficient/precision edits fail with visible feedback rather than clipping or hidden numerical changes. Practice is an independent baseline lifetime with student curves only before reveal; edited predictions remove old grading. Raw/model errors clear stale answer output. Owned timers, gesture cancellation, pointer listeners, observers and editors are released on mode change/disposal.
+
+Initial source/DOM checks: `npm test -- src/modules/cp04` passes 81 tests in 7 files; `npm run check` passes with Node 24.22.1. Independent fixtures include the normalization-preserving 2→3 rad/s corner change (a₁=2/3, |G(j)|=3/√80), quadratic corner/damping invariants and signed RHP phase. New DOM fixtures cover initial computed plots, unit invariance, underflow recovery, full six-factor/zero-factor domain, atomic failure, range previews during movement, Escape/cancel/late-callback cleanup, pointer/key linkage and Practice answer/grade isolation. These mocked-editor tests are not real-browser evidence.
+
+Pending: focused plot/gesture recovery review, production build/full application checks and centralized real-browser acceptance on desktop/narrow layouts. No measured latency or actual touch interaction is claimed. PR URL and exact final tested SHA will be recorded after freezing the candidate. The historical PR #15 below is the original exercise contribution.
+
 ## Prepared coordinator integration — 29 October 2026
 
 Frozen source `3c6eb86f704576f86c93f948a45b348719a2badc` is merged with its history into the isolated integration branch. The view now imports the shared native reader, with the duplicate local implementation removed and its fixtures retained against the shared API. Unit changes validate nonblank frequency drafts before atomically converting them; invalid underflow remains visible and does not silently become zero or partially change units. Blank optional corner predictions remain blank. Existing frequency and visual-scalar bounds remain local.
 
 Both scalar readers use shared TeX argument preflight before spacing/delimiter removal; regressions cover malformed command, Unicode and nested-delimiter arguments plus valid boxed values. The existing child-signal wrapper now owns a DOM host, clears partial/pending content, aborts partial failure immediately and releases reentrant late disposers exactly once. Standalone disposal, failure recovery and pending navigation are tested alongside the real teaching flow. Integration checks: 59 module tests, TypeScript and diff checks pass. The prior independent mathematical review and worker browser evidence remain applicable. Stage remains implemented pending coordinator combined/browser acceptance.
 
-- **Stage:** verified
-- **Review disposition:** requested corrections are implemented and rechecked below; independent final acceptance/integration is pending. No verified stage is claimed.
+- **Stage:** implemented
+- **Review disposition:** original exercise accepted in v0.3.13; current refinement is implemented pending independent technical and centralized browser acceptance.
 - **Assessed:** 2026-10-29; starting primary-main revision `8696261267b7620bfc101ce2b5f13772bfaa529a`.
 - **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`.
 - **Ownership/branch:** `src/modules/cp04/**`; `codex/cp04-bode-01a18701`; claim `worker-cp04-01a18701`.
