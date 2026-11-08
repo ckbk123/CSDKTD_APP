@@ -29,7 +29,8 @@ describe('Practice lazy-mount recovery ownership', () => {
     press(root, 'Practice'); expect(controller.signal.aborted).toBe(false); expect(state.signals[0].aborted).toBe(true); expect(state.aborts).toBe(1);
     expect(root.querySelector('[data-practice-attempt]')).toBeNull(); expect(root.textContent).toContain('Practice could not open'); expect(root.querySelector<HTMLElement>('[data-learning-mode="explore"]')!.hidden).toBe(false); expect(input.value).toBe('changed exploration');
     window.dispatchEvent(new Event('cp06-practice-resource')); expect(state.probes).toBe(0);
-    state.fail = false; press(root, 'Retry Practice'); expect(root.querySelectorAll('[data-practice-attempt]')).toHaveLength(1); expect(state.signals[1].aborted).toBe(false); expect(controller.signal.aborted).toBe(false);
+    state.fail = false; const retry = [...root.querySelectorAll('button')].find(n => n.textContent === 'Retry Practice')!; retry.focus(); press(root, 'Retry Practice'); expect(root.querySelectorAll('[data-practice-attempt]')).toHaveLength(1); expect(state.signals[1].aborted).toBe(false); expect(controller.signal.aborted).toBe(false);
+    expect(document.activeElement).toBe([...root.querySelectorAll('button')].find(n => n.textContent === 'Practice')); expect(root.querySelector<HTMLElement>('[role="status"]')!.hidden).toBe(true);
     window.dispatchEvent(new Event('cp06-practice-resource')); expect(state.probes).toBe(1);
     press(root, 'Explore'); expect(input.value).toBe('changed exploration'); expect(root.querySelector<HTMLElement>('[data-learning-mode="explore"]')!.hidden).toBe(false);
   });

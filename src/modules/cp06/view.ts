@@ -35,11 +35,13 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   };
   const show = (isExplore: boolean) => {
     if (disposed || lifetime.signal.aborted) return;
+    const retryOwnedFocus = document.activeElement === retry;
     window.mathVirtualKeyboard?.hide({ animate: false });
     if (!isExplore) explorePanel.dispatchEvent(new Event('cp06-suspend'));
     if (!isExplore && !practiceMounted && !startPractice()) return;
     recovery.hidden = true;
     explorePanel.hidden = !isExplore; practicePanel.hidden = isExplore; explore.setAttribute('aria-pressed', String(isExplore)); practice.setAttribute('aria-pressed', String(!isExplore));
+    if (retryOwnedFocus) (isExplore ? explore : practice).focus({ preventScroll: true });
   };
   const cleanup = () => { if (disposed) return; disposed = true; signal.removeEventListener('abort', onAbort); lifetime.abort(); disposeExplore?.(); releasePractice(); root.remove(); };
   lifetime.signal.addEventListener('abort', cleanup, { once: true });
