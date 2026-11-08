@@ -46,5 +46,10 @@
 [data-module="CS05"] .cs05-tail-arrow { stroke: var(--accent); stroke-width: 2; fill: none; vector-effect: non-scaling-stroke; }
 [data-module="CS05"] .cs05-explore .cs05-branch, [data-module="CS05"] .cs05-explore .cs05-axis { vector-effect: non-scaling-stroke; }
 [data-module="CS05"] .cs05-explore input[type="range"] { width: 100%; min-height: 40px; padding-inline: 0; accent-color: var(--accent); }
+[data-module="CS05"] .cs05-visual { gap: .45rem; }
+[data-module="CS05"] .cs05-primary-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; align-items: end; }
+[data-module="CS05"] .cs05-primary-controls .cs05-field { gap: .2rem; font-size: .85rem; }
+[data-module="CS05"] .cs05-primary-controls input { min-width: 0; width: 100%; min-height: 40px; }
+[data-module="CS05"] .cs05-live-outcome { font-weight: 650; }
 [data-module="CS05"] [data-learning-mode="practice"] svg text { font-size: 16px; }
 @media (max-width: 900px) { [data-module="CS05"] .cs05-explore-layout { grid-template-columns: minmax(0, 1fr); } }

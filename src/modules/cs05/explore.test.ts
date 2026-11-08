@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { convertLatexToMarkup, convertLatexToMathMl, validateLatex } from 'mathlive/ssr';
 import type { EquationInputOptions } from '../../shared/equations/input';
 import { locus, numericRoots, solveRegions } from './gains';
 import { mountView } from './view';
@@ -28,6 +29,23 @@ describe('CS05 immediate exact-gain exploration', () => {
   it('opens with the exact baseline interval, both diagrams and every selected root', () => {
     const { root } = open(); expect(root.querySelectorAll('.cs05-responsive-plane > svg, .cs05-interactive-strip > svg')).toHaveLength(2); expect(field(root, 'Complete exact stable gain set').textContent).toBe('K\\in(0,70)'); expect(root.querySelectorAll('.cs05-inspector li')).toHaveLength(3); expect(gainText(root)).toBe('K=20');
     expect(root.textContent).toContain('Strictly stable · every exact inequality is positive');
+  });
+  it('renders the actual generated leading-unit characteristic notation without a joined TeX command', () => {
+    const { root } = open();
+    const check = () => { const source = field(root, 'Complete selected characteristic polynomial').textContent!; expect(validateLatex(source)).toEqual([]); expect(convertLatexToMarkup(source)).not.toContain('ML__error'); expect(convertLatexToMathMl(source)).toContain('<mo>≈</mo>'); };
+    check(); input(root, 'Numeric gain K', '0'); check(); input(root, 'Fixed numerator N(s)', '1'); input(root, 'Fixed denominator D(s)', 's+1'); press(root, 'Apply model'); check(); input(root, 'Numeric gain K', '1e-10'); check();
+  });
+  it('keeps an exact surd selection distinct from a continuous native thumb, with explicit keyboard steps', () => {
+    const { root } = open(); press(root, 'Irrational boundaries'); press(root, 'Select endpoint 3'); const exact = gainText(root); input(root, 'Locus maximum gain', '1000'); press(root, 'Apply view range');
+    const cursor = field<HTMLInputElement>(root, 'Live gain cursor'), position = 2 - Math.sqrt(2); expect(cursor.step).toBe('any'); expect(cursor.valueAsNumber).toBeCloseTo(position, 14); expect(cursor.getAttribute('aria-valuetext')).toContain('exact algebraic gain is retained'); expect(gainText(root)).toBe(exact); expect(root.querySelector('.cs05-live-outcome')!.textContent).toBe('Not strictly stable · exact check');
+    const right = new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }); cursor.dispatchEvent(right); expect(right.defaultPrevented).toBe(true); expect(cursor.valueAsNumber).toBeCloseTo(position + 1, 10); expect(gainText(root)).not.toBe(exact); expect(root.textContent).not.toContain('Exact endpoint identity retained');
+    cursor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true, cancelable: true })); expect(cursor.valueAsNumber).toBe(0); cursor.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true, cancelable: true })); expect(cursor.valueAsNumber).toBe(1000); expect(root.querySelector('.cs05-live-outcome')!.textContent).toBe('Strictly stable · exact check');
+    cursor.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', shiftKey: true, bubbles: true, cancelable: true })); expect(cursor.valueAsNumber).toBe(990); cursor.dispatchEvent(new KeyboardEvent('keydown', { key: 'PageDown', bubbles: true, cancelable: true })); expect(cursor.valueAsNumber).toBe(980);
+  });
+  it('keeps the exact outcome directly above the strip and beside two compact primary controls', () => {
+    const { root } = open(), primary = root.querySelector('.cs05-primary-controls')!, outcome = root.querySelector<HTMLElement>('.cs05-live-outcome')!, strip = root.querySelector('.cs05-interactive-strip')!;
+    expect(primary.querySelectorAll('input')).toHaveLength(2); expect(primary.contains(field(root, 'Numeric gain K'))).toBe(true); expect(primary.contains(field(root, 'Live gain cursor'))).toBe(true); expect(outcome.compareDocumentPosition(strip) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0); expect(outcome.textContent).toBe('Strictly stable · exact check');
+    input(root, 'Numeric gain K', '80'); expect(outcome.textContent).toBe('Not strictly stable · exact check'); input(root, 'Fixed denominator D(s)', 's^4+1'); press(root, 'Apply model'); expect(outcome.textContent).toBe('Not strictly stable · exact check'); expect(root.querySelector('.cs05-model-state')!.textContent).toContain('last checked model');
   });
   it('reuses the exact region and finite trace while gain changes, keeping axes fixed', () => {
     const { root } = open(), solves = vi.mocked(solveRegions).mock.calls.length, traces = vi.mocked(locus).mock.calls.length;

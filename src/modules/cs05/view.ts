@@ -27,7 +27,7 @@ export const mountView: ModuleMount = ({ container, signal }) => {
       if (disposed || child.signal.aborted) { release?.(); releasePractice(); return false; }
       disposePractice = release; practiceMounted = true; return true;
     } catch {
-      // Practice already releases its tracked editors/DOM; abort also releases any signal-owned resource from a partial mount.
+      // Abort releases signal-owned resources; removing the owned host clears partial Practice DOM.
       releasePractice();
       if (!disposed && !lifetime.signal.aborted) { recoveryText.textContent = 'Practice could not open. Retry Practice or continue exploring.'; recovery.hidden = false; }
       return false;
