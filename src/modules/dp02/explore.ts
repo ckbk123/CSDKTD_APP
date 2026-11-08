@@ -85,7 +85,7 @@ export const mount:ModuleMount=({container,signal})=>{
     planes.replaceChildren(nextPlanes);sequence.replaceChildren(nextSequence);get('.dp-live-readout').replaceChildren(readout);get('.dp-inverse-readout').replaceChildren(inverse);get('.dp-alias-readout').replaceChildren(aliases);
     const clipped=Math.max(Math.abs(model.pole.real),Math.abs(model.pole.imag),Math.abs(inv.real),Math.abs(inv.imag))>viewWindow.s||Math.max(z.radius,previous.radius)>viewWindow.z;
     get('.dp-window-note').textContent=clipped?'Some checked poles, inverse branches or radii are outside the fixed view. Values remain listed; use Fit plots.':'Equal plane axes are fixed. Reference T stays fixed while you move target T.';
-    message.textContent=`Checked mapping · ${model.N} intervals · horizon ${fmt(model.N*model.T)} s.`;
+    message.textContent=`Checked · ${model.N} intervals · ${fmt(model.N*model.T)} s.`;
     periodRange.value=String(Math.log10(model.T));periodRange.setAttribute('aria-valuetext',`${fmt(model.T,9)} seconds`);
     inspect();sizePlots(root);if(focus)(planes.querySelector<SVGElement>(`[data-pole-handle="${focus}"]`)??planes.querySelector<SVGElement>('[data-pole-handle="1"]'))?.focus({preventScroll:true});
   }
@@ -98,7 +98,7 @@ export const mount:ModuleMount=({container,signal})=>{
   for(const field of [period,reference,count])field.addEventListener('input',queue,{signal:life.signal});
   periodRange.addEventListener('input',()=>{try{period.value=String(10**readNumericInput(periodRange,'logarithmic T'));queue();}catch(error){rejected(error);}},{signal:life.signal});
   for(const field of [kInput,kRange])field.addEventListener('input',()=>{try{const k=readNumericInput(field,'sample k');if(!Number.isInteger(k)||k<0||k>checked.N)throw new Error(`Choose an integer sample from 0 to ${checked.N}.`);selected=k;kInput.value=String(k);get('.dp-inspection-error').textContent='';inspect();}catch(error){get('.dp-inspection-error').textContent=(error as Error).message;}},{signal:life.signal});
-  const viewOnly=()=>{const prior=message.textContent,inspection=kInput.value,invalid=Boolean(get('.dp-inspection-error').textContent);try{publish(checked);if(!prior?.startsWith('Checked mapping'))message.textContent=prior;if(invalid)kInput.value=inspection;}catch(error){rejected(error);}};
+  const viewOnly=()=>{const prior=message.textContent,inspection=kInput.value,invalid=Boolean(get('.dp-inspection-error').textContent);try{publish(checked);if(!prior?.startsWith('Checked ·'))message.textContent=prior;if(invalid)kInput.value=inspection;}catch(error){rejected(error);}};
   branch.addEventListener('change',viewOnly,{signal:life.signal});
   get('[data-action="fit"]').addEventListener('click',()=>{const z=mapPole(checked.pole,checked.T),p=mapPole(checked.pole,checked.T0),inv=inversePole(z,checked.T,Number(branch.value));viewWindow={s:Math.max(1,Math.abs(checked.pole.real),Math.abs(checked.pole.imag),Math.abs(inv.real),Math.abs(inv.imag))*1.25,z:Math.max(1,z.radius,p.radius)*1.2};viewOnly();},{signal:life.signal});
   const releaseCapture=(id:number)=>{try{if(planes.hasPointerCapture?.(id))planes.releasePointerCapture(id);}catch{/* A detached pointer may already be released. */}};

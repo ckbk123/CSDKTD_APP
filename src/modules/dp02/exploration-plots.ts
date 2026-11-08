@@ -13,7 +13,7 @@ export function explorationPlanes(pole:Pole,T:number,T0:number,inverse:Pole,wind
   const target=mapPole(pole,T),reference=mapPole(pole,T0);
   for(const domain of ['s','z'] as const){
     const extent=window[domain],figure=document.createElement('figure'),heading=document.createElement('h4');heading.textContent=domain==='s'?'Continuous pole':'Mapped pole';
-    const svg=node('svg',{viewBox:'0 0 400 360','aria-label':domain==='s'?'Continuous pole and conjugate; drag a cross':'Discrete poles, unit circle and reference mapping',role:'img','data-plane':domain});
+    const svg=node('svg',{viewBox:'0 0 400 360','aria-label':domain==='s'?'Continuous pole and conjugate; drag a cross':'Discrete poles, unit circle and reference mapping',role:domain==='s'?'group':'img','data-plane':domain});
     svg.append(node('title',{},domain==='s'?'Continuous pole and selected inverse branch':'Target mapping and reference at Tref'));
     svg.append(node('path',{d:'M65,165H335M200,30V300',class:'dp-axis'}));
     for(const sign of [-1,1])svg.append(node('text',{x:200+sign*135,y:322,'text-anchor':'middle'},fmt(sign*extent,3)),node('text',{x:57,y:165-sign*135+4,'text-anchor':'end'},fmt(sign*extent,3)));

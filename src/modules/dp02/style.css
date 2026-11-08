@@ -34,6 +34,7 @@
 [data-module="DP02"] .dp-modes button { min-height: 44px; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 9px 12px; font: inherit; }
 [data-module="DP02"] .dp-modes button[aria-pressed="true"] { background: var(--tint); border-color: var(--accent); }
 [data-module="DP02"] .dp-explore .dp-planes { margin-top: 0; }
+[data-module="DP02"] .dp-explore .dp-period-controls { margin: 0 0 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 [data-module="DP02"] .dp-explore .dp-axis-caption { margin: 0 0 6px; font-size: 12px; }
 [data-module="DP02"] .dp-explore input, [data-module="DP02"] .dp-explore select { min-height: 44px; }
 [data-module="DP02"] .dp-explore input[type="range"] { padding: 8px 0; accent-color: var(--accent); }

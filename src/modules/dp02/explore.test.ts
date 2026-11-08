@@ -2,7 +2,7 @@ import {afterEach,describe,expect,it,vi} from 'vitest';
 import type {EquationDraft,EquationInputOptions} from '../../shared/equations/input';
 import {mount} from './explore';
 import {mount as mountModes} from './view';
-import {coordinates,explorationPlanes,worldPoint} from './exploration-plots';
+import {coordinates,explorationPlanes,worldPoint,sizePlots} from './exploration-plots';
 
 vi.mock('../../shared/equations/input',()=>({
   createEquationDisplay:(latex:string,label:string)=>{const el=document.createElement('div');el.textContent=latex;el.setAttribute('aria-label',label);return el;},
@@ -119,6 +119,12 @@ describe('DP02 fixed equal plane geometry',()=>{
     expect(coordinates({real:2,imag:1},5)).toEqual({x:254,y:138});expect(worldPoint(254,138,5)).toEqual({real:2,imag:1});
     const root=explorationPlanes({real:-2,imag:3},.1,.1,{real:-2,imag:3},{s:5,z:1.2});
     expect(root.querySelector('[data-plane="s"]')!.getAttribute('viewBox')).toBe('0 0 400 360');
+    expect(root.querySelector('[data-plane="s"]')!.getAttribute('role')).toBe('group');
     expect(root.querySelectorAll('.dp-reference').length).toBe(2);
+  });
+  it('keeps world geometry while rendering 12px text and 44px hit targets at half width',()=>{
+    const root=explorationPlanes({real:-2,imag:3},.1,.1,{real:-2,imag:3},{s:5,z:1.2}),svg=root.querySelector<SVGSVGElement>('[data-plane="s"]')!,before=svg.querySelector('.dp-cross')!.getAttribute('d');
+    vi.spyOn(svg,'getBoundingClientRect').mockReturnValue({x:0,y:0,left:0,top:0,right:200,bottom:180,width:200,height:180,toJSON(){return {};}});sizePlots(root);
+    expect(svg.querySelector<SVGTextElement>('text')!.style.fontSize).toBe('24px');expect(Number(svg.querySelector('[data-hit]')!.getAttribute('r'))).toBe(44);expect(svg.querySelector('.dp-cross')!.getAttribute('d')).toBe(before);
   });
 });
