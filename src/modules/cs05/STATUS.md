@@ -1,6 +1,24 @@
 # CS05 implementation status
 
-- **Stage:** verified
+- **Stage:** implemented
+- **Current finite refinement, 8 November 2026:** exact stable-gain exploration and practice, assigned by the interactivity coordinator after release v0.3.16. Owner `interactivity-cs05-01a1ac7b`; fresh branch `codex/cs05-gain-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cs05-gain-fallback/CSDKTD APP`, base `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c`. The managed worktree call stalled, so the coordinator authorized the documented isolated Git-worktree fallback. Browser QA remains centralized with the coordinator.
+
+## Current interactivity refinement audit
+
+The delivered v0.3.16 exercise below is preserved as historical verification, not evidence for this new presentation. Inspection found a complete exact gain-set solver and checked numerical locus, with results initially hidden behind a long setup/reveal flow. The slider already updated selected roots after reveal, but a plot-range edit invalidated the exact region and the plane rescaled with selected roots. This finite refinement retains the accepted mathematics and improves access to those capabilities.
+
+| Accepted refinement | Current implementation/evidence |
+|---|---|
+| Immediate meaningful visual | `explore.ts` opens the computed baseline locus, stable-interval strip, complete exact set and every selected root with a nearby exact stability verdict. Model entry and full derivation are optional depth. New source-backed UI tests check the baseline `(0,70)` and all three roots. |
+| Live gain with exact authority | Numeric/range controls reuse the cached Region and finite trace. Only selected full roots and readouts update. Exact endpoint buttons preserve their Cut identity; numerical positions do not classify an endpoint. Tests spy on region/locus calls and retain a surd selection across view-range changes. |
+| View independent of mathematics | Range changes rebuild the finite trace while retaining the exact Region and selected Cut. Equal-scale axes stay fixed during gain changes; Fit selected roots is explicit, and clipping is disclosed beside the visual. |
+| Full original domain | Existing `gains.ts`, `exact.ts` and `expression.ts` are unchanged. Multiple/disjoint/unbounded intervals, allowed K=0, zero/negative numerators, exact surd endpoints and every full characteristic mode remain supported. New UI checks exercise these cases through their preserved solver. |
+| Optional Practice with intentional hiding | The original exercise remains in `practice.ts`, initially hiding its checked gain-set answer. It retains predictions, full Routh/boundary derivation and exact endpoint behavior. Mode-local state is isolated; the owned lazy Practice child scope/retry pattern includes the accepted failure/focus safeguards from the earlier pilot. Existing 64 CS05 tests pass against that preserved view. Prediction edits now refresh a revealed grade rather than keeping an old prediction's feedback. |
+| Direct gain-strip interaction and limits | Pointer scrubbing, native numeric/range and strip arrow/Home/End controls are wired. The cursor has a declared bounded precision and rejects tiny nonzero values rather than substituting zero. Active-drag Escape, cancellation, view suspension and observer disposal use visit-owned resources. Focused coalescing/lifetime/real-shell and responsive geometry checks are still being completed in this checkpoint; no new actual browser check is claimed. |
+
+Current local checkpoint: **72 tests in 5 files** pass with TypeScript checking. The eight new Explore checks cover immediate visual, cache reuse/fixed axes, exact crossing, surd retention, multiple/unbounded/zero/negative cases, invalid drafts/underflow, fine cursor scales and independent Practice state. Full-project/build/browser acceptance remains pending; the Stage line describes implementation, not final verification.
+
+## Historical exercise delivery and review
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (primary main v0.3.9)
 - **Worker chat:** `01a186d1-e192-7e11-a9da-294fb7ec7b78`
