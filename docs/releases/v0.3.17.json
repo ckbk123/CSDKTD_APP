@@ -49,6 +49,6 @@
   "checks": [
     "TypeScript and production build passed.",
     "Independent source review and attributed actual changed-input/drag/keyboard/Practice/native-draft/phone/reset/navigation checks passed.",
-    "Combined production-browser desktop and phone route smoke passed with fonts loaded, zero MathLive errors, no pending fallback, clean console and375/375 phone document widths."
+    "Combined production-browser desktop and phone route smoke passed with fonts loaded, zero MathLive errors, no pending fallback, clean console and 375/375 phone document widths."
   ]
 }

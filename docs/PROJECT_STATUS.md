@@ -4,7 +4,7 @@
 
 ## Current refinement delivery — v0.3.17 / 8 November 2026
 
-All56 bounded mathematical exercises remain delivered. Shared interaction foundations and seven concept refinements are accepted, with49 remaining. The separate [refinement ledger](interactivity-progress.json) records actual progress and finite assignments. [v0.3.17 evidence](releases/v0.3.17.json) records5,750 application tests/276files,33coordination tests, type/build and independent source/browser gates. No deployment.
+All 56 bounded mathematical exercises remain delivered. Shared interaction foundations and seven concept refinements are accepted, with 49 remaining. The separate [refinement ledger](interactivity-progress.json) records actual progress and finite assignments. [v0.3.17 evidence](releases/v0.3.17.json) records 5,750 application tests/276 files,33 coordination tests, type/build and independent source/browser gates. No deployment.
 
 ## Completed mathematical exercise batch — v0.3.15 / 30 October 2026
 

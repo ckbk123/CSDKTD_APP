@@ -67,7 +67,7 @@
       "pr": 65,
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console.",
         "Actual keyboard partial minus/exponent survived Fit/unit rejection/mode roundtrip and recovered by continued typing; invalid native controls receive zero value writes."
       ],
@@ -86,7 +86,7 @@
       "pr": 62,
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
       "remaining": [],
@@ -104,7 +104,7 @@
       "pr": 63,
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
       "remaining": [],
@@ -120,7 +120,7 @@
       "scope": "Linked continuous/discrete pole mapping with direct pole and period exploration",
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
       "remaining": [],
@@ -386,7 +386,7 @@
       "target": "Drag corner markers horizontally on log axis; factor chips beside plot; show individual factor contribution on focus/hover; gain slider shifts magnitude and delay slider moves phase.",
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console.",
         "Actual keyboard partial minus/exponent survived Fit/unit rejection/mode roundtrip and recovered by continued typing; invalid native controls receive zero value writes."
       ],
@@ -538,7 +538,7 @@
       "target": "Exact complete stable-gain strip and boundary selection linked to full-root inspection, fixed axes and independent Practice.",
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
       "remaining": [],
@@ -685,7 +685,7 @@
       "target": "Linked continuous/discrete pole planes, bounded direct pole editing, sample-period exploration, fixed axes/Fit, reference ghost, actual sample cursor and independent original Practice.",
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
       "remaining": [],
@@ -770,7 +770,7 @@
       "target": "A live sample-period slider and draggable sample-clock cursor next to continuous/stem/hold views would make sampling tangible; lock either delay samples m or physical delay tau explicitly when changing T.",
       "evidence": [
         "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
-        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "5750 combined application tests in 276 files,33 coordination tests, TypeScript and production build passed.",
         "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
       "remaining": [],
