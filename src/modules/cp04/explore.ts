@@ -93,20 +93,22 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
     });
     const model = { gain: k.value, delay: tau.value, originPower: Number(origin.value), factors }; normalize(model); return { model, gain: k.text, delay: tau.text, factors: texts };
   }
-  function synchronize() {
-    invalidQuick = undefined;
+  function synchronize(preserve?: HTMLInputElement) {
     const model = checked.model, factor = model.factors[selected];
+    // A browser can retain visible partial numeric text while value is empty.
+    // Never serialize/restore such a draft: leave its actual control untouched.
+    const setNative = (input: HTMLInputElement, value: string) => { if (input !== preserve && input !== invalidQuick) input.value = value; };
     const set = (input: EquationInput, text: string) => { if (input.getValue().latex !== text) input.setValue(text); };
     set(gain, checked.gain); set(delay, checked.delay); origin.value = String(model.originPower);
-    gainControl.value = String(model.gain); gainRange.value = String(Math.log10(Math.abs(model.gain))); delayControl.value = String(model.delay); delayRange.value = String(model.delay);
+    setNative(gainControl, String(model.gain)); setNative(gainRange, String(Math.log10(Math.abs(model.gain)))); setNative(delayControl, String(model.delay)); setNative(delayRange, String(model.delay));
     choice.replaceChildren(); model.factors.forEach((f, i) => { const option = el('option', `Factor ${i + 1} · ${f.position} · ${f.kind === 'first' ? '1st' : '2nd'} order`); option.value = String(i); choice.append(option); }); choice.value = String(selected);
     choice.disabled = !factor; add.disabled = model.factors.length >= 6; remove.disabled = !factor;
     corner.disabled = cornerRange.disabled = !factor; position.disabled = order.disabled = !factor; coefficients.forEach(c => c.element.hidden = !factor);
     if (factor) {
-      const f = normalizeFactor(factor); corner.value = String(fromAngular(f.corner, unit)); cornerRange.value = String(Math.log10(f.corner));
-      damping.value = String(f.damping ?? .25); damping.parentElement!.hidden = factor.kind !== 'second';
+      const f = normalizeFactor(factor); setNative(corner, String(fromAngular(f.corner, unit))); setNative(cornerRange, String(Math.log10(f.corner)));
+      setNative(damping, String(f.damping ?? .25)); damping.parentElement!.hidden = factor.kind !== 'second';
       position.value = factor.position; order.value = factor.kind; coefficients.forEach((field, i) => set(field, checked.factors[selected][i])); coefficients[2].element.hidden = factor.kind !== 'second';
-    } else { damping.parentElement!.hidden = true; corner.value = ''; }
+    } else { damping.parentElement!.hidden = true; setNative(corner, ''); }
     undo.disabled = !history;
   }
   function viewValues() {
@@ -142,21 +144,21 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
     reasoning.append(el('p', `Cursor contributions: gain ${fmt(20 * Math.log10(Math.abs(n.gain)))} dB / ${model.gain < 0 ? 180 : 0}°; origin ${fmt(20 * model.originPower * Math.log10(omega))} dB / ${90 * model.originPower}°; delay 0 dB / ${fmt(-model.delay * omega * 180 / Math.PI)}°; ${at.contributions.map((c, i) => `factor ${i + 1}: ${fmt(c.db)} dB / ${fmt(c.phase)}°`).join('; ')}.`));
     cursorRange.min = String(Math.log10(low)); cursorRange.max = String(Math.log10(high)); cursorRange.value = String(Math.log10(omega));
   }
-  function publish(next: Snapshot, message: string, remember = true, fitAxes = false, nextSelected = selected) {
-    normalize(next.model); viewValues(); const previous = checked, previousSelected = selected; checked = next; selected = nextSelected; validDraft = true;
-    try { redraw(fitAxes); if (remember) history = previous; synchronize(); feedback.textContent = message; }
-    catch (error) { checked = previous; selected = previousSelected; validDraft = true; synchronize(); redraw(); throw error; }
+  function publish(next: Snapshot, message: string, remember = true, fitAxes = false, nextSelected = selected, preserve?: HTMLInputElement) {
+    normalize(next.model); viewValues(); const previous = checked, previousSelected = selected, previousInvalid = invalidQuick; checked = next; selected = nextSelected; validDraft = true;
+    try { redraw(fitAxes); if (remember) history = previous; invalidQuick = undefined; synchronize(preserve); feedback.textContent = message; }
+    catch (error) { checked = previous; selected = previousSelected; invalidQuick = previousInvalid; validDraft = true; synchronize(preserve); redraw(); throw error; }
   }
   function runRaw() { clearTimer(); try { publish(readRaw(), 'Checked raw model. Plots use the displayed coefficients.'); } catch (error) { report(error); } }
   function queueRaw() { if (disposed || signal.aborted) return; if (!isActive()) { pendingRaw = true; return; } if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; runRaw(); }, 40); }
   function begin(kind: 'corner' | 'gain' | 'delay', pointer?: number, factor = selected, source?: HTMLInputElement) {
-    if (gesture && (gesture.kind !== kind || gesture.factor !== factor || gesture.pointer !== pointer || gesture.source !== source)) commit();
-    if (gesture) return;
     if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before another model or view change, or check the raw model to restore its values.`);
+    if (gesture && (gesture.kind !== kind || gesture.factor !== factor || gesture.pointer !== pointer || gesture.source !== source)) commit(source);
+    if (gesture) return;
     // An invalid visible draft must never be silently replaced by a gesture.
     const current = readRaw(); viewValues(); checked = current; validDraft = true; gesture = { base: current, pointer, source, kind, factor };
   }
-  function propose(value: number) {
+  function propose(value: number, preserve?: HTMLInputElement) {
     if (!gesture) return;
     const base = gesture.base; let next: Snapshot;
     if (gesture.kind === 'corner') {
@@ -164,23 +166,22 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
       next = { ...base, factors, model: { ...base.model, factors: base.model.factors.map((f, i) => i === gesture!.factor ? edit.factor : f) } };
     } else if (gesture.kind === 'gain') { const text = scalarText(value), parsed = parseReal(text); next = { ...base, gain: text, model: { ...base.model, gain: parsed } }; }
     else { const text = scalarText(value, true); next = { ...base, delay: text, model: { ...base.model, delay: parseDelay(text) } }; }
-    publish(next, 'Live preview from displayed, checked coefficients. Release to commit; Escape cancels.', false);
+    publish(next, 'Live preview from displayed, checked coefficients. Release to commit; Escape cancels.', false, false, selected, preserve);
   }
-  function flush() { clearTimer(); if (gesture?.value !== undefined) { const value = gesture.value; gesture.value = undefined; propose(value); } }
+  function flush(preserve?: HTMLInputElement) { clearTimer(); if (gesture?.value !== undefined) { const value = gesture.value; gesture.value = undefined; propose(value, preserve); } }
   function queue(value: number) { if (!gesture) return; gesture.value = value; if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; try { flush(); } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'This edit is unsupported.'; } }, 32); }
   function releasePointer() {
     const pointer = gesture?.pointer; gesture = undefined;
     if (pointer !== undefined && plots.hasPointerCapture?.(pointer)) plots.releasePointerCapture(pointer);
   }
-  function commit() { if (!gesture) return; try { flush(); history = gesture.base; releasePointer(); synchronize(); feedback.textContent = 'Checked model edit committed. Displayed coefficients determine both plots.'; } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'This edit is unsupported.'; } }
-  function cancelGesture() { clearTimer(); if (!gesture) return; checked = gesture.base; releasePointer(); validDraft = true; synchronize(); try { redraw(); feedback.textContent = 'Gesture cancelled; previous checked model restored.'; } catch (error) { report(error); } }
+  function commit(preserve?: HTMLInputElement) { if (!gesture) return; try { flush(preserve); history = gesture.base; releasePointer(); synchronize(preserve); feedback.textContent = 'Checked model edit committed. Displayed coefficients determine both plots.'; } catch (error) { cancelGesture(preserve); feedback.textContent = error instanceof Error ? error.message : 'This edit is unsupported.'; } }
+  function cancelGesture(preserve?: HTMLInputElement) { clearTimer(); if (!gesture) return; checked = gesture.base; releasePointer(); validDraft = true; synchronize(preserve); try { redraw(); feedback.textContent = 'Gesture cancelled; previous checked model restored.'; } catch (error) { report(error); } }
   function quick(input: HTMLInputElement, kind: 'corner' | 'gain' | 'delay', value: () => number, range = false) {
     input.addEventListener('input', () => {
-      const draft = input.value;
-      try { const proposed = value(); if (invalidQuick === input) invalidQuick = undefined; begin(kind, undefined, selected, input); if (range) queue(proposed); else propose(proposed); }
-      catch (error) { const blocked = invalidQuick; if (gesture) cancelGesture(); input.value = draft; if (!range) invalidQuick = blocked ?? input; report(error); }
+      try { const proposed = value(); if (invalidQuick === input) invalidQuick = undefined; begin(kind, undefined, selected, input); if (range) queue(proposed); else propose(proposed, input); }
+      catch (error) { if (!range) invalidQuick ??= input; if (gesture) cancelGesture(range ? undefined : input); report(error); }
     }, { signal });
-    input.addEventListener('change', commit, { signal });
+    input.addEventListener('change', () => commit(), { signal });
     input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); commit(); } }, { signal });
   }
   quick(corner, 'corner', () => toAngular(readNumericInput(corner, 'Actual corner'), unit));
@@ -190,13 +191,16 @@ export const mountExplore = ({ container, signal: parent, hooks, isActive = () =
   quick(delayControl, 'delay', () => readNumericInput(delayControl, 'Delay'));
   quick(delayRange, 'delay', () => readNumericInput(delayRange, 'Delay range'), true);
   damping.addEventListener('input', () => {
-    cancelGesture(); try {
+    try {
+      const proposed = readNumericInput(damping, 'Damping ratio');
+      if (proposed < .05 || proposed > 1) throw new Error('Damping ratio must be from 0.05 to 1.');
       if (invalidQuick === damping) invalidQuick = undefined;
       if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before another model change.`);
-      const current = readRaw(), f = normalizeFactor(current.model.factors[selected]), edit = editFactor(current.model.factors[selected], f.corner, readNumericInput(damping, 'Damping ratio'));
+      commit(damping);
+      const current = readRaw(), f = normalizeFactor(current.model.factors[selected]), edit = editFactor(current.model.factors[selected], f.corner, proposed);
       const factors = current.factors.map(v => [...v]); factors[selected][1] = edit.a1; factors[selected][2] = edit.a2;
-      publish({ ...current, factors, model: { ...current.model, factors: current.model.factors.map((v, i) => i === selected ? edit.factor : v) } }, 'Checked damping edit; natural frequency and normalization gain preserved.');
-    } catch (error) { invalidQuick ??= damping; report(error); }
+      publish({ ...current, factors, model: { ...current.model, factors: current.model.factors.map((v, i) => i === selected ? edit.factor : v) } }, 'Checked damping edit; natural frequency and normalization gain preserved.', true, false, selected, damping);
+    } catch (error) { invalidQuick ??= damping; cancelGesture(damping); report(error); }
   }, { signal });
   choice.addEventListener('change', () => { const next = Number(choice.value); cancelGesture(); try { if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before selecting another factor, or check the raw model to restore its values.`); const current = readRaw(); publish(current, 'Selected factor linked on both plots.', JSON.stringify(current.model) !== JSON.stringify(checked.model), false, next); } catch (error) { choice.value = String(selected); report(error); } }, { signal });
   apply.addEventListener('click', runRaw, { signal });
