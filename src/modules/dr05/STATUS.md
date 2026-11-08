@@ -1,13 +1,36 @@
 # DR05 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Current finite refinement:** DR05 sampling/hold exploration, 8 November 2026; owner interactivity-dr05-01a1ac7b, branch codex/dr05-sampling-exploration, baseline aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c (released v0.3.16).
 - **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/dr05-sampling-01a1ac7b. The documented ordinary Git fallback was used after managed creation did not return; no prior contribution worktree was reused.
-- **Refinement acceptance:** immediate linked source/exact samples/held input, explicit physical-window versus fixed-count policy and sample budget, live T with integer-delay semantics, linked integer cursor, optional Practice, owned coalescing/cleanup and readable native phone axes. Existing run/realization/hold/approximation/parser limits remain authoritative. Implementation and local checks are in progress; the integration owner owns real-browser acceptance.
+- **Pull request:** [#62](https://github.com/ckbk123/CSDKTD_APP/pull/62), reused for this finite refinement and any review corrections.
+- **Refinement acceptance:** immediate linked source/exact samples/held input, explicit physical-window versus fixed-count policy and sample budget, live T with integer-delay semantics, linked integer cursor, optional Practice, owned coalescing/cleanup and native text axes. Existing run/realization/hold/approximation/parser limits remain authoritative. Local implementation/checks are complete; independent technical review and integration-owner real-browser acceptance remain pending. No new browser evidence is claimed below.
+
+## Current finite interface refinement
+
+The default Explore view immediately computes the actual baseline. Period and integer-cursor numeric/range controls sit above the linked output and held-input drawings; model/initial-state/drawing settings, checked derivation and full numeric table are accessible through optional sections. Each range has its own visible/accessibility label. Cursor movement selects an existing sample on both plots, updates the held-interval shading and exposes actual state/output/update arithmetic without another simulation. Plot taps have numeric/keyboard equivalents.
+
+Physical-window mode defaults to 0–3 s and derives N=31 at T=.1, N=16 at .2, N=61 at .05. The requested display horizon and retained calculation horizon are disclosed separately; a noncommensurate endpoint may retain samples beyond the displayed window. A too-small T reports the required N and the 120-sample budget rather than changing T, density or horizon. Fixed-count mode preserves the original complete T=.0001–10 and N=4–120 domain, ignoring an inactive window draft. All calculations still pass through the unchanged math.run implementation. The local window helper is presentation policy, not a solver.
+
+Integer m remains fixed on ordinary T edits and live notes show τ=mT. The optional half-T/double-m action preserves physical delay (and the prior horizon in fixed-count mode) only when the resulting experiment fits the existing bounds; it validates before changing controls and never rounds fractional delay. Pulse notes state that width T and signed area A·T change; ramp notes retain physical slope A and the held staircase A(k−m)T. Original right-hand sample timing and zero past-input history are preserved.
+
+Practice removes output curves, output scales, state/output arithmetic, matrices, sample tables and error metrics immediately when the model changes. Input/clock and material approximation/conditioning/coarse-drawing/post-delay warnings remain visible after the coalesced calculation. Reveal retains the accepted optional y[1] prediction/tolerance. Editing only a prediction revokes old grading while keeping the valid checked model. Invalid inspection drafts remain visible with the last valid cursor; a true off-window sample is reported with its actual time/value and no clamped plot marker.
+
+Explore edits coalesce through one owned 60 ms timer and explicitly label any retained previous preview; cursor controls are disabled while that preview is stale. Direct cleanup cancels it and aborts the view's child signal even while the parent is active. Partial editor allocation failure also releases signal-owned resources. No observer, animation loop, media listener or new dependency was introduced. Axes use native 12 CSS px HTML labels outside a responsive 180 px signal drawing, with sparse ticks and no forced plot minimum width; actual phone readability remains a browser gate.
+
+The local regression set preserves the original mathematical/parser/loader coverage and adds independent baseline/delayed double-integrator values, fixed-window spacing, visible-count/budget limits, fixed m versus fixed τ, noncommensurate/off-window and floating-point endpoint handling, feedthrough path separation, prediction hiding/stale grading, cursor independence, separately labelled controls and owned cleanup/failure checks. View equation controls are mocked; these tests are not evidence of real MathLive behavior.
+
+Local verification on 8 November 2026, Node 24.22.1 and an isolated locked npm ci installation:
+
+- node node_modules/vitest/vitest.mjs run src/modules/dr05: 106 tests / 5 files passed.
+- npm run check: passed.
+- npm test: 5,652 tests / 265 files passed (42.72 s).
+- npm run build: passed, including its TypeScript check; the existing MathLive chunk-size advisory remains.
+- git diff --check: passed. math.ts, parser.ts, workspace.ts and index.ts are unchanged from aaeda5e. All tracked changes remain in src/modules/dr05/**.
+
+Browser gates pending with the integration owner: actual equation tools/fonts, native slider keyboard behavior, desktop/phone layout and computed 12 px axes, baseline/reset/reopen, rapid edits/navigation and lifecycle isolation. This implemented assessment does not replace the historical browser record with evidence for the new interface.
 
 ## Historical accepted bounded exercise
-
-Current implementation checkpoint: immediate Explore previews and optional Practice are present; physical-window mode derives/discloses the bounded sample count while fixed-count mode retains the original T/count domain. Separate T/clock ranges, integer delay with live physical-delay notes, a compatible half-T/double-m action and native text axes are implemented. Existing model/approximation/parser source is unchanged. The 91 current module tests (including four new window-policy tests and the adapted original teaching-flow tests), TypeScript and production build pass. Added exploration/cursor/ownership/plot regressions and full-suite verification remain in progress; coordinator browser acceptance is pending.
 
 The v0.3.16 baseline retains the independently verified bounded DR05 exercise. Earlier delivery records below do not establish verification of the new interface refinement.
 - **Assessed:** 2026-10-29. Contribution base: 8696261267b7620bfc101ce2b5f13772bfaa529a. This delivery record accompanies the tested tree; the submitted claim names its exact final commit.

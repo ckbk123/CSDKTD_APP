@@ -14,11 +14,14 @@ export function trajectoryPlot(result: Result, panel: 'output' | 'input', select
   const xScale = document.createElement('div'); xScale.className = 'zoh-x-scale'; const title = document.createElement('p'); title.className = 'zoh-axis-title'; title.textContent = 'Time t (s)';
   figure.append(caption, frame); frame.append(yScale, svg, xScale, title);
   const rows = result.samples, T = rows[1].t, x = (t: number) => 8 + 494 * t / visibleEnd;
-  const visible = rows.filter(row => row.t <= visibleEnd);
+  // Multiplication can put a mathematically coincident endpoint a few ulps beyond H.
+  // This is a display boundary only; keep every computed time and sample unchanged.
+  const withinWindow = (t: number) => t <= visibleEnd || Math.abs(t - visibleEnd) <= 8 * Number.EPSILON * Math.max(1, Math.abs(t), Math.abs(visibleEnd));
+  const visible = rows.filter(row => withinWindow(row.t));
   const segments = result.segments.filter(segment => segment[0].t < visibleEnd).map(segment => {
     const points = []; for (const point of segment) { points.push(point); if (point.t > visibleEnd) break; } return points;
   });
-  const values = panel === 'input' ? visible.map(r => r.held) : segments.flat().map(p => p.y).concat(visible.map(r => r.y), result.comparison?.filter(r => r.t <= visibleEnd).map(r => r.y) ?? []);
+  const values = panel === 'input' ? visible.map(r => r.held) : segments.flat().map(p => p.y).concat(visible.map(r => r.y), result.comparison?.filter(r => withinWindow(r.t)).map(r => r.y) ?? []);
   const low = Math.min(0, ...values), high = Math.max(0, ...values), padding = Math.max(.1, .1 * (high - low)), minimum = low - padding, maximum = high + padding;
   const y = (v: number) => 168 - 156 * (v - minimum) / (maximum - minimum);
   for (const [value, place] of [[maximum, 'high'], [(minimum + maximum) / 2, 'middle'], [minimum, 'low']] as const) {
@@ -35,7 +38,7 @@ export function trajectoryPlot(result: Result, panel: 'output' | 'input', select
   if (panel === 'output') {
     // Each interval remains separate: feedthrough jumps never become diagonal chords.
     segments.forEach(segment => add('path', { d: segment.map((p, i) => (i ? 'L' : 'M') + x(p.t) + ',' + y(p.y)).join(' '), class: 'zoh-line', 'vector-effect': 'non-scaling-stroke' }));
-    result.comparison?.filter(r => r.t <= visibleEnd).forEach(r => add('rect', { x: x(r.t) - 3.5, y: y(r.y) - 3.5, width: 7, height: 7, class: 'zoh-approx' }));
+    result.comparison?.filter(r => withinWindow(r.t)).forEach(r => add('rect', { x: x(r.t) - 3.5, y: y(r.y) - 3.5, width: 7, height: 7, class: 'zoh-approx' }));
   } else {
     const d = visible.map((r, i) => (i ? 'H' : 'M') + x(r.t) + (i ? 'V' : ',') + y(r.held)).join(' ') + (visible.length ? 'H' + x(Math.min(visibleEnd, (visible.at(-1)!.k + 1) * T)) : '');
     add('path', { d, class: 'zoh-line', 'vector-effect': 'non-scaling-stroke' });
@@ -43,7 +46,7 @@ export function trajectoryPlot(result: Result, panel: 'output' | 'input', select
   visible.forEach(row => { const node = add('circle', { cx: x(row.t), cy: y(panel === 'output' ? row.y : row.held), r: 3, class: 'zoh-exact', 'data-sample': row.k }); markers.push({ node, k: row.k }); });
   const cursor = add('line', { x1: 8, x2: 8, y1: 12, y2: 168, class: 'zoh-cursor', 'vector-effect': 'non-scaling-stroke' });
   function select(k: number): boolean {
-    const row = rows[k], onScreen = !!row && row.t <= visibleEnd;
+    const row = rows[k], onScreen = !!row && withinWindow(row.t);
     cursor.setAttribute('visibility', onScreen ? 'visible' : 'hidden'); interval.setAttribute('visibility', onScreen && k < rows.length - 1 ? 'visible' : 'hidden');
     if (onScreen) {
       cursor.setAttribute('x1', String(x(row.t))); cursor.setAttribute('x2', String(x(row.t))); cursor.dataset.sample = String(k);

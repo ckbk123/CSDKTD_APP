@@ -26,6 +26,7 @@
 [data-module="DR05"] .zoh-visual, [data-module="DR05"] .zoh-controls-panel { min-width: 0; border: 0; padding: 0; }
 [data-module="DR05"] .zoh-controls-panel { border-left: 1px solid var(--line); padding-left: 18px; }
 [data-module="DR05"] .zoh-controls-panel .zoh-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-module="DR05"] .zoh-clock-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 10px 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
 [data-module="DR05"] .zoh-controls-panel > label { margin-bottom: 14px; }
 [data-module="DR05"] input, [data-module="DR05"] select { box-sizing: border-box; min-height: 44px; }
 [data-module="DR05"] input[type="range"] { padding: 0; accent-color: var(--accent); }

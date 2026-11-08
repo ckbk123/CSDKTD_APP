@@ -50,6 +50,9 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     const T = number(primary, 'Sample period T (s)', '.1', .0001, 10), periodRange = element('input');
     periodRange.type = 'range'; periodRange.min = '-4'; periodRange.max = '1'; periodRange.step = '.01'; periodRange.value = '-1'; periodRange.setAttribute('aria-label', 'Slide sample period T (log scale)');
     label(primary, 'Slide T in seconds (logarithmic scale)', periodRange);
+    const clockBar = element('div', '', 'zoh-controls zoh-clock-bar');
+    clockBar.append(T.parentElement!, periodRange.parentElement!, inspect.parentElement!, cursor.parentElement!);
+    resultHost.insertBefore(clockBar, outputPlot); cursorControls.remove();
     const policy = select(primary, 'Time window policy', [['window', 'Fixed physical time window'], ['count', 'Fixed sample count']], 'window');
     const horizon = number(primary, 'Physical time window (s)', '3', .0001, 1190), count = number(primary, 'Number of sample instants', '31', 4, 120, '1');
     const delay = number(primary, 'Input delay m (whole samples)', '0', 0, 12, '1');
