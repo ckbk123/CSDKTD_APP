@@ -1,7 +1,7 @@
 # CP06 implementation status
 
-- **Stage:** verified
-- **Current finite refinement, accepted 8 November 2026:** CP06 pole/zero exploration pilot, explicitly assigned by the human through the integration owner after the application-wide interactivity review. Isolated branch `codex/cp06-interactivity-pilot`, worktree `C:/Users/baokh/.codex/worktrees/cp06-interactivity-pilot/CSDKTD APP`, exact base `cf69ad252c34c971c6d81282db9e0a471f40d846`. Local ownership is recorded as `interactivity-cp06-01a1ac7b`. The integration owner accepted frozen source `0b582bf0821ccd94776fffc288910692f32a0cd5` after independent review and the attributed central production-browser checks below. This final handoff changes documentation only.
+- **Stage:** implemented
+- **Current finite refinement, 8 November 2026:** CP06 pole/zero exploration pilot, explicitly assigned by the human through the integration owner after the application-wide interactivity review. Isolated branch `codex/cp06-interactivity-pilot`, worktree `C:/Users/baokh/.codex/worktrees/cp06-interactivity-pilot/CSDKTD APP`, exact base `cf69ad252c34c971c6d81282db9e0a471f40d846`. Local ownership is recorded as `interactivity-cp06-01a1ac7b`. The integration owner accepted frozen interaction/math source `0b582bf0821ccd94776fffc288910692f32a0cd5` after the attributed central production-browser checks below. A subsequent independent review requested the late Practice-mount recovery boundary described below; its focused implementation/checks are complete, with final independent acceptance pending.
 - **Refinement PR:** [#61 — Make CP06 root-locus exploration immediate and directly editable](https://github.com/ckbk123/CSDKTD_APP/pull/61). The integration owner created and attached this PR after the connected GitHub integration rejected creation with HTTP 403. Corrections stay on this branch and PR.
 - Historical v0.3.15 state: the accepted bounded construction exercise was verified. The coordinator preparation of source `756220aaf8b021741de201aa46895a9218cfd2d4` included 169 independent analytic-root/PI/candidate/rule/continuation checks, 121 module tests and shared notation/lifecycle review. The older detailed delivery record below is retained as historical evidence, not evidence that the new interactive presentation has passed browser acceptance.
 
@@ -42,6 +42,14 @@ The integration owner reported acceptance on 8 November 2026 for frozen worker s
 - No warning/error console logs were observed in this central pass. The parent also retains an earlier accepted pointer drag from −5 to −4.14, exact numeric placement at −4 and undo on the same frozen source.
 
 These checks do not claim actual touch testing, a measured latency/FPS result, or Escape during an atomic native drag. Escape ownership is supported by the combined real-shell regressions and independent technical review. All solver/resource bounds, numerical qualifications and source-versus-authored fixture distinctions remain unchanged.
+
+## Late Practice-mount recovery correction
+
+Independent review of the later Practice-button path found that its lazy mount had no recovery catch or separate abort scope. The existing `practice.ts` try/catch already destroyed tracked editors/results and cleared its partial DOM; duplicate visible editors were not established as an actual defect. The missing boundary was ownership of other signal-registered resources and recovery feedback while Explore remained active.
+
+`view.ts` now gives each Practice mount attempt an owned child abort signal and host. A failed attempt aborts that scope, removes the host/forwarding listener, keeps the parent and Explore state active, and offers Retry Practice. A successful attempt retains its child scope until module disposal. Abort during mounting also releases a disposer returned after that abort. Existing Practice cleanup remains in place and idempotent.
+
+`view-recovery.test.ts` injects a Practice mount that registers a window event and abort resource before throwing. It verifies immediate failed-child abort with the parent active, preserved Explore state, resource-free retries, no extra attempt hosts, successful direct-disposal cleanup, and a synchronous parent abort during mounting. The CP06 suite passes **162 tests in 10 files** for this correction. No mathematical, plotting or accepted browser-interaction source changed; check/build and the independent return review are pending in this checkpoint.
 
 ## Historical bounded construction delivery
 - **Assessed:** 2026-10-29; primary baseline `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
