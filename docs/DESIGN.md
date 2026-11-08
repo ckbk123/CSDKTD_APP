@@ -41,7 +41,7 @@ Keep the interface compact and familiar. Do not add slogans, promotional copy, d
 
 Use textbook-style equations and the shared [visual equation input](EQUATION_INPUT.md). Fractions have a numerator and denominator, powers/subscripts use their proper positions, and matrices retain rows and columns. Students should be able to use ordinary keys, symbol buttons and the math keyboard without learning MATLAB syntax or LaTeX. Raw syntax is an internal interchange format, not the primary interface.
 
-The default-example banner typesets all 56 curated baselines. Its **Edit equations** button opens a temporary notation preview; it clearly states that edits do not update the still-empty workspace. Actual teaching tools place the same shared input inside their own workspace and validate its mathematical meaning before calculating. Keep prose, units and assumptions next to the equation rather than burying them inside an editable formula.
+The collapsed reference example typesets all 56 curated baselines. Its **Try notation (preview)** button opens a temporary notation preview and clearly states that edits do not update the workspace. Actual teaching tools place the same shared input inside their own workspace and validate its mathematical meaning before calculating. Keep prose, units and assumptions next to the equation rather than burying them inside an editable formula.
 
 ## Module consistency
 

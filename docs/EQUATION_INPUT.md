@@ -10,7 +10,7 @@ The math keyboard starts with a **Systems** layout containing `s`, `z`, `K`, `j`
 
 All 56 module banners have curated equation parts in `src/shared/equations/examples.ts`. Prose remains prose; equations use explicit LaTeX rather than automatic conversion of arbitrary strings. The original `manifest.defaultExample` text is retained and checked against each curated source.
 
-The banner's **Edit equations** action opens shared visual inputs. **Done editing** returns to a typeset view of those temporary edits. This is an equation preview: edits do not update the module workspace or a mathematical model. Reset, leaving the tool and reopening start from the baseline again. There is no persistence.
+The reference's **Try notation (preview)** action opens shared visual inputs. **Done with preview** returns to a typeset view of those temporary edits. This is an equation preview: edits do not update the module workspace or a mathematical model. Reset, leaving the tool and reopening start from the baseline again. There is no persistence.
 
 When implementing a module, build its actual exercise inputs inside its own workspace with the shared component below. Do not treat the shell preview as a solver input channel, and do not couple modules through it.
 
