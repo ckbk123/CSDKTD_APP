@@ -163,8 +163,11 @@ describe('live sampling clock with deliberate Practice', () => {
     change(control(root, 'Sample period T (s)'), '.05'); change(control(root, 'Sample period T (s)'), '.2');
     expect(solver).not.toHaveBeenCalled();
     expect(root.textContent).toContain('previous preview');
+    const pending = root.querySelector('.zoh-preview-state')!, firstPlot = root.querySelector('.zoh-plot')!;
+    expect(pending.textContent).toBe('Updating · previous preview'); expect(pending.nextElementSibling).toBe(firstPlot);
     vi.advanceTimersByTime(59); expect(solver).not.toHaveBeenCalled(); vi.advanceTimersByTime(1);
     expect(solver).toHaveBeenCalledOnce();
+    expect(pending.textContent).toBe('Live preview');
     expect(outputValues(root)).toHaveLength(16);
     expect(outputValues(root)[1]).toBe('0.1812692');
     expect(root.querySelector('.zoh-clock-summary')?.textContent).toContain('visible 0–3 s · computed 0–3 s');

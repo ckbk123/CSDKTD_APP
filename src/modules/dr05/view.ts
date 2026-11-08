@@ -39,11 +39,12 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     const resultHost = element('div'); resultHost.setAttribute('aria-label', 'Sampling workspace');
     const metadata = element('p', '', 'zoh-clock-summary'), modelDisplay = element('div', '', 'zoh-current-model'), feedback = element('p', '', 'zoh-warning');
     feedback.setAttribute('role', 'status');
+    const previewState = element('p', 'Live preview', 'zoh-preview-state'); previewState.setAttribute('role', 'status');
     const outputPlot = element('div', '', 'zoh-plot'), inputPlot = element('div', '', 'zoh-plot');
     const cursorControls = element('div', '', 'zoh-controls zoh-cursor-controls'), inspect = number(cursorControls, 'Inspect sample k', '1', 0, 30, '1'), cursor = element('input');
     cursor.type = 'range'; cursor.min = '0'; cursor.max = '30'; cursor.step = '1'; cursor.value = '1'; cursor.setAttribute('aria-label', 'Sampling clock cursor'); label(cursorControls, 'Move the sample cursor (arrow keys)', cursor);
     const arithmetic = element('div', '', 'zoh-arithmetic'), inspectionError = element('p', '', 'zoh-warning'); inspectionError.setAttribute('role', 'status');
-    visual.append(resultHost); resultHost.append(feedback, outputPlot, inputPlot, cursorControls, metadata, inspectionError, arithmetic, notice);
+    visual.append(resultHost); resultHost.append(feedback, previewState, outputPlot, inputPlot, cursorControls, metadata, inspectionError, arithmetic, notice);
     resultHost.append(element('p', 'Solid paths join numerical drawing points of the held-input source. A clipped window edge uses linear drawing interpolation, not an exact sample. Filled circles: exact ZOH samples. Hollow squares: interval approximation. Shading marks the selected held interval; cursor movement does not change the model.', 'zoh-small'), modelDisplay);
     const mode = select(controlsPanel, 'Learning mode', [['explore', 'Explore — live clock and response'], ['practice', 'Practice — predict before revealing']], 'explore');
     const primary = element('div', '', 'zoh-controls'); controlsPanel.append(primary);
@@ -52,7 +53,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     label(primary, 'Slide T in seconds (logarithmic scale)', periodRange);
     const clockBar = element('div', '', 'zoh-controls zoh-clock-bar');
     clockBar.setAttribute('aria-label', 'Live sample period controls'); clockBar.append(T.parentElement!, periodRange.parentElement!);
-    resultHost.insertBefore(clockBar, outputPlot);
+    resultHost.insertBefore(clockBar, previewState);
     const policy = select(primary, 'Time window policy', [['window', 'Fixed physical time window'], ['count', 'Fixed sample count']], 'window');
     const horizon = number(primary, 'Physical time window (s)', '3', .0001, 1190), count = number(primary, 'Number of sample instants', '31', 4, 120, '1');
     const delay = number(primary, 'Input delay m (whole samples)', '0', 0, 12, '1');
@@ -112,6 +113,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       sourceControls();
       const preservePreview = mode.value === 'explore' && (resultHost.dataset.state === 'preview' || resultHost.dataset.state === 'draft') && !!current;
       if (!preservePreview) { current = undefined; clearRendered(); }
+      previewState.hidden = false; previewState.textContent = preservePreview ? 'Updating · previous preview' : 'Updating…';
       resultHost.dataset.state = 'draft'; notice.hidden = false; notice.textContent = preservePreview ? 'Draft changed — previous preview shown while the current inputs update.' : mode.value === 'practice' ? 'Draft changed. Output remains hidden until Reveal sampled model.' : 'Updating the current preview…';
       inspect.disabled = cursor.disabled = true;
       if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; compute(false); }, 60);
@@ -173,6 +175,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
         inputDrawing = trajectoryPlot(result, 'input', Math.min(selected, result.samples.length - 1), w.visibleEnd); inputPlot.append(inputDrawing.element);
         feedback.textContent = [result.warning, scalarWarning].filter(Boolean).join(' ');
         const outputs = mode.value === 'explore' || checked;
+        previewState.hidden = false; previewState.textContent = checked ? 'Checked model' : outputs ? 'Live preview' : 'Practice · output hidden';
         if (outputs) {
           outputDrawing = trajectoryPlot(result, 'output', Math.min(selected, result.samples.length - 1), w.visibleEnd); outputPlot.append(outputDrawing.element);
           equation(modelDisplay, draft.latex, 'Current continuous plant'); renderTable(current); data.hidden = false;
@@ -189,6 +192,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
         }
       } catch (error) {
         current = undefined; clearRendered(); resultHost.dataset.state = 'invalid'; inspect.disabled = cursor.disabled = true;
+        previewState.hidden = true;
         feedback.textContent = error instanceof Error ? error.message : 'Check the plant and experiment values.'; notice.hidden = true; notice.textContent = '';
       }
     }
