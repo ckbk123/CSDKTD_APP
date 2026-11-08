@@ -29,7 +29,7 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
   });
   it('moves actual corner 2→3 with visible 2/3 and retained Kn=.5, then undoes', () => {
     const { root, controller } = open(); update(root, 'Selected factor', '1', 'change');
-    const original = points(root); update(root, 'Actual corner [rad/s]', '3'); update(root, 'Actual corner [rad/s]', '3', 'change');
+    const original = points(root); update(root, 'Actual corner [rad/s]', '3'); field(root, 'Actual corner [rad/s]').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })); expect(root.textContent).toContain('model edit committed');
     expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₀').value).toBe('2'); expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₁').value).toBe('2/3');
     expect(root.textContent).toContain('normalization gain Kₙ=0.5'); expect(root.textContent).toContain('|G|=0.3354102'); expect(points(root)).not.toBe(original);
     click(root, 'Undo model edit'); expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₁').value).toBe('1'); expect(points(root)).toBe(original); controller.abort();
