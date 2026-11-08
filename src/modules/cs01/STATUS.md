@@ -1,6 +1,23 @@
 # CS01 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement (8 November 2026):** CS01 constrained modal-family pole/response exploration. Owner `interactivity-cs01-01a1ac7b`, branch `codex/cs01-modal-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cs01-modal-exploration/CSDKTD APP`, base primary main `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c`. Current primary guides and TASK/code/tests were inspected. Browser QA is centralized with the coordinator; assigned preview port 8806 is reserved for that handoff. No shared API, dependency, version or deployment change is included.
+
+## Finite refinement audit and checkpoint
+
+The accepted exercise below has exact two-state algebra, full arbitrary A/B/C/D entry, separate internal/BIBO conclusions and guarded analytic response calculations. Its initial screen hides all geometry until a long matrix/prediction/reveal flow; selecting a mode and switching original/reduced views occurs after the derivation. Plots auto-fit and require narrow-screen scrolling. This refinement preserves that full exercise as Practice and adds an immediate, explicitly constrained family Explore view. An arbitrary realization will never be silently converted to a family to move its roots.
+
+| Accepted scope | Existing foundation / finite work |
+|---|---|
+| Three explicit editable families | New `families.ts` maps canonical real/conjugate roots, labelled hidden/visible diagonal states and repeated semisimple/Jordan roots to exact original-parser-validated A/B/C/D. Six independent tests pass for the baseline, changed pole, oscillator, hidden scalar cancellation and Jordan distinction. |
+| Original domain and all modes | Preserve `math.ts`, parser, exact GCD/sign/Jordan/conditioning screens and arbitrary matrix entry. New family editing uses a declared 0.01 grid and the original derived-entry/denominator limits; these editing bounds do not replace arbitrary-matrix support. |
+| Immediate linked visual/result | Pending: baseline all-root plane, normalized selected mode/free-state response and separate internal/zero-input/BIBO verdicts with synchronized visible model. Fixed equal axes, explicit Fit, shared time cursor and local cached traces. |
+| Controls and native draft honesty | Pending: live initial state/horizon, constrained pole pointer/arrows/numeric controls, one pointer owner, transactional cancel/undo and retained native badInput without value writes during view-only actions. |
+| Exercise and ownership | Pending: independent retained Practice attempt, child abort scope/recovery/late disposer, owned observers/frames/timers, real-shell Escape and narrow screen geometry evidence. All new mutable state remains visit-local. |
+| Delivery | Stage describes a partial checkpoint. Focused module/type/build/full checks, independent review, one PR, central browser desktop/phone/reset/navigation and exact clean submission remain open. |
+
+## Historical accepted exercise delivery
+
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Pull request:** [#8 — CS01 stability laboratory](https://github.com/ckbk123/CSDKTD_APP/pull/8)
