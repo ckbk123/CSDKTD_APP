@@ -12,11 +12,14 @@ vi.mock('../../shared/equations/input', () => ({
 }));
 import { mount } from './view';
 let controller: AbortController, cleanup: ReturnType<typeof mount>;
-const open = (): HTMLElement => {
+const open = (mode: 'explore' | 'practice' = 'practice', policy: 'window' | 'count' = 'count'): HTMLElement => {
   const root = document.createElement('div'); root.dataset.module = 'DR05'; document.body.append(root);
-  controller = new AbortController(); cleanup = mount({ container: root, signal: controller.signal }); return root;
+  controller = new AbortController(); cleanup = mount({ container: root, signal: controller.signal });
+  const modeControl = root.querySelector<HTMLSelectElement>('[aria-label="Learning mode"]')!, windowControl = root.querySelector<HTMLSelectElement>('[aria-label="Time window policy"]')!;
+  if (modeControl.value !== mode) { modeControl.value = mode; modeControl.dispatchEvent(new Event('input')); }
+  if (windowControl.value !== policy) { windowControl.value = policy; windowControl.dispatchEvent(new Event('input')); } return root;
 };
-afterEach(() => { controller?.abort(); if (typeof cleanup === 'function') cleanup(); document.body.replaceChildren(); });
+afterEach(() => { controller?.abort(); if (typeof cleanup === 'function') cleanup(); document.body.replaceChildren(); vi.useRealTimers(); });
 const click = (root: HTMLElement, text: string): void => {
   const button = [...root.querySelectorAll('button')].find(e => e.textContent === text); expect(button).toBeDefined(); button!.click();
 };
@@ -30,7 +33,7 @@ describe('DR05 teaching flow with the equation API stub', () => {
   it('reveals independent baseline samples and changed-period results', () => {
     const root = open(); click(root, 'Reveal sampled model');
     expect(outputValues(root).slice(0, 4)).toEqual(['0', '0.09516258', '0.1812692', '0.2591818']);
-    change(control(root, 'Sample period T (s)'), '0.2'); expect(root.textContent).toContain('Inputs changed');
+    change(control(root, 'Sample period T (s)'), '0.2'); expect(root.textContent).toContain('Draft changed');
     click(root, 'Reveal sampled model'); expect(outputValues(root)[1]).toBe('0.1812692');
   });
   it('keeps samples unchanged when only drawing density changes', () => {
@@ -80,7 +83,8 @@ describe('DR05 teaching flow with the equation API stub', () => {
       expect(root.textContent).not.toContain('Sample k = 0');
       expect(root.textContent).toContain(raw === '1e-400' || raw === '' ? 'Inspection point:' : 'Choose k from 0');
       expect(outputValues(root)[1]).toBe('0.1812692');
-      expect(root.querySelectorAll('.zoh-plot svg')).toHaveLength(0);
+      expect(root.querySelectorAll('.zoh-plot svg')).toHaveLength(2);
+      expect(root.textContent).toContain('last valid cursor remains selected');
     }
     change(inspect, '20'); change(control(root, 'Number of sample instants'), '4'); click(root, 'Reveal sampled model');
     expect(inspect.value).toBe('3'); expect(root.textContent).toContain('Sample k = 3');
@@ -94,7 +98,7 @@ describe('DR05 teaching flow with the equation API stub', () => {
     // badInput=true; setting .value programmatically cannot create that state.
     const validity = vi.spyOn(prediction, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState);
     click(root, 'Reveal sampled model');
-    expect(root.textContent).toContain('Complete all required numeric controls.');
+    expect(root.textContent).toContain('as a finite number');
     expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')).toBeNull();
     validity.mockRestore(); click(root, 'Reveal sampled model');
     expect(outputValues(root)[1]).toBe('0.09516258');
@@ -124,5 +128,5 @@ describe('DR05 teaching flow with the equation API stub', () => {
 it('preserves native exponent entry, intentional zero and integer checks through the shared reader', () => {
   const root = open(); change(control(root, 'Sample period T (s)'), '1e-2'); change(control(root, 'Amplitude A (ramp: units/s)'), '0e-999');
   change(control(root, 'Number of sample instants'), '4e0'); click(root, 'Reveal sampled model'); expect(outputValues(root)).toEqual(['0', '0', '0', '0']);
-  change(control(root, 'Number of sample instants'), '4.5'); click(root, 'Reveal sampled model'); expect(root.textContent).toContain('integer from 4 to 120'); expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')!.closest('[hidden]')).not.toBeNull();
+  change(control(root, 'Number of sample instants'), '4.5'); click(root, 'Reveal sampled model'); expect(root.textContent).toContain('integer from 4 to 120'); expect(root.querySelector('[aria-label="Zero-state pulse transfer function"]')).toBeNull();
 });

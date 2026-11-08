@@ -1,6 +1,15 @@
 # DR05 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement:** DR05 sampling/hold exploration, 8 November 2026; owner interactivity-dr05-01a1ac7b, branch codex/dr05-sampling-exploration, baseline aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c (released v0.3.16).
+- **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/dr05-sampling-01a1ac7b. The documented ordinary Git fallback was used after managed creation did not return; no prior contribution worktree was reused.
+- **Refinement acceptance:** immediate linked source/exact samples/held input, explicit physical-window versus fixed-count policy and sample budget, live T with integer-delay semantics, linked integer cursor, optional Practice, owned coalescing/cleanup and readable native phone axes. Existing run/realization/hold/approximation/parser limits remain authoritative. Implementation and local checks are in progress; the integration owner owns real-browser acceptance.
+
+## Historical accepted bounded exercise
+
+Current implementation checkpoint: immediate Explore previews and optional Practice are present; physical-window mode derives/discloses the bounded sample count while fixed-count mode retains the original T/count domain. Separate T/clock ranges, integer delay with live physical-delay notes, a compatible half-T/double-m action and native text axes are implemented. Existing model/approximation/parser source is unchanged. The 91 current module tests (including four new window-policy tests and the adapted original teaching-flow tests), TypeScript and production build pass. Added exploration/cursor/ownership/plot regressions and full-suite verification remain in progress; coordinator browser acceptance is pending.
+
+The v0.3.16 baseline retains the independently verified bounded DR05 exercise. Earlier delivery records below do not establish verification of the new interface refinement.
 - **Assessed:** 2026-10-29. Contribution base: 8696261267b7620bfc101ce2b5f13772bfaa529a. This delivery record accompanies the tested tree; the submitted claim names its exact final commit.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802
 - **Branch/worktree:** codex/dr05-zoh-f802; C:\Users\baokh\.codex\worktrees\dr05-zoh-f802\CSDKTD APP
