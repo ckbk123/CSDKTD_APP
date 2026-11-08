@@ -62,3 +62,4 @@
   [data-module="CP04"] .bode-explore-controls > details, [data-module="CP04"] .bode-explore-controls > p, [data-module="CP04"] .bode-explore-controls > .bode-actions { grid-column: 1 / -1; }
 }
 @media (max-width: 1000px) { [data-module="CP04"] .bode-fields, [data-module="CP04"] .bode-coefficients { grid-template-columns: minmax(0, 1fr); } }
+[data-module="CP04"] [hidden] { display: none !important; }

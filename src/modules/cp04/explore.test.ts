@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
+import { readFileSync } from 'node:fs';
 const partial = vi.hoisted(() => ({ count: 0, failAt: 0, abort: undefined as undefined | (() => void), listener: vi.fn() }));
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (value: string, label: string) => { const node = document.createElement('div'); node.textContent = value; node.setAttribute('aria-label', label); return node; },
@@ -28,6 +29,14 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
     const { root, controller } = open(); expect(active(root).querySelectorAll('polyline.bode-exact-line')).toHaveLength(2); expect(active(root).textContent).toContain('|G|=0.3162278, -10 dB, -71.56505°');
     expect(active(root).querySelector('.bode-live-plots')!.compareDocumentPosition(field(root, 'Actual corner [rad/s]')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(field(root, 'Actual corner [rad/s]').parentElement!.querySelectorAll('input')).toHaveLength(1); expect(field(root, 'Move selected corner (log scale)').parentElement!.querySelectorAll('input')).toHaveLength(1); controller.abort();
+  });
+  it('honors hidden semantics over flex/grid styles for first-order damping and inactive modes', () => {
+    const style = document.createElement('style'); style.textContent = readFileSync('src/modules/cp04/workspace.css', 'utf8'); document.head.append(style);
+    const { root, controller } = open(); const exploration = active(root), damping = field(root, 'Damping ratio ζ').parentElement!;
+    expect(damping.hidden).toBe(true); expect(getComputedStyle(damping).display).toBe('none');
+    update(root, 'Example', 'quadratic', 'change'); expect(damping.hidden).toBe(false); expect(getComputedStyle(damping).display).toBe('flex');
+    update(root, 'Learning mode', 'practice', 'change'); expect(exploration.hidden).toBe(true); expect(getComputedStyle(exploration).display).toBe('none');
+    controller.abort(); style.remove();
   });
   it('moves actual corner 2→3 with visible 2/3 and retained Kn=.5, then undoes', () => {
     const { root, controller } = open(); update(root, 'Selected factor', '1', 'change');
