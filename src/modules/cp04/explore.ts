@@ -4,6 +4,7 @@ import { readNumericInput } from '../../shared/numeric-input';
 import { baseline, dbToLinear, factorAt, frequency, frequencyGrid, fromAngular, normalize, normalizeFactor, parseDelay, parseReal, responseAt, slopeIntervals, toAngular, type Contribution, type Factor, type FrequencyUnit, type Model } from './math';
 import { editFactor, scalarText } from './editing';
 import { createPlot, format as fmt, pointerFrequency, type Axis, type Curve, type Geometry } from './plot';
+import type { ModeHooks } from './mode';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] => {
   const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node;
@@ -19,8 +20,9 @@ function button(parent: HTMLElement, title: string) { const node = el('button', 
 function depth(parent: HTMLElement, title: string) { const node = el('details'); node.append(el('summary', title)); parent.append(node); return node; }
 interface Snapshot { model: Model; gain: string; delay: string; factors: string[][] }
 const snapshot = (model: Model): Snapshot => ({ model, gain: scalarText(model.gain), delay: scalarText(model.delay, true), factors: model.factors.map(f => [scalarText(f.a0), scalarText(f.a1), scalarText(f.a2)]) });
+type ExploreContext = Parameters<ModuleMount>[0] & { hooks?: ModeHooks; isActive?: () => boolean };
 
-export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
+export const mountExplore = ({ container, signal: parent, hooks, isActive = () => true }: ExploreContext): (() => void) | undefined => {
   const life = new AbortController(), signal = life.signal, editors: EquationInput[] = [];
   const root = el('div', undefined, 'bode-explore'); container.append(root);
   root.append(el('p', 'Move a corner to change both plots. Select a factor to link its contribution; raw constants stay in the normalization gain.', 'bode-intro'));
@@ -50,9 +52,9 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   const rawGlobals = el('div', undefined, 'bode-fields'); raw.append(rawGlobals);
   let checked = snapshot(baseline()), selected = 0, unit: FrequencyUnit = 'rad/s', history: Snapshot | undefined;
   let axes: [Axis, Axis] | undefined, width = 660, geometry: Geometry | undefined, validDraft = true, disposed = false, timer: number | undefined;
-  let invalidQuick: HTMLInputElement | undefined;
+  let invalidQuick: HTMLInputElement | undefined, pendingRaw = false;
   let normalizationEquation: HTMLElement | undefined, normalizationValue: number | undefined;
-  let gesture: { base: Snapshot; pointer?: number; kind: 'corner' | 'gain' | 'delay'; factor: number; value?: number } | undefined;
+  let gesture: { base: Snapshot; pointer?: number; source?: HTMLInputElement; kind: 'corner' | 'gain' | 'delay'; factor: number; value?: number } | undefined;
   let observer: ResizeObserver | undefined;
   // Link ownership before the first editor can register a resource or throw.
   parent.addEventListener('abort', dispose, { once: true });
@@ -112,7 +114,7 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     const grid = frequencyGrid(low, high); frequency(omega); if (omega < low || omega > high) throw new Error('Place the cursor inside the displayed frequency range.'); return { low, high, omega, grid };
   }
   function redraw(fitAxes = false) {
-    if (signal.aborted || !validDraft) return;
+    if (signal.aborted || !validDraft || !isActive()) return;
     const model = checked.model, n = normalize(model), { low, high, omega, grid } = viewValues();
     const omegas = [...new Set([...grid, ...n.factors.map(f => f.corner).filter(c => c >= low && c <= high), omega])].sort((a, b) => a - b), exact = omegas.map(w => responseAt(model, w));
     const mag = (db: number) => magnitude.value === 'linear' ? dbToLinear(db) : db;
@@ -146,12 +148,13 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     catch (error) { checked = previous; selected = previousSelected; validDraft = true; synchronize(); redraw(); throw error; }
   }
   function runRaw() { clearTimer(); try { publish(readRaw(), 'Checked raw model. Plots use the displayed coefficients.'); } catch (error) { report(error); } }
-  function queueRaw() { if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; runRaw(); }, 40); }
-  function begin(kind: 'corner' | 'gain' | 'delay', pointer?: number, factor = selected) {
+  function queueRaw() { if (!isActive()) { pendingRaw = true; return; } if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; runRaw(); }, 40); }
+  function begin(kind: 'corner' | 'gain' | 'delay', pointer?: number, factor = selected, source?: HTMLInputElement) {
+    if (gesture && (gesture.kind !== kind || gesture.factor !== factor || gesture.pointer !== pointer || gesture.source !== source)) commit();
     if (gesture) return;
     if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before another model or view change, or check the raw model to restore its values.`);
     // An invalid visible draft must never be silently replaced by a gesture.
-    const current = readRaw(); viewValues(); checked = current; validDraft = true; gesture = { base: current, pointer, kind, factor };
+    const current = readRaw(); viewValues(); checked = current; validDraft = true; gesture = { base: current, pointer, source, kind, factor };
   }
   function propose(value: number) {
     if (!gesture) return;
@@ -174,7 +177,7 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   function quick(input: HTMLInputElement, kind: 'corner' | 'gain' | 'delay', value: () => number, range = false) {
     input.addEventListener('input', () => {
       const draft = input.value;
-      try { const proposed = value(); if (invalidQuick === input) invalidQuick = undefined; begin(kind); if (range) queue(proposed); else propose(proposed); }
+      try { const proposed = value(); if (invalidQuick === input) invalidQuick = undefined; begin(kind, undefined, selected, input); if (range) queue(proposed); else propose(proposed); }
       catch (error) { const blocked = invalidQuick; if (gesture) cancelGesture(); input.value = draft; if (!range) invalidQuick = blocked ?? input; report(error); }
     }, { signal });
     input.addEventListener('change', commit, { signal });
@@ -215,6 +218,9 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   undo.addEventListener('click', () => { cancelGesture(); if (!history) return; const previous = history; try { publish(previous, 'Previous checked model restored.', false, false, Math.min(selected, Math.max(0, previous.model.factors.length - 1))); history = undefined; undo.disabled = true; } catch (error) { report(error); } }, { signal });
   fit.addEventListener('click', () => { cancelGesture(); try { redraw(true); } catch (error) { report(error); } }, { signal });
   function displayChanged(fitAxes = false) { cancelGesture(); try { if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before changing the view, or check the raw model to restore its values.`); if (!validDraft) { const current = readRaw(); publish(current, 'Checked model; view updated.', JSON.stringify(current.model) !== JSON.stringify(checked.model), fitAxes); } else redraw(fitAxes); } catch (error) { report(error); } }
+  function labelFrequencies() {
+    [lowInput, highInput, cursor, corner].forEach((input, i) => { const title = `${['Lower frequency', 'Upper frequency', 'Cursor frequency', 'Actual corner'][i]} [${unit}]`; input.setAttribute('aria-label', title); input.parentElement!.firstChild!.textContent = title; input.min = String(fromAngular(1e-4, unit)); input.max = String(fromAngular(1e4, unit)); });
+  }
   [lowInput, highInput, cursor].forEach(input => input.addEventListener('input', () => displayChanged(), { signal }));
   magnitude.addEventListener('change', () => displayChanged(true), { signal }); contribution.addEventListener('change', () => displayChanged(), { signal });
   cursorRange.addEventListener('input', () => { try { cursor.value = String(fromAngular(10 ** readNumericInput(cursorRange, 'Frequency cursor'), unit)); displayChanged(); } catch (error) { report(error); } }, { signal });
@@ -223,20 +229,23 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     try {
       const inputs = [lowInput, highInput, cursor, ...(checked.model.factors.length ? [corner] : [])], values = inputs.map(input => { const omega = toAngular(readNumericInput(input, 'Frequency'), unit); frequency(omega); return fromAngular(omega, next); });
       inputs.forEach((input, i) => input.value = String(values[i])); unit = next;
-      [lowInput, highInput, cursor, corner].forEach((input, i) => { const title = `${['Lower frequency', 'Upper frequency', 'Cursor frequency', 'Actual corner'][i]} [${unit}]`; input.setAttribute('aria-label', title); input.parentElement!.firstChild!.textContent = title; input.min = String(fromAngular(1e-4, unit)); input.max = String(fromAngular(1e4, unit)); }); displayChanged();
+      labelFrequencies(); displayChanged();
     } catch (error) { units.value = unit; report(error); }
   }, { signal });
   plots.addEventListener('pointerdown', event => {
+    if (!isActive()) return;
     const target = (event.target as Element).closest('[data-factor]'); if (!target || event.button !== 0) return;
-    cancelGesture(); try { checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); begin('corner', event.pointerId, selected); redraw(); plots.focus({ preventScroll: true }); event.preventDefault(); plots.setPointerCapture?.(event.pointerId); } catch (error) { report(error); }
+    if (gesture?.pointer !== undefined) return;
+    commit(); try { checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); begin('corner', event.pointerId, selected); redraw(); plots.focus({ preventScroll: true }); event.preventDefault(); plots.setPointerCapture?.(event.pointerId); } catch (error) { report(error); }
   }, { signal });
-  window.addEventListener('pointermove', event => { if (gesture?.pointer !== event.pointerId || !geometry) return; event.preventDefault(); try { const image = plots.querySelector('svg'); if (image) queue(pointerFrequency(event.clientX, image.getBoundingClientRect(), geometry)); } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'Pointer edit failed.'; } }, { signal, passive: false });
-  window.addEventListener('pointerup', event => { if (gesture?.pointer === event.pointerId) commit(); }, { signal });
-  window.addEventListener('pointercancel', event => { if (gesture?.pointer === event.pointerId) cancelGesture(); }, { signal });
-  plots.addEventListener('lostpointercapture', () => { if (gesture?.pointer !== undefined) cancelGesture(); }, { signal });
-  window.addEventListener('blur', cancelGesture, { signal });
-  window.addEventListener('keydown', event => { if (event.key === 'Escape' && gesture) { event.preventDefault(); event.stopImmediatePropagation(); cancelGesture(); plots.focus({ preventScroll: true }); } }, { signal, capture: true });
+  window.addEventListener('pointermove', event => { if (!isActive() || gesture?.pointer !== event.pointerId || !geometry) return; event.preventDefault(); try { const image = plots.querySelector('svg'); if (image) queue(pointerFrequency(event.clientX, image.getBoundingClientRect(), geometry)); } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'Pointer edit failed.'; } }, { signal, passive: false });
+  window.addEventListener('pointerup', event => { if (isActive() && gesture?.pointer === event.pointerId) commit(); }, { signal });
+  window.addEventListener('pointercancel', event => { if (isActive() && gesture?.pointer === event.pointerId) cancelGesture(); }, { signal });
+  plots.addEventListener('lostpointercapture', event => { if (isActive() && gesture?.pointer === event.pointerId) cancelGesture(); }, { signal });
+  window.addEventListener('blur', () => { if (isActive()) cancelGesture(); }, { signal });
+  window.addEventListener('keydown', event => { if (isActive() && event.key === 'Escape' && gesture) { event.preventDefault(); event.stopImmediatePropagation(); cancelGesture(); plots.focus({ preventScroll: true }); } }, { signal, capture: true });
   plots.addEventListener('keydown', event => {
+    if (!isActive()) return;
     const target = (event.target as Element).closest('[data-factor]'); if (!target || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault(); try {
       cancelGesture(); checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); const f = normalizeFactor(checked.model.factors[selected]), bounds = viewValues();
@@ -249,9 +258,17 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     const model: Model = examples.value === 'quadratic' ? { gain: 1, delay: 0, originPower: 0, factors: [{ kind: 'second', position: 'pole', a0: 4, a1: 1, a2: 1 }] } : examples.value === 'rhp' ? { ...base, factors: [...base.factors, { kind: 'first', position: 'zero', a0: 1, a1: -1, a2: 0 }] } : examples.value === 'delay' ? { ...base, delay: .5 } : examples.value === 'origin' ? { ...base, originPower: -1 } : base;
     try { publish(snapshot(model), 'Checked example loaded. Proposed variations are labelled in the menu.', true, true, 0); } catch (error) { report(error); }
   }, { signal });
-  const resize = () => { if (disposed) return; const next = plots.getBoundingClientRect().width; if (next > 0 && Math.abs(next - width) > 1) { cancelGesture(); width = next; try { redraw(); } catch (error) { report(error); } } };
+  const resize = () => { if (disposed || !isActive()) return; const next = plots.getBoundingClientRect().width; if (next > 0 && Math.abs(next - width) > 1) { cancelGesture(); width = next; try { redraw(); } catch (error) { report(error); } } };
   observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); observer?.observe(plots); window.addEventListener('resize', resize, { signal });
   function dispose() { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); clearTimer(); releasePointer(); observer?.disconnect(); life.abort(); editors.forEach(e => e.destroy()); root.remove(); }
-  if (parent.aborted) dispose(); else { synchronize(); validDraft = true; try { redraw(true); feedback.textContent = 'Checked baseline. Both plots respond to the controls.'; resize(); } catch (error) { report(error); } }
+  if (hooks) {
+    hooks.suspend = () => {
+      pendingRaw ||= timer !== undefined && !gesture;
+      // A valid typed value settles like blur; an unfinished drag/range rolls back.
+      if (gesture?.source?.type === 'number') commit(); else cancelGesture();
+    };
+    hooks.resume = () => { resize(); if (pendingRaw) { pendingRaw = false; queueRaw(); } };
+  }
+  if (parent.aborted) dispose(); else { synchronize(); labelFrequencies(); validDraft = true; try { redraw(true); feedback.textContent = 'Checked baseline. Both plots respond to the controls.'; resize(); } catch (error) { report(error); } }
   return dispose;
 };

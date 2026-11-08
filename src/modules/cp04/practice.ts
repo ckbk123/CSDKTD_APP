@@ -3,6 +3,7 @@ import { createEquationDisplay, createEquationInput, type EquationDraft, type Eq
 import { baseline, dbToLinear, diagnosePrediction, factorAt, frequency, frequencyGrid, fromAngular, normalize, parseDelay, parseReal, predictionAt, responseAt, slopeIntervals, toAngular, type Factor, type FrequencyUnit, type Model, type Prediction } from './math';
 import { readNumericInput as finite } from '../../shared/numeric-input';
 import { createPlot, type Curve } from './plot';
+import type { ModeHooks } from './mode';
 import './workspace.css';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
@@ -39,7 +40,8 @@ function table(headers: readonly string[], rows: readonly (readonly string[])[])
 }
 interface Binding { input: EquationInput; read(): number }
 interface Row { id: number; element: HTMLElement; position: ReturnType<typeof select>; kind: ReturnType<typeof select>; fields: Binding[]; guess: ReturnType<typeof numeric>; dispose(): void }
-export const mountView: ModuleMount = ({ container, signal }) => {
+type PracticeContext = Parameters<ModuleMount>[0] & { hooks?: ModeHooks; isActive?: () => boolean };
+export const mountView = ({ container, signal, hooks, isActive = () => true }: PracticeContext): (() => void) => {
   const root = el('div', undefined, 'cp04'); container.append(root); root.append(el('h3', 'Construct the Bode plot before revealing the answer'), el('p', 'Normalize the given factors, predict the gain and corners, then compare your construction with the numerical frequency response.'));
   const presets = select('Example', [['baseline', 'Baseline: 1 / ((s+1)(s+2))'], ['delay', 'Baseline with 0.5 s pure delay (proposed)'], ['quadratic', 'Resonant quadratic (proposed)'], ['rhp', 'Right-half-plane zero (proposed)'], ['origin', 'Baseline with an integrator (proposed)']]); root.append(presets.element);
   const globals = el('div', undefined, 'bode-fields'), factorArea = el('div'), results = el('div', undefined, 'bode-results'), message = el('p', 'Place your gain and corner markers, then draw your prediction.', 'bode-message'); message.setAttribute('role', 'status');
@@ -158,7 +160,8 @@ export const mountView: ModuleMount = ({ container, signal }) => {
   }, { signal });
   baseline().factors.forEach(f => addRow(f));
   let plotWidth = 0;
-  const resize = (): void => { const next = results.getBoundingClientRect().width; if (next > 0 && Math.abs(next - plotWidth) > 1) { plotWidth = next; redraw(); } };
+  const resize = (): void => { if (!isActive()) return; const next = results.getBoundingClientRect().width; if (next > 0 && Math.abs(next - plotWidth) > 1) { plotWidth = next; redraw(); } };
+  if (hooks) hooks.resume = resize;
   const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); observer?.observe(results);
   window.addEventListener('resize', resize, { signal }); signal.addEventListener('abort', () => observer?.disconnect(), { once: true });
   return () => { observer?.disconnect(); rows.forEach(row => row.dispose()); gain.input.destroy(); delay.input.destroy(); root.remove(); };
