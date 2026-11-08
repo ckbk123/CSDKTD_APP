@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationDraft, EquationInputOptions } from '../../shared/equations/input';
-import { mount } from './view';
+import { mount } from './practice';
 
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (latex: string, label: string) => { const node = document.createElement('div'); node.setAttribute('aria-label', label); node.textContent = latex; return node; },

@@ -1,6 +1,11 @@
 # DP02 implementation status
 
-- **Stage:** verified
+- **Stage:** implemented
+- **Current finite refinement:** linked s/z mapping and modal samples, 8 November 2026; owner `interactivity-dp02-01a1ac7b`, branch `codex/dp02-linked-exploration`, isolated worktree `C:/Users/baokh/.codex/worktrees/dp02-linked-exploration/CSDKTD APP`, base `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c`.
+- **Current evidence:** 123 DP02 tests in five files and TypeScript pass. New Explore opens on computed linked planes/samples, logarithmic sample-period scrubbing, 0.01 pole/conjugate drag and arrow/Shift-arrow alternatives, fixed equal axes with explicit Fit/clipping, a reference ghost, integer sample inspection and inverse/alias readouts. Practice retains the original required-prediction/reveal flow in its own visit-local mode. Numeric/equation entry preserves the original full domain; invalid drafts explicitly retain the last checked mapping. A fixed 32 ms coalescing schedule is tested during continued input; no input-to-paint timing is claimed.
+- **Preserved mathematics:** `math.ts` and the original sample/plane computation in `plots.ts` are unchanged. New geometry is a presentation transform. Both modes select only supported equation quick tools, and owned plot resizing adjusts text/hit-area sizes without changing model/world values. Resource tests cover active-drag Escape from actual stable focus, direct disposal, failed lazy Practice and a disposer returned during parent abort.
+- **Pending gates:** production build, complete application regression, independent source review and actual browser interaction/phone/font checks. No new browser evidence, actual touch, measured latency or learning outcomes are claimed at this checkpoint.
+- Historical verified state below describes the bounded exercise before this new refinement.
 - **Assessed:** 2026-10-29; review correction checked on this branch, based on `c5d1135`; exact final tested SHA is recorded in the submitted claim
 - **Ownership:** `src/modules/dp02/**`; [accepted contract](TASK.md)
 - **Worker chat:** `01a186d1-a367-78f1-98f5-e1cf147ef306`
