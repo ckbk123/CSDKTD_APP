@@ -7,7 +7,7 @@ import { frequency, normalize, normalizeFactor, parseDelay, parseReal, type Fact
 export function scalarText(value: number, delay = false): string {
   const parse = delay ? parseDelay : parseReal;
   if (!Number.isFinite(value)) throw new Error('The proposed value is not finite.');
-  if (delay ? value < 0 || value > 10 : Math.abs(value) > 1e6 || value !== 0 && Math.abs(value) < 1e-6) throw new Error('This edit would exceed the supported coefficient bounds. Use the raw coefficient editors.');
+  if (delay ? value < 0 || value > 10 : Math.abs(value) > 1e6 || value !== 0 && Math.abs(value) < 1e-6) throw new Error('This edit would exceed the supported coefficient bounds. Use the raw model editors.');
   if (value === 0) return '0';
   const sign = value < 0 ? '-' : '', target = Math.abs(value);
   const integer = Math.round(target);
@@ -22,7 +22,7 @@ export function scalarText(value: number, delay = false): string {
     h0 = h1; h1 = h; k0 = k1; k1 = k;
     const remainder = x - a; if (!remainder) break; x = 1 / remainder;
   }
-  if (!best || Math.abs(parse(best) - value) > 1e-10 * Math.abs(value)) throw new Error('This edit cannot be represented at the supported scalar precision. Use the raw coefficient editors.');
+  if (!best || Math.abs(parse(best) - value) > 1e-10 * Math.abs(value)) throw new Error('This edit cannot be represented at the supported scalar precision. Use the raw model editors.');
   return best;
 }
 

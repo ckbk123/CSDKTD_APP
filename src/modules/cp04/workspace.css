@@ -20,7 +20,7 @@
 [data-module="CP04"] .bode-figure { margin: 24px 0; min-width: 0; overflow-x: auto; }
 [data-module="CP04"] .bode-figure figcaption { font-weight: 550; margin: 10px 0; }
 [data-module="CP04"] .bode-figure > svg { display: block; width: 100%; height: auto; background: var(--background); border: 1px solid var(--line); border-radius: 8px; }
-[data-module="CP04"] .bode-figure text { fill: var(--muted); font-size: 12px; font-family: inherit; }
+[data-module="CP04"] .bode-figure text { fill: var(--muted); font-size: 12.2px; font-family: inherit; }
 [data-module="CP04"] .bode-axis { stroke: var(--muted); stroke-width: 1; }
 [data-module="CP04"] .bode-grid { stroke: var(--line); stroke-width: .7; }
 [data-module="CP04"] .bode-line { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
@@ -40,7 +40,7 @@
 [data-module="CP04"] .bode-explore-layout { display: grid; grid-template-columns: minmax(0, 1fr) 255px; gap: 20px; align-items: start; }
 [data-module="CP04"] .bode-visual, [data-module="CP04"] .bode-live-plots, [data-module="CP04"] .bode-explore-controls { min-width: 0; }
 [data-module="CP04"] .bode-explore .bode-figure { margin: 0 0 12px; overflow: visible; }
-[data-module="CP04"] .bode-explore .bode-figure text { font-size: 12.1px; }
+[data-module="CP04"] .bode-explore .bode-figure text { font-size: 12.2px; }
 [data-module="CP04"] .bode-explore .bode-figure figcaption { font-size: 13px; margin: 0 0 5px; }
 [data-module="CP04"] .bode-explore .bode-legend { gap: 6px 12px; margin: 4px 0; }
 [data-module="CP04"] .bode-explore .bode-control { font-size: 12px; margin: 0 0 8px; gap: 3px; }
@@ -51,6 +51,7 @@
 [data-module="CP04"] .bode-warning { font-size: 12px; color: var(--accent-strong); background: var(--tint); padding: 8px; }
 [data-module="CP04"] .bode-selected-marker { stroke: var(--accent); stroke-dasharray: 5 3; }
 [data-module="CP04"] .bode-handle { cursor: ew-resize; touch-action: none; outline: none; }
+[data-module="CP04"] .bode-handle * { touch-action: none; }
 [data-module="CP04"] .bode-hit { fill: transparent; }
 [data-module="CP04"] .bode-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
 [data-module="CP04"] .bode-handle:focus .bode-dot { fill: var(--accent); stroke: var(--text); stroke-width: 3; }

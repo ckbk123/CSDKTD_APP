@@ -28,7 +28,7 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   const plots = el('div', undefined, 'bode-live-plots'); plots.tabIndex = -1; plots.setAttribute('aria-label', 'Bode plots and corner editing');
   const warning = el('p', undefined, 'bode-warning'); warning.setAttribute('role', 'status');
   const readout = el('p', undefined, 'bode-live-readout'); readout.setAttribute('aria-live', 'polite');
-  const feedback = el('p', undefined, 'bode-live-status'); feedback.setAttribute('role', 'status'); visual.append(plots, warning, readout, feedback);
+  const feedback = el('p', undefined, 'bode-live-status'); feedback.setAttribute('role', 'status'); visual.append(warning, plots, readout, feedback);
   const examples = select(controls, 'Example', [['baseline', 'Baseline — two real poles'], ['quadratic', 'Resonant quadratic (proposed)'], ['rhp', 'Right-half-plane zero (proposed)'], ['delay', 'Pure delay (proposed)'], ['origin', 'Integrator (proposed)']]);
   const choice = select(controls, 'Selected factor', []);
   const corner = numeric(controls, 'Actual corner [rad/s]', 1, 1e-4, 1e4);
@@ -50,7 +50,13 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   const rawGlobals = el('div', undefined, 'bode-fields'); raw.append(rawGlobals);
   let checked = snapshot(baseline()), selected = 0, unit: FrequencyUnit = 'rad/s', history: Snapshot | undefined;
   let axes: [Axis, Axis] | undefined, width = 660, geometry: Geometry | undefined, validDraft = true, disposed = false, timer: number | undefined;
+  let invalidQuick: HTMLInputElement | undefined;
+  let normalizationEquation: HTMLElement | undefined, normalizationValue: number | undefined;
   let gesture: { base: Snapshot; pointer?: number; kind: 'corner' | 'gain' | 'delay'; factor: number; value?: number } | undefined;
+  let observer: ResizeObserver | undefined;
+  // Link ownership before the first editor can register a resource or throw.
+  parent.addEventListener('abort', dispose, { once: true });
+  if (parent.aborted) { dispose(); return; }
   const entry = { tools: ['fraction', 'parentheses'] as const, description: 'Enter a signed real number, decimal with up to 9 places, or a simple fraction. Algebraic expressions and powers are unsupported.' };
   function editor(parentNode: HTMLElement, label: string, value: string) {
     const input = createEquationInput({ ...entry, label, value, signal, onChange: () => { cancelGesture(); validDraft = false; clearPlots('Raw model draft changed; checking…'); queueRaw(); } }); editors.push(input); parentNode.append(input.element); return input;
@@ -86,8 +92,10 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     const model = { gain: k.value, delay: tau.value, originPower: Number(origin.value), factors }; normalize(model); return { model, gain: k.text, delay: tau.text, factors: texts };
   }
   function synchronize() {
+    invalidQuick = undefined;
     const model = checked.model, factor = model.factors[selected];
-    gain.setValue(checked.gain); delay.setValue(checked.delay); origin.value = String(model.originPower);
+    const set = (input: EquationInput, text: string) => { if (input.getValue().latex !== text) input.setValue(text); };
+    set(gain, checked.gain); set(delay, checked.delay); origin.value = String(model.originPower);
     gainControl.value = String(model.gain); gainRange.value = String(Math.log10(Math.abs(model.gain))); delayControl.value = String(model.delay); delayRange.value = String(model.delay);
     choice.replaceChildren(); model.factors.forEach((f, i) => { const option = el('option', `Factor ${i + 1} · ${f.position} · ${f.kind === 'first' ? '1st' : '2nd'} order`); option.value = String(i); choice.append(option); }); choice.value = String(selected);
     choice.disabled = !factor; add.disabled = model.factors.length >= 6; remove.disabled = !factor;
@@ -95,7 +103,7 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     if (factor) {
       const f = normalizeFactor(factor); corner.value = String(fromAngular(f.corner, unit)); cornerRange.value = String(Math.log10(f.corner));
       damping.value = String(f.damping ?? .25); damping.parentElement!.hidden = factor.kind !== 'second';
-      position.value = factor.position; order.value = factor.kind; coefficients.forEach((field, i) => field.setValue(checked.factors[selected][i])); coefficients[2].element.hidden = factor.kind !== 'second';
+      position.value = factor.position; order.value = factor.kind; coefficients.forEach((field, i) => set(field, checked.factors[selected][i])); coefficients[2].element.hidden = factor.kind !== 'second';
     } else { damping.parentElement!.hidden = true; corner.value = ''; }
     undo.disabled = !history;
   }
@@ -126,20 +134,22 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     const at = responseAt(model, omega), selectedAt = term(omega);
     readout.textContent = `At ${fmt(fromAngular(omega, unit))} ${unit}: |G|=${fmt(at.magnitude)}, ${fmt(at.db)} dB, ${fmt(at.phase)}°. Exact − asymptotic: ${fmt(at.db - at.asymptoteDb)} dB, ${fmt(at.phase - at.asymptotePhase)}°.${selectedAt ? ` Highlighted: ${fmt(selectedAt.db)} dB, ${fmt(selectedAt.phase)}°.` : ''}`;
     reasoning.replaceChildren(el('summary', 'Normalization, slopes and cursor contributions'));
-    reasoning.append(createEquationDisplay(`K_n=K\\frac{\\prod_{\\mathrm{numerator}}a_0}{\\prod_{\\mathrm{denominator}}a_0}\\approx${n.gain.toPrecision(8).replace(/e([+-]?\d+)/, '\\times10^{$1}')}`, 'Normalization gain'), el('p', `Raw K=${fmt(model.gain)}; normalization gain Kₙ=${fmt(n.gain)}. The selected normalized factor excludes its a₀ constant. Contributions add in dB/degrees; linear ratios multiply.`));
+    if (!normalizationEquation || normalizationValue !== n.gain) { normalizationEquation = createEquationDisplay(`K_n=K\\frac{\\prod_{\\mathrm{numerator}}a_0}{\\prod_{\\mathrm{denominator}}a_0}\\approx${n.gain.toPrecision(8).replace(/e([+-]?\d+)/, '\\times10^{$1}')}`, 'Normalization gain'); normalizationValue = n.gain; }
+    reasoning.append(normalizationEquation, el('p', `Raw K=${fmt(model.gain)}; normalization gain Kₙ=${fmt(n.gain)}. The selected normalized factor excludes its a₀ constant. Contributions add in dB/degrees; linear ratios multiply.`));
     reasoning.append(el('p', slopeIntervals(model).map(s => `${fmt(fromAngular(s.from, unit))} < ${unit === 'Hz' ? 'f' : 'ω'} < ${fmt(fromAngular(s.to, unit))}: ${s.slope} dB/dec`).join('; ')));
     reasoning.append(el('p', `Cursor contributions: gain ${fmt(20 * Math.log10(Math.abs(n.gain)))} dB / ${model.gain < 0 ? 180 : 0}°; origin ${fmt(20 * model.originPower * Math.log10(omega))} dB / ${90 * model.originPower}°; delay 0 dB / ${fmt(-model.delay * omega * 180 / Math.PI)}°; ${at.contributions.map((c, i) => `factor ${i + 1}: ${fmt(c.db)} dB / ${fmt(c.phase)}°`).join('; ')}.`));
     cursorRange.min = String(Math.log10(low)); cursorRange.max = String(Math.log10(high)); cursorRange.value = String(Math.log10(omega));
   }
-  function publish(next: Snapshot, message: string, remember = true, fitAxes = false) {
-    normalize(next.model); viewValues(); const previous = checked; checked = next; validDraft = true;
+  function publish(next: Snapshot, message: string, remember = true, fitAxes = false, nextSelected = selected) {
+    normalize(next.model); viewValues(); const previous = checked, previousSelected = selected; checked = next; selected = nextSelected; validDraft = true;
     try { redraw(fitAxes); if (remember) history = previous; synchronize(); feedback.textContent = message; }
-    catch (error) { checked = previous; validDraft = true; synchronize(); redraw(); throw error; }
+    catch (error) { checked = previous; selected = previousSelected; validDraft = true; synchronize(); redraw(); throw error; }
   }
   function runRaw() { clearTimer(); try { publish(readRaw(), 'Checked raw model. Plots use the displayed coefficients.'); } catch (error) { report(error); } }
   function queueRaw() { if (timer === undefined) timer = window.setTimeout(() => { timer = undefined; runRaw(); }, 40); }
   function begin(kind: 'corner' | 'gain' | 'delay', pointer?: number, factor = selected) {
     if (gesture) return;
+    if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before another model or view change, or check the raw model to restore its values.`);
     // An invalid visible draft must never be silently replaced by a gesture.
     const current = readRaw(); viewValues(); checked = current; validDraft = true; gesture = { base: current, pointer, kind, factor };
   }
@@ -164,10 +174,11 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   function quick(input: HTMLInputElement, kind: 'corner' | 'gain' | 'delay', value: () => number, range = false) {
     input.addEventListener('input', () => {
       const draft = input.value;
-      try { const proposed = value(); begin(kind); if (range) queue(proposed); else propose(proposed); }
-      catch (error) { if (gesture) cancelGesture(); input.value = draft; report(error); }
+      try { const proposed = value(); if (invalidQuick === input) invalidQuick = undefined; begin(kind); if (range) queue(proposed); else propose(proposed); }
+      catch (error) { const blocked = invalidQuick; if (gesture) cancelGesture(); input.value = draft; if (!range) invalidQuick = blocked ?? input; report(error); }
     }, { signal });
     input.addEventListener('change', commit, { signal });
+    input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); commit(); } }, { signal });
   }
   quick(corner, 'corner', () => toAngular(readNumericInput(corner, 'Actual corner'), unit));
   quick(cornerRange, 'corner', () => 10 ** readNumericInput(cornerRange, 'Corner range'), true);
@@ -177,12 +188,14 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   quick(delayRange, 'delay', () => readNumericInput(delayRange, 'Delay range'), true);
   damping.addEventListener('input', () => {
     cancelGesture(); try {
+      if (invalidQuick === damping) invalidQuick = undefined;
+      if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before another model change.`);
       const current = readRaw(), f = normalizeFactor(current.model.factors[selected]), edit = editFactor(current.model.factors[selected], f.corner, readNumericInput(damping, 'Damping ratio'));
       const factors = current.factors.map(v => [...v]); factors[selected][1] = edit.a1; factors[selected][2] = edit.a2;
       publish({ ...current, factors, model: { ...current.model, factors: current.model.factors.map((v, i) => i === selected ? edit.factor : v) } }, 'Checked damping edit; natural frequency and normalization gain preserved.');
-    } catch (error) { report(error); }
+    } catch (error) { invalidQuick ??= damping; report(error); }
   }, { signal });
-  choice.addEventListener('change', () => { const next = Number(choice.value); cancelGesture(); try { checked = readRaw(); selected = next; synchronize(); validDraft = true; redraw(); } catch (error) { choice.value = String(selected); report(error); } }, { signal });
+  choice.addEventListener('change', () => { const next = Number(choice.value); cancelGesture(); try { if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before selecting another factor, or check the raw model to restore its values.`); const current = readRaw(); publish(current, 'Selected factor linked on both plots.', JSON.stringify(current.model) !== JSON.stringify(checked.model), false, next); } catch (error) { choice.value = String(selected); report(error); } }, { signal });
   apply.addEventListener('click', runRaw, { signal });
   for (const input of [origin, position, order]) input.addEventListener('change', () => {
     cancelGesture();
@@ -192,16 +205,16 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     } catch (error) { report(error); }
   }, { signal });
   add.addEventListener('click', () => { cancelGesture(); try {
-    const current = readRaw(); if (current.model.factors.length >= 6) throw new Error('Use at most six factors.'); selected = current.model.factors.length;
-    publish({ ...current, factors: [...current.factors, ['1', '1', '0']], model: { ...current.model, factors: [...current.model.factors, { kind: 'first', position: 'pole', a0: 1, a1: 1, a2: 0 }] } }, 'Added a first-order pole factor.');
-  } catch (error) { selected = Math.max(0, checked.model.factors.length - 1); report(error); } }, { signal });
-  remove.addEventListener('click', () => { cancelGesture(); try {
-    const current = readRaw(), index = selected; selected = Math.max(0, Math.min(selected, current.model.factors.length - 2));
-    publish({ ...current, factors: current.factors.filter((_, i) => i !== index), model: { ...current.model, factors: current.model.factors.filter((_, i) => i !== index) } }, 'Removed the selected factor.');
+    const current = readRaw(); if (current.model.factors.length >= 6) throw new Error('Use at most six factors.');
+    publish({ ...current, factors: [...current.factors, ['1', '1', '0']], model: { ...current.model, factors: [...current.model.factors, { kind: 'first', position: 'pole', a0: 1, a1: 1, a2: 0 }] } }, 'Added a first-order pole factor.', true, false, current.model.factors.length);
   } catch (error) { report(error); } }, { signal });
-  undo.addEventListener('click', () => { cancelGesture(); if (!history) return; const previous = history; history = undefined; selected = Math.min(selected, Math.max(0, previous.model.factors.length - 1)); try { publish(previous, 'Previous checked model restored.', false); } catch (error) { report(error); } }, { signal });
+  remove.addEventListener('click', () => { cancelGesture(); try {
+    const current = readRaw(), index = selected;
+    publish({ ...current, factors: current.factors.filter((_, i) => i !== index), model: { ...current.model, factors: current.model.factors.filter((_, i) => i !== index) } }, 'Removed the selected factor.', true, false, Math.max(0, Math.min(selected, current.model.factors.length - 2)));
+  } catch (error) { report(error); } }, { signal });
+  undo.addEventListener('click', () => { cancelGesture(); if (!history) return; const previous = history; try { publish(previous, 'Previous checked model restored.', false, false, Math.min(selected, Math.max(0, previous.model.factors.length - 1))); history = undefined; undo.disabled = true; } catch (error) { report(error); } }, { signal });
   fit.addEventListener('click', () => { cancelGesture(); try { redraw(true); } catch (error) { report(error); } }, { signal });
-  function displayChanged(fitAxes = false) { cancelGesture(); try { if (!validDraft) { checked = readRaw(); validDraft = true; } redraw(fitAxes); } catch (error) { report(error); } }
+  function displayChanged(fitAxes = false) { cancelGesture(); try { if (invalidQuick) throw new Error(`Correct ${invalidQuick.getAttribute('aria-label')} before changing the view, or check the raw model to restore its values.`); if (!validDraft) { const current = readRaw(); publish(current, 'Checked model; view updated.', JSON.stringify(current.model) !== JSON.stringify(checked.model), fitAxes); } else redraw(fitAxes); } catch (error) { report(error); } }
   [lowInput, highInput, cursor].forEach(input => input.addEventListener('input', () => displayChanged(), { signal }));
   magnitude.addEventListener('change', () => displayChanged(true), { signal }); contribution.addEventListener('change', () => displayChanged(), { signal });
   cursorRange.addEventListener('input', () => { try { cursor.value = String(fromAngular(10 ** readNumericInput(cursorRange, 'Frequency cursor'), unit)); displayChanged(); } catch (error) { report(error); } }, { signal });
@@ -215,7 +228,7 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
   }, { signal });
   plots.addEventListener('pointerdown', event => {
     const target = (event.target as Element).closest('[data-factor]'); if (!target || event.button !== 0) return;
-    cancelGesture(); try { checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); begin('corner', event.pointerId, selected); plots.focus({ preventScroll: true }); event.preventDefault(); plots.setPointerCapture?.(event.pointerId); } catch (error) { report(error); }
+    cancelGesture(); try { checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); begin('corner', event.pointerId, selected); redraw(); plots.focus({ preventScroll: true }); event.preventDefault(); plots.setPointerCapture?.(event.pointerId); } catch (error) { report(error); }
   }, { signal });
   window.addEventListener('pointermove', event => { if (gesture?.pointer !== event.pointerId || !geometry) return; event.preventDefault(); try { const image = plots.querySelector('svg'); if (image) queue(pointerFrequency(event.clientX, image.getBoundingClientRect(), geometry)); } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'Pointer edit failed.'; } }, { signal, passive: false });
   window.addEventListener('pointerup', event => { if (gesture?.pointer === event.pointerId) commit(); }, { signal });
@@ -227,19 +240,18 @@ export const mountExplore: ModuleMount = ({ container, signal: parent }) => {
     const target = (event.target as Element).closest('[data-factor]'); if (!target || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault(); try {
       cancelGesture(); checked = readRaw(); selected = Number(target.getAttribute('data-factor')); synchronize(); const f = normalizeFactor(checked.model.factors[selected]), bounds = viewValues();
-      begin('corner'); propose(event.key === 'Home' ? bounds.low : event.key === 'End' ? bounds.high : Math.max(1e-4, Math.min(1e4, f.corner * 10 ** ((event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? .1 : .02))))); commit();
+      begin('corner'); propose(event.key === 'Home' ? bounds.low : event.key === 'End' ? bounds.high : Math.max(bounds.low, Math.min(bounds.high, f.corner * 10 ** ((event.key === 'ArrowRight' || event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? .1 : .02))))); commit();
       plots.querySelector<SVGElement>(`[data-factor="${selected}"]`)?.focus();
     } catch (error) { cancelGesture(); feedback.textContent = error instanceof Error ? error.message : 'This corner edit is unsupported.'; }
   }, { signal });
   examples.addEventListener('change', () => {
     cancelGesture(); const base = baseline();
     const model: Model = examples.value === 'quadratic' ? { gain: 1, delay: 0, originPower: 0, factors: [{ kind: 'second', position: 'pole', a0: 4, a1: 1, a2: 1 }] } : examples.value === 'rhp' ? { ...base, factors: [...base.factors, { kind: 'first', position: 'zero', a0: 1, a1: -1, a2: 0 }] } : examples.value === 'delay' ? { ...base, delay: .5 } : examples.value === 'origin' ? { ...base, originPower: -1 } : base;
-    selected = 0; try { publish(snapshot(model), 'Checked example loaded. Proposed variations are labelled in the menu.', true, true); } catch (error) { report(error); }
+    try { publish(snapshot(model), 'Checked example loaded. Proposed variations are labelled in the menu.', true, true, 0); } catch (error) { report(error); }
   }, { signal });
   const resize = () => { if (disposed) return; const next = plots.getBoundingClientRect().width; if (next > 0 && Math.abs(next - width) > 1) { cancelGesture(); width = next; try { redraw(); } catch (error) { report(error); } } };
-  const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); observer?.observe(plots); window.addEventListener('resize', resize, { signal });
+  observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); observer?.observe(plots); window.addEventListener('resize', resize, { signal });
   function dispose() { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); clearTimer(); releasePointer(); observer?.disconnect(); life.abort(); editors.forEach(e => e.destroy()); root.remove(); }
-  parent.addEventListener('abort', dispose, { once: true });
   if (parent.aborted) dispose(); else { synchronize(); validDraft = true; try { redraw(true); feedback.textContent = 'Checked baseline. Both plots respond to the controls.'; resize(); } catch (error) { report(error); } }
   return dispose;
 };

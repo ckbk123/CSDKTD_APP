@@ -1,8 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
+const partial = vi.hoisted(() => ({ count: 0, failAt: 0, listener: vi.fn() }));
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (value: string, label: string) => { const node = document.createElement('div'); node.textContent = value; node.setAttribute('aria-label', label); return node; },
   createEquationInput: (options: EquationInputOptions) => {
+    partial.count++;
+    if (partial.count === partial.failAt) { window.addEventListener('cp04-partial', partial.listener, { signal: options.signal }); throw new Error('partial editor failure'); }
     const element = document.createElement('div'), input = document.createElement('textarea'); input.value = options.value; input.setAttribute('aria-label', options.label); element.append(input);
     const getValue = () => ({ latex: input.value, empty: !input.value.trim(), hasPlaceholders: false, syntaxIssues: [] });
     input.addEventListener('input', () => options.onChange?.(getValue()), { signal: options.signal });
@@ -16,7 +19,7 @@ const click = (root: HTMLElement, label: string) => [...root.querySelectorAll('b
 function open() { const root = document.createElement('div'); root.dataset.module = 'CP04'; document.body.append(root); const controller = new AbortController(); const cleanup = mountView({ container: root, signal: controller.signal }); return { root, controller, cleanup }; }
 function pointer(node: EventTarget, type: string, x = 350, id = 7) { const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, button: 0 }); Object.defineProperty(event, 'pointerId', { value: id }); node.dispatchEvent(event); return event; }
 function points(root: HTMLElement, index = 0) { return root.querySelectorAll('polyline.bode-exact-line')[index]?.getAttribute('points'); }
-afterEach(() => { vi.useRealTimers(); document.body.replaceChildren(); });
+afterEach(() => { partial.failAt = 0; partial.listener.mockClear(); vi.useRealTimers(); vi.unstubAllGlobals(); document.body.replaceChildren(); });
 
 describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () => {
   it('opens computed baseline without a submit and keeps each numeric/range name independent', () => {
@@ -56,6 +59,17 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
     vi.useFakeTimers(); const { root, controller } = open(); update(root, 'Selected factor coefficient a₀', '.000001'); update(root, 'Selected factor coefficient a₁', '.000001'); vi.advanceTimersByTime(50);
     update(root, 'Actual corner [rad/s]', '2'); expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').value).toBe('2'); expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₁').value).toBe('.000001'); expect(root.textContent).toContain('supported coefficient bounds'); expect(root.querySelectorAll('polyline')).toHaveLength(0); controller.abort();
   });
+  it('keeps an invalid native model draft blocked when view-only controls change', () => {
+    const { root, controller } = open(); update(root, 'Raw gain K (signed)', '0'); expect(root.querySelectorAll('polyline')).toHaveLength(0);
+    update(root, 'Contribution to highlight', 'all', 'change'); expect(root.querySelectorAll('polyline')).toHaveLength(0); expect(field<HTMLInputElement>(root, 'Raw gain K (signed)').value).toBe('0'); expect(root.textContent).toContain('Correct Raw gain K');
+    update(root, 'Raw gain K (signed)', '2'); update(root, 'Raw gain K (signed)', '2', 'change'); expect(root.textContent).toContain('|G|=0.6324555'); controller.abort();
+  });
+  it('keeps source-slot selection atomic when a display failure rejects add/remove/undo', () => {
+    const { root, controller } = open(); update(root, 'Selected factor', '1', 'change'); update(root, 'Actual corner [rad/s]', '3'); update(root, 'Actual corner [rad/s]', '3', 'change');
+    update(root, 'Cursor frequency [rad/s]', '1000'); click(root, 'Add a factor'); click(root, 'Remove selected factor'); click(root, 'Undo model edit');
+    expect(field<HTMLSelectElement>(root, 'Selected factor').value).toBe('1'); expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₀').value).toBe('2'); expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₁').value).toBe('2/3');
+    update(root, 'Cursor frequency [rad/s]', '1'); expect(root.textContent).toContain('|G|=0.3354102'); click(root, 'Undo model edit'); expect(field<HTMLTextAreaElement>(root, 'Selected factor coefficient a₁').value).toBe('1'); controller.abort();
+  });
   it('updates a continuous range before release, cancels with Escape at the stable focus and drops late work', () => {
     vi.useFakeTimers(); const { root, controller } = open(); const original = points(root);
     update(root, 'Move selected corner (log scale)', '.2'); vi.advanceTimersByTime(20); update(root, 'Move selected corner (log scale)', '.3'); vi.advanceTimersByTime(15); expect(points(root)).not.toBe(original); expect(root.textContent).toContain('Live preview');
@@ -64,13 +78,25 @@ describe('CP04 visual-first linked exploration (DOM, not browser evidence)', () 
   });
   it('links marker pointer/keyboard edits and restores on pointer cancellation', () => {
     vi.useFakeTimers(); const { root, controller } = open(); const original = points(root);
-    const image = root.querySelector('svg')!; vi.spyOn(image, 'getBoundingClientRect').mockReturnValue({ left: 0, width: 660 } as DOMRect);
-    pointer(root.querySelector('[data-factor="1"]')!, 'pointerdown'); pointer(window, 'pointermove', 420); vi.advanceTimersByTime(40); expect(points(root)).not.toBe(original); pointer(window, 'pointercancel'); expect(points(root)).toBe(original);
+    pointer(root.querySelector('[data-factor="1"]')!, 'pointerdown'); vi.spyOn(root.querySelector('svg')!, 'getBoundingClientRect').mockReturnValue({ left: 0, width: 660 } as DOMRect);
+    pointer(window, 'pointermove', 420); vi.advanceTimersByTime(40); expect(points(root)).not.toBe(original); pointer(window, 'pointercancel'); expect(points(root)).toBe(original);
     root.querySelector('[data-factor="0"]')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })); expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').valueAsNumber).toBeCloseTo(10 ** .02, 11); expect(root.querySelectorAll('.bode-selected-marker')).toHaveLength(2); controller.abort();
   });
   it('starts Practice without Explore answers and revokes a previous matched grade on prediction edits', () => {
     const { root, controller } = open(); update(root, 'Learning mode', 'practice', 'change'); expect(root.querySelectorAll('polyline')).toHaveLength(0); expect(root.textContent).not.toContain('normalization gain Kₙ='); expect(root.querySelector('.bode-verdict')).toBeNull();
     update(root, 'Your corner for factor 2 [rad/s]', '2'); update(root, 'Your normalization gain magnitude |Kₙ|', '.5'); click(root, 'Draw my asymptote'); expect(root.querySelectorAll('polyline')).toHaveLength(2); expect(root.querySelectorAll('.bode-checked-marker')).toHaveLength(0); expect(root.textContent).not.toContain('Exact numerical');
     click(root, 'Reveal checked construction'); expect(root.textContent).toContain('match the asymptotic construction'); update(root, 'Your normalization gain magnitude |Kₙ|', '1'); expect(root.textContent).not.toContain('match the asymptotic construction'); expect(root.querySelectorAll('polyline')).toHaveLength(0); controller.abort();
+  });
+  it('aborts a partially created editor before displaying recoverable failure', () => {
+    partial.failAt = partial.count + 2; const { root, controller, cleanup } = open(); window.dispatchEvent(new Event('cp04-partial'));
+    expect(partial.listener).not.toHaveBeenCalled(); expect(controller.signal.aborted).toBe(false); expect(root.querySelector('[role="alert"]')?.textContent).toContain('Reset'); expect(root.querySelector('textarea')).toBeNull(); cleanup?.(); expect(root.children).toHaveLength(0);
+  });
+  it('owns adaptive plot observation and cancels a pending gesture on resize', () => {
+    vi.useFakeTimers(); let callback: (() => void) | undefined; const disconnect = vi.fn();
+    vi.stubGlobal('ResizeObserver', class { constructor(cb: () => void) { callback = cb; } observe() {} disconnect = disconnect; });
+    const { root, controller } = open(); const plots = root.querySelector<HTMLElement>('.bode-live-plots')!; const original = field<HTMLInputElement>(root, 'Actual corner [rad/s]').value;
+    update(root, 'Move selected corner (log scale)', '.5'); vi.spyOn(plots, 'getBoundingClientRect').mockReturnValue({ width: 305 } as DOMRect); callback?.(); vi.advanceTimersByTime(100);
+    expect(field<HTMLInputElement>(root, 'Actual corner [rad/s]').value).toBe(original); expect(root.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 305 270');
+    controller.abort(); expect(disconnect).toHaveBeenCalledOnce(); callback?.(); expect(root.children).toHaveLength(0);
   });
 });

@@ -31,7 +31,7 @@ export function createPlot(omegas: readonly number[], curves: readonly Curve[], 
   options: { width?: number; axis?: Axis; interactive?: boolean; nonnegative?: boolean } = {}) {
   const figure = document.createElement('figure'); figure.className = 'bode-figure';
   const caption = document.createElement('figcaption'); caption.textContent = title; figure.append(caption);
-  const width = Math.max(240, options.width ?? 660), left = Math.min(85, width * .22), right = width - 22;
+  const width = Math.max(180, options.width ?? 660), left = Math.min(85, width * .22), right = width - 22;
   const geometry: Geometry = { start: omegas[0], end: omegas[omegas.length - 1], left, right, width };
   const axis = options.axis ?? fittedAxis(curves, options.nonnegative);
   const image = svg('svg', { viewBox: `0 0 ${width} 270`, role: options.interactive ? 'group' : 'img', 'aria-label': title });
@@ -55,17 +55,19 @@ export function createPlot(omegas: readonly number[], curves: readonly Curve[], 
   image.append(paths);
   const grouped = new Map<string, Marker[]>();
   for (const marker of markers.filter(m => m.omega >= geometry.start && m.omega <= geometry.end)) {
-    const key = `${marker.style}:${x(marker.omega).toFixed(2)}`; grouped.set(key, [...(grouped.get(key) ?? []), marker]);
+    const key = `${options.interactive ? '' : marker.style}:${x(marker.omega).toFixed(2)}`; grouped.set(key, [...(grouped.get(key) ?? []), marker]);
   }
   for (const group of grouped.values()) {
-    const marker = group[0]; image.append(svg('line', { x1: x(marker.omega), y1: 43, x2: x(marker.omega), y2: 218, class: `bode-marker ${marker.style}` }));
+    const marker = group[0];
+    for (const m of group) image.append(svg('line', { x1: x(m.omega), y1: 43, x2: x(m.omega), y2: 218, class: `bode-marker ${m.style}` }));
     if (options.interactive && marker.factor !== undefined) {
-      // Coincident markers are staggered vertically; each factor stays selectable.
-      group.forEach((m, i) => {
-        const cy = 38 + i * 44;
+      // Six separate 44px rows keep nearby/coincident corners selectable on phones.
+      group.forEach(m => {
+        const cy = 26 + m.factor! * 44;
         const handle = svg('g', { role: 'slider', tabindex: 0, 'data-factor': m.factor!, 'aria-label': `Move corner of factor ${m.factor! + 1} on ${title.toLowerCase()}`, 'aria-valuemin': fromAngular(geometry.start, unit), 'aria-valuemax': fromAngular(geometry.end, unit), 'aria-valuenow': fromAngular(m.omega, unit), 'aria-valuetext': `${format(fromAngular(m.omega, unit))} ${unit}`, class: 'bode-handle' });
-        handle.append(svg('circle', { cx: x(m.omega), cy, r: 22, class: 'bode-hit' }), svg('circle', { cx: x(m.omega), cy, r: 6, class: 'bode-dot' }));
-        const name = svg('text', { x: x(m.omega) + 10, y: cy + 4, 'font-size': 12 }); name.textContent = m.name; handle.append(name); image.append(handle);
+        handle.append(svg('circle', { cx: x(m.omega), cy, r: 22.2, class: 'bode-hit' }), svg('circle', { cx: x(m.omega), cy, r: 6, class: 'bode-dot' }));
+        const onRight = x(m.omega) > right - 24;
+        const name = svg('text', { x: x(m.omega) + (onRight ? -10 : 10), y: cy + 4, 'text-anchor': onRight ? 'end' : 'start', 'font-size': 12 }); name.textContent = m.name; handle.append(name); image.append(handle);
       });
     } else label(x(marker.omega), marker.style === 'bode-predicted-marker' ? 29 : 42, group.map(m => m.name).join(','));
   }
