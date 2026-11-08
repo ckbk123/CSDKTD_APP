@@ -1,12 +1,23 @@
 # CP04 implementation status
 
+- **Stage:** verified
+- **Current review disposition:** finite interactivity refinement independently reviewed and centrally browser-accepted on 8 November 2026; no accepted refinement requirement remains in the declared domain.
+
 ## Interactivity refinement — 8 November 2026
 
 Explicit finite scope: visual-first Bode exploration and preservation of the existing bounded construction exercise. Fresh isolated baseline `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c` (v0.3.16), branch `codex/cp04-factor-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cp04-factor-exploration/CSDKTD APP`; only CP04 is owned. The earlier verified exercise and its historical browser evidence below remain preserved history, not browser evidence for this refinement.
 
-Current refinement pull request: [#65 — CP04 linked Bode exploration](https://github.com/ckbk123/CSDKTD_APP/pull/65), created and attached by the integration owner. Reuse this PR/branch for review corrections. Initial candidate `829cb336d508258e187b87500c190fa6e0409c34` received the source review below; centralized browser review remains pending on the corrected candidate.
+Current refinement pull request: [#65 — CP04 linked Bode exploration](https://github.com/ckbk123/CSDKTD_APP/pull/65), created and attached by the integration owner. Reuse this PR/branch for review corrections. The final accepted code/test source is `e2b97c33db4a61a93c603ce5f8009d9cfc303a70`, followed by documentation-only `15e4bf4d1b77163072f1e09a860a6a05053cdd30` and this acceptance record. The submitted claim records the exact clean final HEAD.
 
 Current implementation: Explore computes its useful baseline immediately, links exact/asymptotic magnitude and unwrapped phase, selected-factor contribution, log-corner handles/range/numeric/key controls, signed gain, explicit delay, cursor, view units, fixed axes with Fit and one-step model undo. The original complete raw-factor domain and scalar parsers remain available. Corner/damping transformations preserve a₀, raw K and first-order half-plane sign; generated coefficient strings are reparsed before publication. Unsupported coefficient/precision edits fail with visible feedback rather than clipping or hidden numerical changes. Practice starts independently from its baseline with student curves only before reveal; edited predictions remove old grading. Raw/model errors clear stale answer output. Mode suspension settles/cancels active work; owned timers, pointer listeners, observers and editors are fully released on visit disposal.
+
+### Final centralized browser acceptance — 8 November 2026
+
+Evidence below is attributed to the integration owner, who performed actual browser QA on accepted code `e2b97c33` / documentation `15e4bf4`; this worker did not operate a browser. Repeated checks confirm first-order damping is excluded from the visible/accessibility interface and phase-handle arrow edits retain phase focus. For the quadratic, corner 3 rad/s with cursor 3 gives magnitude 0.5 at −90°; damping 0.5 gives magnitude 0.25. Invalid corner text `1e-999` survives Explore→Practice→Explore; attempted unit conversion is rejected, rad/s remains selected and no curves are displayed.
+
+Reset and navigation to frequency specifications remove the old Bode roots (count zero); returning starts a fresh Explore baseline with corner 1. At the phone viewport the page client/scroll widths are 375/375, fonts load, MathLive reports zero notation errors and the console warning/error log is empty. Screenshots outside Git: `C:/Users/baokh/.codex/visualizations/2026/11/05/01a1ac7b-23ee-7530-bb2d-334ceb1752ec/cp04-refinement-phone.jpg` and `cp04-refinement-desktop.jpg` in that directory. Earlier actual drag/fraction/delay/Hz/mode checks remain separately attributed to `480ed6f` below.
+
+The final unchanged code/test source passes all 5,673 application tests in 267 files, including 99 CP04 tests/9 files; TypeScript, production build and diff checks pass. This acceptance record changes documentation only. No measured sub-100 ms latency, actual touch testing or exhaustive all-browser claim is made; sampled-curve/parser/coefficient limits remain as declared.
 
 ### Source review return — 8 November 2026
 
@@ -26,7 +37,7 @@ Frozen code/test source `93fd02685f67b415a84069f260af38b86351daed`: `npm test --
 
 Earlier-run qualification: the first concurrent full run had 5,659 passes and one unchanged CF04 async-mount timeout in its existing 1-second wait. CF04's eight tests passed alone, and both bounded-concurrency full runs passed (5,661 tests before the final selection/undo fixture, then 5,662 above). No unrelated module or timeout was edited. The existing bundled MathLive chunk-size advisory remains unchanged.
 
-Pending: correction source recheck and centralized real-browser acceptance on desktop/narrow layouts. No measured latency or actual touch interaction is claimed. Final acceptance evidence and SHA will be recorded after coordinator review. The historical PR #15 below is the original exercise contribution.
+No accepted refinement work remains within the declared domain. The historical PR #15 below is the original exercise contribution; its older stage/provenance notes are preserved history.
 
 ## Prepared coordinator integration — 29 October 2026
 
@@ -34,8 +45,7 @@ Frozen source `3c6eb86f704576f86c93f948a45b348719a2badc` is merged with its hist
 
 Both scalar readers use shared TeX argument preflight before spacing/delimiter removal; regressions cover malformed command, Unicode and nested-delimiter arguments plus valid boxed values. The existing child-signal wrapper now owns a DOM host, clears partial/pending content, aborts partial failure immediately and releases reentrant late disposers exactly once. Standalone disposal, failure recovery and pending navigation are tested alongside the real teaching flow. Integration checks: 59 module tests, TypeScript and diff checks pass. The prior independent mathematical review and worker browser evidence remain applicable. Stage remains implemented pending coordinator combined/browser acceptance.
 
-- **Stage:** implemented
-- **Review disposition:** original exercise accepted in v0.3.13; current refinement is implemented pending independent technical and centralized browser acceptance.
+Historical disposition: the original exercise was accepted in v0.3.13; the current refinement acceptance and stage are recorded above.
 - **Assessed:** 2026-10-29; starting primary-main revision `8696261267b7620bfc101ce2b5f13772bfaa529a`.
 - **Worker chat:** `01a18701-1ec8-7073-a23f-e744d40a5355`.
 - **Ownership/branch:** `src/modules/cp04/**`; `codex/cp04-bode-01a18701`; claim `worker-cp04-01a18701`.
