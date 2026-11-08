@@ -19,7 +19,9 @@ const button = (container: HTMLElement, text: string): HTMLButtonElement => [...
 async function open() {
   const container = document.createElement('div'); container.dataset.module = 'CP04'; document.body.append(container); const controller = new AbortController(), cleanup = mount({ container, signal: controller.signal });
   await vi.waitFor(() => expect(container.querySelector('textarea')).not.toBeNull());
-  return { container, controller, cleanup, reveal: () => button(container, 'Reveal checked construction').click() };
+  update(labeled(container, 'Learning mode'), 'practice', 'change');
+  const panel = container.querySelector<HTMLElement>('[data-cp04-panel=practice]')!;
+  return { container: panel, controller, cleanup, reveal: () => button(panel, 'Reveal checked construction').click() };
 }
 afterEach(() => document.body.replaceChildren());
 describe('CP04 construction and lifecycle', () => {
