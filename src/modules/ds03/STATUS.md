@@ -1,6 +1,16 @@
+# DS03 interactivity refinement
+
+- **Stage:** implemented
+- **Finite scope:** Direct disk/half-plane point exploration; owner interactivity-ds03-01a1ac7b, branch codex/ds03-direct-mapping, fresh baseline aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c (latest primary main at assignment).
+- **Owned paths:** src/modules/ds03/**. No math/parser/loader/index changes, dependencies or deployment.
+- **Current gates:** 94 module tests / 3 files and TypeScript pass. New mapping fixtures check independent coordinates, exact/cardinal mapping pole, letterboxing, native draft preservation, fixed axes, keyboard/undo and first-pointer cancellation/cleanup. Full build/suite, independent review and central desktop/phone verification remain pending.
+
+The selected point now opens on linked equal-scale planes, before the optional original characteristic-polynomial/Routh exercise. Its circle lock gives 1-degree direct/keyboard motion; free motion uses a declared 0.01 coordinate grid, with Shift alternatives and numeric controls. Original numeric coordinates including the 1e-8 near-pole fixture, arbitrary supported circle angles, affine gain interval, exceptional rows, all original roots and five-stage reveal remain. Mapping the independent selected point does not reveal a polynomial answer. Fixed views/Fit and explicit off-view/infinite notices avoid clamping a large image to a finite plot point. Failed numeric drafts retain the actual control and last checked map through view changes. A child scope owns pointer capture, window listeners, observer and cleanup. Prediction changes revoke old grading while retaining the checked polynomial.
+
+## Historical accepted mathematical exercise
 # DS03 implementation status
 
-- **Stage:** verified
+Historical exercise stage: verified
 - **Last assessed:** 2026-10-29
 - **Owned paths:** `src/modules/ds03/**`
 - **Contract:** [TASK.md](TASK.md); [stage definitions](../../../docs/PROJECT_STATUS.md)

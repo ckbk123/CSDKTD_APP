@@ -30,3 +30,20 @@
 [data-module="DS03"] .ds-active-row { background: var(--tint); }
 [data-module="DS03"] .equation-display { max-width: 100%; overflow-x: auto; }
 @media (max-width: 650px) { [data-module="DS03"] .ds-planes { grid-template-columns: minmax(0,1fr); } }
+[data-module="DS03"] .ds-tool [hidden] { display: none !important; }
+[data-module="DS03"] .ds-mapping { min-width: 0; }
+[data-module="DS03"] .ds-mapping h3 { margin-top: 0; }
+[data-module="DS03"] .ds-map-readout { overflow-wrap: anywhere; }
+[data-module="DS03"] .ds-map-status { color: var(--accent); font-size: 12px; }
+[data-module="DS03"] .ds-map-status:empty { display: none; }
+[data-module="DS03"] .ds-map-actions { margin: 8px 0; }
+[data-module="DS03"] .ds-map-actions button { min-height: 44px; }
+[data-module="DS03"] .ds-point-hit { fill: transparent; stroke: none; pointer-events: all; }
+[data-module="DS03"] [data-selected-point] { cursor: grab; touch-action: none; }
+[data-module="DS03"] [data-selected-point]:focus-visible .ds-selected { stroke-width: 4; }
+[data-module="DS03"] .ds-map-lock { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 10px 0; }
+[data-module="DS03"] .ds-map-lock input { width: 22px; height: 22px; accent-color: var(--accent); }
+[data-module="DS03"] .ds-map-controls label { flex-basis: 160px; }
+[data-module="DS03"] .ds-map-controls input[type="range"] { min-height: 44px; padding: 0; }
+[data-module="DS03"] .ds-exercise { border-top: 1px solid var(--line); padding-top: 12px; }
+[data-module="DS03"] .ds-exercise summary { cursor: pointer; font-weight: 600; padding: 10px 0; }

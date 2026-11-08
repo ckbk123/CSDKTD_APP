@@ -1,7 +1,8 @@
 import type { ModuleMount } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationDraft } from '../../shared/equations/input';
 import { readNumericInput } from '../../shared/numeric-input';
-import { analyze, BASELINE, mapToW, parseFamily, stableInterval, transform, VARIANT, type Affine, type Complex, type Family } from './math';
+import { analyze, BASELINE, parseFamily, stableInterval, transform, VARIANT, type Affine, type Complex, type Family } from './math';
+import { createMapping } from './mapping';
 import './workspace.css';
 
 const fmt = (n: number): string => Math.abs(n) < 1e-13 ? '0' : n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 7 });
@@ -25,54 +26,37 @@ function node<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, clas
 }
 function equation(latex: string, label: string): HTMLElement { return createEquationDisplay(latex, label); }
 
-/** A sampled visual only; roots, identities and the gain interval are computed separately. */
-function plane(title: string, isW: boolean, points: readonly (Complex | null)[], selected: Complex | null): HTMLElement {
-  const figure = node('figure'); const caption = node('figcaption', title); figure.append(caption);
-  const ns = 'http://www.w3.org/2000/svg'; const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('viewBox', '0 0 360 300'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', title);
-  const extent = Math.min(10, Math.max(1.5, ...[...points, selected].filter((p): p is Complex => p !== null).map(p => Math.max(Math.abs(p.re), Math.abs(p.im)) * 1.2)));
-  const scale = 112 / extent, x = (v: number) => 180 + v * scale, y = (v: number) => 146 - v * scale;
-  function shape(tag: string, attrs: Record<string, string | number>, text?: string): void {
-    const s = document.createElementNS(ns, tag); for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, String(v)); if (text) s.textContent = text; svg.append(s);
-  }
-  if (isW) shape('rect', { x: 38, y: 20, width: 142, height: 252, class: 'ds-region' });
-  else shape('circle', { cx: 180, cy: 146, r: scale, class: 'ds-region' });
-  shape('line', { x1: 38, x2: 325, y1: 146, y2: 146, class: 'ds-axis' });
-  shape('line', { x1: 180, x2: 180, y1: 20, y2: 272, class: 'ds-axis' });
-  shape('text', { x: 285, y: 139 }, isW ? 'Re w' : 'Re z'); shape('text', { x: 187, y: 25 }, isW ? 'Im w' : 'Im z');
-  shape('text', { x: 45, y: 289 }, `Ticks: ±${fmt(extent)}; dimensionless`);
-  for (const tick of [-extent, extent]) {
-    shape('line', { x1: x(tick), x2: x(tick), y1: 142, y2: 150, class: 'ds-axis' });
-    shape('text', { x: x(tick), y: 164, 'text-anchor': 'middle' }, fmt(tick));
-    shape('line', { x1: 176, x2: 184, y1: y(tick), y2: y(tick), class: 'ds-axis' });
-  }
-  if (!isW) { shape('text', { x: x(-1) - 15, y: 177 }, '−1'); shape('text', { x: x(1), y: 177 }, '+1'); }
-  let hidden = 0;
-  points.forEach(p => {
-    if (!p || Math.abs(p.re) > extent || Math.abs(p.im) > extent) { hidden++; return; }
-    const px = x(p.re), py = y(p.im);
-    shape('path', { d: `M${px - 5},${py - 5}l10,10m0,-10l-10,10`, class: 'ds-root' });
-  });
-  if (selected && Math.abs(selected.re) <= extent && Math.abs(selected.im) <= extent) shape('circle', { cx: x(selected.re), cy: y(selected.im), r: 6, class: 'ds-selected' });
-  else if (selected) hidden++;
-  figure.append(svg, node('p', `${isW ? 'Tint: Re w < 0.' : 'Tint: |z| < 1.'} ○ selected point; × roots.${hidden ? ` ${hidden} point(s) at infinity or outside this view; see numeric values.` : ''}`, 'ds-small'));
-  return figure;
-}
-
-export const mountUI: ModuleMount = ({ container, signal }) => {
+export const mountUI: ModuleMount = ({ container, signal: parent }) => {
+  const life = new AbortController(), signal = life.signal;
+  let disposed = false, disposeInput = () => {}, disposeMapping = () => {};
   const root = node('div', undefined, 'ds-tool'); container.append(root);
+  const dispose = () => {
+    if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); life.abort();
+    try { disposeInput(); } finally { try { disposeMapping(); } finally { root.remove(); } }
+  };
+  parent.addEventListener('abort', dispose, { once: true });
+  if (parent.aborted) { dispose(); return dispose; }
+  try {
+  const mapping = createMapping(root, signal); disposeMapping = mapping.destroy;
+  const identity = node('details'); identity.append(node('summary', 'Why the disk maps to the left half-plane'),
+    equation(String.raw`w=\frac{z-1}{z+1},\quad z=\frac{1+w}{1-w}`, 'Bilinear convention'),
+    equation(String.raw`\operatorname{Re}w=\frac{|z|^2-1}{|z+1|^2}`, 'Disk to half-plane identity'),
+    node('p', 'For z≠−1 the denominator is positive, so the sign of Re w follows |z|²−1. The unit circle maps to the imaginary axis. The inverse has a pole at w=1. Plot coordinates and displayed decimals are numerical; the formulas are algebraic identities.', 'ds-small'));
+  mapping.element.append(identity);
+  const exercise = node('details', undefined, 'ds-exercise'); exercise.append(node('summary', 'Characteristic polynomial and Routh exercise')); root.append(exercise);
   const intro = node('p', 'Use a bilinear substitution to turn a discrete stability question into a quadratic Routh test. Predict first, then reveal each step.');
-  root.append(intro);
+  exercise.append(intro);
   let draft: EquationDraft, family: Family | null = null, gain = 1, step = 0, row = 0;
-  let point: Complex = { re: 0, im: 1 };
+  let gradeCurrent = false;
   const error = node('p', undefined, 'ds-feedback'); error.setAttribute('role', 'status'); error.hidden = true;
   const result = node('section'); result.setAttribute('aria-label', 'Checked derivation');
-  const input = createEquationInput({ label: 'Characteristic polynomial P(z)', value: BASELINE, signal, onChange: next => { draft = next; invalidate(); } });
-  root.append(input.element, node('p', 'Supported: monic z² + (aK+b)z + cK+d; decimals, parentheses, products and numeric fractions. Each nonzero coefficient: magnitude 10⁻⁸ to 100; up to 300 characters. Higher orders and nonlinear K terms are unsupported.', 'ds-small'));
+  const input = createEquationInput({ label: 'Characteristic polynomial P(z)', value: BASELINE, signal, tools: ['fraction', 'power', 'parentheses'], onChange: next => { draft = next; invalidate(); } });
+  disposeInput = input.destroy;
+  exercise.append(input.element, node('p', 'Supported: monic z² + (aK+b)z + cK+d; decimals, parentheses, products and numeric fractions. Each nonzero coefficient: magnitude 10⁻⁸ to 100; up to 300 characters. Higher orders and nonlinear K terms are unsupported.', 'ds-small'));
   draft = input.getValue();
   const controls = node('div', undefined, 'ds-controls');
   function numeric(label: string, value: number, min: number, max: number, change: (v: number) => void): HTMLInputElement {
-    const wrap = node('label', label); const field = node('input'); field.type = 'number'; field.value = String(value); field.min = String(min); field.max = String(max); field.step = 'any';
+    const wrap = node('label', label); const field = node('input'); field.type = 'number'; field.value = String(value); field.min = String(min); field.max = String(max); field.step = 'any'; field.setAttribute('aria-label', label);
     field.addEventListener('input', () => {
       let next: number;
       try { next = readNumericInput(field, label); }
@@ -85,7 +69,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
   const gainField = numeric('Selected gain K (−100 to 100)', gain, -100, 100, v => { gain = v; invalidate(); });
   const predictionLabel = node('label', 'Your prediction at this K'); const prediction = node('select');
   for (const value of ['Choose a prediction', 'strictly stable', 'boundary', 'unstable']) { const option = node('option', value); option.value = value; prediction.append(option); }
-  predictionLabel.append(prediction); controls.append(predictionLabel); root.append(controls);
+  predictionLabel.append(prediction); controls.append(predictionLabel); exercise.append(controls);
   const actions = node('div', undefined, 'ds-actions');
   function button(label: string, action: () => void, parent: HTMLElement = actions): HTMLButtonElement {
     const b = node('button', label); b.type = 'button';
@@ -103,56 +87,24 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
     if (signal.aborted) return;
     try {
       if (draft.empty || draft.hasPlaceholders || draft.syntaxIssues.length) throw new Error('Complete the visual polynomial and check its notation first.');
-      family = parseFamily(draft.latex); gain = readNumericInput(gainField, 'Selected gain K'); analyze(family, gain); step = 1; error.hidden = true; render();
+      family = parseFamily(draft.latex); gain = readNumericInput(gainField, 'Selected gain K'); analyze(family, gain); gradeCurrent = true; step = 1; error.hidden = true; render();
     } catch (reason) { family = null; result.replaceChildren(); renderMap(); error.textContent = reason instanceof Error ? reason.message : 'Check the inputs.'; error.hidden = false; }
   });
   button('Try 0.1K variation', () => { input.setValue(VARIANT); draft = input.getValue(); invalidate(); input.focus(); });
-  root.append(actions, error, result);
-  const mapping = node('section', undefined, 'ds-section'); root.append(mapping);
-  mapping.append(node('h3', 'Explore the disk boundary'), equation(String.raw`w=\frac{z-1}{z+1},\quad z=\frac{1+w}{1-w}`, 'Bilinear convention'));
-  mapping.append(node('p', 'Dimensionless coordinates; no 2/T scaling or sample period is used. The unit circle maps to the imaginary axis, except z = −1, which maps to infinity. The inverse has w = 1 as its pole.'));
-  const mapControls = node('div', undefined, 'ds-controls'); const mapView = node('div');
-  const angleLabel = node('label', 'Unit-circle angle θ (degrees)'); const angle = node('input'); angle.type = 'number'; angle.min = '0'; angle.max = '360'; angle.step = '1'; angle.value = '90';
-  const slider = node('input'); slider.type = 'range'; slider.min = '0'; slider.max = '360'; slider.value = '90'; slider.setAttribute('aria-label', 'Unit-circle angle slider in degrees'); angleLabel.append(angle, slider); mapControls.append(angleLabel);
-  const reLabel = node('label', 'Selected Re z (−5 to 5)'), re = node('input'); re.type = 'number'; re.min = '-5'; re.max = '5'; re.step = '.1'; re.value = '0'; reLabel.append(re); mapControls.append(reLabel);
-  const imLabel = node('label', 'Selected Im z (−5 to 5)'), im = node('input'); im.type = 'number'; im.min = '-5'; im.max = '5'; im.step = '.1'; im.value = '1'; imLabel.append(im); mapControls.append(imLabel);
-  const mapError = node('p'); mapError.setAttribute('role', 'status'); mapping.append(mapControls, mapError, mapView);
-  function updateAngle(field: HTMLInputElement): void {
-    let degrees: number;
-    try { degrees = readNumericInput(field, 'Unit-circle angle θ (degrees)'); }
-    catch (reason) { mapError.textContent = reason instanceof Error ? reason.message : 'Check the angle.'; return; }
-    if (!Number.isFinite(degrees) || degrees < 0 || degrees > 360) { mapError.textContent = 'Choose an angle from 0° to 360°.'; return; }
-    angle.value = field.value; slider.value = field.value;
-    point = degrees === 180 ? { re: -1, im: 0 } : { re: Math.cos(degrees * Math.PI / 180), im: Math.sin(degrees * Math.PI / 180) };
-    re.value = fmt(point.re); im.value = fmt(point.im); mapError.textContent = ''; renderMap();
-  }
-  angle.addEventListener('input', () => updateAngle(angle), { signal }); slider.addEventListener('input', () => updateAngle(slider), { signal });
-  const updatePoint = () => {
-    let r: number, i: number;
-    try { r = readNumericInput(re, 'Selected Re z'); i = readNumericInput(im, 'Selected Im z'); }
-    catch (reason) { mapError.textContent = reason instanceof Error ? reason.message : 'Check the selected point.'; return; }
-    if (![r, i].every(v => Number.isFinite(v) && Math.abs(v) <= 5)) { mapError.textContent = 'Choose finite real and imaginary parts between −5 and 5.'; return; }
-    const distance = Math.hypot(r + 1, i);
-    if (distance !== 0 && distance < 1e-8) { mapError.textContent = 'This point is too close to the mapping pole. Choose z = −1 exactly, or a point at least 10⁻⁸ away.'; return; }
-    point = { re: r, im: i }; mapError.textContent = ''; renderMap();
-  };
-  re.addEventListener('input', updatePoint, { signal }); im.addEventListener('input', updatePoint, { signal });
-  mapping.append(equation(String.raw`\operatorname{Re}w=\frac{|z|^2-1}{|z+1|^2}`, 'Disk to half-plane identity'));
+  exercise.append(actions, error, result);
   root.append(node('p', 'This is a characteristic-polynomial exercise: strict stability requires every root inside the disk. Boundary roots are excluded, including repeated ones. No transfer-function cancellation, feedback topology or time-response initial condition is assumed. Formulas are algebraic identities; displayed decimals and plotted coordinates are numerical.', 'ds-small'));
 
-  function invalidate(): void { family = null; step = 0; result.replaceChildren(); error.hidden = true; prediction.value = 'Choose a prediction'; renderMap(); }
+  prediction.addEventListener('change', () => { gradeCurrent = false; if (family) render(); }, { signal });
+  function invalidate(): void { gradeCurrent = false; family = null; step = 0; result.replaceChildren(); error.hidden = true; prediction.value = 'Choose a prediction'; renderMap(); }
   function renderMap(): void {
     if (signal.aborted) return;
-    const w = mapToW(point); const r = family && step ? analyze(family, gain) : null;
-    const pair = node('div', undefined, 'ds-planes'); pair.append(plane('z plane · unit disk', false, r?.zRoots ?? [], point), plane('w plane · left half-plane', true, r?.wRoots ?? [], w));
-    const readout = node('p', `Selected z = ${complex(point)}; |z| = ${fmt(Math.hypot(point.re, point.im))}. ${w ? `w = ${complex(w)}.` : 'w is at infinity: z = −1 is the mapping pole.'}`);
-    mapView.replaceChildren(pair, readout);
+    const r = family && step ? analyze(family, gain) : null; mapping.setRoots(r?.zRoots ?? [], r?.wRoots ?? []);
   }
   function render(): void {
     if (!family || signal.aborted) return;
     const r = analyze(family, gain), q = transform(family), set = stableInterval(family);
     result.replaceChildren();
-    const chosen = prediction.value; const correct = chosen === r.classification || chosen === 'boundary' && r.classification.startsWith('boundary');
+    const chosen = gradeCurrent ? prediction.value : 'Choose a prediction'; const correct = chosen === r.classification || chosen === 'boundary' && r.classification.startsWith('boundary');
     const feedback = node('p', `${chosen === 'Choose a prediction' ? 'Computed check' : correct ? 'Your prediction agrees' : 'Compare your prediction'}: at K = ${fmt(gain)}, the original quadratic is ${r.classification}.`, 'ds-feedback');
     feedback.setAttribute('role', 'status'); result.append(feedback);
     result.append(node('h3', `Step ${step} of 5`));
@@ -193,7 +145,7 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
       const endpointActions = node('div', undefined, 'ds-actions');
       for (const [label, value] of [['lower', set.lower], ['upper', set.upper]] as const) if (!set.empty && Number.isFinite(value) && Math.abs(value) <= 100) button(`Inspect ${label} endpoint (${fmt(value)})`, () => {
         gain = value; const field = controls.querySelector('input'); if (field) field.value = String(value);
-        prediction.value = 'Choose a prediction'; step = 5; render();
+        prediction.value = 'Choose a prediction'; gradeCurrent = false; step = 5; render();
       }, endpointActions);
       result.append(endpointActions);
     }
@@ -211,5 +163,6 @@ export const mountUI: ModuleMount = ({ container, signal }) => {
     result.append(navigation); renderMap();
   }
   renderMap();
-  return () => { input.destroy(); root.remove(); };
+  return dispose;
+  } catch (reason) { dispose(); throw reason; }
 };
