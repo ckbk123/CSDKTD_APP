@@ -54,6 +54,30 @@
       "source": "0c97e0dece42ada97b9f50ca29e81b61a0204452",
       "pr": 59,
       "release": "0.3.16"
+    },
+    {
+      "id": "CP04",
+      "agent": "/root/design_interactivity",
+      "scope": "Computed Bode exploration with normalization-preserving corner manipulation, linked factor contributions, view-only units and separate Practice.",
+      "state": "assigned",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 2
+    },
+    {
+      "id": "DR05",
+      "agent": "/root/structure_stability",
+      "scope": "Linked sampling clock and held input over a declared physical window, live bounded sampling-period exploration, exact integer-delay timing and separate Practice.",
+      "state": "assigned",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 2
+    },
+    {
+      "id": "CS05",
+      "agent": "/root/response_interactivity",
+      "scope": "Exact stable-gain set with live gain-strip/root inspection, exact boundary identity, fixed locus geometry and separate Practice.",
+      "state": "assigned",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 2
     }
   ],
   "modules": [
@@ -249,9 +273,11 @@
     },
     {
       "id": "CP04",
-      "state": "planned",
+      "state": "assigned",
       "target": "Drag corner markers horizontally on log axis; factor chips beside plot; show individual factor contribution on focus/hover; gain slider shifts magnitude and delay slider moves phase.",
-      "evidence": [],
+      "evidence": [
+        "Finite scope assigned after accepted v0.3.16; implementation and central browser acceptance remain pending."
+      ],
       "remaining": [
         "Implement finite concept-specific refinement",
         "Relevant regression and real-browser verification",
@@ -395,9 +421,11 @@
     },
     {
       "id": "CS05",
-      "state": "planned",
+      "state": "assigned",
       "target": "First pilot: baseline locus immediately, add/remove/drag open-loop poles/zeros under degree limits, real-axis or conjugate-pair constraints, fixed viewport, keyboard/numeric equivalents and undo; fixed-model K scrub stays distinct from plant editing.",
-      "evidence": [],
+      "evidence": [
+        "Finite scope assigned after accepted v0.3.16; implementation and central browser acceptance remain pending."
+      ],
       "remaining": [
         "Implement finite concept-specific refinement",
         "Relevant regression and real-browser verification",
@@ -619,9 +647,11 @@
     },
     {
       "id": "DR05",
-      "state": "planned",
+      "state": "assigned",
       "target": "A live sample-period slider and draggable sample-clock cursor next to continuous/stem/hold views would make sampling tangible; lock either delay samples m or physical delay tau explicitly when changing T.",
-      "evidence": [],
+      "evidence": [
+        "Finite scope assigned after accepted v0.3.16; implementation and central browser acceptance remain pending."
+      ],
       "remaining": [
         "Implement finite concept-specific refinement",
         "Relevant regression and real-browser verification",
@@ -690,5 +720,6 @@
     "CP04",
     "DR05",
     "CS05"
-  ]
+  ],
+  "currentWave": 2
 }

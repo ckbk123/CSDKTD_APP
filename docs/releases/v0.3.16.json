@@ -5,6 +5,9 @@
   "applicationTests": 5633,
   "applicationTestFiles": 263,
   "coordinationTests": 33,
+  "acceptedCommit": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+  "mainCi": "https://github.com/ckbk123/CSDKTD_APP/actions/runs/42482911491",
+  "mainCiConclusion": "success",
   "sharedPr": 58,
   "modules": [
     {
