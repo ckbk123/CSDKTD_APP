@@ -9,7 +9,7 @@ vi.mock('../../shared/equations/input', () => ({
   },
   createEquationDisplay: (latex: string, label: string) => { const e = document.createElement('div'); e.setAttribute('aria-label', label); e.textContent = latex; return e; },
 }));
-import { mountView } from './view';
+import { mountView } from './practice';
 const hide = vi.fn();
 beforeEach(() => { Object.defineProperty(window, 'mathVirtualKeyboard', { configurable: true, value: { hide } }); hide.mockClear(); });
 afterEach(() => { document.body.replaceChildren(); });
