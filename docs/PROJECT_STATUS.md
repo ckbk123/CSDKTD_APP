@@ -2,7 +2,11 @@
 
 **Coordination resumed, 30 October 2026:** the human authorized finishing the eight remaining tools and reviewing new contributions. [RESUMED_COORDINATION.md](RESUMED_COORDINATION.md) records current local assignments. The released delivery counts below change only after checked integration; assignment or active work is not verification. The completed ten-worker batch and finite external prompt remain valid historical/external workflows.
 
-## Current delivery — v0.3.15 / 30 October 2026
+## Current refinement delivery — v0.3.17 / 8 November 2026
+
+All56 bounded mathematical exercises remain delivered. Shared interaction foundations and seven concept refinements are accepted, with49 remaining. The separate [refinement ledger](interactivity-progress.json) records actual progress and finite assignments. [v0.3.17 evidence](releases/v0.3.17.json) records5,750 application tests/276files,33coordination tests, type/build and independent source/browser gates. No deployment.
+
+## Completed mathematical exercise batch — v0.3.15 / 30 October 2026
 
 The resumed review accepted the eight remaining external contributions: **56 verified bounded teaching tools, zero partials and zero scaffolds**. All 57 PR histories are preserved. [COMPLETION_HANDOFF.md](COMPLETION_HANDOFF.md) records delivery, [DELIVERY_STATUS.json](DELIVERY_STATUS.json) records stages, and [v0.3.15](releases/v0.3.15.json) maps the frozen sources and corrective commits. Combined validation passes **5,562 application tests in 257 files, 32 coordination tests, type checking and build**. Verification retains each module's supported mathematical/input/work limits and source provenance; it is not an all-input, all-browser or canonical-slide-answer certificate. [Interface refinement](INTERFACE_REFINEMENT.md) remains a separate iterative follow-up. The v0.3.14 handoff and v0.3.0 scaffold assessment below remain historical evidence.
 

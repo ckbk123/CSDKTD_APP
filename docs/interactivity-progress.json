@@ -59,64 +59,56 @@
       "id": "CP04",
       "agent": "/root/design_interactivity",
       "scope": "Normalization-preserving Bode corner exploration and independent Practice",
-      "state": "review-return",
+      "state": "accepted",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
       "wave": 2,
       "branch": "codex/cp04-factor-exploration",
-      "source": "79cc53b967a21c662818879133f6d1f513f51e79",
+      "source": "cc46f01b15995f7928859f078accb6593c14b3fe",
       "pr": 65,
       "evidence": [
-        "88 local tests, 5662 full tests, type/build pass at frozen candidate",
-        "Source review accepts coefficient serialization, original mathematical domain and responsive plot sizing"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console.",
+        "Actual keyboard partial minus/exponent survived Fit/unit rejection/mode roundtrip and recovered by continued typing; invalid native controls receive zero value writes."
       ],
-      "remaining": [
-        "Correct late disposer, cross-control gesture ownership, secondary pointer handling and retained mode attempts",
-        "Central real-browser desktop/phone acceptance",
-        "Combined integration and release"
-      ]
+      "remaining": [],
+      "release": "0.3.17"
     },
     {
       "id": "DR05",
       "agent": "/root/structure_stability",
       "scope": "Physical-window sampling clock, held-input timing and linked exact samples",
-      "state": "review-return",
+      "state": "accepted",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
       "wave": 2,
       "branch": "codex/dr05-sampling-exploration",
-      "source": "b3574a6befbd0dc8d4792fbc4e5edd36d754c15d",
+      "source": "ac1602d5084361a6e7f5f8a90de1d84b1015a6fb",
       "pr": 62,
       "evidence": [
-        "107 local tests, 5653 full tests, type/build pass at corrected source",
-        "Independent source review accepts original math/domain, Practice hiding, window budgeting and owned cleanup",
-        "Actual browser confirms baseline/changed T, doubled clock spacing, fixed physical delay, budget rejection and phone 12px axes",
-        "Returned initial desktop/phone visual placement and off-window fit; corrected clipping and compact stack reviewed"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
-      "remaining": [
-        "Keep retained-preview label beside the visible plot during a gesture",
-        "Repeat real-browser gate for the corrected compact stack",
-        "Combined integration and release"
-      ]
+      "remaining": [],
+      "release": "0.3.17"
     },
     {
       "id": "CS05",
       "agent": "/root/response_interactivity",
       "scope": "Exact stable-gain strip and boundary selection with full-root inspection",
-      "state": "review-return",
+      "state": "accepted",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
       "wave": 2,
       "branch": "codex/cs05-gain-exploration",
-      "source": "53be4827d9c15c5484c31a49dcfbe9404e8de354",
+      "source": "a1f40f1b0a1dbb8e19c1fc54222c337880572836",
       "pr": 63,
       "evidence": [
-        "92 local tests, type/build pass; independent review accepts corrected pointer/draft/CSS ownership",
-        "Actual browser verifies K70 crossing, full roots, disjoint/unbounded sets, retained irrational endpoint, rejected native underflow and equal nested plane geometry"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
-      "remaining": [
-        "Correct rendered characteristic TeX delimiter",
-        "Keep slider and exact-selection accessible values coherent",
-        "Compact phone controls and expose exact stability beside the strip",
-        "Repeat browser gate, combined integration and release"
-      ]
+      "remaining": [],
+      "release": "0.3.17"
     },
     {
       "id": "DP02",
@@ -124,19 +116,73 @@
       "branch": "codex/dp02-linked-exploration",
       "source": "3bc8591b3553ed21388efdf800bf65364b5133df",
       "pr": 64,
-      "state": "verified-awaiting-release",
+      "state": "accepted",
       "scope": "Linked continuous/discrete pole mapping with direct pole and period exploration",
       "evidence": [
-        "125 module tests, 5650 full tests, type/build pass at b6ad05e code",
-        "Two independent source reviews accept core refinement and first-pointer ownership correction",
-        "Actual production browser verifies pole drag/arrows, changed T/sample, real fraction entry, native error recovery, Practice, fonts, phone layout, reset/navigation",
-        "Exact clean final claim submitted; preserved source merged into private wave-2 integration candidate"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
-      "remaining": [
-        "Combined wave regression and release"
-      ],
+      "remaining": [],
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
-      "wave": 2
+      "wave": 2,
+      "release": "0.3.17"
+    },
+    {
+      "id": "CS01",
+      "agent": "/root/response_interactivity",
+      "branch": "codex/cs01-modal-exploration",
+      "scope": "Three explicit modal families, linked full poles/state response and retained arbitrary-matrix Practice",
+      "state": "in-progress",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 3,
+      "remaining": [
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "CF01",
+      "agent": "/root/structure_stability",
+      "branch": "codex/cf01-transient-exploration",
+      "scope": "Transient/pole/target exploration with preserved positive DC gain and finite-horizon measurement semantics",
+      "state": "in-progress",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 3,
+      "remaining": [
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "CP03",
+      "agent": "/root/design_interactivity",
+      "branch": "codex/cp03-sinusoidal-exploration",
+      "scope": "Live sinusoidal response, direct measurement markers and linked frequency views with retained Practice",
+      "state": "in-progress",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 3,
+      "remaining": [
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "DS03",
+      "agent": "/root",
+      "branch": "codex/ds03-direct-mapping",
+      "scope": "Immediate linked disk/half-plane point editing and original Routh exercise",
+      "state": "in-progress",
+      "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
+      "wave": 3,
+      "remaining": [
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
+      ]
     }
   ],
   "modules": [
@@ -241,13 +287,15 @@
     },
     {
       "id": "CF01",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Compact response+pole-region split view; drag damping/frequency target pair and extra factor within supported family; sliders for settling/overshoot targets and visible measurement handles.",
-      "evidence": [],
+      "evidence": [
+        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
       ]
     },
     {
@@ -321,30 +369,31 @@
     },
     {
       "id": "CP03",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Drag labeled peak/amplitude handles; keep frequency knob beside time/frequency visual; animate the phase relationship with reduced-motion support and show settled-window status.",
-      "evidence": [],
+      "evidence": [
+        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
       ]
     },
     {
       "id": "CP04",
-      "state": "review-return",
+      "state": "accepted",
       "target": "Drag corner markers horizontally on log axis; factor chips beside plot; show individual factor contribution on focus/hover; gain slider shifts magnitude and delay slider moves phase.",
       "evidence": [
-        "88 local tests, 5662 full tests, type/build pass at frozen candidate",
-        "Source review accepts coefficient serialization, original mathematical domain and responsive plot sizing"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console.",
+        "Actual keyboard partial minus/exponent survived Fit/unit rejection/mode roundtrip and recovered by continued typing; invalid native controls receive zero value writes."
       ],
-      "remaining": [
-        "Correct late disposer, cross-control gesture ownership, secondary pointer handling and retained mode attempts",
-        "Central real-browser desktop/phone acceptance",
-        "Combined integration and release"
-      ],
-      "source": "79cc53b967a21c662818879133f6d1f513f51e79",
-      "pr": 65
+      "remaining": [],
+      "source": "cc46f01b15995f7928859f078accb6593c14b3fe",
+      "pr": 65,
+      "release": "0.3.17"
     },
     {
       "id": "CP05",
@@ -439,13 +488,15 @@
     },
     {
       "id": "CS01",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Provide a constrained pole-exploration preset beside its time mode; drag within a declared modal family to cross imaginary axis and feel decay/growth, without pretending arbitrary eigenvalue edits preserve an entered realization.",
-      "evidence": [],
+      "evidence": [
+        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
       ]
     },
     {
@@ -483,20 +534,18 @@
     },
     {
       "id": "CS05",
-      "state": "review-return",
-      "target": "First pilot: baseline locus immediately, add/remove/drag open-loop poles/zeros under degree limits, real-axis or conjugate-pair constraints, fixed viewport, keyboard/numeric equivalents and undo; fixed-model K scrub stays distinct from plant editing.",
+      "state": "accepted",
+      "target": "Exact complete stable-gain strip and boundary selection linked to full-root inspection, fixed axes and independent Practice.",
       "evidence": [
-        "92 local tests, type/build pass; independent review accepts corrected pointer/draft/CSS ownership",
-        "Actual browser verifies K70 crossing, full roots, disjoint/unbounded sets, retained irrational endpoint, rejected native underflow and equal nested plane geometry"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
-      "remaining": [
-        "Correct rendered characteristic TeX delimiter",
-        "Keep slider and exact-selection accessible values coherent",
-        "Compact phone controls and expose exact stability beside the strip",
-        "Repeat browser gate, combined integration and release"
-      ],
-      "source": "53be4827d9c15c5484c31a49dcfbe9404e8de354",
-      "pr": 63
+      "remaining": [],
+      "source": "a1f40f1b0a1dbb8e19c1fc54222c337880572836",
+      "pr": 63,
+      "scopeDecision": "The exact stable-gain tool uses boundary and gain exploration. General pole/zero insertion remains the separate accepted CP06 sandbox; existing exact-region mathematics is preserved.",
+      "release": "0.3.17"
     },
     {
       "id": "DD01",
@@ -632,19 +681,18 @@
     },
     {
       "id": "DP02",
-      "state": "verified-awaiting-release",
-      "target": "Drag s-plane pole and scrub T with continuously linked z-plane and stems; ghost reference map and alias-frequency pair; challenge freezes reference and hides only target until checked.",
+      "state": "accepted",
+      "target": "Linked continuous/discrete pole planes, bounded direct pole editing, sample-period exploration, fixed axes/Fit, reference ghost, actual sample cursor and independent original Practice.",
       "evidence": [
-        "125 module tests, 5650 full tests, type/build pass at b6ad05e code",
-        "Two independent source reviews accept core refinement and first-pointer ownership correction",
-        "Actual production browser verifies pole drag/arrows, changed T/sample, real fraction entry, native error recovery, Practice, fonts, phone layout, reset/navigation",
-        "Exact clean final claim submitted; preserved source merged into private wave-2 integration candidate"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
-      "remaining": [
-        "Combined wave regression and release"
-      ],
+      "remaining": [],
       "source": "3bc8591b3553ed21388efdf800bf65364b5133df",
-      "pr": 64
+      "pr": 64,
+      "release": "0.3.17",
+      "scopeDecision": "The reference ghost supports immediate comparison. The original independently retained Practice supplies the prediction exercise; the optional new paired challenge was not adopted."
     },
     {
       "id": "DP03",
@@ -718,21 +766,18 @@
     },
     {
       "id": "DR05",
-      "state": "review-return",
+      "state": "accepted",
       "target": "A live sample-period slider and draggable sample-clock cursor next to continuous/stem/hold views would make sampling tangible; lock either delay samples m or physical delay tau explicitly when changing T.",
       "evidence": [
-        "107 local tests, 5653 full tests, type/build pass at corrected source",
-        "Independent source review accepts original math/domain, Practice hiding, window budgeting and owned cleanup",
-        "Actual browser confirms baseline/changed T, doubled clock spacing, fixed physical delay, budget rejection and phone 12px axes",
-        "Returned initial desktop/phone visual placement and off-window fit; corrected clipping and compact stack reviewed"
+        "Independent source review and centrally attributed desktop/phone browser acceptance passed; exact evidence and limits are recorded in the owned STATUS.",
+        "5750 combined application tests in276 files,33 coordination tests, TypeScript and production build passed.",
+        "Final combined production desktop/phone route smoke passed: no pending fallback, zero MathLive errors, fonts loaded, phone client/scroll375/375 and clean console."
       ],
-      "remaining": [
-        "Keep retained-preview label beside the visible plot during a gesture",
-        "Repeat real-browser gate for the corrected compact stack",
-        "Combined integration and release"
-      ],
-      "source": "b3574a6befbd0dc8d4792fbc4e5edd36d754c15d",
-      "pr": 62
+      "remaining": [],
+      "source": "ac1602d5084361a6e7f5f8a90de1d84b1015a6fb",
+      "pr": 62,
+      "scopeDecision": "Ordinary T edits keep integer delay m fixed and state tau=mT; the bounded half-T/double-m action explicitly preserves physical delay. Both fixed-window and original fixed-count domains remain.",
+      "release": "0.3.17"
     },
     {
       "id": "DS01",
@@ -758,13 +803,15 @@
     },
     {
       "id": "DS03",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Make the point directly draggable in z plane while preserving numeric/angle alternatives; highlight inside/outside correspondence and approach to z=-1 without false finite projection.",
-      "evidence": [],
+      "evidence": [
+        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
+        "Complete finite refinement",
+        "Independent source and real-browser verification",
+        "Combined integration/release"
       ]
     },
     {
@@ -790,14 +837,14 @@
       ]
     }
   ],
-  "completedModuleRefinements": 3,
-  "remainingModuleRefinements": 53,
+  "completedModuleRefinements": 7,
+  "remainingModuleRefinements": 49,
   "nextWave": [
-    "CP04",
-    "DR05",
-    "CS05",
-    "DP02"
+    "CS01",
+    "CF01",
+    "CP03",
+    "DS03"
   ],
-  "currentWave": 2,
-  "verifiedCandidates": 1
+  "currentWave": 3,
+  "verifiedCandidates": 0
 }

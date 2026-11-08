@@ -1,0 +1,54 @@
+{
+  "version": "0.3.17",
+  "date": "2026-11-08",
+  "kind": "interactivity-wave-2",
+  "state": "accepted",
+  "modules": [
+    {
+      "id": "CP04",
+      "source": "cc46f01b15995f7928859f078accb6593c14b3fe",
+      "pr": 65,
+      "moduleTests": 106,
+      "behavior": "Immediate Bode plots with normalization-preserving corner editing, gain/delay exploration, linked cursor and independent retained Practice.",
+      "decision": "accepted"
+    },
+    {
+      "id": "DR05",
+      "source": "ac1602d5084361a6e7f5f8a90de1d84b1015a6fb",
+      "pr": 62,
+      "moduleTests": 107,
+      "behavior": "Fixed physical-window sampling exploration, explicit integer-delay semantics, linked held-input/sample cursor, qualified clipped drawings and optional Practice.",
+      "decision": "accepted"
+    },
+    {
+      "id": "CS05",
+      "source": "a1f40f1b0a1dbb8e19c1fc54222c337880572836",
+      "pr": 63,
+      "moduleTests": 97,
+      "behavior": "Exact complete stable-gain strip and boundary selection linked to full-root inspection, fixed axes and independent Practice.",
+      "decision": "accepted"
+    },
+    {
+      "id": "DP02",
+      "source": "3bc8591b3553ed21388efdf800bf65364b5133df",
+      "pr": 64,
+      "moduleTests": 125,
+      "behavior": "Linked continuous/discrete pole planes, bounded direct pole editing, sample-period exploration, reference ghost and actual sample inspection.",
+      "decision": "accepted"
+    }
+  ],
+  "remainingRefinements": 49,
+  "limits": [
+    "Original bounded mathematics, arbitrary supported model entry and Practice remain.",
+    "No actual touch, measured latency, universal browser/theme or learning-outcome claim.",
+    "No deployment."
+  ],
+  "applicationTests": 5750,
+  "applicationTestFiles": 276,
+  "coordinationTests": 33,
+  "checks": [
+    "TypeScript and production build passed.",
+    "Independent source review and attributed actual changed-input/drag/keyboard/Practice/native-draft/phone/reset/navigation checks passed.",
+    "Combined production-browser desktop and phone route smoke passed with fonts loaded, zero MathLive errors, no pending fallback, clean console and375/375 phone document widths."
+  ]
+}

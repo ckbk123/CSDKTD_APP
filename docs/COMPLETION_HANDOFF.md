@@ -1,5 +1,7 @@
 # Control Studio v0.3.15 — exercise completion
 
+**Current separately authorized refinement: v0.3.17 / 8 November2026.** The original56 bounded tools remain delivered. Shared fixes and seven concept refinements are accepted;49 remain. See [the live refinement ledger](interactivity-progress.json), [release evidence](releases/v0.3.17.json) and [batch details](INTEGRATION_BATCHES.md). The exercise-completion history below does not cancel the owner’s later explicit application-wide refinement instruction.
+
 On 30 October 2026 the human resumed coordination and requested completion before iterative interface refinement. Eight external fork contributions, PRs #50–57, fill the remaining tools. Delivery is now **56 independently verified bounded exercises**, with no remaining empty catalogue workspaces or partial module stages. [The source map](releases/v0.3.15.json) preserves submitted SHAs, PRs and corrective commits; all 57 original PR histories remain in Git.
 
 ## What changed

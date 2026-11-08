@@ -2,6 +2,12 @@
 
 Versions identify accepted application integrations, not worker checkpoints or hosting deployments. The coordinator assigns patch releases serially under [the version policy](docs/COORDINATION.md#version-policy).
 
+## 0.3.17 — 8 November 2026
+
+- Extend the accepted interaction patterns to four tools: CP04 links direct Bode corner/gain/delay editing to both plots; DR05 links a physical sampling window, held input and exact samples; CS05 links exact gain boundaries to the full root set; DP02 links continuous/discrete poles, period controls and sample inspection. Preserve all bounded mathematics and original Practice flows.
+- Keep equal/fixed plot axes, keyboard/numeric alternatives, readable phone labels and visible invalid drafts. Correct native partial-number preservation, exact gain/thumb coherence, clipped-window drawing scales and first-pointer ownership.
+- All **5,750 application tests in 276 files**, **33 coordination tests**, TypeScript, production build and independent source/desktop/phone gates pass. [Exact sources and evidence](docs/releases/v0.3.17.json) are preserved. Seven concept refinements are accepted; **49 remain** in [the ledger](docs/interactivity-progress.json). No deployment.
+
 ## 0.3.16 — 8 November 2026
 
 - Improve catalogue search across course terms and punctuation, make whole-catalogue scope explicit, compact the reference/notation preview and add related-tool links. Equation fields can select appropriate quick symbols while retaining the math keyboard.
