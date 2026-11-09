@@ -4,14 +4,14 @@ import type { EquationInputOptions } from '../../shared/equations/input';
 import { mountExplore } from './explore';
 import { mountView } from './view';
 import { run } from './math';
-const probe = vi.hoisted(() => ({ failInput: false, failDisplay: false, live: 0, calls: [] as EquationInputOptions[] }));
+const probe = vi.hoisted(() => ({ failInput: false, failDisplay: false, live: 0, calls: [] as EquationInputOptions[], duringDisplay: undefined as (() => void) | undefined, writesAfterDispose: 0 }));
 vi.mock('./math', async original => { const actual = await original<typeof import('./math')>(); return { ...actual, run: vi.fn(actual.run) }; });
 vi.mock('../../shared/equations/input', () => ({
-  createEquationDisplay: (latex: string, label: string) => { if (probe.failDisplay) { probe.failDisplay = false; throw new Error('Injected renderer failure'); } const node = document.createElement('div'); node.dataset.latex = latex; node.setAttribute('aria-label', label); return node; },
+  createEquationDisplay: (latex: string, label: string) => { const during = probe.duringDisplay; probe.duringDisplay = undefined; during?.(); if (probe.failDisplay) { probe.failDisplay = false; throw new Error('Injected renderer failure'); } const node = document.createElement('div'); node.dataset.latex = latex; node.setAttribute('aria-label', label); return node; },
   createEquationInput: (options: EquationInputOptions) => {
     probe.calls.push(options); probe.live++; let closed = false; const element = document.createElement('div'), field = document.createElement('textarea'); field.setAttribute('aria-label', options.label); field.value = options.value; element.append(field);
     const destroy = () => { if (closed) return; closed = true; probe.live--; element.remove(); }; options.signal.addEventListener('abort', destroy, { once: true }); if (probe.failInput) { probe.failInput = false; throw new Error('Injected signal-owned editor failure'); }
-    const getValue = () => ({ latex: field.value, empty: !field.value.trim(), hasPlaceholders: false, syntaxIssues: [] }); field.addEventListener('input', () => options.onChange?.(getValue()), { signal: options.signal }); return { element, getValue, setValue: (value: string) => { field.value = value; }, destroy, focus: () => field.focus() };
+    const getValue = () => ({ latex: field.value, empty: !field.value.trim(), hasPlaceholders: false, syntaxIssues: [] }); field.addEventListener('input', () => options.onChange?.(getValue()), { signal: options.signal }); return { element, getValue, setValue: (value: string) => { if (closed) probe.writesAfterDispose++; field.value = value; }, destroy, focus: () => field.focus() };
   },
 }));
 const visits: { root: HTMLElement; parent: AbortController; cleanup: () => void }[] = [];
@@ -21,7 +21,7 @@ function enter(root: HTMLElement, label: string, value: string) { const input = 
 function model(root: HTMLElement, value: string) { const editor = root.querySelector('textarea')!; editor.value = value; editor.dispatchEvent(new Event('input')); button(root, 'Apply model').click(); }
 function open(full = false) { const root = document.createElement('div'), parent = new AbortController(); document.body.append(root); const cleanup = (full ? mountView : mountExplore)({ container: root, signal: parent.signal }); const visit = { root, parent, cleanup }; visits.push(visit); return visit; }
 const readout = (root: HTMLElement) => root.querySelector('.dr03-live-readout')!.textContent;
-beforeEach(() => { vi.useFakeTimers(); probe.failInput = probe.failDisplay = false; probe.calls = []; });
+beforeEach(() => { vi.useFakeTimers(); probe.failInput = probe.failDisplay = false; probe.calls = []; probe.duringDisplay = undefined; probe.writesAfterDispose = 0; });
 afterEach(() => { visits.splice(0).forEach(v => { v.parent.abort(); v.cleanup(); v.root.remove(); }); expect(probe.live).toBe(0); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('DR03 immediate checked memory and cached sample inspection', () => {
@@ -73,6 +73,15 @@ describe('DR03 retained modes and owned replay/input lifetimes', () => {
   });
   it('disconnects an observer allocated during synchronous parent abort', () => {
     const root = document.createElement('div'), parent = new AbortController(), observe = vi.fn(), disconnect = vi.fn(); vi.stubGlobal('ResizeObserver', class { constructor() { parent.abort(); } observe = observe; disconnect = disconnect; }); const cleanup = mountExplore({ container: root, signal: parent.signal }); cleanup(); expect(observe).not.toHaveBeenCalled(); expect(disconnect).toHaveBeenCalledTimes(1); expect(root.childElementCount).toBe(0);
+  });
+  it('does not reschedule replay after the renderer reentrantly aborts its visit', () => {
+    const { root, parent } = open(); button(root, 'Play').click(); probe.duringDisplay = () => parent.abort(); vi.advanceTimersByTime(500); expect(root.childElementCount).toBe(0); expect(vi.getTimerCount()).toBe(0); expect(probe.writesAfterDispose).toBe(0);
+  });
+  it('does not synchronize a destroyed editor after a renderer aborts a native model commit', () => {
+    const { root, parent } = open(); probe.duringDisplay = () => parent.abort(); enter(root, 'Sequence amplitude A', '2'); vi.advanceTimersByTime(32); expect(root.childElementCount).toBe(0); expect(probe.writesAfterDispose).toBe(0); expect(vi.getTimerCount()).toBe(0);
+  });
+  it('does not allocate a ResizeObserver after initial rendering has already aborted the visit', () => {
+    const root = document.createElement('div'), parent = new AbortController(), allocated = vi.fn(), observe = vi.fn(); vi.stubGlobal('ResizeObserver', class { constructor() { allocated(); } observe = observe; disconnect() {} }); probe.duringDisplay = () => parent.abort(); const cleanup = mountExplore({ container: root, signal: parent.signal }); cleanup(); expect(root.childElementCount).toBe(0); expect(allocated).not.toHaveBeenCalled(); expect(observe).not.toHaveBeenCalled(); expect(probe.writesAfterDispose).toBe(0);
   });
   it.each(['abort', 'dispose'])('cancels replay and queued input after direct %s', action => {
     const { root, parent, cleanup } = open(); button(root, 'Play').click(); vi.advanceTimersByTime(500); enter(root, 'Sequence amplitude A', '2'); const calls = vi.mocked(run).mock.calls.length; if (action === 'abort') parent.abort(); else cleanup(); vi.runAllTimers(); expect(vi.mocked(run).mock.calls).toHaveLength(calls); expect(root.childElementCount).toBe(0);

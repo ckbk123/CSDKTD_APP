@@ -29,6 +29,14 @@ The accepted original exercise record below is historical. New fixtures are inde
 - Current checks: `npm exec -- vitest run src/modules/dr03 --reporter dot --maxWorkers 4` — **178 passed / 9 files**; `npm run check` — pass; `npm run build` — pass (existing shared MathLive chunk-size advisory); `git diff --check` — pass. The original `math.ts`, `parser.ts`, `rational.ts`, `input.ts`, `visuals.ts`, `workspace.ts` and `index.ts` match the captured base. Fresh full and independent source results will be attributed separately.
 - Pending central actual browser QA on assigned port **8815**: model/history/T/ramp/delay edits, cursor/replay, native failure retention, keyboard/register access, retained Practice, equation fonts/math keyboard, narrow overflow/readability, reset/leave/reopen/rapid navigation and console. No browser/server was launched by this worker; no measured latency, actual touch or production-layout claim is made. Stage implemented is not browser verification.
 
+### Reentrant render-abort review return
+
+First frozen source `a42095628ca1ae0c4a41d7af979d0c1ed0aecc74` passed **5,777 tests / 279 files** in77.03s with four workers. During the independent review, external read-only fixtures reproduced two lifetime continuations: a renderer-aborted replay tick scheduled one more timer, and a renderer-aborted native commit synchronized an already destroyed editor. The design reviewer independently confirmed the source paths. The coordinator authorized the narrow correction; the external failing fixtures remain outside Git as attributed evidence, not passing checks on the original freeze.
+
+Post-render publication/synchronization and replay continuation now return immediately after abort/disposal; a paused/disposed replay cannot reschedule. View/error paths ignore results after disposal, and initial rendering must remain active before allocating an observer. Three owned fixtures cover the two reproductions and absence of any observer allocation after initial-render abort. Original mathematics, trajectories, parser, domains and qualification screens remain unchanged. Fresh focused/check/build/full results for the returned source will be recorded separately.
+
+Returned-source checks: **181 tests / 9 files**, the two external reproduced failures **2/2 now pass**, `npm run check`, `npm run build` and `git diff --check` pass. The design reviewer additionally reproduced an original last-sample Play-restart continuation and observed its external fixture pass with these guards; final acceptance awaits the exact frozen revision. Fresh full results and actual browser gates remain separate.
+
 ## Historical accepted exercise delivery
 - **Assessed:** 29 October 2026. Fresh claim base 9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86, primary main v0.3.9.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
