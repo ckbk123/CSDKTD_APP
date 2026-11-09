@@ -67,7 +67,10 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
     }
     function publishInspection(prepared: ReturnType<typeof prepareInspection>): boolean {
       if (disposed || signal.aborted) return false;
-      const focused = register.contains(document.activeElement) ? (document.activeElement as HTMLElement).dataset.memoryIndex : undefined; register.replaceChildren(prepared.memory); arithmetic.replaceChildren(prepared.equation); canonical.replaceChildren(prepared.comparisons); inputDrawing.select(k); outputDrawing.select(k);
+      const focused = register.contains(document.activeElement) ? (document.activeElement as HTMLElement).dataset.memoryIndex : undefined;
+      const scroll = [...register.querySelectorAll<HTMLElement>('.dr03-memory-cells')].map(lane => ({ left: lane.scrollLeft, top: lane.scrollTop }));
+      register.replaceChildren(prepared.memory); register.querySelectorAll<HTMLElement>('.dr03-memory-cells').forEach((lane, i) => { lane.scrollLeft = scroll[i]?.left ?? 0; lane.scrollTop = scroll[i]?.top ?? 0; });
+      arithmetic.replaceChildren(prepared.equation); canonical.replaceChildren(prepared.comparisons); inputDrawing.select(k); outputDrawing.select(k);
       const row = prepared.value.row; readout.textContent = `k=${k} · t=${fmt(row.t)} s · u[k]≈${fmt(row.u)} · y[k]≈${fmt(row.y)} · selected result≈${fmt(prepared.value.value)}`;
       range.max = cursor.max = String(checked.result.rows.length - 1); range.value = String(k); range.setAttribute('aria-valuetext', `Sample ${k}, time ${fmt(row.t)} seconds on the checked experiment`); if (!cursorIssue) cursor.value = String(k); cursorError.textContent = cursorIssue; targetChoice.value = String(target); sampleTable.querySelectorAll<HTMLElement>('[data-sample]').forEach(rowNode => rowNode.classList.toggle('dr03-current', Number(rowNode.dataset.sample) === k)); if (focused) register.querySelector<HTMLElement>(`[data-memory-index="${focused}"]`)?.focus({ preventScroll: true }); if (disposed || signal.aborted) return false; refreshState(); return true;
     }

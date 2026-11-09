@@ -37,6 +37,10 @@ Post-render publication/synchronization and replay continuation now return immed
 
 Returned-source checks: **181 tests / 9 files**, the two external reproduced failures **2/2 now pass**, `npm run check`, `npm run build` and `git diff --check` pass. The design reviewer additionally reproduced an original last-sample Play-restart continuation and observed its external fixture pass with these guards; final acceptance awaits the exact frozen revision. Fresh full results and actual browser gates remain separate.
 
+The design reviewer then reproduced a local scroll/focus defect: replacing the maximum eight-state register reset a panned input lane from scrollLeft400 to0 even though state8 retained focus. The coordinator returned that correction before acceptance. Publication now snapshots both lane scroll positions and restores them before conditional same-cell focus. An owned fixture covers state8, independent lane offsets, cursor/replay selection, retained raw underflow and Fit without field writes. This is DOM scroll-state evidence, not actual narrow-browser layout proof; original numerical behavior is unchanged.
+
+The reentrant-guard source `f69bc3f493b18035d56fb058b12455f1378e04bc` separately passed **5,780 tests / 279 files**,85.56s. The final scroll-return candidate passes **182 tests / 9 files**, all four external continuation/scroll reproductions, check/build/diff; the earlier full run does not substitute for a full run on this final delta. Independent focused acceptance and final full/browser results remain pending.
+
 ## Historical accepted exercise delivery
 - **Assessed:** 29 October 2026. Fresh claim base 9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86, primary main v0.3.9.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
