@@ -93,11 +93,11 @@ export const mountView = ({ container, signal: parent, hooks, isActive = () => t
   const planePanel = el('section', undefined, 'modes-card'); planePanel.append(el('h3', 'Pole and zero plane'));
   const lock = checkbox('Lock denominator while moving the zero', false), preserveDc = checkbox('Preserve DC gain when moving the zero', true); planePanel.append(lock.element, preserveDc.element);
   const planeStatus = el('p', 'Crosses are poles; the open circle is a real numerator zero. Drag a marker and release to apply.'); planeStatus.setAttribute('role', 'status');
-  const planeScroll = el('div', undefined, 'modes-plane-scroll'), plane = svg('svg', { viewBox: '0 0 560 380', role: 'img', 'aria-label': 'Draggable pole-zero plane in inverse seconds' });
+  const planeScroll = el('div', undefined, 'modes-plane-scroll'), plane = svg('svg', { viewBox: '0 0 560 560', role: 'img', 'aria-label': 'Draggable pole-zero plane in inverse seconds' });
   planeTarget = plane;
-  const px = (r: number) => 280 + r * 21, py = (i: number) => 180 - i * 14, marks = svg('g', {}), ghost = svg('g', { class: 'modes-ghost' });
-  for (const v of [-10, -5, 0, 5, 10]) plane.append(svg('line', { x1: px(v), x2: px(v), y1: 40, y2: 320, class: 'modes-grid' }), svg('line', { x1: 70, x2: 490, y1: py(v), y2: py(v), class: 'modes-grid' }), svg('text', { x: px(v), y: 341, 'text-anchor': 'middle' }, String(v)), svg('text', { x: 57, y: py(v) + 4, 'text-anchor': 'end' }, String(v)));
-  plane.append(svg('line', { x1: 70, x2: 490, y1: 180, y2: 180, class: 'modes-axis' }), svg('line', { x1: 280, x2: 280, y1: 40, y2: 320, class: 'modes-axis' }), svg('text', { x: 280, y: 370, 'text-anchor': 'middle' }, 'Real part [s⁻¹]'), svg('text', { x: 70, y: 22 }, 'Imaginary part [s⁻¹]'), marks, ghost); planeScroll.append(plane); planePanel.append(planeStatus, planeScroll);
+  const px = (r: number) => 280 + r * 21, py = (i: number) => 270 - i * 21, marks = svg('g', {}), ghost = svg('g', { class: 'modes-ghost' });
+  for (const v of [-10, -5, 0, 5, 10]) plane.append(svg('line', { x1: px(v), x2: px(v), y1: 60, y2: 480, class: 'modes-grid' }), svg('line', { x1: 70, x2: 490, y1: py(v), y2: py(v), class: 'modes-grid' }), svg('text', { x: px(v), y: 510, 'text-anchor': 'middle' }, String(v)), svg('text', { x: 57, y: py(v) + 4, 'text-anchor': 'end' }, String(v)));
+  plane.append(svg('line', { x1: 70, x2: 490, y1: 270, y2: 270, class: 'modes-axis' }), svg('line', { x1: 280, x2: 280, y1: 60, y2: 480, class: 'modes-axis' }), svg('text', { x: 280, y: 550, 'text-anchor': 'middle' }, 'Real part [s⁻¹]'), svg('text', { x: 70, y: 22 }, 'Imaginary part [s⁻¹]'), marks, ghost); planeScroll.append(plane); planePanel.append(planeStatus, planeScroll);
   const poleChoice = select('Pole to move', [['0', 'Pole 1'], ['1', 'Pole 2']]), real = numeric('Pole real part [s⁻¹]', -1, -10, 10), imaginary = numeric('Pole imaginary part [s⁻¹]', Math.sqrt(3), -10, 10), applyPole = button('Apply pole coordinates');
   const zeroLocation = numeric('Real zero location [s⁻¹]', -2, -10, 10), applyZero = button('Apply zero location'), coordinates = el('div', undefined, 'modes-controls'); coordinates.append(poleChoice.element, real.element, imaginary.element, applyPole, zeroLocation.element, applyZero); planePanel.append(coordinates);
   planePanel.append(el('p', 'Conjugate poles move together. Set the imaginary part to zero to form a repeated real pole; enter a nonzero imaginary part to form a pair. Real poles can move independently. An unmoved rational pole stays exact; an irrational one rounds to 9 decimal places so the edited coefficients remain rational. Entered coordinates round to 9 decimal places; dragging snaps to 0.01 s⁻¹ and the real axis. The numeric controls provide the same operations by keyboard.')); root.append(planePanel);
@@ -116,7 +116,7 @@ export const mountView = ({ container, signal: parent, hooks, isActive = () => t
   }
   function setModel(next: Model): void { model = next; dirty = false; syncing = true; try { [model.a1, model.a0, model.b1, model.b0].forEach((value, i) => { if (!disposed) fields[i].setValue(latexRat(value)); }); } finally { syncing = false; } if (!disposed) syncPlane(); }
   function drawCross(group: SVGGElement, r: number, i: number, attributes: Record<string, string | number> = {}): void {
-    const cross = svg('g', { class: 'modes-pole', ...attributes }); cross.append(svg('path', { d: `M${px(r) - 6},${py(i) - 6}l12,12m0,-12l-12,12` }), svg('circle', { cx: px(r), cy: py(i), r: 13, class: 'modes-hit' })); group.append(cross);
+    const cross = svg('g', { class: 'modes-pole', ...attributes }); cross.append(svg('path', { d: `M${px(r) - 6},${py(i) - 6}l12,12m0,-12l-12,12` }), svg('circle', { cx: px(r), cy: py(i), r: 22.5, class: 'modes-hit' })); group.append(cross);
   }
   function syncPlane(): void {
     const a = inspect(model); marks.replaceChildren();
@@ -188,7 +188,7 @@ export const mountView = ({ container, signal: parent, hooks, isActive = () => t
   }, { signal });
   plane.addEventListener('pointermove', event => {
     if (!drag || drag.pointer !== event.pointerId) return; const bounds = plane.getBoundingClientRect();
-    const r = ((event.clientX - bounds.left) / bounds.width * 560 - 280) / 21, i = (180 - (event.clientY - bounds.top) / bounds.height * 380) / 14;
+    const r = ((event.clientX - bounds.left) / bounds.width * 560 - 280) / 21, i = (270 - (event.clientY - bounds.top) / bounds.height * 560) / 21;
     drag.real = Math.round(Math.max(-10, Math.min(10, r)) * 100) / 100; drag.imaginary = drag.type === 'zero' || Math.abs(i) < .05 ? 0 : Math.round(Math.max(-10, Math.min(10, i)) * 100) / 100;
     ghost.replaceChildren(); if (drag.type === 'zero') ghost.append(svg('circle', { cx: px(drag.real), cy: py(0), r: 8, class: 'modes-zero' })); else { drawCross(ghost, drag.real, drag.imaginary); if (drag.imaginary) drawCross(ghost, drag.real, -drag.imaginary); }
     planeStatus.textContent = `Candidate ${drag.type}: ${fmt(drag.real)}${drag.imaginary ? ` + ${fmt(drag.imaginary)}j` : ''} s⁻¹. Release to validate and calculate; solid markers still show the applied model.`;

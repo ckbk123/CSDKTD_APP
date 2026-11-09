@@ -22,6 +22,7 @@ async function open() {
 }
 afterEach(() => document.body.replaceChildren());
 describe('CP02 exercise and lifecycle', () => {
+  it('uses equal physical scales for the complete original Practice plane', async () => { const { container, controller, reveal } = await open(); reveal(); const plane = container.querySelector('.modes-plane-scroll > svg')!, upper = plane.querySelector('[data-pole="0"] .modes-hit')!, lower = plane.querySelector('[data-pole="1"] .modes-hit')!; expect(plane.getAttribute('viewBox')).toBe('0 0 560 560'); expect((280 - Number(upper.getAttribute('cx'))) / 1).toBeCloseTo((Number(lower.getAttribute('cy')) - Number(upper.getAttribute('cy'))) / (2 * Math.sqrt(3)), 12); expect(upper.getAttribute('r')).toBe('22.5'); controller.abort(); });
   it('checks predictions and reveals only computed baseline output', async () => {
     const { container, controller, reveal } = await open(); expect(container.querySelector('polyline')).toBeNull();
     update(labeled(container, 'Predicted original mode family'), 'conjugate', 'change'); update(labeled(container, 'Predicted initial slope'), 'zero', 'change'); update(labeled(container, 'Do the same poles force the same step response?'), 'yes', 'change'); reveal();
@@ -63,8 +64,8 @@ describe('CP02 exercise and lifecycle', () => {
   });
   it('applies a conjugate drag only on release and releases capture on abort', async () => {
     const { container, controller, reveal } = await open(); reveal(); const plane = container.querySelector<SVGSVGElement>('.modes-plane-scroll svg')!;
-    let captured = false; plane.setPointerCapture = vi.fn(() => { captured = true; }); plane.hasPointerCapture = vi.fn(() => captured); plane.releasePointerCapture = vi.fn(() => { captured = false; }); plane.getBoundingClientRect = () => ({ left: 0, top: 0, width: 560, height: 380 } as DOMRect);
-    const pointer = (target: Element, type: string, x = 238, y = 138) => { const event = new MouseEvent(type, { bubbles: true, button: 0, clientX: x, clientY: y }); Object.defineProperty(event, 'pointerId', { value: 1 }); target.dispatchEvent(event); };
+    let captured = false; plane.setPointerCapture = vi.fn(() => { captured = true; }); plane.hasPointerCapture = vi.fn(() => captured); plane.releasePointerCapture = vi.fn(() => { captured = false; }); plane.getBoundingClientRect = () => ({ left: 0, top: 0, width: 560, height: 560 } as DOMRect);
+    const pointer = (target: Element, type: string, x = 238, y = 207) => { const event = new MouseEvent(type, { bubbles: true, button: 0, clientX: x, clientY: y }); Object.defineProperty(event, 'pointerId', { value: 1 }); target.dispatchEvent(event); };
     pointer(plane.querySelector('[data-pole="0"]')!, 'pointerdown'); pointer(plane, 'pointermove'); expect(labeled<HTMLTextAreaElement>(container, 'Denominator a₀').value).toBe('4'); expect(container.textContent).toContain('Candidate pole: -2 + 3j'); pointer(plane, 'pointerup');
     expect(labeled<HTMLTextAreaElement>(container, 'Denominator a₀').value).toBe('13'); expect(labeled<HTMLTextAreaElement>(container, 'Denominator a₁').value).toBe('4'); expect(plane.querySelectorAll('[data-pole]')).toHaveLength(2);
     pointer(plane.querySelector('[data-pole="0"]')!, 'pointerdown'); controller.abort(); expect(captured).toBe(false); expect(container.children).toHaveLength(0);
