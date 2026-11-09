@@ -118,7 +118,7 @@ export function createMapping(container: HTMLElement, parent: AbortSignal) {
   function render() {
     if (disposed || signal.aborted) return;
     const focused = pair.contains(document.activeElement), w = mapToW(point), radius = Math.hypot(point.re, point.im);
-    const region = radius < 1 - 1e-12 ? 'inside the disk' : radius > 1 + 1e-12 ? 'outside the disk' : 'on the unit circle (within rounding)';
+    const region = radius < 1 - 1e-12 ? 'inside the disk' : radius > 1 + 1e-12 ? 'outside the disk' : lock.checked ? 'unit-circle angle construction' : 'near the unit circle (radius tolerance 10⁻¹²)';
     readout.textContent = `${invalid ? 'Last checked point · ' : ''}Selected z = ${complex(point)}; |z| = ${fmt(radius)} · ${region}. ${w ? `w = ${complex(w)}.` : 'w is at infinity: z = −1 is the mapping pole.'}`;
     pair.replaceChildren(plane('z plane · unit disk', false, roots, point, extents[0]), plane('w plane · left half-plane', true, mapped, w, extents[1]));
     undo.disabled = !previous;

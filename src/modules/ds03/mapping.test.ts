@@ -36,6 +36,10 @@ describe('disk/half-plane point controls',()=>{
     click(v.root,'Fit point views'); expect(v.root.querySelector('svg')!.querySelector('.ds-region')?.getAttribute('r')).toBe(String(260/9.6));
     expect(before).toContain('Equal real/imaginary scale');
   });
+  it('qualifies a numerically unresolved radius near the mapping pole rather than calling it a boundary point',()=>{
+    const v=open(); edit(field(v.root,'Selected Re z (−5 to 5)'),'-1'); edit(field(v.root,'Selected Im z (−5 to 5)'),'1e-8');
+    expect(text(v.root)).toContain('w = 1 + 200000000j.'); expect(text(v.root)).toContain('near the unit circle (radius tolerance 10⁻¹²)'); expect(text(v.root)).not.toContain('on the unit circle');
+  });
   it('offers keyboard circle/free movement, retained focus, exceptional End and reversible edits',()=>{
     const v=open(); key(v.root,'End'); expect(text(v.root)).toContain('w is at infinity');
     expect(document.activeElement?.hasAttribute('data-selected-point')).toBe(true);
