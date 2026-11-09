@@ -1,6 +1,21 @@
 # CD01 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement:** reason-gated controller preview with linked response/effort, 9 November 2026; owner interactivity-cd01-01a1ac7b; branch codex/cd01-pid-exploration; baseline 6af3485ef6da6f11f4979ff665896d83b99414b5 (released v0.3.17).
+- **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cd01-pid-01a1ac7b, fresh ordinary linked Git worktree and own locked npm ci (109 packages).
+- **Owned scope:** src/modules/cd01/** only; math.ts, numerics.ts, parser.ts, workspace.ts and index.ts remain authoritative. Central browser gates are pending with the integration owner; no browser launch or deployment is authorized here.
+
+## Current interaction requirement audit
+
+The actual baseline computes/records the course trial on mount, but every plot remains hidden until Reveal after the full model/requirement/gain/initial form. Draft edits remove the entire result panel. The initial and subsequent temporary note summaries expose exact steady error and peak effort before prediction. Reason gating before Apply/Derive, eight-note bounds, original prediction-edit invalidation, all controller terms/modes/matching, and comparison-failure retention are working foundations to preserve.
+
+The finite scope is a visual-first output/total-effort workbench with synchronized signed gains and active-filter controls. A chosen student reason permits coalesced draft exploration; Apply alone records one trial and clears that reason. Unrecorded previews must remain separate from the applied trial/notes/grade. Original arbitrary plant, initial memories, coefficient matching and P/PI/filtered-PD/PID semantics stay accessible. Requirement changes reassess cached runs, while a common nearest-sample cursor uses the original computed 801-sample grid. Native invalid drafts remain actual elements through view-only actions; no hidden clamping, solver downgrade or full-model replacement is included.
+
+Initial checkpoint: plots.ts presents existing signal arrays using native axes and a reusable nearest-sample marker; no response solver is added. Two independent tests pass for unchanged path/sample data through cursor movement and fixed-axis/off-view requirement-guide disclosure. All 76 original CD01 tests also pass (78 current tests in 6 files). UI implementation, type/build/full suite, independent review and actual browser evidence are not yet claimed.
+
+## Historical accepted bounded exercise
+
+The v0.3.17 delivery below is historical verification, not verification of the current finite interface refinement.
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
