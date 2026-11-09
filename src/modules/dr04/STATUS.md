@@ -1,7 +1,27 @@
 # DR04 implementation status
 
-- **Stage:** verified
-- **Last assessed:** 2026-10-30.
+- **Stage:** implemented
+- **Last assessed:** 2026-11-09.
+- **Refinement owner:** `interactivity-dr04-01a1ac7b`, branch `codex/dr04-direct-boundaries`, fresh base `6af3485ef6da6f11f4979ff665896d83b99414b5`.
+
+## Current interactivity refinement
+
+The checked source graph now appears immediately at visit/reset, before any Mason answer. The compact physical cascade has a directly selectable intermediate sampler/hold. Switching it uses every current source draft through the original exact converter; invalid drafts remain intact and the old graph/result are withheld. The existing full pipeline, source controls, presets, endpoint/gain editor, prediction and complex audit remain available in optional detail.
+
+Branch labels in the actual drawing are focusable controls, with Enter/Space and the original equivalent row Trace buttons. Both build the same ordered branch list and use the unchanged connectivity/product check. A changed selection revokes its old trace proof. Drawing redraws preserve branch focus, inner scroll and actual numeric/equation attempts; selecting a trace does not rerun or replace the full Mason result. At the declared minimum 800 px inner graph width each label target is at least 44 CSS px in both dimensions. This is a source geometry check, not actual phone acceptance.
+
+The graph retains its exact original node/path geometry and independent connectivity. Optional conversion comparisons still distinguish a continuous cascade from separately sampled integrators. Source, edited-discrete and authored-discrete-only provenance remain explicit. All original exact algebra, parser, physical conversion, Mason enumeration, numeric audit and sample computations are unchanged. Module styles now use the existing shared Indigo/slate tokens; no new palette, dependencies or mathematical scope.
+
+Owned row scopes are tracked before editor construction, including a constructor that registers a resource and then throws. A late editor returned after reentrant abort is destroyed rather than attached. Cleanup aborts all scopes before releasing editors and removes the root even if one editor release fails. Quick equation tools are restricted to the fraction, integer-power and parentheses grammar already supported by this module.
+
+Current checks: **110 module tests /5 files**, TypeScript and whitespace checks pass. Independent source review, the complete application suite, production build and the full actual-browser gate are pending. Unit/DOM tests use mocked editors and do not establish MathLive/font/phone behavior.
+
+Actual browser acceptance remains open: initial desktop/phone hierarchy and graph scroll; direct boundary switch and original exact changed-data values; branch pointer and keyboard selection/focus/panning; actual fraction/power entry; invalid native partial/underflow recovery without value writes; original full graph editor/prediction/audit; reset, leave/reopen, rapid navigation, local fonts and console. The private browser provider was unavailable during this background continuation. The historical browser evidence below belongs to the earlier foundation and is not new refinement acceptance. No deployment.
+
+## Historical verified foundation — 30 October 2026
+
+The following records the accepted pre-refinement implementation and its original evidence; the current Stage above tracks the new refinement gates.
+
 - **Base:** `a43989def918052cc969cbee8691ce79d8824ec9`.
 - **Contract:** [TASK.md](TASK.md), unchanged; index metadata unchanged.
 - **Owner:** external contributor `ckbk456`, branch `codex/dr04-sampled-mason-20261030`.

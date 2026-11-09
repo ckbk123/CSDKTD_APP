@@ -16,53 +16,70 @@ const signalTex=(name:string)=>`\\mathrm{${name}}(z)`;
 export const mount:ModuleMount=({container,signal:parent})=>{
   if(parent.aborted)return;
   const lifetime=new AbortController(),signal=lifetime.signal,root=el('div');root.dataset.module='DR04';container.append(root);
-  const editors=new Set<EquationInput>();let rows:Row[]=[],answerLife:AbortController|undefined,disposed=false;
-  const cleanup=()=>{if(disposed)return;disposed=true;parent.removeEventListener('abort',cleanup);lifetime.abort();answerLife?.abort();rows.forEach(r=>r.life.abort());editors.forEach(e=>e.destroy());editors.clear();root.remove();};
+  const editors=new Set<EquationInput>(),rowLives=new Set<AbortController>();let rows:Row[]=[],answerLife:AbortController|undefined,disposed=false;
+  const cleanup=()=>{
+    if(disposed)return;disposed=true;parent.removeEventListener('abort',cleanup);
+    lifetime.abort();answerLife?.abort();rowLives.forEach(l=>l.abort());rowLives.clear();
+    let failure:unknown;for(const e of editors){try{e.destroy();}catch(error){failure??=error;}}
+    editors.clear();root.remove();if(failure)throw failure;
+  };
   parent.addEventListener('abort',cleanup,{once:true});
   try{
     let ready=false,conversion:Conversion|null=null,nodes:string[]=[],kind='converted',chosen:string[]=[],chosenNodes:string[]=[],analysis:Analysis|null=null,solvedNet:Net|null=null;
-    const feedback=el('p','Declare the boundaries, convert to samples, then predict and reduce the discrete graph.');feedback.className='dr04-feedback';feedback.setAttribute('role','status');
+    const feedback=el('p','Select branch labels in arrow order, or change the intermediate sampling boundary.');feedback.className='dr04-feedback';feedback.setAttribute('role','status');
     const note=(host:HTMLElement,text:string)=>host.append(el('p',text));
     const section=(title:string)=>{const s=el('section');s.append(el('h2',title));root.append(s);return s;};
     const grid=(host:HTMLElement)=>{const g=el('div');g.className='dr04-grid';host.append(g);return g;};
     const button=(host:HTMLElement,label:string,action:()=>void,life=signal)=>{const b=el('button',label);b.type='button';host.append(b);b.addEventListener('click',()=>{if(life.aborted)return;b.after(feedback);try{action();}catch(e){feedback.textContent=e instanceof Error?e.message:'Check the graph and inputs.';}},{signal:life});return b;};
     const select=(host:HTMLElement,label:string,options:readonly(readonly[string,string])[])=>{const l=el('label',label),s=el('select');s.setAttribute('aria-label',label);l.append(s);host.append(l);options.forEach(([value,text])=>{const o=el('option',text);o.value=value;s.append(o);});return s;};
-    const math=(host:HTMLElement,label:string,value:string,onChange:()=>void,life=signal)=>{const e=createEquationInput({label,value,signal:life,onChange});editors.add(e);host.append(e.element);return e;};
+    const math=(host:HTMLElement,label:string,value:string,onChange:()=>void,life=signal)=>{const e=createEquationInput({label,value,signal:life,onChange,tools:['fraction','power','parentheses'],description:'Use real numbers, fractions and integer powers −6…6. Graph and prediction fields also accept z.'});if(disposed||life.aborted){e.destroy();throw new Error('The sampled diagram visit was cancelled.');}editors.add(e);host.append(e.element);return e;};
     const read=(e:EquationInput,optional=false)=>{const d=e.getValue();if(optional&&d.empty&&!d.hasPlaceholders&&!d.syntaxIssues.length)return null;if(d.empty||d.hasPlaceholders||d.syntaxIssues.length)throw new Error('Complete each math box, including all fraction and power boxes.');return d.latex;};
     const native=(host:HTMLElement,label:string,value:string)=>{const l=el('label',label),e=el('input');e.type='number';e.step='any';e.value=value;e.setAttribute('aria-label',label);l.append(e);host.append(l);return e;};
 
-    const source=section('1. Declare the sample and hold boundaries');
-    source.append(createEquationDisplay(String.raw`G_c(s)=\frac{g e^{-\tau s}}{s^2},\quad u[k]=c_0 e[k]+c_1 e[k-1]`,'Original continuous delayed plant and causal digital controller'));
-    note(source,'The original course diagram is unavailable. This authored topology updates the digital controller immediately at kT, holds its output on [kT,(k+1)T), and samples the plant output at kT. States and prehistory are zero. The output is physical y[k]; H scales only its feedback measurement.');
-    const sourceInputs=grid(source),initial=sourceDefault(),fields={} as Record<'g'|'T'|'tau'|'H'|'c0'|'c1',EquationInput>;
+    const source=section('1. Explore the sampling boundary');
+    const boundaryRow=el('div');boundaryRow.className='dr04-boundary-row';source.append(boundaryRow);
+    boundaryRow.append(el('span','Continuous integrator g/s →'));
+    const boundaryToggle=button(boundaryRow,'Insert intermediate sampler and hold',()=>{boundary.value=boundary.value==='whole'?'split':'whole';drawPipeline();sourceDirty();build();});
+    boundaryToggle.setAttribute('aria-label','Intermediate sampler and hold');boundaryToggle.setAttribute('aria-pressed','false');
+    boundaryRow.append(el('span','→ Continuous integrator 1/s → Output sampler'));
+    const sourceSummary=el('p');sourceSummary.className='dr04-model-summary';source.append(sourceSummary);
+    const settings=el('details');settings.className='dr04-settings';settings.append(el('summary','Edit source model, timing, feedback and full pipeline'));source.append(settings);
+    settings.append(createEquationDisplay(String.raw`G_c(s)=\frac{g e^{-\tau s}}{s^2},\quad u[k]=c_0 e[k]+c_1 e[k-1]`,'Original continuous delayed plant and causal digital controller'));
+    note(settings,'The original course diagram is unavailable. This authored topology updates the digital controller immediately at kT, holds its output on [kT,(k+1)T), and samples the plant output at kT. States and prehistory are zero. The output is physical y[k]; H scales only its feedback measurement.');
+    const sourceInputs=grid(settings),initial=sourceDefault(),fields={} as Record<'g'|'T'|'tau'|'H'|'c0'|'c1',EquationInput>;
     for(const [key,label]of [['g','Plant gain g (s⁻²)'],['T','Sample period T (s)'],['tau','Physical transport delay τ (s)'],['H','Sensor gain H'],['c0','Controller current coefficient c₀'],['c1','Controller memory coefficient c₁']] as const)fields[key]=math(sourceInputs,label,initial[key],sourceDirty);
-    const boundary=select(source,'Intermediate boundary',[['whole','Keep the continuous integrators connected'],['split','Insert a sampler and ZOH between integrators']]);
-    const sign=select(source,'Feedback sign',[['negative','Negative: e[k]=r[k]−H y[k]'],['positive','Positive: e[k]=r[k]+H y[k]'],['open','Open: e[k]=r[k]']]);
-    const pipeline=el('ol');pipeline.className='dr04-pipeline';source.append(pipeline);drawPipeline();
-    button(source,'Convert boundaries and build discrete graph',build);
-    const presets=el('div');presets.className='dr04-actions';source.append(presets);
+    const boundary=select(settings,'Intermediate boundary',[['whole','Keep the continuous integrators connected'],['split','Insert a sampler and ZOH between integrators']]);
+    const sign=select(settings,'Feedback sign',[['negative','Negative: e[k]=r[k]−H y[k]'],['positive','Positive: e[k]=r[k]+H y[k]'],['open','Open: e[k]=r[k]']]);
+    const pipeline=el('ol');pipeline.className='dr04-pipeline';settings.append(pipeline);drawPipeline();
+    button(settings,'Convert boundaries and build discrete graph',build);
+    const presets=el('div');presets.className='dr04-actions';settings.append(presets);
     for(const[label,patch]of [['Source inputs',{}],['Add intermediate sample and hold',{boundary:'split'}],['Half T, keep the physical delay',{T:'0.1'}],['Remove the transport delay',{tau:'0'}],['Positive feedback',{feedback:'positive'}]] as const)button(presets,label,()=>preset(patch));
     button(presets,'Two paths and three non-touching loops',()=>loadGraph(disjoint(),'authored discrete-only'));
     button(presets,'Nested discrete loops',()=>loadGraph(nested(),'authored discrete-only'));
 
-    const graphSection=section('2. Edit the discrete signal-flow graph');graphSection.hidden=true;
-    const graphNote=el('p'),derived=el('div'),drawing=el('div');graphSection.append(graphNote,derived,drawing);
-    note(graphSection,'Each receiving node sums its incoming signed branches. Branch IDs define connectivity; crossing lines do not connect. Every node here is a discrete sample, and every gain is a rational function of z. Zero-gain branches do not contribute to paths or loops.');
-    const namesLabel=el('label','Signal names (2–7, separated by commas)'),names=el('input');names.type='text';names.setAttribute('aria-label','Signal names (2–7, separated by commas)');namesLabel.append(names);graphSection.append(namesLabel);
-    button(graphSection,'Apply signal names',()=>{
+    const graphSection=section('2. Trace the discrete signal-flow graph');graphSection.hidden=true;
+    const graphNote=el('p'),derived=el('details'),drawing=el('div');derived.className='dr04-derived';derived.append(el('summary','Compare the exact held-plant conversions'));graphSection.append(graphNote,drawing);
+    drawing.className='dr04-drawing';
+    const graphSettings=el('details');graphSettings.append(el('summary','Edit signal names, endpoints and branch gains'));
+    note(graphSettings,'Each receiving node sums its incoming signed branches. Branch IDs define connectivity; crossing lines do not connect. Every node here is a discrete sample, and every gain is a rational function of z. Zero-gain branches do not contribute to paths or loops.');
+    const namesLabel=el('label','Signal names (2–7, separated by commas)'),names=el('input');names.type='text';names.setAttribute('aria-label','Signal names (2–7, separated by commas)');namesLabel.append(names);graphSettings.append(namesLabel);
+    button(graphSettings,'Apply signal names',()=>{
       const next=names.value.trim().split(/[,\s]+/);if(next.length<2||next.length>7||new Set(next).size!==next.length||next.some(n=>!/^[A-Za-z][A-Za-z0-9]{0,7}$/.test(n)))throw new Error('Use 2–7 distinct signal names: a letter followed by at most 7 letters/digits.');
       if(rows.some(r=>!next.includes(r.from.value)||!next.includes(r.to.value)))throw new Error('Reconnect or remove branches attached to a removed signal before applying the names.');
       nodes=next;updateSelects();graphDirty();
     });
-    const ends=grid(graphSection),sourceSelect=select(ends,'External input signal',[]),targetSelect=select(ends,'Output signal',[]);
-    const rowHost=el('div');graphSection.append(rowHost);
-    button(graphSection,'Add branch',()=>{if(rows.length>=16)throw new Error('Use at most 16 branches.');let id=1;while(rows.some(r=>r.id===`b${id}`))id++;addRow(`b${id}`,sourceSelect.value,targetSelect.value,'1');graphDirty();});
+    const ends=grid(graphSettings),sourceSelect=select(ends,'External input signal',[]),targetSelect=select(ends,'Output signal',[]);
+    const rowHost=el('div');graphSettings.append(rowHost);
+    button(graphSettings,'Add branch',()=>{if(rows.length>=16)throw new Error('Use at most 16 branches.');let id=1;while(rows.some(r=>r.id===`b${id}`))id++;addRow(`b${id}`,sourceSelect.value,targetSelect.value,'1');graphDirty();});
     const traceBox=el('div');traceBox.className='dr04-trace';graphSection.append(traceBox);traceBox.append(el('h3','Trace a path or loop before revealing the answer'));
-    note(traceBox,'Use each branch’s Trace button in arrow order. Clicking a selected branch removes it from the sequence.');
+    note(traceBox,'Select branch labels on the drawing in arrow order. Enter or Space selects a focused label. Selecting it again removes it from the sequence. The branch editor has equivalent Trace buttons.');
     const traceStatus=el('p','No branches selected.'),traceAnswer=el('div');traceBox.append(traceStatus,traceAnswer);
-    button(traceBox,'Clear selected trace',()=>{chosen=[];chosenNodes=[];traceAnswer.replaceChildren();redraw();});
+    button(traceBox,'Clear selected trace',()=>{chosen=[];chosenNodes=[];traceAnswer.replaceChildren();feedback.textContent='No branches selected. Select an ordered path or loop to check.';redraw();});
     button(traceBox,'Check selected forward path',()=>checkTrace('path'));
     button(traceBox,'Check selected elementary loop',()=>checkTrace('loop'));
+    graphSection.append(derived,graphSettings);
+    drawing.addEventListener('click',event=>{const target=branchTarget(event);if(!target)return;target.focus({preventScroll:true});toggleTrace(target.dataset.branch!);},{signal});
+    drawing.addEventListener('keydown',event=>{if(event.key!=='Enter'&&event.key!==' ')return;const target=branchTarget(event);if(!target)return;event.preventDefault();event.stopPropagation();if(!event.repeat)toggleTrace(target.dataset.branch!);},{signal});
 
     const exercise=section('3. Predict, apply Mason, and check');exercise.hidden=true;
     const prediction=math(exercise,'Predicted output/input transfer (optional)','',()=>{if(ready){clearAnswer();feedback.textContent='Prediction changed. Check it against the current graph.';}});
@@ -87,35 +104,44 @@ export const mount:ModuleMount=({container,signal:parent})=>{
     const link=el('a','NPTEL: express sampled graphs using discrete variables before Mason');link.href='https://archive.nptel.ac.in/content/storage2/courses/108103008/module2/lec5/1.html';provenance.append(link);root.append(provenance,feedback);
 
     function clearAnswer(){answerLife?.abort();answerLife=undefined;analysis=null;solvedNet=null;answer.replaceChildren();audit.textContent='';if(!root.contains(feedback))root.append(feedback);}
-    function sourceDirty(){if(!ready)return;conversion=null;graphSection.hidden=true;exercise.hidden=true;clearAnswer();source.append(feedback);feedback.textContent='Source model changed. Convert its sample/hold boundaries again.';}
-    function graphDirty(){clearAnswer();kind='edited discrete';chosen=[];chosenNodes=[];traceAnswer.replaceChildren();feedback.textContent='Graph changed. Check the edited discrete model again.';redraw();}
+    function sourceDirty(){if(!ready)return;conversion=null;graphSection.hidden=true;exercise.hidden=true;clearAnswer();source.append(feedback);sourceSummary.textContent='Source edits are pending. Convert the current model to show its checked discrete graph.';feedback.textContent='Source model changed. Convert its sample/hold boundaries again.';}
+    function graphDirty(){clearAnswer();kind='edited discrete';chosen=[];chosenNodes=[];traceAnswer.replaceChildren();sourceSummary.textContent='The edited discrete graph is independent of the source model above. Reconvert to restore the source topology.';feedback.textContent='Graph changed. Check the edited discrete model again.';redraw();}
     function sourceDraft():SourceDraft{const d=sourceDefault();for(const key of Object.keys(fields) as (keyof typeof fields)[])d[key]=read(fields[key])!;d.boundary=boundary.value as Boundary;d.feedback=sign.value as Feedback;return d;}
-    function build(){clearAnswer();graphSection.hidden=true;exercise.hidden=true;conversion=convert(sourceDraft());loadGraph(conversion.graph,'converted');}
+    function build(){clearAnswer();conversion=null;graphSection.hidden=true;exercise.hidden=true;conversion=convert(sourceDraft());loadGraph(conversion.graph,'converted');}
     function preset(patch:Partial<SourceDraft>){const d={...sourceDefault(),...patch};for(const key of Object.keys(fields) as (keyof typeof fields)[])fields[key].setValue(d[key]);boundary.value=d.boundary;sign.value=d.feedback;drawPipeline();build();}
-    function drawPipeline(){pipeline.replaceChildren();for(const[domain,text]of[
+    function drawPipeline(){boundaryToggle.textContent=boundary.value==='whole'?'Insert intermediate sampler and hold':'Remove intermediate sampler and hold';boundaryToggle.setAttribute('aria-pressed',String(boundary.value==='split'));pipeline.replaceChildren();for(const[domain,text]of[
       ['discrete',sign.value==='negative'?'Σ: e[k]=r[k] − H y[k]':sign.value==='positive'?'Σ: e[k]=r[k] + H y[k]':'Σ: e[k]=r[k]'],['discrete','Controller C(z): u[k]'],['boundary','Input ZOH: u[k] → u_h(t)'],['continuous','Transport delay exp(−τs)'],['continuous','Integrator g/s: v(t)'],
       ...(boundary.value==='split'?[['boundary','Sample v(kT), then hold v[k]']]:[]),['continuous','Integrator 1/s: y(t)'],['boundary','Output sampler at kT: y[k]'],['discrete','Sensor H, then return to Σ'],
     ]){const item=el('li'),badge=el('strong',domain);item.append(badge,el('span',text));pipeline.append(item);}}
     function loadGraph(d:DraftNet,label:string){
-      clearAnswer();rows.forEach(r=>{r.life.abort();r.gain.destroy();editors.delete(r.gain);});rows=[];rowHost.replaceChildren();nodes=[...d.nodes];kind=label;names.value=nodes.join(', ');sourceSelect.replaceChildren();targetSelect.replaceChildren();fillOptions(sourceSelect,d.source);fillOptions(targetSelect,d.target);
-      d.branches.forEach(b=>addRow(b.id,b.from,b.to,b.value));chosen=[];chosenNodes=[];traceAnswer.replaceChildren();graphSection.hidden=false;exercise.hidden=false;derived.replaceChildren();prediction.setValue('');
+      clearAnswer();rows.forEach(r=>{r.life.abort();rowLives.delete(r.life);r.gain.destroy();editors.delete(r.gain);});rows=[];rowHost.replaceChildren();nodes=[...d.nodes];kind=label;names.value=nodes.join(', ');sourceSelect.replaceChildren();targetSelect.replaceChildren();fillOptions(sourceSelect,d.source);fillOptions(targetSelect,d.target);
+      d.branches.forEach(b=>addRow(b.id,b.from,b.to,b.value));chosen=[];chosenNodes=[];traceAnswer.replaceChildren();graphSection.hidden=false;exercise.hidden=false;derived.replaceChildren(el('summary','Compare the exact held-plant conversions'));prediction.setValue('');
       if(label==='converted'&&conversion){derived.append(createEquationDisplay(`C(z)=${latex(conversion.controller)},\\quad z^{-m}=${latex(conversion.delay)},\\quad P_0(z)=${latex(conversion.input.boundary==='whole'?conversion.whole:conversion.split)}`,'Converted controller, transport delay, and undelayed held plant'));
         derived.append(createEquationDisplay(String.raw`P_{\mathrm{whole}}(z)=\frac{gT^2}{2}\frac{z+1}{(z-1)^2},\quad P_{\mathrm{split}}(z)=\frac{gT^2}{(z-1)^2}`,'Different exact pulse transfers for the two physical boundaries'));
         note(derived,`Physical delay τ/T=${conversion.m} samples. D[k]=u[k−${conversion.m}]. The whole cascade has y[k+1]=y[k]+T v[k]+gT²u[k−m]/2; the extra intermediate hold removes that half-interval input term. v[k+1]=v[k]+gT u[k−m].`);
-      }else conversion=null;
+        sourceSummary.textContent=`${conversion.input.boundary==='whole'?'Connected continuous cascade':'Extra intermediate sampler and hold'}; T=${fractionText(conversion.T)} s, τ/T=${conversion.m} samples; ${conversion.input.feedback} feedback. Authored topology; zero states and prehistory. Source parameters are editable below.`;
+      }else{conversion=null;sourceSummary.textContent='This authored discrete-only graph is independent of the continuous source model. Reconvert to restore the source topology.';}
       redraw();feedback.textContent='The graph is discrete. Predict its output/input transfer or trace a path/loop before revealing Mason’s result.';
     }
     function fillOptions(s:HTMLSelectElement,current:string){s.replaceChildren();nodes.forEach(n=>{const o=el('option',n);o.value=n;s.append(o);});s.value=nodes.includes(current)?current:nodes[0];}
     function updateSelects(){for(const s of[sourceSelect,targetSelect,...rows.flatMap(r=>[r.from,r.to])])fillOptions(s,s.value);}
     function addRow(id:string,from:string,to:string,value:string){
-      const host=el('div');host.className='dr04-branch';host.append(el('h3',`Branch ${id}`));const life=new AbortController(),endpoints=grid(host),a=select(endpoints,`${id} from`,[]),b=select(endpoints,`${id} to`,[]);fillOptions(a,from);fillOptions(b,to);
+      const host=el('div');host.className='dr04-branch';host.append(el('h3',`Branch ${id}`));const life=new AbortController();rowLives.add(life);const endpoints=grid(host),a=select(endpoints,`${id} from`,[]),b=select(endpoints,`${id} to`,[]);fillOptions(a,from);fillOptions(b,to);
       const gain=math(host,`${id} gain in z`,value,graphDirty,life.signal),r:Row={id,from:a,to:b,gain,host,life};rows.push(r);rowHost.append(host);
-      button(host,`Trace ${id}`,()=>{traceAnswer.replaceChildren();chosen=chosen.includes(id)?chosen.filter(v=>v!==id):[...chosen,id];chosenNodes=[];redraw();},life.signal);
-      button(host,`Remove ${id}`,()=>{life.abort();gain.destroy();editors.delete(gain);rows=rows.filter(v=>v!==r);host.remove();graphDirty();},life.signal);
+      button(host,`Trace ${id}`,()=>toggleTrace(id),life.signal);
+      button(host,`Remove ${id}`,()=>{life.abort();rowLives.delete(life);gain.destroy();editors.delete(gain);rows=rows.filter(v=>v!==r);host.remove();graphDirty();},life.signal);
       for(const s of[a,b])s.addEventListener('change',graphDirty,{signal:life.signal});
     }
     function net(readGains=true):Net{const n:Net={nodes:[...nodes],source:sourceSelect.value,target:targetSelect.value,branches:rows.map(r=>({id:r.id,from:r.from.value,to:r.to.value,gain:readGains?parseGain(read(r.gain)!):constant(1n)}))};if(readGains)validate(n);return n;}
-    function redraw(){if(!nodes.length)return;derived.hidden=kind!=='converted';graphNote.textContent=kind==='converted'?'Converted from the declared continuous model. All nodes below are discrete.':`This ${kind} graph is independent of the continuous conversion. Reconvert the source model to restore its derived gains.`;traceStatus.textContent=chosen.length?`Selected branch order: ${chosen.join(' → ')}`:'No branches selected.';drawing.replaceChildren(drawGraph(net(false),chosen,chosenNodes,''));}
+    function branchTarget(event:Event){if(graphSection.hidden||disposed)return null;const target=event.target instanceof Element?event.target.closest<SVGElement>('[data-branch]'):null;return target&&drawing.contains(target)?target:null;}
+    function toggleTrace(id:string){if(!rows.some(r=>r.id===id))return;traceAnswer.replaceChildren();chosen=chosen.includes(id)?chosen.filter(v=>v!==id):[...chosen,id];chosenNodes=[];feedback.textContent='Trace selection changed. Check the current branch order for a connected path or loop.';redraw();}
+    function redraw(){
+      if(!nodes.length)return;
+      const old=drawing.querySelector<HTMLElement>('.dr04-scroll'),active=document.activeElement,focused=active instanceof Element&&drawing.contains(active)?active.closest('[data-branch]')?.getAttribute('data-branch'):null,regionFocused=active===old,left=old?.scrollLeft??0,top=old?.scrollTop??0;
+      derived.hidden=kind!=='converted';graphNote.textContent=kind==='converted'?'Converted from the declared continuous model. All nodes below are discrete.':`This ${kind} graph is independent of the continuous conversion. Reconvert the source model to restore its derived gains.`;traceStatus.textContent=chosen.length?`Selected branch order: ${chosen.join(' → ')}`:'No branches selected.';
+      const next=drawGraph(net(false),chosen,chosenNodes,'',true);drawing.replaceChildren(next);next.scrollLeft=left;next.scrollTop=top;
+      if(focused){[...next.querySelectorAll<SVGElement>('[data-branch]')].find(e=>e.dataset.branch===focused)?.focus({preventScroll:true});}else if(regionFocused)next.focus({preventScroll:true});
+    }
     function checkTrace(type:'path'|'loop'){traceAnswer.replaceChildren();const t=trace(net(),chosen,type);chosenNodes=t.nodes;traceAnswer.append(createEquationDisplay(`G_{\\mathrm{trace}}(z)=${latex(t.gain)}`,'Checked selected trace gain'));note(traceAnswer,`${type==='path'?'Forward path':'Elementary loop'}: ${t.nodes.join(' → ')}${type==='loop'?` → ${t.nodes[0]}`:''}.`);feedback.textContent='The connected trace is valid; its signed gain is the product of the selected branches.';redraw();}
     function solve(){
       clearAnswer();const n=net(),guess=read(prediction,true),a=analyze(n);
@@ -146,7 +172,7 @@ export const mount:ModuleMount=({container,signal:parent})=>{
     }
     function fractionText(g:Gain){const q=g.n[0];return q.d===1n?String(q.n):`${q.n}/${q.d}`;}
     function formatComplex(z:{re:number;im:number}){return`${z.re.toPrecision(9)} ${z.im<0?'−':'+'} j${Math.abs(z.im).toPrecision(9)}`;}
-    boundary.addEventListener('change',()=>{drawPipeline();sourceDirty();},{signal});sign.addEventListener('change',()=>{drawPipeline();sourceDirty();},{signal});for(const s of[sourceSelect,targetSelect])s.addEventListener('change',graphDirty,{signal});
-    ready=true;return cleanup;
+    boundary.addEventListener('change',()=>{drawPipeline();sourceDirty();try{build();}catch(error){feedback.textContent=error instanceof Error?error.message:'Check the sampling boundaries.';}},{signal});sign.addEventListener('change',()=>{drawPipeline();sourceDirty();},{signal});for(const s of[sourceSelect,targetSelect])s.addEventListener('change',graphDirty,{signal});
+    ready=true;build();return cleanup;
   }catch(error){cleanup();throw error;}
 };

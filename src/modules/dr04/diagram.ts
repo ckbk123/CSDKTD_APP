@@ -1,11 +1,11 @@
 import type { Net } from './mason';
 
 /** Schematic geometry only; graph connectivity comes exclusively from endpoints. */
-export function drawGraph(net: Net, edges: string[], nodes: string[], chosenNode: string): HTMLElement {
+export function drawGraph(net: Net, edges: string[], nodes: string[], chosenNode: string, interactive = false): HTMLElement {
   const wrap = document.createElement('div'); wrap.className = 'dr04-scroll';
   wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label','Discrete signal-flow graph; scroll horizontally if needed');
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 920 430'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'Signal-flow graph; branch IDs identify the same signed block connections below. Use the branch and signal buttons to select.');
+  svg.setAttribute('viewBox', '0 0 920 430'); svg.setAttribute('role', interactive ? 'group' : 'img'); svg.setAttribute('aria-label', interactive ? 'Discrete signal-flow graph. Select branch labels in arrow order to trace a path or loop. Enter or Space selects a focused branch.' : 'Signal-flow graph; branch IDs identify the same signed block connections below. Use the branch and signal buttons to select.');
   const others = net.nodes.filter(n => n !== net.source && n !== net.target);
   const positions = new Map<string, { x: number; y: number }>([[net.source, { x: 70, y: 220 }], [net.target, { x: 850, y: 220 }]]);
   others.forEach((name, i) => positions.set(name, { x: 220 + i * (480 / Math.max(1, others.length - 1)), y: others.length < 3 ? 220 : i % 2 ? 280 : 150 }));
@@ -27,8 +27,16 @@ export function drawGraph(net: Net, edges: string[], nodes: string[], chosenNode
     }
     const active = edges.includes(branch.id) || incident(branch.id);
     path.setAttribute('d', shape); path.setAttribute('class', active ? 'dr04-edge chosen' : 'dr04-edge'); path.setAttribute('marker-end', 'url(#dr04-arrow)');
-    text.setAttribute('x', String(tx)); text.setAttribute('y', String(ty)); text.textContent = branch.id; text.setAttribute('class', active ? 'dr04-edge-label chosen' : 'dr04-edge-label');
-    svg.append(path, text);
+    text.setAttribute('x', String(tx)); text.setAttribute('y', String(ty)); text.setAttribute('text-anchor', 'middle'); text.textContent = branch.id; text.setAttribute('class', active ? 'dr04-edge-label chosen' : 'dr04-edge-label');
+    if (interactive) {
+      const group = document.createElementNS(svg.namespaceURI, 'g'), hit = document.createElementNS(svg.namespaceURI, 'path'), label = document.createElementNS(svg.namespaceURI, 'rect');
+      group.setAttribute('class', 'dr04-branch-target'); group.setAttribute('data-branch', branch.id); group.setAttribute('role', 'button'); group.setAttribute('tabindex', '0');
+      group.setAttribute('aria-pressed', String(edges.includes(branch.id)));
+      group.setAttribute('aria-label', `Trace branch ${branch.id}: ${branch.from} to ${branch.to}${edges.includes(branch.id) ? `; selected position ${edges.indexOf(branch.id) + 1}` : ''}`);
+      hit.setAttribute('d', shape); hit.setAttribute('class', 'dr04-edge-hit'); hit.setAttribute('aria-hidden', 'true');
+      label.setAttribute('x', String(tx - 32)); label.setAttribute('y', String(ty - 30)); label.setAttribute('width', '64'); label.setAttribute('height', '52'); label.setAttribute('rx', '6'); label.setAttribute('class', 'dr04-label-hit'); label.setAttribute('aria-hidden', 'true');
+      group.append(path, hit, label, text); svg.append(group);
+    } else svg.append(path, text);
   });
   svg.setAttribute('viewBox', `0 ${top} 920 ${bottom - top}`);
   net.nodes.forEach(name => {
