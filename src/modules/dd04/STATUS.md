@@ -2,9 +2,10 @@
 
 - **Stage:** in-progress
 - **Finite assignment:** Memory-first digital PID workspace, editable uncommitted error stems and linked committed-sample inspection/replay; owner interactivity-dd04-01a1ac7b, branch codex/dd04-memory-exploration.
+- **Pull request:** [#71](https://github.com/ckbk123/CSDKTD_APP/pull/71), reused for the finite refinement.
 - **Baseline/worktree:** Fresh latest-primary 6af3485ef6da6f11f4979ff665896d83b99414b5 (v0.3.17), C:/Users/baokh/.codex/worktrees/dd04-memory-exploration/CSDKTD APP. Ordinary Git fallback and isolated locked npm ci; no prior tree reused.
 - **Preserved contract:** Original math.ts/input.ts/format.ts/loader/metadata and all controller/filter/initial-memory domains remain authoritative. The completed bounded exercise is retained; this Stage describes the separate finite interaction refinement.
-- **Checkpoint checks:** 116 module tests / 5 files and TypeScript pass. Four new independent error-editing fixtures pass through the unchanged parser/controller kernel. No new UI, full-suite or browser completion claim is made.
+- **Checkpoint checks:** 119 module tests / 6 files and TypeScript pass. Four new independent error-editing fixtures pass through the unchanged parser/controller kernel. No new UI, full-suite or browser completion claim is made.
 
 The first checkpoint adds only the presentation policy for direct error editing. A current/future sample can change without rewriting committed input history or advancing stored controller memory. Full decimal digits must round-trip through the existing visual-list grammar before publication; unsupported magnitude or entry-resource cases reject atomically. Original equation entry stays available. Independent fixtures verify e1=.5 gives u1=7.05 and changing e2 to -1 after the original first commit gives u2=-23.9 with the first stored output unchanged at14.1.
 
@@ -148,3 +149,5 @@ Actual coordinator production-browser checks at port 8820:
 Accepted for v0.3.8 with no required bounded exercise work remaining. Historical worker checkpoints above retain their original unperformed/pending statements; this later review resolves the approved integration adaptation. No deployment was performed.
 
 Final lifecycle audit added an owned child abort signal to the DD04 wrapper after the UI browser pass above. Both partial mount failure and explicit disposal now abort signal-owned resources immediately while keeping the parent visit independent. Two additional resource-listener regressions pass, including a view that allocates a listener then throws; normal success, abort-before-import, already-aborted input and recovery remain covered. The final combined rerun passed 641 tests and type/production build. This changes resource ownership rather than the rendered controls or PID equations. The contributor guide now states this contract explicitly.
+
+A pure timeline renderer now uses the entire known error sequence for the fixed k/kT axis while drawing only initialized and actually committed outputs. Future output positions remain blank. A single selected current/future input has an editable target; committed error history has no editable handle. Three new fixtures verify the baseline one-commit stem count and fixed positions, committed-history locks, and coordinate reading from the responsive signal rectangle. Native-axis styling and actual interaction wiring are still in progress; no browser readability claim is made.
