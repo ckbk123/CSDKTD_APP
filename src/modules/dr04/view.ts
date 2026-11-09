@@ -42,7 +42,7 @@ export const mount:ModuleMount=({container,signal:parent})=>{
     const boundaryToggle=button(boundaryRow,'Insert intermediate sampler and hold',()=>{boundary.value=boundary.value==='whole'?'split':'whole';drawPipeline();sourceDirty();build();});
     boundaryToggle.setAttribute('aria-label','Intermediate sampler and hold');boundaryToggle.setAttribute('aria-pressed','false');
     boundaryRow.append(el('span','→ Continuous integrator 1/s → Output sampler'));
-    const sourceSummary=el('p');sourceSummary.className='dr04-model-summary';source.append(sourceSummary);
+    const sourceSummary=el('p'),plantPreview=el('div');sourceSummary.className='dr04-model-summary';plantPreview.className='dr04-plant-preview';source.append(sourceSummary,plantPreview);
     const settings=el('details');settings.className='dr04-settings';settings.append(el('summary','Edit source model, timing, feedback and full pipeline'));source.append(settings);
     settings.append(createEquationDisplay(String.raw`G_c(s)=\frac{g e^{-\tau s}}{s^2},\quad u[k]=c_0 e[k]+c_1 e[k-1]`,'Original continuous delayed plant and causal digital controller'));
     note(settings,'The original course diagram is unavailable. This authored topology updates the digital controller immediately at kT, holds its output on [kT,(k+1)T), and samples the plant output at kT. States and prehistory are zero. The output is physical y[k]; H scales only its feedback measurement.');
@@ -104,19 +104,27 @@ export const mount:ModuleMount=({container,signal:parent})=>{
     const link=el('a','NPTEL: express sampled graphs using discrete variables before Mason');link.href='https://archive.nptel.ac.in/content/storage2/courses/108103008/module2/lec5/1.html';provenance.append(link);root.append(provenance,feedback);
 
     function clearAnswer(){answerLife?.abort();answerLife=undefined;analysis=null;solvedNet=null;answer.replaceChildren();audit.textContent='';if(!root.contains(feedback))root.append(feedback);}
-    function sourceDirty(){if(!ready)return;conversion=null;graphSection.hidden=true;exercise.hidden=true;clearAnswer();source.append(feedback);sourceSummary.textContent='Source edits are pending. Convert the current model to show its checked discrete graph.';feedback.textContent='Source model changed. Convert its sample/hold boundaries again.';}
-    function graphDirty(){clearAnswer();kind='edited discrete';chosen=[];chosenNodes=[];traceAnswer.replaceChildren();sourceSummary.textContent='The edited discrete graph is independent of the source model above. Reconvert to restore the source topology.';feedback.textContent='Graph changed. Check the edited discrete model again.';redraw();}
+    function sourceDirty(){if(!ready)return;conversion=null;plantPreview.replaceChildren();graphSection.hidden=true;exercise.hidden=true;clearAnswer();source.append(feedback);sourceSummary.textContent='Source edits are pending. Convert the current model to show its checked discrete graph.';feedback.textContent='Source model changed. Convert its sample/hold boundaries again.';}
+    function graphDirty(){clearAnswer();kind='edited discrete';plantPreview.replaceChildren();chosen=[];chosenNodes=[];traceAnswer.replaceChildren();sourceSummary.textContent='The edited discrete graph is independent of the source model above. Reconvert to restore the source topology.';feedback.textContent='Graph changed. Check the edited discrete model again.';redraw();}
     function sourceDraft():SourceDraft{const d=sourceDefault();for(const key of Object.keys(fields) as (keyof typeof fields)[])d[key]=read(fields[key])!;d.boundary=boundary.value as Boundary;d.feedback=sign.value as Feedback;return d;}
-    function build(){clearAnswer();conversion=null;graphSection.hidden=true;exercise.hidden=true;conversion=convert(sourceDraft());loadGraph(conversion.graph,'converted');}
+    function build(){clearAnswer();conversion=null;plantPreview.replaceChildren();graphSection.hidden=true;exercise.hidden=true;conversion=convert(sourceDraft());loadGraph(conversion.graph,'converted');}
     function preset(patch:Partial<SourceDraft>){const d={...sourceDefault(),...patch};for(const key of Object.keys(fields) as (keyof typeof fields)[])fields[key].setValue(d[key]);boundary.value=d.boundary;sign.value=d.feedback;drawPipeline();build();}
     function drawPipeline(){boundaryToggle.textContent=boundary.value==='whole'?'Insert intermediate sampler and hold':'Remove intermediate sampler and hold';boundaryToggle.setAttribute('aria-pressed',String(boundary.value==='split'));pipeline.replaceChildren();for(const[domain,text]of[
       ['discrete',sign.value==='negative'?'Σ: e[k]=r[k] − H y[k]':sign.value==='positive'?'Σ: e[k]=r[k] + H y[k]':'Σ: e[k]=r[k]'],['discrete','Controller C(z): u[k]'],['boundary','Input ZOH: u[k] → u_h(t)'],['continuous','Transport delay exp(−τs)'],['continuous','Integrator g/s: v(t)'],
       ...(boundary.value==='split'?[['boundary','Sample v(kT), then hold v[k]']]:[]),['continuous','Integrator 1/s: y(t)'],['boundary','Output sampler at kT: y[k]'],['discrete','Sensor H, then return to Σ'],
     ]){const item=el('li'),badge=el('strong',domain);item.append(badge,el('span',text));pipeline.append(item);}}
     function loadGraph(d:DraftNet,label:string){
-      clearAnswer();rows.forEach(r=>{r.life.abort();rowLives.delete(r.life);r.gain.destroy();editors.delete(r.gain);});rows=[];rowHost.replaceChildren();nodes=[...d.nodes];kind=label;names.value=nodes.join(', ');sourceSelect.replaceChildren();targetSelect.replaceChildren();fillOptions(sourceSelect,d.source);fillOptions(targetSelect,d.target);
-      d.branches.forEach(b=>addRow(b.id,b.from,b.to,b.value));chosen=[];chosenNodes=[];traceAnswer.replaceChildren();graphSection.hidden=false;exercise.hidden=false;derived.replaceChildren(el('summary','Compare the exact held-plant conversions'));prediction.setValue('');
+      clearAnswer();plantPreview.replaceChildren();rows.forEach(r=>{r.life.abort();rowLives.delete(r.life);r.gain.destroy();editors.delete(r.gain);});rows=[];rowHost.replaceChildren();nodes=[...d.nodes];kind=label;names.value=nodes.join(', ');sourceSelect.replaceChildren();targetSelect.replaceChildren();fillOptions(sourceSelect,d.source);fillOptions(targetSelect,d.target);
+      graphSection.hidden=true;exercise.hidden=true;
+      try{d.branches.forEach(b=>addRow(b.id,b.from,b.to,b.value));}catch(error){
+        rows.forEach(r=>{r.life.abort();rowLives.delete(r.life);});
+        for(const r of rows){editors.delete(r.gain);try{r.gain.destroy();}catch{/* Release every partial row before reporting the original failure. */}}
+        rows=[];rowHost.replaceChildren();nodes=[];chosen=[];chosenNodes=[];traceAnswer.replaceChildren();conversion=null;
+        sourceSummary.textContent='The graph could not be built. Source drafts are retained; correct the problem and convert again.';throw error;
+      }
+      chosen=[];chosenNodes=[];traceAnswer.replaceChildren();graphSection.hidden=false;exercise.hidden=false;derived.replaceChildren(el('summary','Compare the exact held-plant conversions'));prediction.setValue('');
       if(label==='converted'&&conversion){derived.append(createEquationDisplay(`C(z)=${latex(conversion.controller)},\\quad z^{-m}=${latex(conversion.delay)},\\quad P_0(z)=${latex(conversion.input.boundary==='whole'?conversion.whole:conversion.split)}`,'Converted controller, transport delay, and undelayed held plant'));
+        plantPreview.append(createEquationDisplay(`P_0(z)=${latex(conversion.input.boundary==='whole'?conversion.whole:conversion.split)}`,'Current undelayed held plant P0 from the selected physical boundary'));
         derived.append(createEquationDisplay(String.raw`P_{\mathrm{whole}}(z)=\frac{gT^2}{2}\frac{z+1}{(z-1)^2},\quad P_{\mathrm{split}}(z)=\frac{gT^2}{(z-1)^2}`,'Different exact pulse transfers for the two physical boundaries'));
         note(derived,`Physical delay τ/T=${conversion.m} samples. D[k]=u[k−${conversion.m}]. The whole cascade has y[k+1]=y[k]+T v[k]+gT²u[k−m]/2; the extra intermediate hold removes that half-interval input term. v[k+1]=v[k]+gT u[k−m].`);
         sourceSummary.textContent=`${conversion.input.boundary==='whole'?'Connected continuous cascade':'Extra intermediate sampler and hold'}; T=${fractionText(conversion.T)} s, τ/T=${conversion.m} samples; ${conversion.input.feedback} feedback. Authored topology; zero states and prehistory. Source parameters are editable below.`;
@@ -127,14 +135,22 @@ export const mount:ModuleMount=({container,signal:parent})=>{
     function updateSelects(){for(const s of[sourceSelect,targetSelect,...rows.flatMap(r=>[r.from,r.to])])fillOptions(s,s.value);}
     function addRow(id:string,from:string,to:string,value:string){
       const host=el('div');host.className='dr04-branch';host.append(el('h3',`Branch ${id}`));const life=new AbortController();rowLives.add(life);const endpoints=grid(host),a=select(endpoints,`${id} from`,[]),b=select(endpoints,`${id} to`,[]);fillOptions(a,from);fillOptions(b,to);
-      const gain=math(host,`${id} gain in z`,value,graphDirty,life.signal),r:Row={id,from:a,to:b,gain,host,life};rows.push(r);rowHost.append(host);
-      button(host,`Trace ${id}`,()=>toggleTrace(id),life.signal);
-      button(host,`Remove ${id}`,()=>{life.abort();rowLives.delete(life);gain.destroy();editors.delete(gain);rows=rows.filter(v=>v!==r);host.remove();graphDirty();},life.signal);
-      for(const s of[a,b])s.addEventListener('change',graphDirty,{signal:life.signal});
+      let gain:EquationInput|undefined;
+      try{
+        gain=math(host,`${id} gain in z`,value,graphDirty,life.signal);const r:Row={id,from:a,to:b,gain,host,life};rows.push(r);rowHost.append(host);
+        button(host,`Trace ${id}`,()=>toggleTrace(id),life.signal);
+        button(host,`Remove ${id}`,()=>{life.abort();rowLives.delete(life);r.gain.destroy();editors.delete(r.gain);rows=rows.filter(v=>v!==r);host.remove();graphDirty();},life.signal);
+        for(const s of[a,b])s.addEventListener('change',graphDirty,{signal:life.signal});
+      }catch(error){
+        life.abort();rowLives.delete(life);rows=rows.filter(r=>r.host!==host);
+        if(gain){editors.delete(gain);try{gain.destroy();}catch{/* Preserve the allocation error after releasing this owned scope. */}}
+        host.remove();throw error;
+      }
     }
     function net(readGains=true):Net{const n:Net={nodes:[...nodes],source:sourceSelect.value,target:targetSelect.value,branches:rows.map(r=>({id:r.id,from:r.from.value,to:r.to.value,gain:readGains?parseGain(read(r.gain)!):constant(1n)}))};if(readGains)validate(n);return n;}
     function branchTarget(event:Event){if(graphSection.hidden||disposed)return null;const target=event.target instanceof Element?event.target.closest<SVGElement>('[data-branch]'):null;return target&&drawing.contains(target)?target:null;}
     function toggleTrace(id:string){if(!rows.some(r=>r.id===id))return;traceAnswer.replaceChildren();chosen=chosen.includes(id)?chosen.filter(v=>v!==id):[...chosen,id];chosenNodes=[];feedback.textContent='Trace selection changed. Check the current branch order for a connected path or loop.';redraw();}
+    function highlightTrace(edges:string[],nodes:string[],label:string){traceAnswer.replaceChildren();chosen=[...edges];chosenNodes=[...nodes];feedback.textContent=`Highlighted checked ${label}. The selected branch order now describes this trace.`;redraw();}
     function redraw(){
       if(!nodes.length)return;
       const old=drawing.querySelector<HTMLElement>('.dr04-scroll'),active=document.activeElement,focused=active instanceof Element&&drawing.contains(active)?active.closest('[data-branch]')?.getAttribute('data-branch'):null,regionFocused=active===old,left=old?.scrollLeft??0,top=old?.scrollTop??0;
@@ -159,10 +175,10 @@ export const mount:ModuleMount=({container,signal:parent})=>{
       answer.append(createEquationDisplay(String.raw`T(z)=\frac{\sum_k P_k(z)\Delta_k(z)}{\Delta(z)}`,'Mason formula with path cofactors'));
       const paths=el('details');paths.open=true;paths.append(el('summary',`Forward paths and cofactors (${a.paths.length})`));answer.append(paths);
       if(!a.paths.length)note(paths,'No nonzero path reaches this output; the transfer is zero.');
-      a.paths.forEach((p,i)=>{note(paths,`P${i+1}: ${p.nodes.join(' → ')}; branches ${p.edges.join(', ')}.`);equation(paths,`P_{${i+1}}`,p.gain);equation(paths,`\\Delta_{${i+1}}`,a.cofactors[i]);note(paths,`Eligible non-touching sets for this cofactor: ${a.eligibleSets[i].map(s=>s.loops.map(j=>`L${j+1}`).join('·')).join('; ')||'none; cofactor is 1'}.`);button(paths,`Highlight path P${i+1}`,()=>{chosen=[...p.edges];chosenNodes=[...p.nodes];redraw();},life);});
+      a.paths.forEach((p,i)=>{note(paths,`P${i+1}: ${p.nodes.join(' → ')}; branches ${p.edges.join(', ')}.`);equation(paths,`P_{${i+1}}`,p.gain);equation(paths,`\\Delta_{${i+1}}`,a.cofactors[i]);note(paths,`Eligible non-touching sets for this cofactor: ${a.eligibleSets[i].map(s=>s.loops.map(j=>`L${j+1}`).join('·')).join('; ')||'none; cofactor is 1'}.`);button(paths,`Highlight path P${i+1}`,()=>highlightTrace(p.edges,p.nodes,`forward path P${i+1}`),life);});
       const loops=el('details');loops.open=true;loops.append(el('summary',`Elementary loops (${a.loops.length}) and non-touching products`));answer.append(loops);const picks=new Set<number>();
       if(!a.loops.length)note(loops,'No nonzero loop: Δ=1.');
-      a.loops.forEach((l,i)=>{note(loops,`L${i+1}: ${[...l.nodes,l.nodes[0]].join(' → ')}; branches ${l.edges.join(', ')}.`);equation(loops,`L_{${i+1}}`,l.gain);button(loops,`Highlight loop L${i+1}`,()=>{chosen=[...l.edges];chosenNodes=[...l.nodes];redraw();},life);const label=el('label',`Select L${i+1} for the two-loop check`),check=el('input');check.type='checkbox';check.setAttribute('aria-label',`Select L${i+1} for the two-loop check`);label.append(check);loops.append(label);check.addEventListener('change',()=>{if(check.checked)picks.add(i);else picks.delete(i);},{signal:life});});
+      a.loops.forEach((l,i)=>{note(loops,`L${i+1}: ${[...l.nodes,l.nodes[0]].join(' → ')}; branches ${l.edges.join(', ')}.`);equation(loops,`L_{${i+1}}`,l.gain);button(loops,`Highlight loop L${i+1}`,()=>highlightTrace(l.edges,l.nodes,`elementary loop L${i+1}`),life);const label=el('label',`Select L${i+1} for the two-loop check`),check=el('input');check.type='checkbox';check.setAttribute('aria-label',`Select L${i+1} for the two-loop check`);label.append(check);loops.append(label);check.addEventListener('change',()=>{if(check.checked)picks.add(i);else picks.delete(i);},{signal:life});});
       const shared=el('p');button(loops,'Check two loops for touching',()=>{if(picks.size!==2)throw new Error('Select exactly two elementary loops.');const[i,j]=[...picks],overlap=sharedNodes(a.loops[i],a.loops[j]);shared.textContent=overlap.length?`Touching: shared signal${overlap.length>1?'s':''} ${overlap.join(', ')}. Their product is excluded from Δ.`:'Non-touching: no shared signal. Their product contributes with a plus sign to Δ.';},life);loops.append(shared);
       for(const set of a.sets.filter(s=>s.loops.length>1)){note(loops,`${set.loops.map(i=>`L${i+1}`).join(' · ')}: ${set.loops.length%2?'subtract':'add'} this product in Δ.`);equation(loops,'\\mathrm{product}',set.gain);}
       const equations=el('details');equations.append(el('summary','Original node equations'));answer.append(equations);

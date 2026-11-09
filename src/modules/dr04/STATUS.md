@@ -3,10 +3,11 @@
 - **Stage:** implemented
 - **Last assessed:** 2026-11-09.
 - **Refinement owner:** `interactivity-dr04-01a1ac7b`, branch `codex/dr04-direct-boundaries`, fresh base `6af3485ef6da6f11f4979ff665896d83b99414b5`.
+- **Refinement PR:** [#75](https://github.com/ckbk123/CSDKTD_APP/pull/75), reused for corrections and pending browser acceptance.
 
 ## Current interactivity refinement
 
-The checked source graph now appears immediately at visit/reset, before any Mason answer. The compact physical cascade has a directly selectable intermediate sampler/hold. Switching it uses every current source draft through the original exact converter; invalid drafts remain intact and the old graph/result are withheld. The existing full pipeline, source controls, presets, endpoint/gain editor, prediction and complex audit remain available in optional detail.
+The checked source graph now appears immediately at visit/reset, before any Mason answer. The compact physical cascade has a directly selectable intermediate sampler/hold and a visible current exact P0 identity beside it. Switching it uses every current source draft through the original exact converter; invalid drafts remain intact and the old graph/result are withheld. The existing full pipeline, source controls, presets, endpoint/gain editor, prediction and complex audit remain available in optional detail.
 
 Branch labels in the actual drawing are focusable controls, with Enter/Space and the original equivalent row Trace buttons. Both build the same ordered branch list and use the unchanged connectivity/product check. A changed selection revokes its old trace proof. Drawing redraws preserve branch focus, inner scroll and actual numeric/equation attempts; selecting a trace does not rerun or replace the full Mason result. At the declared minimum 800 px inner graph width each label target is at least 44 CSS px in both dimensions. This is a source geometry check, not actual phone acceptance.
 
@@ -14,7 +15,9 @@ The graph retains its exact original node/path geometry and independent connecti
 
 Owned row scopes are tracked before editor construction, including a constructor that registers a resource and then throws. A late editor returned after reentrant abort is destroyed rather than attached. Cleanup aborts all scopes before releasing editors and removes the root even if one editor release fails. Quick equation tools are restricted to the fraction, integer-power and parentheses grammar already supported by this module.
 
-Current checks: **110 module tests /5 files**, TypeScript and whitespace checks pass. Independent source review, the complete application suite, production build and the full actual-browser gate are pending. Unit/DOM tests use mocked editors and do not establish MathLive/font/phone behavior.
+Current checks: **115 module tests /5 files**, TypeScript, production build and whitespace checks pass. The first source `7370cd6` passed **5,760 application tests /277 files**; a new complete suite and independent correction review are pending at the corrected source. Unit/DOM tests use mocked editors and do not establish MathLive/font/phone behavior.
+
+Independent source review of `7370cd6` reran 110 tests and confirmed the original mathematical files are unchanged. It returned two reproducible failures: answer Highlight path/loop actions retained a separate old trace proof, and runtime Add branch could leave a partial editor scope active after constructor failure. Corrections clear/relabel every selected-trace proof on Highlight, release a failing row locally, and release all newly allocated rows on a failed runtime multi-row rebuild. The parent visit and original source drafts remain usable for recovery. Five additional regressions cover both highlight directions, Add branch and rebuild recovery, and the visible physical-boundary consequence. The reviewer's original external fixtures remain outside Git for an independent rerun.
 
 Actual browser acceptance remains open: initial desktop/phone hierarchy and graph scroll; direct boundary switch and original exact changed-data values; branch pointer and keyboard selection/focus/panning; actual fraction/power entry; invalid native partial/underflow recovery without value writes; original full graph editor/prediction/audit; reset, leave/reopen, rapid navigation, local fonts and console. The private browser provider was unavailable during this background continuation. The historical browser evidence below belongs to the earlier foundation and is not new refinement acceptance. No deployment.
 

@@ -107,6 +107,13 @@ describe('sampled conversion and editable Mason exercise (mock editors; browser 
     solve();expect(row(2)).toBe('200');expect(row(3)).toBe('322');
     toggle.click();expect(toggle.getAttribute('aria-pressed')).toBe('false');expect(document.querySelector('table')).toBeNull();solve();expect(row(2)).toBe('211');expect(row(3)).toBe('314/519/5');
   });
+  it('shows the changed held-plant identity beside the physical switch before revealing Mason',()=>{
+    visit();const identity=()=>document.querySelector('.dr04-plant-preview')!;
+    const original=identity().textContent;expect(original).toContain('P_0(z)');expect(identity().closest('details')).toBeNull();
+    document.querySelector<HTMLButtonElement>('button[aria-label="Intermediate sampler and hold"]')!.click();expect(identity().textContent).not.toBe(original);expect(document.querySelector('table')).toBeNull();
+    set('b4 gain in z','1');expect(identity().children).toHaveLength(0);expect(document.querySelector('.dr04-model-summary')?.textContent).toContain('independent');
+    build();expect(identity().children).toHaveLength(1);set('Physical transport delay τ (s)','0.3');expect(identity().children).toHaveLength(0);
+  });
   it('uses the full source draft when changing boundaries, preserving invalid edits without an old graph',()=>{
     visit();set('Sample period T (s)','\\frac{1}{5}');select('Intermediate boundary','split');solve();expect(row(3)).toBe('322');
     expect(document.querySelector('.dr04-model-summary')?.textContent).toContain('T=1/5 s');expect(document.querySelector('.dr04-model-summary')?.textContent).not.toContain('\\frac');
@@ -135,6 +142,26 @@ describe('sampled conversion and editable Mason exercise (mock editors; browser 
     editorState.failAfterResource='b1 gain in z';const container=document.createElement('div'),parent=new AbortController();document.body.append(container);
     expect(()=>mount({container,signal:parent.signal})).toThrow('Partial row editor');expect(parent.signal.aborted).toBe(false);expect(container.children).toHaveLength(0);expect(editorState.live.size).toBe(0);
     window.dispatchEvent(new Event('dr04-partial-row-probe'));expect(editorState.resourceCalls).toBe(0);
+  });
+  it('cleans a runtime Add branch failure locally while preserving the current valid graph and recovery',()=>{
+    const visitState=visit();solve();editorState.failAfterResource='b7 gain in z';button('Add branch').click();
+    expect(feedback()).toContain('Partial row editor');expect(visitState.parent.signal.aborted).toBe(false);expect(editorState.live.size).toBe(13);expect(document.querySelector('table')).not.toBeNull();
+    expect(field('b7 gain in z')).toBeNull();window.dispatchEvent(new Event('dr04-partial-row-probe'));expect(editorState.resourceCalls).toBe(0);
+    editorState.failAfterResource='';button('Add branch').click();expect(editorState.live.size).toBe(14);expect(field('b7 gain in z')).not.toBeNull();expect(document.querySelector('table')).toBeNull();
+  });
+  it('releases every partial row on a runtime rebuild failure while retaining source controls for recovery',()=>{
+    const visitState=visit();editorState.failAfterResource='b3 gain in z';button('Source inputs').click();expect(feedback()).toContain('Partial row editor');
+    expect(visitState.parent.signal.aborted).toBe(false);expect(editorState.live.size).toBe(7);expect(field('Plant gain g (s⁻²)').value).toBe('5');expect(section(1).hidden).toBe(true);expect(section(2).hidden).toBe(true);
+    window.dispatchEvent(new Event('dr04-partial-row-probe'));expect(editorState.resourceCalls).toBe(0);
+    editorState.failAfterResource='';build();expect(editorState.live.size).toBe(13);solve();expect(row(2)).toBe('211');
+  });
+  it.each(['path to loop','loop to path'])('revokes a separate old trace proof when a checked highlight changes selection: %s',direction=>{
+    visit();solve();const first=direction==='path to loop'?['b1','b2','b3','b4']:['b2','b3','b4','b5','b6'];
+    first.forEach(id=>button(`Trace ${id}`).click());button(direction==='path to loop'?'Check selected forward path':'Check selected elementary loop').click();
+    expect(document.querySelector('[aria-label="Checked selected trace gain"]')).not.toBeNull();
+    button(direction==='path to loop'?'Highlight loop L1':'Highlight path P1').click();expect(document.querySelector('[aria-label="Checked selected trace gain"]')).toBeNull();
+    expect(feedback()).toContain(direction==='path to loop'?'elementary loop L1':'forward path P1');expect(document.querySelector('table')).not.toBeNull();
+    expect(document.querySelector('.dr04-trace')?.textContent).not.toContain(direction==='path to loop'?'Forward path:':'Elementary loop:');
   });
   it('releases an editor returned after reentrant parent abort without attaching a late graph',()=>{
     const container=document.createElement('div'),parent=new AbortController();document.body.append(container);editorState.onCreate=label=>{if(label==='b1 gain in z')parent.abort();};
