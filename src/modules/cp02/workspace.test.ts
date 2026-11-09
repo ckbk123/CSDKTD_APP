@@ -10,7 +10,7 @@ vi.mock('../../shared/equations/input', () => ({
     return { element, getValue, setValue: (value: string) => { input.value = value; }, focus: () => input.focus(), destroy: () => element.remove() };
   },
 }));
-import { mount } from './workspace';
+import { mountView as mount } from './practice';
 function labeled<T extends HTMLElement>(container: HTMLElement, label: string): T { const node = container.querySelector<T>(`[aria-label="${label}"]`); if (!node) throw new Error(`Missing ${label}`); return node; }
 const button = (container: HTMLElement, text: string): HTMLButtonElement => [...container.querySelectorAll('button')].find(b => b.textContent === text)!;
 const update = (input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, value: string, event = 'input') => { input.value = value; input.dispatchEvent(new Event(event, { bubbles: true })); };
