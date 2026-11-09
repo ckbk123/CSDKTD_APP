@@ -3,7 +3,7 @@ import { createEquationDisplay, createEquationInput, type EquationInput } from '
 import { readNumericInput } from '../../shared/numeric-input';
 import { parseNumber } from './number-expression';
 import { bound, checkEntryDeadline, cubicRoots, design, polynomialResidual, responseCoefficients, rootLocus, stepTrace, targetFromSpecs, type Design } from './math';
-import { plot, type Mark } from './plot';
+import { plot, type Mark, type Plot } from './plot';
 import './style.css';
 
 const fmt = (n: number) => n === 0 ? '0' : n.toLocaleString('en-US', { useGrouping: false, maximumSignificantDigits: 6 });
@@ -13,11 +13,12 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, classN
 }
 export const mount: ModuleMount = ({ container, signal: parent }) => {
   if (parent.aborted) return;
-  const lifetime = new AbortController(), signal = lifetime.signal, forward = () => lifetime.abort();
-  parent.addEventListener('abort', forward, { once: true });
-  const root = el('div', undefined, 'cd02'); root.dataset.module = 'CD02'; container.append(root);
+  const lifetime = new AbortController(), signal = lifetime.signal, forward = () => cleanup();
+  const root = el('div', undefined, 'cd02'); root.dataset.module = 'CD02';
   const editors: EquationInput[] = [];
-  const cleanup = () => { lifetime.abort(); parent.removeEventListener('abort', forward); editors.forEach(e => e.destroy()); root.remove(); };
+  let observer: ResizeObserver | undefined, disposed = false;
+  function cleanup() { if (disposed) return; disposed = true; lifetime.abort(); parent.removeEventListener('abort', forward); observer?.disconnect(); editors.forEach(e => e.destroy()); root.remove(); }
+  parent.addEventListener('abort', forward, { once: true }); container.append(root); if (parent.aborted) { cleanup(); return cleanup; }
   try {
     let selected: Design | null = null;
     const feedback = el('p', 'Predict the gain, then reveal the angle and magnitude construction.', 'cd02-feedback'); feedback.setAttribute('role', 'status');
@@ -28,7 +29,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       b.addEventListener('click', () => { if (signal.aborted) return; b.after(feedback); try { action(); } catch (e) { feedback.textContent = e instanceof Error ? e.message : 'Check the inputs.'; } }, { signal }); return b;
     }
     function number(host: HTMLElement, label: string, value: string, min: string, max: string): HTMLInputElement {
-      const l = el('label', label), n = el('input'); n.type = 'number'; n.step = 'any'; n.value = value; n.min = min; n.max = max; l.append(n); host.append(l); return n;
+      const l = el('label', label), n = el('input'); n.type = 'number'; n.step = 'any'; n.value = value; n.min = min; n.max = max; n.setAttribute('aria-label', label); l.append(n); host.append(l); return n;
     }
     const data = section('1. Choose a plant and target');
     note(data, 'Continuous SISO, negative unity feedback, zero initial conditions. Plant poles are 0 and −a; the lead section has pole −p and zero −z. All pole/zero locations use 1/s.');
@@ -36,7 +37,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     const equations = el('div', undefined, 'cd02-equations'); data.append(equations);
     const dirty = () => { selected = null; reasoning.replaceChildren(); results.replaceChildren(); verify.disabled = true; feedback.textContent = 'Inputs changed. Reveal the new design before checking the full model.'; };
     for (const [label, value] of [['Plant numerator g', '1'], ['Plant pole parameter a (1/s)', '2']]) {
-      const editor = createEquationInput({ label, value, signal, onChange: dirty }); editors.push(editor); equations.append(editor.element);
+      const editor = createEquationInput({ label, value, signal, tools: ['fraction', 'power', 'parentheses'], description: 'Finite scalar arithmetic with fractions, visible parentheses and integer powers −6…6.', onChange: dirty }); if (disposed || signal.aborted) { editor.destroy(); return cleanup; } editors.push(editor); equations.append(editor.element);
     }
     note(data, 'Model fields accept numbers, fractions, visible parentheses, +, −, explicit ×/÷ and integer powers −6…6. No variables, e/E, mixed numbers or hidden brace grouping. g: 0.05…20; a: 0.1…20.');
     const targetControls = el('div', undefined, 'cd02-controls'); data.append(targetControls);
@@ -142,8 +143,11 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     }
     function syncMode(): void { const specs = mode.value === 'specs'; sigma.disabled = specs; omega.disabled = specs; targetOS.disabled = !specs; targetTs.disabled = !specs; }
     mode.addEventListener('change', () => { syncMode(); dirty(); }, { signal });
-    for (const input of [sigma, omega, pole, prediction, targetOS, targetTs]) input.addEventListener('input', dirty, { signal });
+    for (const input of [sigma, omega, pole, targetOS, targetTs]) input.addEventListener('input', dirty, { signal });
+    prediction.addEventListener('input', () => { feedback.textContent = 'Prediction edited. Reveal again to check it; any checked mathematical design remains valid.'; }, { signal });
     for (const input of [maxOS, maxTs, maxRamp, horizon, maxGain]) input.addEventListener('input', () => { results.replaceChildren(); feedback.textContent = 'Verification inputs changed. Verify the full model again.'; }, { signal });
+    const resize = () => { if (signal.aborted || root.closest('[hidden]')) return; root.querySelectorAll<Plot>('.cd02-plot-holder').forEach(figure => { const width = figure.getBoundingClientRect().width; if (width > 0) figure.redraw(width); }); };
+    observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); if (signal.aborted) observer?.disconnect(); else observer?.observe(root); window.addEventListener('resize', resize, { signal });
   } catch (e) { cleanup(); throw e; }
   return cleanup;
 };

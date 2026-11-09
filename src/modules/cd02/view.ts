@@ -11,6 +11,7 @@ export function mountWithPanels({ container, signal: parent }: Context, mounts: 
   const life = new AbortController(), panels = new Map<string, { host: HTMLDivElement; scope: AbortController; hooks: ModeHooks; release?: () => void }>(); let disposed = false;
   function dispose() { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); life.abort(); for (const panel of panels.values()) { panel.scope.abort(); const release = panel.release; panel.release = undefined; release?.(); } root.remove(); }
   parent.addEventListener('abort', dispose, { once: true });
+  if (parent.aborted) { dispose(); return dispose; }
   function show() {
     if (disposed || parent.aborted) return;
     for (const [key, panel] of panels) if (key !== mode.value && !panel.host.hidden) { panel.hooks.suspend?.(); panel.host.hidden = true; panel.host.inert = true; }

@@ -30,7 +30,7 @@ describe('lead exercise flow (mocked editors, not browser evidence)', () => {
     visit(); expect(button('Verify full compensated model').disabled).toBe(true); expect(document.querySelector('svg')).toBeNull();
     set('Predicted controller gain K (optional)', '12'); reveal(); expect(message()).toContain('agrees'); expect(document.body.textContent).toContain('A third pole remains at −4');
     check(); const rows = document.querySelectorAll('tbody tr'); expect(rows).toHaveLength(4); expect(rows[0].textContent).toContain('all three modes');
-    expect(parseFloat(rows[1].children[1].textContent!)).toBeCloseTo(7.925, 2); expect(rows[3].children[1].textContent).toBe('0.375'); expect(document.querySelectorAll('svg')).toHaveLength(3);
+    expect(parseFloat(rows[1].children[1].textContent!)).toBeCloseTo(7.925, 2); expect(rows[3].children[1].textContent).toBe('0.375'); expect(document.querySelectorAll('figure > svg')).toHaveLength(3);
   });
   it('recomputes the changed compensator pole and invalidates old answers', () => {
     visit(); reveal(); check(); button('Change pole to −8').click(); expect(document.querySelector('table')).toBeNull(); expect(button('Verify full compensated model').disabled).toBe(true);

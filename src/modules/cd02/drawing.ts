@@ -29,15 +29,15 @@ export function draw({ title, width, curves, points = [], axis, equal = false, x
     for (let i = 0; i < c.points.length; i += stride) { let lo = i, hi = i; for (let j = i; j < Math.min(c.points.length, i + stride); j++) { if (c.points[j].im < c.points[lo].im) lo = j; if (c.points[j].im > c.points[hi].im) hi = j; } indices.add(lo); indices.add(hi); }
     const d = [...indices].filter(i => i >= 0).sort((a, b) => a - b).map((i, n) => `${n ? 'L' : 'M'}${X(c.points[i].re)},${Y(c.points[i].im)}`).join(' '); add('path', { d, class: `cd02-line cd02-series-${index % 4}`, ...(c.dashed ? { 'stroke-dasharray': '6 5' } : {}) }, undefined, clip);
   });
-  let clipped = false;
+  let clipped = curves.some(c => c.points.some(p => p.re < x[0] || p.re > x[1] || p.im < y[0] || p.im > y[1]));
   for (const p of points) {
     const px = X(p.re), py = Y(p.im), inside = px >= left && px <= right && py >= top && py <= bottom;
     if (!inside) { clipped = true; continue; }
     const group = add('g', { class: `cd02-point cd02-${p.kind}` });
     if (p.kind === 'pole') add('path', { d: `M${px - 5},${py - 5}L${px + 5},${py + 5}M${px - 5},${py + 5}L${px + 5},${py - 5}` }, undefined, group);
-    else add('circle', { cx: String(px), cy: String(py), r: '5' }, undefined, group);
+    else add('circle', { cx: String(px), cy: String(py), r: p.kind === 'zero' ? '7' : '3.5' }, undefined, group);
     add('title', {}, p.label, group);
-    if (p.handle) { group.setAttribute('data-cd02-handle', p.handle); group.setAttribute('tabindex', '0'); group.setAttribute('role', p.handle === 'pole' ? 'slider' : 'button'); group.setAttribute('aria-label', p.label); group.setAttribute('aria-valuetext', p.value ?? p.label); if (p.handle === 'pole') { group.setAttribute('aria-valuemin', '.2'); group.setAttribute('aria-valuemax', '50'); group.setAttribute('aria-valuenow', String(-p.re)); } add('circle', { cx: String(px), cy: String(py), r: '22.5', class: 'cd02-hit' }, undefined, group); }
+    if (p.handle) { group.setAttribute('data-cd02-handle', p.handle); group.setAttribute('tabindex', '0'); group.setAttribute('role', p.handle === 'pole' ? 'slider' : 'button'); group.setAttribute('aria-label', p.handle === 'pole' ? p.label : `${p.label}. ${p.value ?? ''}`); if (p.handle === 'pole') { group.setAttribute('aria-valuetext', p.value ?? p.label); group.setAttribute('aria-orientation', 'horizontal'); group.setAttribute('aria-valuemin', '.2'); group.setAttribute('aria-valuemax', '50'); group.setAttribute('aria-valuenow', String(-p.re)); } else group.setAttribute('aria-roledescription', 'two-dimensional target control'); add('circle', { cx: String(px), cy: String(py), r: '22.5', class: 'cd02-hit' }, undefined, group); }
   }
   add('text', { x: String((left + right) / 2), y: '302', 'text-anchor': 'middle' }, xLabel); add('text', { x: String(left), y: '21' }, yLabel);
   const legend = document.createElement('p'); legend.className = 'cd02-note'; legend.textContent = curves.map(c => `${c.dashed ? '┄' : '━'} ${c.label}`).join(' · '); figure.append(legend);

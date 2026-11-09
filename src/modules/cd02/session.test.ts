@@ -1,0 +1,14 @@
+import { afterEach, expect, it, vi } from 'vitest';
+vi.mock('../../shared/equations/input', () => ({ createEquationDisplay: vi.fn(), createEquationInput: vi.fn() }));
+import { mountWithPanels } from './view';
+afterEach(() => { document.body.replaceChildren(); vi.restoreAllMocks(); });
+it('releases a late returned disposer once when a submount synchronously aborts its parent', () => {
+  const parent = new AbortController(), root = document.createElement('div'), release = vi.fn(); document.body.append(root); const dispose = mountWithPanels({ container: root, signal: parent.signal }, { explore: () => { parent.abort(); return release; }, practice: vi.fn() }); expect(root.children).toHaveLength(0); expect(release).toHaveBeenCalledOnce(); dispose(); expect(release).toHaveBeenCalledOnce();
+});
+it('aborts partial resources before failure feedback, hides failed panels and supports a fresh retry', () => {
+  const parent = new AbortController(), root = document.createElement('div'), resource = vi.fn(); document.body.append(root); let attempts = 0; const dispose = mountWithPanels({ container: root, signal: parent.signal }, { explore: ({ container, signal }) => { attempts++; window.addEventListener('cd02-partial', resource, { signal }); if (attempts === 1) throw new Error('partial mount'); container.textContent = 'Recovered'; }, practice: ({ container }) => { container.textContent = 'Practice'; } });
+  window.dispatchEvent(new Event('cd02-partial')); expect(resource).not.toHaveBeenCalled(); const failed = root.querySelector<HTMLElement>('[data-cd02-panel="explore"]')!, mode = root.querySelector('select')!; expect(failed.querySelector('[role="alert"]')!.textContent).toContain('partial mount'); mode.value = 'practice'; mode.dispatchEvent(new Event('change')); expect(failed.hidden).toBe(true); expect(failed.inert).toBe(true); mode.value = 'explore'; mode.dispatchEvent(new Event('change')); failed.querySelector('button')!.click(); expect(root.textContent).toContain('Recovered'); window.dispatchEvent(new Event('cd02-partial')); expect(resource).toHaveBeenCalledOnce(); expect(parent.signal.aborted).toBe(false); dispose(); window.dispatchEvent(new Event('cd02-partial')); expect(resource).toHaveBeenCalledOnce();
+});
+it('releases retained independent panel scopes and returned cleanup exactly once', () => {
+  const parent = new AbortController(), root = document.createElement('div'), a = vi.fn(), b = vi.fn(), signals: AbortSignal[] = []; const dispose = mountWithPanels({ container: root, signal: parent.signal }, { explore: ({ signal }) => { signals.push(signal); return a; }, practice: ({ signal }) => { signals.push(signal); return b; } }); const mode = root.querySelector('select')!; mode.value = 'practice'; mode.dispatchEvent(new Event('change')); dispose(); parent.abort(); dispose(); expect(a).toHaveBeenCalledOnce(); expect(b).toHaveBeenCalledOnce(); expect(signals.every(s => s.aborted)).toBe(true);
+});
