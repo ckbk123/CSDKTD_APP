@@ -48,10 +48,12 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
   const markerError = node('p', '', 'cp03-message cp03-marker-error'); markerError.setAttribute('role', 'status'); markerFields.append(markerError);
   const placementLabel = node('label', 'Click plot to place', 'cp03-field'), placement = node('select'); placement.setAttribute('aria-label', 'Click plot to place');
   for (const [value, text] of [['tu', 'Input peak marker'], ['ty', 'Output peak marker'], ['B', 'Output amplitude marker']]) { const e = node('option', text); e.value = value; placement.append(e); } placementLabel.append(placement); markerFields.append(placementLabel);
+  markerFields.append(node('p', 'Drag tᵤ/tᵧ horizontally and B vertically, or edit the numbers. Arrow keys shift peaks by 2° of a cycle and B by 1% of A; Shift takes ten steps. Home/End use the bounds. Escape cancels a drag.', 'cp03-small'));
   const transientLabel = node('label', '', 'cp03-check'), transient = node('input'); transient.type = 'checkbox'; transient.setAttribute('aria-label', 'Reveal zero-state response and transient'); transientLabel.append(transient, node('span', 'Reveal zero-state response and transient')); controls.append(transientLabel);
   const measurement = node('p', '', 'cp03-measurement'), grade = node('p', '', 'cp03-message cp03-grade'); grade.setAttribute('role', 'status'); controls.append(measurement, grade);
   const actions = node('div', '', 'cp03-actions'); controls.append(actions);
   const reveal = button(actions, mode === 'practice' ? 'Reveal calculation and linked plots' : 'Check marker measurement', () => { if (!trial || dirty) { compute(); if (!trial) return; } revealed = true; graded = true; renderChecked(); drawTime(); updateMeasurement(); }, signal);
+  button(actions, 'Reset measurement markers', () => { if (!trial || dirty) return; cancelGesture(); const peak = (Math.ceil((trial.w * trial.t0 - Math.PI / 2) / (2 * Math.PI)) * 2 * Math.PI + Math.PI / 2) / trial.w; tu.value = ty.value = String(peak); B.value = String(Math.min(1e8, trial.A / 2)); graded = false; updateMeasurement(); drawTime(); }, signal);
   button(actions, 'Fit time axes', () => { cancelGesture(); timeAxis = undefined; drawTime(); }, signal);
   button(actions, 'Window start = 0', () => { start.value = '0'; changed(); }, signal);
   button(actions, 'One period later', () => { try { const next = read(start, 'window start in seconds') + 2 * Math.PI / read(omega, 'frequency in rad/s'); if (next > 1000) throw new Error('The later window exceeds the 1000 s start limit.'); start.value = String(next); changed(); } catch (error) { report(error); } }, signal);
@@ -118,14 +120,17 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
   }
   function drawTime() {
     if (!trial || dirty || !isActive()) return;
-    let markers: ReturnType<typeof readMarkers> | undefined; try { markers = readMarkers(); } catch { /* Keep valid traces visible while the marker draft is corrected. */ }
+    const valid = (input: HTMLInputElement) => { try { return read(input, 'marker placement'); } catch { return undefined; } };
+    const inputTime = valid(tu), outputTime = valid(ty), b = valid(B);
     const handles: Handle[] = [], marks = [];
-    if (markers) { handles.push({ key: 'tu', label: 'Move input peak marker', x: markers.inputTime, min: trial.t0, max: trial.t1, value: markers.inputTime, units: 's' }, { key: 'ty', label: 'Move output peak marker', x: markers.outputTime, min: trial.t0, max: trial.t1, value: markers.outputTime, units: 's' }, { key: 'B', label: 'Move output amplitude marker', y: markers.b, min: 0, max: 1e8, value: markers.b, units: 'output units' }); marks.push({ x: markers.inputTime, label: 'tᵤ' }, { x: markers.outputTime, label: 'tᵧ' }, { y: markers.b, label: 'B' }); }
+    if (inputTime !== undefined) { handles.push({ key: 'tu', label: 'Move input peak marker', x: inputTime, min: trial.t0, max: trial.t1, value: inputTime, units: 's' }); marks.push({ x: inputTime, label: 'tᵤ' }); }
+    if (outputTime !== undefined) { handles.push({ key: 'ty', label: 'Move output peak marker', x: outputTime, min: trial.t0, max: trial.t1, value: outputTime, units: 's' }); marks.push({ x: outputTime, label: 'tᵧ' }); }
+    if (b !== undefined) { handles.push({ key: 'B', label: 'Move output amplitude marker', y: b, min: 0, max: 1e8, value: b, units: 'output units' }); marks.push({ y: b, label: 'B' }); }
     const series = timeSeries();
-    if (!timeAxis) { const values = series.flatMap(s => s.points.flatMap(p => p ? [p.y] : [])); const lo = Math.min(0, ...values), hi = Math.max(0, markers?.b ?? 0, ...values), pad = Math.max(1e-12, (hi - lo) * .12); timeAxis = [lo - pad, hi + pad]; }
+    if (!timeAxis) { const values = series.flatMap(s => s.points.flatMap(p => p ? [p.y] : [])); const lo = Math.min(0, ...values), hi = Math.max(0, b ?? 0, ...values), pad = Math.max(1e-12, (hi - lo) * .12); timeAxis = [lo - pad, hi + pad]; }
     const drawing = drawPlot({ id: 'time', title: transient.checked && trial.actual ? 'Input, actual zero-state output and transient' : 'Input and particular sinusoid', xLabel: 'Time t (s)', yLabel: 'Signal amplitude (u / y units)', series, marks, handles, xRange: [trial.t0, trial.t1], yRange: timeAxis, width: width - 2 });
     replaceDrawing(timeHost, drawing, 'time');
-    material.textContent = [trial.actualError ? `Actual trace unavailable: ${trial.actualError} The particular sinusoid remains available.` : '', drawing.clipped || markers && (markers.b < timeAxis[0] || markers.b > timeAxis[1]) ? 'Some values are outside the fixed time axes. Choose Fit time axes.' : ''].filter(Boolean).join(' ');
+    material.textContent = [trial.actualError ? `Actual trace unavailable: ${trial.actualError} The particular sinusoid remains available.` : '', drawing.clipped || b !== undefined && (b < timeAxis[0] || b > timeAxis[1]) ? 'Some values are outside the fixed time axes. Choose Fit time axes.' : '', inputTime === undefined || outputTime === undefined ? 'Complete peak markers inside this window, or choose Reset measurement markers. Their drafts are retained.' : ''].filter(Boolean).join(' ');
   }
   function replaceDrawing(host: HTMLElement, drawing: ReturnType<typeof drawPlot>, id: string) { const focused = host.contains(document.activeElement); host.replaceChildren(drawing.element); drawings.set(id, { geometry: drawing.geometry, image: drawing.image }); if (focused || gesture?.plot === id) host.focus({ preventScroll: true }); }
   function renderChecked() {

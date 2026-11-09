@@ -56,7 +56,7 @@ export function drawPlot(options: PlotOptions) {
     series.points.forEach(point => { if (!point) flush(); else segment.push(`${x(point.x)},${y(point.y)}`); }); flush();
   }); image.append(paths);
   for (const mark of options.marks ?? []) {
-    if (mark.x !== undefined && mark.y !== undefined) image.append(svg('circle', { cx: x(mark.x), cy: y(mark.y), r: 5, class: 'cp03-cursor' }));
+    if (mark.x !== undefined && mark.y !== undefined) { const point = svg('circle', { cx: x(mark.x), cy: y(mark.y), r: 5, class: 'cp03-cursor' }); point.append(svg('title', {}, mark.label)); image.append(point); }
     else if (mark.x !== undefined && mark.x >= xmin && mark.x <= xmax) image.append(svg('line', { x1: x(mark.x), y1: top, x2: x(mark.x), y2: bottom, class: 'cp03-marker' }));
     else if (mark.y !== undefined && mark.y >= ymin && mark.y <= ymax) image.append(svg('line', { x1: left, y1: y(mark.y), x2: right, y2: y(mark.y), class: 'cp03-marker' }));
   }
@@ -64,7 +64,8 @@ export function drawPlot(options: PlotOptions) {
     if (handle.x !== undefined && (handle.x < xmin || handle.x > xmax) || handle.y !== undefined && (handle.y < ymin || handle.y > ymax)) continue;
     const hx = handle.x !== undefined ? x(handle.x) : right - 12, hy = handle.y !== undefined ? y(handle.y) : handle.key === 'ty' ? 74 : 25;
     const group = svg('g', { role: 'slider', tabindex: 0, 'data-cp03-handle': handle.key, 'aria-label': handle.label, 'aria-orientation': handle.y !== undefined ? 'vertical' : 'horizontal', 'aria-valuemin': handle.min, 'aria-valuemax': handle.max, 'aria-valuenow': handle.value, 'aria-valuetext': `${numberLabel(handle.value)} ${handle.units}`, class: 'cp03-handle' });
-    group.append(svg('circle', { cx: hx, cy: hy, r: 22.5, class: 'cp03-hit' }), svg('circle', { cx: hx, cy: hy, r: 6, class: 'cp03-dot' })); image.append(group);
+    const onRight = hx > right - 24;
+    group.append(svg('title', {}, handle.label), svg('circle', { cx: hx, cy: hy, r: 22.5, class: 'cp03-hit' }), svg('circle', { cx: hx, cy: hy, r: 6, class: 'cp03-dot' }), svg('text', { x: hx + (onRight ? -10 : 10), y: hy + 4, 'text-anchor': onRight ? 'end' : 'start', 'aria-hidden': 'true' }, handle.key === 'tu' ? 'tᵤ' : handle.key === 'ty' ? 'tᵧ' : handle.key === 'B' ? 'B' : 'ω')); image.append(group);
   }
   if (options.onTime && options.signal) image.addEventListener('click', event => { const p = pointerPosition(event.clientX, event.clientY, image.getBoundingClientRect(), geometry); options.onTime?.(p.x); }, { signal: options.signal });
   const legend = document.createElement('p'); legend.className = 'cp03-legend';
