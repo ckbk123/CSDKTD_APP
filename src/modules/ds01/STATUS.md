@@ -1,6 +1,23 @@
 # DS01 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement — 9 November 2026:** direct modal-row unit-disk exploration with cached integer-sample inspection. Owner `interactivity-ds01-01a1ac7b`; fresh branch `codex/ds01-modal-exploration`, worktree `C:/Users/baokh/.codex/worktrees/ds01-modal-exploration/CSDKTD APP`, base current primary main `6af3485ef6da6f11f4979ff665896d83b99414b5` (v0.3.17). Current primary guides and original TASK/code/tests were inspected; locked dependencies installed only here. Only `src/modules/ds01/**` is owned. Browser QA is deferred/centralized with the coordinator on assigned port 8811; no browser/server was launched.
+
+## Finite refinement audit and first source checkpoint
+
+The accepted exercise already supports one to four distinct real/conjugate rows, simple/independent/Jordan2/Jordan3 structures, output visibility and a constructed block-diagonal real SISO realization up to 24 states. It does not accept arbitrary A/B/C matrices. Full row editing, add/remove, generated matrices, exact retained-decimal boundary certification and near-circle uncertainty must remain; no arbitrary-matrix or exact-circle solver expansion is included.
+
+| Accepted refinement | Existing evidence / next work |
+|---|---|
+| Immediate all-root plane and selected stems | Existing checked plots sit after the setup/reveal flow. Add Explore baseline±0.8 with live internal/BIBO/location conclusions, direct constrained row edits and responsive fixed equal axes/Fit. Preserve the full original exercise independently as Practice. |
+| Full modal rows and hidden/Jordan behavior | Original `math.ts` stays unchanged. Keep all 1–4 rows, supported structures, conjugate pairing, collision validation, visibility and 24-state limits. Hiding changes C only; it does not remove internal modes or make the block unexcited by B. |
+| Reversible edits and raw draft honesty | Pending: 0.01 pointer/keyboard moves with numeric/raw alternatives, bounded visit-local undo/cancel, one pointer owner, native badInput preservation and retained independent Practice state. |
+| Integer sample cursor and T convention | New `rows.ts` caches only amplitudes by row/pole/structure/N. A T change reuses them and computes physical t=kT separately; integer cursor inspection does not resample powers. T remains0.001–10 s, final sample N4–80. |
+| Boundary policy and exact limits | Existing locate/classify remain authoritative. Retained-decimal exact circle points are certified; other radii within10⁻⁹ stay uncertain. Generic sin/cos angle construction will not be promoted to a certified boundary. Exact existing presets remain available. |
+| Validation/delivery | The original baseline passes113 tests in2 files. First checkpoint:119 tests in3 files and `npm run check` pass, including six new immutable-row/cache fixtures. Visual/lifetime/full checks, one PR, independent source review and actual browser gates remain open. This is a partial source checkpoint, not completion. |
+
+## Historical accepted exercise delivery
+
 - **Assessed:** 2026-10-29, against [TASK.md](TASK.md); starting revision `c5d1135`.
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Owned scope:** `src/modules/ds01/**`; metadata, shell, shared APIs and dependencies preserved.
