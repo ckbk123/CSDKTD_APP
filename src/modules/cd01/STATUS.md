@@ -26,11 +26,17 @@ Math, numerical propagation, parser, workspace loader and eager metadata are byt
 
 Current source checks with bundled Node 24.22.1 and the installed npm CLI:
 
-- `npm test -- src/modules/cd01 --reporter dot`: **96 tests / 6 files pass**, 3.35 s. Original mathematical/parser/loader fixtures remain; new fixtures cover reason/record separation, coalescing, cached requirements/cursor, fractional signed gains, inactive Tf, explicit draft synchronization, failed pending Apply, prediction edit invalidation, native raw-field preservation, typing focus, comparison failure, clipped geometry, cleanup and installed MathLive SSR notation validation.
+- `npm test -- src/modules/cd01 --reporter dot`: **99 tests / 6 files pass**, 4.30 s. Original mathematical/parser/loader fixtures remain; new fixtures cover reason/record separation, coalescing, cached requirements/cursor, fractional signed gains, inactive Tf, explicit draft synchronization, failed pending Apply, prediction edit invalidation, native raw-field preservation, typing focus, comparison failure, clipped geometry, cleanup and installed MathLive SSR notation validation.
 - `npm run check`: passes; `npm run build` also repeats type checking and passes (existing MathLive large-chunk warning only).
 - `git diff --check`: passes; changes are confined to CD01.
-- Fresh full suite at checkpoint `4f6ee93b2a5eeb9d7bd3f4199621d6cd376df1ae`: **5,769 tests / 277 files pass**, 42.62 s. A later focused correction moves numeric labels only when the selected knob actually changes, preserving typing focus and actual badInput in active and optional gain fields; its 96-test module check and build pass, with the fresh full-suite repeat pending.
+- Full suite at initial checkpoint `4f6ee93b2a5eeb9d7bd3f4199621d6cd376df1ae`: **5,769 tests / 277 files pass**, 42.62 s. The typing-focus correction `c655f8b818e5434fc32b535382b1eb5d3fb5de8e` moves numeric labels only when the selected knob actually changes; its fresh full suite passes **5,770 tests / 277 files**, 56.15 s.
 - Independent source review and actual browser gates are pending. No real-browser result, verified stage, integration or release is claimed by these checks. Own production preview is available on port 8810 for the integration owner; no browser was launched here.
+
+### Returned native prediction correction
+
+The integration owner independently found that the optional complete-check renderer recreated prediction controls from string values on Reveal/Hide. A browser partial number can expose an empty value with badInput, so serializing that field loses its actual draft. Prediction controls and feedback now live in a retained applied-trial section outside the rebuilt optional reasoning. Reveal/Hide preserves the same elements, actual badInput/raw values and applied grade. Unrecorded draft exploration hides/inerts that retained section without changing its controls or feedback; successful Apply alone clears them for the newly recorded trial. A student edit still revokes that prediction's old grade.
+
+Two field-specific regressions preserve each actual prediction element, badInput and zero value assignments through Reveal/Hide/Fit and reason-gated preview, then verify recovery on the new Kp=6 trial with independently known u(0)=26. A third regression preserves an existing applied grade during view-only actions and a cached requirements preview, then checks its explicit new-trial reset. The current 99 module tests, TypeScript and production build pass; fresh final full suite and return review remain pending at this source checkpoint.
 
 ## Historical accepted bounded exercise
 

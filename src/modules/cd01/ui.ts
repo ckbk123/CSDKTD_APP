@@ -29,9 +29,9 @@ export const mount:ModuleMount=({container,signal:parent})=>{
   const status=el('p');status.setAttribute('role','status');const view=el('div'),history=el('div');
   let selected:Trial,comparisons:Trial[]=[],comparisonNotes:string[]=[],applied:Options,requirements:Requirements,matchedTarget:number[]|null=null,revealed=false,inspectTime=0;
   let appliedController:Controller={kind:'PID',kp:4,ki:2,kd:1,tf:.05};
-  const attempts={error:'',effort:''},notes:{reason:string;summary:string;details:string}[]=[];
+  const notes:{reason:string;summary:string;details:string}[]=[];
   let preview:Candidate|undefined,dirty=false,pending=false,needRun=false,previewIssue='',cursorIssue='',liveAxes:{output?:Axis;effort?:Axis}={},liveDrawings:Drawing[]=[],detailDrawings:Drawing[]=[];
-  const invalidate=(rerun=true)=>{if(closed)return;dirty=true;needRun=needRun||rerun;revealed=false;previewIssue='';view.replaceChildren();detailDrawings=[];renderHistory();schedulePreview();};
+  const invalidate=(rerun=true)=>{if(closed)return;dirty=true;needRun=needRun||rerun;revealed=false;previewIssue='';exercise.hidden=exercise.inert=true;view.replaceChildren();detailDrawings=[];renderHistory();schedulePreview();};
   const intro=el('section');intro.append(el('h3','Choose a linear controller and test the complete result'),el('p','Set the performance requirements, choose a structure and record a reason before applying changed gains. Compare tracking accuracy, transients and effort; the same pole pair alone does not describe every controller.'));
   intro.append(createEquationDisplay(String.raw`e=r-y,\quad u=u_P+u_I+u_D,\quad y=G(s)u,\quad\text{negative unity feedback}`, 'Error and negative-feedback signal convention'));
   function equation(label:string,value:string):EquationInput{
@@ -94,7 +94,10 @@ export const mount:ModuleMount=({container,signal:parent})=>{
   const settings=el('details');settings.className='pid-settings';settings.append(el('summary','Plant, all gains, requirements, initial data and matching'),intro);
   intro.append(request,gains,initial,matching,limits);
   const notesDetails=el('details');notesDetails.className='pid-notes';notesDetails.append(el('summary','Applied trial notes (up to eight)'),history);
-  root.append(workbench,actions,status,settings,notesDetails,view);
+  const exercise=el('section'),exerciseIntro=el('p'),prediction=el('div');exercise.className='pid-applied-prediction';prediction.className='pid-controls';
+  const predictError=numeric(prediction,'Your stable steady error r−y∞','predictError',''),predictEffort=numeric(prediction,'Your initial control u(0)','predictEffort',''),predictButton=button('Check my prediction','predict'),revealButton=button('Reveal complete check','reveal'),feedback=el('p');feedback.dataset.prediction='';feedback.setAttribute('role','status');
+  exercise.append(el('h3','4. Predict tracking and the first control effort'),exerciseIntro,prediction,predictButton,revealButton,feedback);
+  root.append(workbench,actions,status,settings,notesDetails,exercise,view);
   function syncKnob():void{
     const name=knobPicker.value,input=knobs[name];for(const candidate of Object.values(knobs))if(candidate!==input&&candidate.parentElement!.parentElement!==gainRow)gainRow.append(candidate.parentElement!);if(input.parentElement!.parentElement!==knobNumber)knobNumber.append(input.parentElement!);
     const source=preview?.controller??appliedController;let value:number,issue='';
@@ -138,7 +141,7 @@ export const mount:ModuleMount=({container,signal:parent})=>{
     stopTimer();pending=false;const candidate=buildCandidate(derive);
     if(derive){kp.value=String(candidate.controller.kp);ki.value=String(candidate.controller.ki);kd.value=String(candidate.controller.kd);}
     selected=candidate.selected;comparisons=candidate.comparisons;comparisonNotes=candidate.comparisonNotes;applied=candidate.options;requirements=candidate.requirements;matchedTarget=candidate.desired;appliedController=candidate.controller;
-    preview=undefined;dirty=pending=needRun=false;previewIssue='';revealed=false;inspectTime=0;if(!cursorIssue)cursorTime.value='0';attempts.error='';attempts.effort='';record(reason);why.value='';syncKnob();render();status.textContent='Trial applied and reason recorded once. Choose a new reason before changing the next trial.';
+    preview=undefined;dirty=pending=needRun=false;previewIssue='';revealed=false;inspectTime=0;if(!cursorIssue)cursorTime.value='0';predictError.value=predictEffort.value='';feedback.replaceChildren();exercise.hidden=exercise.inert=false;record(reason);why.value='';syncKnob();render();status.textContent='Trial applied and reason recorded once. Choose a new reason before changing the next trial.';
   }
   function schedulePreview():void{
     if(closed)return;
@@ -188,10 +191,9 @@ export const mount:ModuleMount=({container,signal:parent})=>{
   }
   function scrollTable(table:HTMLTableElement,label:string):HTMLElement{const region=el('div');region.className='pid-table-scroll';region.tabIndex=0;region.setAttribute('role','region');region.setAttribute('aria-label',label);region.append(table);return region;}
   function render():void{
-    if(signal.aborted)return;const active=document.activeElement instanceof HTMLElement&&view.contains(document.activeElement)?document.activeElement:null,action=active?.dataset.action,name=active instanceof HTMLInputElement?active.name:undefined;
+    if(signal.aborted)return;
     view.replaceChildren();detailDrawings=[];const m=selected.model,c=m.controller,r=selected.run;
-    const exercise=el('section');exercise.append(el('h3','4. Predict tracking and the first control effort'),el('p',`Selected ${c.kind}; active ${m.activeKind}. Initial plant y=${fmt(applied.initial[0])}, ẏ=${fmt(applied.initial[1])}; held reference=${fmt(applied.reference)}. An inactive term adds no state.`));
-    const prediction=el('div');prediction.className='pid-controls';numeric(prediction,'Your stable steady error r−y∞','predictError',attempts.error);numeric(prediction,'Your initial control u(0)','predictEffort',attempts.effort);exercise.append(prediction,button('Check my prediction','predict'),button(revealed?'Hide complete check':'Reveal complete check','reveal'));const feedback=el('p');feedback.dataset.prediction='';feedback.setAttribute('role','status');exercise.append(feedback);view.append(exercise);
+    exerciseIntro.textContent=`Selected ${c.kind}; active ${m.activeKind}. Initial plant y=${fmt(applied.initial[0])}, ẏ=${fmt(applied.initial[1])}; held reference=${fmt(applied.reference)}. An inactive term adds no state.`;revealButton.textContent=revealed?'Hide complete check':'Reveal complete check';revealButton.setAttribute('aria-expanded',String(revealed));
     if(revealed){
       const terms=el('section');terms.append(el('h3','5. Keep controller form and filter explicit'),createEquationDisplay(`C(s)=(${tex(c.kp)})${c.ki?`+\\frac{${tex(c.ki)}}{s}`:''}${c.kd?`+\\frac{(${tex(c.kd)})s}{(${tex(c.tf)})s+1}`:''}`, 'Applied parallel controller, inactive terms omitted'),createEquationDisplay(String.raw`u_P=K_pe`+(c.ki?String.raw`,\quad\dot I=e,\quad u_I=K_iI`:String.raw`,\quad u_I=0`)+(c.kd?String.raw`,\quad T_f\dot v=e-v,\quad u_D=\frac{K_d}{T_f}(e-v)`:String.raw`,\quad u_D=0`), 'Individual active controller contributions'));
       const converted=standard(c);if(converted)terms.append(createEquationDisplay(`C(s)=(${tex(c.kp)})\\left(1+${converted.ti===null?'0':`\\frac{1}{(${tex(converted.ti)})s}`}+\\frac{(${tex(converted.td)})s}{(${tex(converted.tf)})s+1}\\right)`, 'Equivalent standard controller notation'),el('p',`Ti=${converted.ti===null?'inactive':fmt(converted.ti)+'s'}, Td=${fmt(converted.td)}s, Tf=${fmt(converted.tf)}s. These are an algebraic conversion, not a new tuning rule.`));else terms.append(el('p','Kp=0: the parallel controller is valid, but a standard form factored by Kp is unavailable.'));
@@ -218,10 +220,9 @@ export const mount:ModuleMount=({container,signal:parent})=>{
       view.append(terms,check,plots);
     }
     renderHistory();renderLive();
-    if(active&&!active.isConnected){const replacement=action?[...view.querySelectorAll<HTMLButtonElement>('button[data-action]')].find(b=>b.dataset.action===action):[...view.querySelectorAll<HTMLInputElement>('input[name]')].find(i=>i.name===name);replacement?.focus({preventScroll:true});}
   }
   const reasons:Record<string,string>={accuracy:'Improve steady tracking',transient:'Change overshoot or transient speed',effort:'Reduce control effort',structure:'Compare controller structures',matching:'Test analytic pole placement',data:'Test changed plant or initial data'};
-  root.addEventListener('input',event=>{const input=event.target;if(input instanceof HTMLInputElement&&(input.name==='predictError'||input.name==='predictEffort')){attempts[input.name==='predictError'?'error':'effort']=input.value;view.querySelector('[data-prediction]')?.replaceChildren();}},{signal});
+  prediction.addEventListener('input',()=>feedback.replaceChildren(),{signal});
   root.addEventListener('click',event=>{
     const action=(event.target as Element).closest<HTMLButtonElement>('button[data-action]')?.dataset.action;if(!action)return;
     try{
@@ -231,11 +232,10 @@ export const mount:ModuleMount=({container,signal:parent})=>{
       else if(action==='setFilter'){if(kind.value==='P'||kind.value==='PI')throw new Error('P/PI has no derivative-filter coefficient to set.');const d=targetEditor.getValue(),p=parsePlant(plantEditor.getValue().latex),q=parseTarget(d.latex,kind.value==='PID'?4:3),value=1/(q[1]-p.a1);if(!Number.isFinite(value)||value<.001||value>10)throw new Error('Target next-leading coefficient cannot give a supported positive Tf.');tf.value=String(value);syncKnob();invalidate();status.textContent='Filter draft set from the target coefficient. Choose a reason and derive the gains to verify the full result.';}
       else if(action==='fit'){liveAxes={};renderLive();status.textContent='Signal axes fitted to the checked curves. Unapplied numeric drafts and their elements were preserved.';}
       else if(action==='reveal'){if(dirty)throw new Error('Apply the reasoned trial before revealing its complete check.');revealed=!revealed;render();}
-      else if(action==='predict'){if(dirty)throw new Error('Apply the reasoned trial before checking a prediction.');const e=read(view.querySelector<HTMLInputElement>('input[name="predictError"]')!),u=read(view.querySelector<HTMLInputElement>('input[name="predictEffort"]')!),r=selected.run,agrees=(a:number,b:number)=>b===0?a===0:Math.abs(a-b)<=1e-7*Math.abs(b);view.querySelector('[data-prediction]')!.textContent=r.steadyError===null?'A stable-model steady error is unavailable; check every mode first.':agrees(e,r.steadyError)&&agrees(u,r.samples[0].u)?'Prediction agrees with the stable DC calculation and the initial controller memories.':'Recheck the stable DC error and all three effort terms, including the filtered derivative kick.';}
+      else if(action==='predict'){if(dirty)throw new Error('Apply the reasoned trial before checking a prediction.');const e=read(predictError),u=read(predictEffort),r=selected.run,agrees=(a:number,b:number)=>b===0?a===0:Math.abs(a-b)<=1e-7*Math.abs(b);feedback.textContent=r.steadyError===null?'A stable-model steady error is unavailable; check every mode first.':agrees(e,r.steadyError)&&agrees(u,r.samples[0].u)?'Prediction agrees with the stable DC calculation and the initial controller memories.':'Recheck the stable DC error and all three effort terms, including the filtered derivative kick.';}
       else if(action==='time')inspect();
     }catch(error){previewIssue=error instanceof Error?error.message:'Check the controller inputs.';status.textContent=previewIssue;renderLive();}
   },{signal});
-  view.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.target as HTMLInputElement).name==='inspectTime'){event.preventDefault();view.querySelector<HTMLButtonElement>('button[data-action="time"]')?.click();}},{signal});
   if(closed||signal.aborted)return cleanup;
   try{apply('Course baseline on initial visit');}catch(error){status.textContent=error instanceof Error?error.message:'Check the model.';}
   return cleanup;
