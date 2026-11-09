@@ -140,6 +140,12 @@
         "Complete finite refinement",
         "Independent source and real-browser verification",
         "Combined integration/release"
+      ],
+      "source": "3731390366a3871e926e686732b432688644f997",
+      "pr": 67,
+      "evidence": [
+        "96 module tests / 4 files, TypeScript and production build passed at the durable checkpoint.",
+        "Three explicit family controls and cached analytic cursor are wired; edge/lifecycle/full/browser gates remain."
       ]
     },
     {
@@ -154,6 +160,11 @@
         "Complete finite refinement",
         "Independent source and real-browser verification",
         "Combined integration/release"
+      ],
+      "source": "f749e95564c21a7c87bd9f7554012f82a27968ee",
+      "pr": 66,
+      "evidence": [
+        "Early presentation-policy checkpoint has four independent parameter fixtures; the full linked UI is still being implemented."
       ]
     },
     {
@@ -175,13 +186,20 @@
       "agent": "/root",
       "branch": "codex/ds03-direct-mapping",
       "scope": "Immediate linked disk/half-plane point editing and original Routh exercise",
-      "state": "in-progress",
+      "state": "implemented-awaiting-review",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
       "wave": 3,
       "remaining": [
         "Complete finite refinement",
         "Independent source and real-browser verification",
         "Combined integration/release"
+      ],
+      "source": "034af74df4cbcfe363b43c9ae6dd796a6f80c796",
+      "pr": 68,
+      "evidence": [
+        "99 module tests / 3 files, TypeScript and production build passed.",
+        "5646 full tests / 264 files passed at90328f; the later near-circle label has an added independent fixture.",
+        "Partial actual desktop checks passed; independent source review and remaining actual browser gates are pending."
       ]
     }
   ],
@@ -290,13 +308,15 @@
       "state": "in-progress",
       "target": "Compact response+pole-region split view; drag damping/frequency target pair and extra factor within supported family; sliders for settling/overshoot targets and visible measurement handles.",
       "evidence": [
-        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+        "Early presentation-policy checkpoint has four independent parameter fixtures; the full linked UI is still being implemented."
       ],
       "remaining": [
         "Complete finite refinement",
         "Independent source and real-browser verification",
         "Combined integration/release"
-      ]
+      ],
+      "source": "f749e95564c21a7c87bd9f7554012f82a27968ee",
+      "pr": 66
     },
     {
       "id": "CF02",
@@ -491,13 +511,16 @@
       "state": "in-progress",
       "target": "Provide a constrained pole-exploration preset beside its time mode; drag within a declared modal family to cross imaginary axis and feel decay/growth, without pretending arbitrary eigenvalue edits preserve an entered realization.",
       "evidence": [
-        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+        "96 module tests / 4 files, TypeScript and production build passed at the durable checkpoint.",
+        "Three explicit family controls and cached analytic cursor are wired; edge/lifecycle/full/browser gates remain."
       ],
       "remaining": [
         "Complete finite refinement",
         "Independent source and real-browser verification",
         "Combined integration/release"
-      ]
+      ],
+      "source": "3731390366a3871e926e686732b432688644f997",
+      "pr": 67
     },
     {
       "id": "CS02",
@@ -803,16 +826,20 @@
     },
     {
       "id": "DS03",
-      "state": "in-progress",
+      "state": "implemented-awaiting-review",
       "target": "Make the point directly draggable in z plane while preserving numeric/angle alternatives; highlight inside/outside correspondence and approach to z=-1 without false finite projection.",
       "evidence": [
-        "Explicit finite assignment; fresh claimed worktree from the latest committed primary main at assignment."
+        "99 module tests / 3 files, TypeScript and production build passed.",
+        "5646 full tests / 264 files passed at90328f; the later near-circle label has an added independent fixture.",
+        "Partial actual desktop checks passed; independent source review and remaining actual browser gates are pending."
       ],
       "remaining": [
         "Complete finite refinement",
         "Independent source and real-browser verification",
         "Combined integration/release"
-      ]
+      ],
+      "source": "034af74df4cbcfe363b43c9ae6dd796a6f80c796",
+      "pr": 68
     },
     {
       "id": "DS04",
@@ -846,5 +873,10 @@
     "DS03"
   ],
   "currentWave": 3,
-  "verifiedCandidates": 0
+  "verifiedCandidates": 0,
+  "verificationEnvironment": {
+    "observedOn": "2026-11-09",
+    "browser": "Private IAB provider unavailable during the current background continuation; prior tool handles ended. Actual checks already observed remain attributed to their exact source. Outstanding browser gates are pending, not replaced by DOM tests.",
+    "preview": "Accepted v0.3.17 primary preview restored on port8787; no deployment."
+  }
 }
