@@ -20,6 +20,23 @@ Focused candidate evidence: `node node_modules/vitest/vitest.mjs run src/modules
 
 Finite closeout review of frozen `8a02df9c08fc80fe1f14c56d12d6aa86b04dc1db`: own full suite passed **5,780 tests /280files**,50.45s. The coordinator independently reviewed the full source/domain and reproduced two presentation returns in an outside-Git fixture: restarting the80ms timer delayed every preview during continuous movement, and a subnormal fixed state axis produced nonfinite SVG coordinates when a larger component was selected. The corrected queue retains its original deadline and publishes the newest candidate; it does not create a second timer. Timeline segments now clip in data coordinates before screen conversion, preserving computed sample arrays and contiguous dashed runs. General-T inverse basis vectors clip with explicit Fit qualification; ratio-first scaling and finite display padding handle valid inverses near the floating-point limit without narrowing the engine domain. Owned regressions include the coordinator's tiny-state fixture, continuous input deadlines, drawing crossings and a valid general T=6×10⁻³⁰⁹I with a large finite inverse. The unchanged external two-test review fixture now passes. Corrected focused/type/build and the one fresh final full suite are recorded below after the corrected freeze; actual browser acceptance remains pending.
 
+### Final partial QA handoff — 9 November 2026
+
+Corrected frozen source **`cf60063b865e9e28d1a0eed7098155489785f894`**, same [PR #82](https://github.com/ckbk123/CSDKTD_APP/pull/82), is independently source-accepted by the coordinator. The coordinator rechecked the narrow correction delta, confirmed clean exact HEAD, independently reran **144 module tests /nine files** and the unchanged outside-Git **two-test** reproduction, and reported no remaining source blocker. Its earlier full-source math/domain/complete-Practice/lifetime review stands. This attribution is independent source/test review, not actual-browser evidence.
+
+Own final corrected-source checks all pass:
+
+- `node node_modules/vitest/vitest.mjs run src/modules/cr03`: **144 tests /nine files**,6.10s.
+- `node node_modules/vitest/vitest.mjs run --config <outside-Git artifact directory>/cr03-root-review.config.mjs`: **two tests /one file**,1.32s, reproductions unchanged.
+- `npm run check`: pass.
+- `npm run build`: pass; the existing shared MathLive chunk-size advisory remains.
+- `npm test`: **5,783 tests /280files**,45.82s, on exact corrected source; exit0. Earlier8a02 full5,780/280 remains separately attributed above.
+- `git diff --check 6af3485`: pass. Original `math.ts`, `parser.ts`, `index.ts` and `workspace.ts` remain byte-unchanged from that primary baseline; no shared/dependency/version files changed.
+
+Final build/full logs remain outside Git in `C:/Users/baokh/.codex/visualizations/2026/11/05/01a1ac7b-23ee-7530-bb2d-334ceb1752ec/` as `cr03-build.log` and `cr03-full-suite-final.log`; the coordinator's original reproduction/config stay there too. Port8822 remains allocated for this contribution, but the previous preview was not listening at final process revalidation; no current running preview or rendered inspection is claimed.
+
+Actual desktop/phone geometry, actual fonts/editor/keyboard/fraction entry, direct touch, measured latency, browser reset/navigation and browser acceptance remain **pending**. Source/DOM/SSR checks do not replace those gates. Stage remains implemented; this clean exact-HEAD claim is handed off with reason **partial**, preserving this tree/branch/PR for later browser review. No integration, verified stage, release, deployment or successful overall-goal completion is asserted. The user's explicit stop-after-current instruction ends this worker after this handoff; no next module is claimed, prepared or started. Prior CF01/PR66, CD01/PR72 and CD03/PR77 handoffs remain preserved unchanged.
+
 ## Historical original delivery (preserved)
 
 - **Coordinator preparation:** frozen source `8319494d68d6dcf81bf44ba0ec090846564a2119` is prepared with the explicitly authorized trajectory-conditioning screen, shared TeX argument preflight, and owned deferred-view cleanup.111 module tests plus179 shared-preflight and25 native-reader tests pass (315 total), with type checking and diff validation. Stage remains implemented; coordinator browser acceptance of the integrated correction is pending.
