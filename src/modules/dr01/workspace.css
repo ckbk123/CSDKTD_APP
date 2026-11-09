@@ -34,3 +34,22 @@
   [data-module="DR01"] .dr01-tool svg text { font-size: 14px; }
   [data-module="DR01"] .dr01-tool svg { min-width: 620px; }
 }
+[data-module="DR01"].dr01-panels{display:grid;gap:12px;min-width:0}
+[data-module="DR01"] .dr01-explore-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
+[data-module="DR01"] .dr01-explore-controls label,[data-module="DR01"].dr01-panels>label{display:grid;gap:5px;min-width:0;font-size:12px;color:var(--muted)}
+[data-module="DR01"].dr01-panels>label>select{min-height:44px;padding:8px;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:6px;width:100%;font:inherit}
+[data-module="DR01"] .dr01-explore input,[data-module="DR01"] .dr01-explore select,[data-module="DR01"] .dr01-explore button{min-height:44px}
+[data-module="DR01"] .dr01-explore input[type="range"]{accent-color:var(--accent);padding:4px;cursor:pointer}
+[data-module="DR01"] .dr01-explore summary{min-height:44px;padding:8px 0}
+[data-module="DR01"] .dr01-explore-inspection{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:center}
+[data-module="DR01"] .dr01-explore-inspection>label{display:grid;font-size:12px;gap:5px;color:var(--muted)}
+[data-module="DR01"] .dr01-explore-inspection>p,[data-module="DR01"] .dr01-explore-inspection>.dr01-actions{grid-column:1/-1}
+[data-module="DR01"] .dr01-sequence-figure{min-width:0;width:100%;overflow:hidden}
+[data-module="DR01"] .dr01-sequence-figure>svg{display:block;width:100%;min-width:0;min-height:0;height:auto;overflow:visible;touch-action:pan-y}
+[data-module="DR01"] .dr01-sequence-figure svg text{font:12px system-ui;fill:var(--text)}
+[data-module="DR01"] .dr01-inspection-line{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 5;pointer-events:none}
+[data-module="DR01"] .dr01-delay-guide{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 4;pointer-events:none}
+[data-module="DR01"] [data-onset]{cursor:ew-resize;touch-action:none}
+[data-module="DR01"] .dr01-onset-target{fill:var(--tint);stroke:var(--accent);stroke-width:2}
+[data-module="DR01"] [data-onset]:focus{outline:none}
+[data-module="DR01"] [data-onset]:focus-visible .dr01-onset-target{stroke-width:4}

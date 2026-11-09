@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationDraft, EquationInputOptions } from '../../shared/equations/input';
-import { mountView } from './view';
+import { mountPractice as mountView } from './practice';
 
 // These tests verify exercise wiring, not MathLive fonts, editing or keyboard behavior.
 vi.mock('../../shared/equations/input', () => ({
