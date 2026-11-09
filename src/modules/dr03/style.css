@@ -42,3 +42,43 @@
   [data-module="DR03"] .dr03-controls, [data-module="DR03"] .dr03-history, [data-module="DR03"] .dr03-coefficients { grid-template-columns: minmax(0, 1fr); }
   [data-module="DR03"] button { max-width: 100%; }
 }
+
+[data-module="DR03"].dr03-modes,
+[data-module="DR03"].dr03-explore { display: grid; gap: 12px; min-width: 0; }
+[data-module="DR03"] .dr03-live-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+[data-module="DR03"] .dr03-live-actions button { margin: 0; min-height: 44px; }
+[data-module="DR03"] .dr03-live-actions [aria-pressed="true"] { background: var(--tint); color: var(--accent); border-color: var(--accent); }
+[data-module="DR03"] .dr03-live-compact,
+[data-module="DR03"] .dr03-live-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-width: 0; }
+[data-module="DR03"] .dr03-explore label { display: flex; flex-direction: column; gap: 5px; min-width: 0; font-size: 12px; }
+[data-module="DR03"] .dr03-explore input,
+[data-module="DR03"] .dr03-explore select { box-sizing: border-box; min-height: 44px; }
+[data-module="DR03"] .dr03-explore input[type="range"] { accent-color: var(--accent); padding: 0; }
+[data-module="DR03"] .dr03-live-visuals { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 12px; }
+[data-module="DR03"] .dr03-live-form { display: grid; gap: 12px; }
+[data-module="DR03"] .dr03-live-state,
+[data-module="DR03"] .dr03-live-readout { margin: 0; font-size: 13px; overflow-wrap: anywhere; }
+[data-module="DR03"] .dr03-live-readout { padding: 8px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--tint); font-variant-numeric: tabular-nums; }
+[data-module="DR03"] .dr03-live-note,
+[data-module="DR03"] .dr03-live-canonical p { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+[data-module="DR03"] .dr03-live-warning { padding: 0; margin: 0; font-size: 13px; overflow-wrap: anywhere; }
+[data-module="DR03"] .dr03-live-warning:empty { display: none; }
+[data-module="DR03"] .dr03-memory-lane { display: grid; gap: 7px; margin: 10px 0; min-width: 0; }
+[data-module="DR03"] .dr03-memory-lane strong { font-size: 12px; }
+[data-module="DR03"] .dr03-memory-cells { display: flex; gap: 8px; overflow-x: auto; min-width: 0; padding-bottom: 6px; }
+[data-module="DR03"] .dr03-memory-cells button { flex: 0 0 142px; min-height: 74px; margin: 0; white-space: pre-line; text-align: left; font-size: 12px; font-variant-numeric: tabular-nums; }
+[data-module="DR03"] .dr03-memory-cells [aria-pressed="true"] { border-color: var(--accent); background: var(--tint); }
+[data-module="DR03"] .dr03-responsive-plot { min-width: 0; width: 100%; }
+/* Only outer drawings scale; nested clipping viewports keep their own dimensions. */
+[data-module="DR03"] .dr03-responsive-plot > svg { display: block; width: 100%; height: auto; min-width: 0; overflow: visible; }
+[data-module="DR03"] .dr03-responsive-plot text { fill: var(--muted); font-family: inherit; }
+[data-module="DR03"] .dr03-live-axis { fill: none; stroke: var(--line); vector-effect: non-scaling-stroke; }
+[data-module="DR03"] .dr03-live-stem { stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+[data-module="DR03"] .dr03-live-point { fill: var(--accent); }
+[data-module="DR03"] .dr03-live-reference { fill: none; stroke: var(--muted); stroke-width: 1.3; vector-effect: non-scaling-stroke; }
+[data-module="DR03"] .dr03-live-cursor { stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+[data-module="DR03"] .dr03-live-marker { fill: var(--surface); stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+@media (max-width: 760px) {
+  [data-module="DR03"] .dr03-live-visuals { grid-template-columns: minmax(0, 1fr); }
+  [data-module="DR03"] .dr03-explore .dr03-card { padding: 12px; }
+}

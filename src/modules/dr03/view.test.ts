@@ -9,7 +9,7 @@ vi.mock('../../shared/equations/input', () => ({
     return { element, getValue, setValue: (value: string) => { input.value = value; }, destroy: () => element.remove() };
   },
 }));
-import { mount } from './view';
+import { mount } from './practice';
 const visits: { controller: AbortController; cleanup: ReturnType<typeof mount> }[] = [];
 function open(): HTMLElement {
   const container = document.createElement('div'), controller = new AbortController(); document.body.append(container);
