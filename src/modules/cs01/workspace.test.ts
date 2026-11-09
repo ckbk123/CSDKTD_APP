@@ -25,8 +25,11 @@ function labeled<T extends HTMLElement>(container: HTMLElement, text: string): T
   if (!label) throw new Error(`Missing label ${text}`); return label.querySelector('input, select') as T;
 }
 async function open() {
-  const container = document.createElement('div'); container.dataset.module = 'CS01'; document.body.append(container);
-  const controller = new AbortController(); const cleanup = mount({ container, signal: controller.signal });
+  const host = document.createElement('div'); host.dataset.module = 'CS01'; document.body.append(host);
+  const controller = new AbortController(); const cleanup = mount({ container: host, signal: controller.signal });
+  await vi.waitFor(() => expect([...host.querySelectorAll('button')].some(button => button.textContent === 'Practice')).toBe(true));
+  [...host.querySelectorAll('button')].find(button => button.textContent === 'Practice')!.click();
+  const container = host.querySelector<HTMLElement>('[data-learning-mode="practice"]')!;
   await vi.waitFor(() => expect(container.querySelector('textarea')).not.toBeNull());
   const reveal = () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Analyze and reveal')!.click();
   return { container, controller, cleanup, reveal };

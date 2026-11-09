@@ -2,6 +2,7 @@
 
 - **Stage:** in-progress
 - **Current finite refinement (8 November 2026):** CS01 constrained modal-family pole/response exploration. Owner `interactivity-cs01-01a1ac7b`, branch `codex/cs01-modal-exploration`, worktree `C:/Users/baokh/.codex/worktrees/cs01-modal-exploration/CSDKTD APP`, base primary main `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c`. Current primary guides and TASK/code/tests were inspected. Browser QA is centralized with the coordinator; assigned preview port 8806 is reserved for that handoff. No shared API, dependency, version or deployment change is included.
+- **Current refinement PR:** https://github.com/ckbk123/CSDKTD_APP/pull/67 (created and attached by the coordinator; reuse for all corrections).
 
 ## Finite refinement audit and checkpoint
 
@@ -11,10 +12,12 @@ The accepted exercise below has exact two-state algebra, full arbitrary A/B/C/D 
 |---|---|
 | Three explicit editable families | New `families.ts` maps canonical real/conjugate roots, labelled hidden/visible diagonal states and repeated semisimple/Jordan roots to exact original-parser-validated A/B/C/D. Six independent tests pass for the baseline, changed pole, oscillator, hidden scalar cancellation and Jordan distinction. |
 | Original domain and all modes | Preserve `math.ts`, parser, exact GCD/sign/Jordan/conditioning screens and arbitrary matrix entry. New family editing uses a declared 0.01 grid and the original derived-entry/denominator limits; these editing bounds do not replace arbitrary-matrix support. |
-| Immediate linked visual/result | Pending: baseline all-root plane, normalized selected mode/free-state response and separate internal/zero-input/BIBO verdicts with synchronized visible model. Fixed equal axes, explicit Fit, shared time cursor and local cached traces. |
-| Controls and native draft honesty | Pending: live initial state/horizon, constrained pole pointer/arrows/numeric controls, one pointer owner, transactional cancel/undo and retained native badInput without value writes during view-only actions. |
-| Exercise and ownership | Pending: independent retained Practice attempt, child abort scope/recovery/late disposer, owned observers/frames/timers, real-shell Escape and narrow screen geometry evidence. All new mutable state remains visit-local. |
+| Immediate linked visual/result | `explore.ts`, `plots.ts` and `traces.ts` open the computed canonical baseline with all original roots/retained scalar poles, selected real mode, free-state response, three separate exact classifications and visible synchronized A/B/C/D. Equal root axes and response axes stay fixed until Fit. Five UI checks cover baseline, hidden-state changes, independent Jordan structure and cached analytic time inspection. |
+| Controls and native draft honesty | Live initial state/horizon, constrained pole pointer/arrows/numeric controls, one pointer owner, transactional cancel/undo and bounded scheduling are wired. A focused native horizon-underflow test verifies the same input and zero value writes through Fit and response-view changes. Broader multi-pointer, badInput, cancellation and disposal tests remain pending. |
+| Exercise and ownership | Original arbitrary matrix exercise is retained in `practice.ts`, with independent panel state and hidden checked answers. Original math/parser functions and limits are unchanged. The synchronous lazy loader contract remains; a returned disposer after a reentrant abort is now released. Mode scopes abort failed Practice resources and preserve Explore. Original exercise tests pass against the preserved Practice panel. More focused mode/recovery/real-shell/resource and phone geometry checks remain open. |
 | Delivery | Stage describes a partial checkpoint. Focused module/type/build/full checks, independent review, one PR, central browser desktop/phone/reset/navigation and exact clean submission remain open. |
+
+9 November continuation: primary advanced to v0.3.17 (`6af3485e`) while this active claim retains its authorized `aaeda5e` baseline; no rebase or unrelated wave changes were imported. Current module checkpoint passes **96 tests in 4 files** (original accepted math/exercise tests plus six family and five Explore tests). The new UI remains in-progress until interaction/failure/lifecycle tests, broader checks and actual central browser QA are complete. No new actual browser evidence is claimed.
 
 ## Historical accepted exercise delivery
 
