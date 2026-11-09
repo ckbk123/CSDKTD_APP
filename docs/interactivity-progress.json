@@ -173,19 +173,19 @@
       "agent": "/root/design_interactivity",
       "branch": "codex/cp03-sinusoidal-exploration",
       "scope": "Live sinusoidal response, direct measurement markers and linked frequency views with retained Practice",
-      "state": "review-return",
+      "state": "implemented-awaiting-browser",
       "base": "aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c",
       "wave": 3,
       "remaining": [
-        "Restore all trial-derived controls on cancellation without overwriting invalid native drafts",
-        "Keep arbitrary checked frequency coherent with the native log thumb",
-        "Repeat source/focused checks, actual browser gate and combined release"
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
       ],
-      "source": "19eabc2d90cad786b36d724fc344afacbeb77dab",
+      "source": "737aa3d293a24476d303735dd7c047b4502c7524",
       "pr": 70,
       "evidence": [
-        "118 module tests and5656 full tests /267 files, type/build passed at c8f13a5.",
-        "Independent review returned a reproducible stale derived-control state after frequency cancellation and a native log-slider quantization concern."
+        "Independent source review accepted the retained sinusoidal exercise and complete phase-gesture cancellation correction;126 module tests /8 files passed.",
+        "5664 application tests /267 files, TypeScript and production build passed at final55b2649 code.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
       ]
     },
     {
@@ -212,19 +212,19 @@
       "id": "DD04",
       "agent": "/root",
       "branch": "codex/dd04-memory-exploration",
-      "source": "9fdef5f774b434864cb4626ec409cfda0b812390",
+      "source": "b3223871b7ecde8c4093c020de0cc134d62cfcab",
       "pr": 71,
       "scope": "Memory-first PID execution, bounded uncommitted error stems and linked committed-sample inspection/replay",
       "evidence": [
-        "119 module tests /6 files and TypeScript passed at pure editing/timeline checkpoint.",
-        "Interaction wiring and all later verification remain in progress."
+        "Independent source review accepted future-error editing, complete committed-memory replay, native attempts and parser-matched tools;136 module tests /7 files passed.",
+        "5774 application tests /279 files, TypeScript and production build passed at final589d978 code.",
+        "Original controller/parser/math/workspace metadata remain unchanged; clean partial QA handoff with actual browser gates open."
       ],
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 4,
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full/actual-browser verification",
+        "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ]
     },
@@ -232,19 +232,19 @@
       "id": "CD01",
       "agent": "/root/structure_stability",
       "branch": "codex/cd01-pid-exploration",
-      "source": "611555828edfc60503948e0ab68136c9f0e7a1cd",
+      "source": "b06ae2779d0829e357974dc610c7b6bce9c5b69c",
       "pr": 72,
       "scope": "Reason-gated coalesced PID previews, separate applied trial, visible output/effort and cached signal inspection",
       "evidence": [
-        "Early pure plotting/audit checkpoint passed78 module tests /6 files.",
-        "Full UI/reason/preview separation and complete verification remain in progress."
+        "Independent source review accepted original PID mathematics, signed gains, reason-before-preview workflow, draft retention and applied-trial separation;99 module tests /6 files passed.",
+        "5773 application tests /277 files, TypeScript and production build passed at final818ccb6 code.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
       ],
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 4,
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full/actual-browser verification",
+        "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ]
     },
@@ -254,56 +254,152 @@
       "branch": "codex/ds01-modal-exploration",
       "scope": "Full modal-row unit-circle/stem exploration with unchanged boundary certification and retained original Practice",
       "evidence": [
-        "Fresh finite claim/worktree from current main; original1–4 modal rows and24-state constructed-realization domain are preserved."
+        "Independent full source and final real-coordinate wording reviews accepted the original modal-row domain, complete original Practice and sampled unit-circle qualifications;152 module tests /7 files passed.",
+        "5789 application tests /281 files, TypeScript and production build passed at final99abdd6 code.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
       ],
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 4,
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full/actual-browser verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "2b837e0da8ae89324140ce1004b61b301af53f3f",
+      "pr": 73
+    },
+    {
+      "id": "CD02",
+      "agent": "/root/design_interactivity",
+      "branch": "codex/cd02-lead-exploration",
+      "scope": "Direct constrained lead-controller pole/target exploration with original design-derived gain, full-order checks and retained Practice",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "implemented-awaiting-browser",
+      "source": "b1db3168b2148c820a447a1dd7fbe4aa905d6a9a",
+      "pr": 74,
+      "evidence": [
+        "Independent complete source review and Retry/throwing-disposer regressions accepted;173 module tests /11 files passed.",
+        "5795 application tests /282 files, TypeScript and production build pass at correctedcd22fbb code. Narrow exact remaining-decay arithmetic correction independently accepted without widening the original strict boundary.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
+      ],
+      "remaining": [
+        "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ]
+    },
+    {
+      "id": "DR04",
+      "agent": "/root",
+      "branch": "codex/dr04-direct-boundaries",
+      "scope": "Immediate checked sampled graph, direct intermediate sampler/hold selection and actual-drawing ordered trace selection with original complete editor/Mason/audit mathematics",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "source": "7370cd6c4e6f93a38ca02c9f78b94f96efc34e79",
+      "pr": 75,
+      "evidence": [
+        "110 module tests /5 files, 5760 application tests /277 files, TypeScript and production build pass at7370cd6.",
+        "Source tests retain original geometry, exact whole/split fixtures, connected ordered traces, focus/scroll/native drafts and partial/late row cleanup."
+      ],
+      "remaining": [
+        "Independent source review",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "DR03",
+      "agent": "/root/response_interactivity",
+      "branch": "codex/dr03-memory-exploration",
+      "scope": "Immediate memory/register trajectory, linked integer-k inspection and bounded nonmutating replay with original full models and histories",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; cursor/replay may cache, but T changes rerun T-dependent input sequences.",
+        "First orchestration checkpoint passes157 module tests /7 files and TypeScript; UI implementation and full review gates remain open."
+      ],
+      "remaining": [
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "a69e077d526b540110bea72587d9e92b43d73eb8",
+      "pr": 76
+    },
+    {
+      "id": "CD03",
+      "agent": "/root/structure_stability",
+      "branch": "codex/cd03-lag-exploration",
+      "scope": "Immediate proportional baseline, explicit inactive lag drafts, direct bounded corner/ratio exploration and full original response/Practice",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; original lag model/response/parser and conditioning/future-tail qualifications remain authoritative.",
+        "First cache/atomic-corner checkpoint passes36 module tests /5 files and TypeScript; UI implementation and full review gates remain open."
+      ],
+      "remaining": [
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "b2fd845aa0b1b68aac541b8267af6d63f642e4e4",
+      "pr": 77
     }
   ],
   "modules": [
     {
       "id": "CD01",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Keep gains beside a baseline response/effort view; add synchronized bounded gain sliders and a deliberate exploration/prediction flow; retain required trial reasons in guided exercises and avoid pre-reveal answer leakage.",
       "evidence": [
-        "Early pure plotting/audit checkpoint passed78 module tests /6 files.",
-        "Full UI/reason/preview separation and complete verification remain in progress."
+        "Independent source review accepted original PID mathematics, signed gains, reason-before-preview workflow, draft retention and applied-trial separation;99 module tests /6 files passed.",
+        "5773 application tests /277 files, TypeScript and production build passed at final818ccb6 code.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full/actual-browser verification",
+        "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "611555828edfc60503948e0ab68136c9f0e7a1cd",
+      "source": "b06ae2779d0829e357974dc610c7b6bce9c5b69c",
       "pr": 72
     },
     {
       "id": "CD02",
-      "state": "planned",
+      "state": "implemented-awaiting-browser",
       "target": "Open with the baseline complex plane; allow constrained real controller-pole drag and conjugate target-pair drag with numeric alternatives; link angle deficiency, full locus and response preview while retaining full-order verified checks.",
-      "evidence": [],
+      "evidence": [
+        "Independent complete source review and Retry/throwing-disposer regressions accepted;173 module tests /11 files passed.",
+        "5795 application tests /282 files, TypeScript and production build pass at correctedcd22fbb code. Narrow exact remaining-decay arithmetic correction independently accepted without widening the original strict boundary.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "b1db3168b2148c820a447a1dd7fbe4aa905d6a9a",
+      "pr": 74
     },
     {
       "id": "CD03",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Put near-origin pole/zero handles and a ratio-lock toggle on a persistent placement view; show tracking-error and full-response changes together, with numerical envelope/horizon qualifications preserved.",
-      "evidence": [],
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; original lag model/response/parser and conditioning/future-tail qualifications remain authoritative.",
+        "First cache/atomic-corner checkpoint passes36 module tests /5 files and TypeScript; UI implementation and full review gates remain open."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "b2fd845aa0b1b68aac541b8267af6d63f642e4e4",
+      "pr": 77
     },
     {
       "id": "CD04",
@@ -458,18 +554,18 @@
     },
     {
       "id": "CP03",
-      "state": "review-return",
+      "state": "implemented-awaiting-browser",
       "target": "Drag labeled peak/amplitude handles; keep frequency knob beside time/frequency visual; animate the phase relationship with reduced-motion support and show settled-window status.",
       "evidence": [
-        "118 module tests and5656 full tests /267 files, type/build passed at c8f13a5.",
-        "Independent review returned a reproducible stale derived-control state after frequency cancellation and a native log-slider quantization concern."
+        "Independent source review accepted the retained sinusoidal exercise and complete phase-gesture cancellation correction;126 module tests /8 files passed.",
+        "5664 application tests /267 files, TypeScript and production build passed at final55b2649 code.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
       ],
       "remaining": [
-        "Restore all trial-derived controls on cancellation without overwriting invalid native drafts",
-        "Keep arbitrary checked frequency coherent with the native log thumb",
-        "Repeat source/focused checks, actual browser gate and combined release"
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
       ],
-      "source": "19eabc2d90cad786b36d724fc344afacbeb77dab",
+      "source": "737aa3d293a24476d303735dd7c047b4502c7524",
       "pr": 70
     },
     {
@@ -677,18 +773,18 @@
     },
     {
       "id": "DD04",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Preserve its real state-transition lesson. Put current memory and next sample beside the growing plot; optionally offer a bounded editable error-sequence stem editor and next/previous replay, without hiding calculate-versus-commit timing.",
       "evidence": [
-        "119 module tests /6 files and TypeScript passed at pure editing/timeline checkpoint.",
-        "Interaction wiring and all later verification remain in progress."
+        "Independent source review accepted future-error editing, complete committed-memory replay, native attempts and parser-matched tools;136 module tests /7 files passed.",
+        "5774 application tests /279 files, TypeScript and production build passed at final589d978 code.",
+        "Original controller/parser/math/workspace metadata remain unchanged; clean partial QA handoff with actual browser gates open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full/actual-browser verification",
+        "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "9fdef5f774b434864cb4626ec409cfda0b812390",
+      "source": "b3223871b7ecde8c4093c020de0cc134d62cfcab",
       "pr": 71
     },
     {
@@ -844,25 +940,36 @@
     },
     {
       "id": "DR03",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Put register/state/output views together and add time scrub or bounded replay with linked highlights; make mapped histories visibly move through each delay.",
-      "evidence": [],
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; cursor/replay may cache, but T changes rerun T-dependent input sequences.",
+        "First orchestration checkpoint passes157 module tests /7 files and TypeScript; UI implementation and full review gates remain open."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "a69e077d526b540110bea72587d9e92b43d73eb8",
+      "pr": 76
     },
     {
       "id": "DR04",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Make sample/hold boundaries select directly on pipeline and show changed topology/source vs split sampling together; select graph paths in the actual drawing rather than a remote branch list.",
-      "evidence": [],
+      "evidence": [
+        "110 module tests /5 files, 5760 application tests /277 files, TypeScript and production build pass at7370cd6.",
+        "Source tests retain original geometry, exact whole/split fixtures, connected ordered traces, focus/scroll/native drafts and partial/late row cleanup."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Independent source review",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "7370cd6c4e6f93a38ca02c9f78b94f96efc34e79",
+      "pr": 75
     },
     {
       "id": "DR05",
@@ -881,16 +988,19 @@
     },
     {
       "id": "DS01",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Drag a selected pole around/through the unit circle with live z^k stem response; keep hidden-mode and Jordan controls meaningful and show the opposite behavior of +0.8 and -0.8.",
       "evidence": [
-        "Fresh finite claim/worktree from current main; original1–4 modal rows and24-state constructed-realization domain are preserved."
+        "Independent full source and final real-coordinate wording reviews accepted the original modal-row domain, complete original Practice and sampled unit-circle qualifications;152 module tests /7 files passed.",
+        "5789 application tests /281 files, TypeScript and production build passed at final99abdd6 code.",
+        "Clean partial QA handoff; actual browser/font/phone/reset gates remain open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full/actual-browser verification",
+        "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
-      ]
+      ],
+      "source": "2b837e0da8ae89324140ce1004b61b301af53f3f",
+      "pr": 73
     },
     {
       "id": "DS02",
@@ -948,7 +1058,12 @@
     "CS01",
     "CF01",
     "CP03",
-    "DS03"
+    "DS03",
+    "DD04",
+    "CD01",
+    "DS01",
+    "CD02",
+    "DR04"
   ],
   "currentWave": 3,
   "verifiedCandidates": 0,
@@ -957,5 +1072,5 @@
     "browser": "Private IAB provider unavailable during the current background continuation; prior tool handles ended. Actual checks already observed remain attributed to their exact source. Outstanding browser gates are pending, not replaced by DOM tests.",
     "preview": "Accepted v0.3.17 primary preview restored on port8787; no deployment."
   },
-  "sourceVerifiedAwaitingBrowser": 3
+  "sourceVerifiedAwaitingBrowser": 8
 }
