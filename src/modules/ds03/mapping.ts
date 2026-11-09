@@ -36,7 +36,7 @@ export function createMapping(container: HTMLElement, parent: AbortSignal) {
   const root = el('section', undefined, 'ds-mapping'); container.prepend(root);
   let point: Complex = { re: 0, im: 1 }, previous: Complex | undefined, roots: readonly Complex[] = [], mapped: readonly (Complex | null)[] = [];
   let extents = [2, 2], width = 360, geometry: Geometry | undefined, disposed = false, invalid = false;
-  let gesture: { pointer: number; base: Complex } | undefined;
+  let gesture: { pointer: number; base: Complex; angle: number } | undefined;
   let observer: ResizeObserver | undefined;
   const readout = el('p', undefined, 'ds-map-readout'); readout.setAttribute('aria-live', 'polite');
   const status = el('p', '', 'ds-map-status'); status.setAttribute('role', 'status');
@@ -57,29 +57,37 @@ export function createMapping(container: HTMLElement, parent: AbortSignal) {
     const wrap = el('label', label), field = el('input'); field.type = 'number'; field.value = value; field.min = String(min); field.max = String(max); field.step = step; field.setAttribute('aria-label', label); wrap.append(field); controls.append(wrap); return field;
   }
   const angle = number('Unit-circle angle θ (degrees)', '90', 0, 360, '1');
-  const slider = el('input'); slider.type = 'range'; slider.min = '0'; slider.max = '360'; slider.step = '1'; slider.value = '90'; slider.setAttribute('aria-label', 'Unit-circle angle slider in degrees'); angle.parentElement!.append(slider);
+  const slider = el('input'); slider.type = 'range'; slider.min = '0'; slider.max = '360'; slider.step = 'any'; slider.value = '90'; slider.setAttribute('aria-label', 'Unit-circle angle slider in degrees'); angle.parentElement!.append(slider);
   const re = number('Selected Re z (−5 to 5)', '0', -5, 5, '.01'), im = number('Selected Im z (−5 to 5)', '1', -5, 5, '.01');
   const lockLabel = el('label', undefined, 'ds-map-lock'), lock = el('input'); lock.type = 'checkbox'; lock.checked = true; lockLabel.append(lock, el('span', 'Keep pointer and arrow moves on the unit circle'));
   lock.addEventListener('change', () => { cancel(); if (lock.checked) accept(circlePoint(Math.round(Math.atan2(point.im, point.re) * 180 / Math.PI))); }, { signal });
-  root.append(lockLabel, controls, el('p', 'Drag the selected circle or use its arrow keys. Circle moves use 1° steps (Shift: 10°); free moves use 0.01 (Shift: 0.1). Home selects z=1; End selects z=−1. Escape cancels a drag. Numeric coordinates also select interior/exterior points. Dimensions are unitless; w=(z−1)/(z+1), with no 2/T factor.', 'ds-small'));
+  root.append(lockLabel, controls, el('p', 'Drag the selected point or use its arrow keys. Circle dragging uses a 1° grid; circle keys move 1° (Shift: 10°). Angle-slider dragging is continuous, with the same degree keys. Free moves use 0.01 (Shift: 0.1). On the point, Home selects z=1 and End selects z=−1. Escape cancels a drag. Numeric coordinates also select interior/exterior points. Dimensions are unitless; w=(z−1)/(z+1), with no 2/T factor.', 'ds-small'));
 
   function fit(points: readonly (Complex | null)[]) { return Math.min(10, Math.max(1.5, ...points.filter((p): p is Complex => !!p).map(p => 1.2 * Math.max(Math.abs(p.re), Math.abs(p.im))))); }
   function handle() { return pair.querySelector<SVGElement>('[data-selected-point]'); }
-  function sync() {
+  const pointAngle = () => ((Math.atan2(point.im, point.re) * 180 / Math.PI) + 360) % 360;
+  function sync(preferredAngle = pointAngle()) {
     re.value = String(point.re); im.value = String(point.im);
-    const degrees = ((Math.atan2(point.im, point.re) * 180 / Math.PI) + 360) % 360;
-    angle.value = String(degrees); slider.value = String(degrees);
+    angle.value = String(preferredAngle); slider.value = String(preferredAngle); slider.setAttribute('aria-valuetext', `${preferredAngle} degrees`);
   }
-  function accept(next: Complex, remember = true) {
+  function accept(next: Complex, remember = true, preferredAngle?: number) {
     if (![next.re, next.im].every(v => Number.isFinite(v) && Math.abs(v) <= 5)) throw new Error('Choose finite coordinates between −5 and 5.');
-    if (remember) previous = copy(point); point = copy(next); invalid = false; status.textContent = ''; sync(); render();
+    if (remember) previous = copy(point); point = copy(next); invalid = false; status.textContent = ''; sync(preferredAngle); render();
   }
   function fail(error: unknown) { invalid = true; cancel(); status.textContent = error instanceof Error ? error.message : 'Check the selected point.'; render(); }
   function updateAngle(field: HTMLInputElement) {
-    try { const v = readNumericInput(field, 'Unit-circle angle θ (degrees)'); if (v < 0 || v > 360) throw new Error('Choose an angle from 0° to 360°.'); cancel(); lock.checked = true; accept(circlePoint(v)); }
+    try { const v = readNumericInput(field, 'Unit-circle angle θ (degrees)'); if (v < 0 || v > 360) throw new Error('Choose an angle from 0° to 360°.'); cancel(); lock.checked = true; accept(circlePoint(v), true, v); }
     catch (error) { fail(error); }
   }
   angle.addEventListener('input', () => updateAngle(angle), { signal }); slider.addEventListener('input', () => updateAngle(slider), { signal });
+  slider.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const current = invalid ? pointAngle() : Number(angle.value), step = event.shiftKey || event.key.startsWith('Page') ? 10 : 1;
+    const direction = ['ArrowLeft', 'ArrowDown', 'PageDown'].includes(event.key) ? -1 : 1;
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? 360 : Math.max(0, Math.min(360, current + direction * step));
+    slider.value = String(next); updateAngle(slider);
+  }, { signal });
   const updatePoint = () => {
     try { const next = checkedPoint(readNumericInput(re, 'Selected Re z'), readNumericInput(im, 'Selected Im z')); cancel(); lock.checked = false; accept(next); }
     catch (error) { fail(error); }
@@ -127,12 +135,12 @@ export function createMapping(container: HTMLElement, parent: AbortSignal) {
   function release() { const id = gesture?.pointer; gesture = undefined; if (id !== undefined && pair.hasPointerCapture?.(id)) pair.releasePointerCapture(id); }
   function cancel() {
     if (!gesture) return;
-    point = gesture.base; release(); if (!invalid) sync(); render();
+    const startingAngle = gesture.angle; point = gesture.base; release(); if (!invalid) sync(startingAngle); render();
   }
   pair.addEventListener('pointerdown', e => {
     if (gesture || e.button !== 0 || !(e.target as Element).closest('[data-selected-point]')) return;
     if (invalid) { status.textContent = 'Correct the invalid point draft, or select a valid angle, before dragging.'; return; }
-    gesture = { pointer: e.pointerId, base: copy(point) }; e.preventDefault(); pair.setPointerCapture?.(e.pointerId); handle()?.focus({ preventScroll: true });
+    gesture = { pointer: e.pointerId, base: copy(point), angle: Number(angle.value) }; e.preventDefault(); pair.setPointerCapture?.(e.pointerId); handle()?.focus({ preventScroll: true });
   }, { signal });
   window.addEventListener('pointermove', e => {
     if (gesture?.pointer !== e.pointerId || !geometry) return;
@@ -159,7 +167,7 @@ export function createMapping(container: HTMLElement, parent: AbortSignal) {
   function resize() { if (disposed) return; const actual = pair.querySelector('figure')?.getBoundingClientRect().width; const next = actual ? Math.max(220, actual - 22) : 360; if (Math.abs(next - width) > 1) { cancel(); width = next; render(); } }
   function destroy() { if (disposed) return; disposed = true; parent.removeEventListener('abort', destroy); release(); observer?.disconnect(); life.abort(); root.remove(); }
   parent.addEventListener('abort', destroy, { once: true });
-  render(); observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize);
+  sync(); render(); observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize);
   if (disposed || parent.aborted) { observer?.disconnect(); destroy(); } else { observer?.observe(pair); resize(); }
   return { element: root, setRoots(z: readonly Complex[], w: readonly (Complex | null)[]) { roots = z; mapped = w; render(); }, destroy };
 }

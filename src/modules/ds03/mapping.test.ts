@@ -40,6 +40,15 @@ describe('disk/half-plane point controls',()=>{
     const v=open(); edit(field(v.root,'Selected Re z (−5 to 5)'),'-1'); edit(field(v.root,'Selected Im z (−5 to 5)'),'1e-8');
     expect(text(v.root)).toContain('w = 1 + 200000000j.'); expect(text(v.root)).toContain('near the unit circle (radius tolerance 10⁻¹²)'); expect(text(v.root)).not.toContain('on the unit circle');
   });
+  it('keeps fractional numeric angles coherent with a continuous thumb and explicit degree keyboard steps',()=>{
+    const v=open(), angle=field(v.root,'Unit-circle angle θ (degrees)'), slider=field(v.root,'Unit-circle angle slider in degrees');
+    edit(angle,'90.5'); expect(slider.step).toBe('any'); expect(slider.value).toBe('90.5'); expect(slider.getAttribute('aria-valuetext')).toContain('90.5 degrees');
+    expect(Number(field(v.root,'Selected Re z (−5 to 5)').value)).toBeCloseTo(Math.cos(90.5*Math.PI/180),15);
+    slider.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true})); expect(angle.value).toBe('91.5');
+    slider.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft',shiftKey:true,bubbles:true})); expect(angle.value).toBe('81.5');
+    edit(angle,'179.999999999999'); expect(slider.value).toBe('179.999999999999'); expect(text(v.root)).not.toContain('at infinity');
+    slider.dispatchEvent(new KeyboardEvent('keydown',{key:'End',bubbles:true})); expect(angle.value).toBe('360'); expect(slider.value).toBe('360'); expect(text(v.root)).toContain('w = 0.');
+  });
   it('offers keyboard circle/free movement, retained focus, exceptional End and reversible edits',()=>{
     const v=open(); key(v.root,'End'); expect(text(v.root)).toContain('w is at infinity');
     expect(document.activeElement?.hasAttribute('data-selected-point')).toBe(true);
