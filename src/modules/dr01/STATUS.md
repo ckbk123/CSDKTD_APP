@@ -1,7 +1,23 @@
 # DR01 implementation status
 
-- **Stage:** verified
-- **Last assessed:** 2026-10-29
+- **Stage:** in-progress
+- **Last assessed:** 2026-11-09
+- **Refinement owner:** `interactivity-dr01-01a1ac7b`, branch `codex/dr01-sequence-exploration`, fresh base `6af3485ef6da6f11f4979ff665896d83b99414b5`.
+
+## Current interactivity refinement
+
+The authorized finite scope adds immediate sequence-builder exploration beside computed stems and the transform, with direct bounded pole/delay/length controls and linked cached integer-sample inspection. The complete original inverse-transform prediction, arbitrary bounded expression, histories, table, derivation and ROC qualifications remain independently available as Practice. There is no new mathematical family or parser scope.
+
+Initial checkpoint adds caller-owned immutable builder/trial snapshots and cached inspection through the original `fromSequence`, `samples`, `poles` and full-precision `transformLatex`. Only a valid T-only change reuses sample rows, because T labels kT in this exercise. A source/history/count change reruns the original bounded computation. Existing algebraic-versus-convergent DC qualifications are retained, including the conservative retained-pole exterior. No original mathematical file, loader, metadata, shared file or dependency has changed.
+
+First checks: **115 module tests /4 files** and TypeScript pass. Five independent orchestration fixtures cover the geometric/alternating delayed baseline, initial memory, sum versus average and full one-third coefficient roundtrip, T-only/cache semantics, immutable snapshots, original domain/overflow failures and singular/nonconvergent DC distinctions. UI implementation, complete application suite/build, independent review and actual browser acceptance remain pending.
+
+Planned browser gate: immediate desktop/phone visual, bounded direct controls and keyboard cancellation/undo, same-scale stems, actual fraction/power/fonts/keyboard, native partial/underflow retention through Fit/mode/inspection, original arbitrary inverse Practice, reset/reopen/rapid navigation and clean console. The private browser provider is unavailable during this background continuation. Source/DOM tests do not establish that gate. Own future preview port8817; preserve accepted port8787. No deployment.
+
+## Historical verified foundation — 29 October 2026
+
+The records below describe the original accepted implementation and its dated evidence; the current Stage above tracks the new refinement.
+
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/dr01-z-transforms-7e78`
