@@ -25,11 +25,14 @@ function labeled<T extends HTMLElement>(container: HTMLElement, text: string): T
   if (!label) throw new Error(`Missing label ${text}`); return label.querySelector('input, select') as T;
 }
 async function open() {
-  const container = document.createElement('div'); container.dataset.module = 'CS01'; document.body.append(container);
-  const controller = new AbortController(); const cleanup = mount({ container, signal: controller.signal });
+  const host = document.createElement('div'); host.dataset.module = 'CS01'; document.body.append(host);
+  const controller = new AbortController(); const cleanup = mount({ container: host, signal: controller.signal });
+  await vi.waitFor(() => expect([...host.querySelectorAll('button')].some(button => button.textContent === 'Practice')).toBe(true));
+  [...host.querySelectorAll('button')].find(button => button.textContent === 'Practice')!.click();
+  const container = host.querySelector<HTMLElement>('[data-learning-mode="practice"]')!;
   await vi.waitFor(() => expect(container.querySelector('textarea')).not.toBeNull());
   const reveal = () => [...container.querySelectorAll('button')].find(button => button.textContent === 'Analyze and reveal')!.click();
-  return { container, controller, cleanup, reveal };
+  return { container, controller, cleanup, reveal, host };
 }
 afterEach(() => { document.body.replaceChildren(); });
 
@@ -111,6 +114,13 @@ describe('CS01 exercise and visit lifecycle', () => {
     const a = container.querySelector<HTMLTextAreaElement>('textarea[aria-label="A (2 × 2)"]')!;
     change(a, '\\begin{bmatrix}100&0\\\\0&1\\end{bmatrix}', 'input'); reveal();
     expect(container.textContent).toContain('Internal asymptotic stability'); expect(container.textContent).toContain('Shorten the horizon'); controller.abort();
+  });
+  it('retains the actual arbitrary-matrix attempt and native invalid text while Explore keeps its own family', async () => {
+    const { container, controller, cleanup, reveal, host } = await open(); change(labeled(container, 'Example'), '1'); reveal(); const initial = labeled<HTMLInputElement>(container, 'Initial x₁(0)'); change(initial, '1e-999', 'input'); const writes = vi.spyOn(initial, 'value', 'set'); const button = (label: string) => [...host.querySelectorAll('button')].find(node => node.textContent === label)!;
+    button('Explore').click(); const explore = host.querySelector<HTMLElement>('[data-learning-mode="explore"]')!, family = explore.querySelector<HTMLSelectElement>('[aria-label="Editable realization family"]')!; change(family, 'hidden'); expect(explore.textContent).toContain('unexcited and unobserved'); button('Practice').click(); expect(labeled(container, 'Initial x₁(0)')).toBe(initial); expect(initial.value).toBe('1e-999'); expect(writes).not.toHaveBeenCalled(); expect(labeled<HTMLSelectElement>(container, 'Example').value).toBe('1'); reveal(); expect(container.querySelector('.cs-message')!.textContent).toContain('nonzero but too small'); button('Explore').click(); expect(family.value).toBe('hidden'); controller.abort(); if (typeof cleanup === 'function') cleanup();
+  });
+  it('revokes a revealed Practice grade when either prediction changes', async () => {
+    const { container, controller, reveal } = await open(); change(labeled(container, 'Zero-input state behavior'), 'asymptotically stable'); reveal(); expect(container.textContent).toContain('State prediction: matches'); change(labeled(container, 'Reduced scalar channel (zero initial state)'), 'false'); expect(container.querySelector('.cs-verdict')).toBeNull(); expect(container.textContent).not.toContain('State prediction: matches'); reveal(); expect(container.textContent).toContain('BIBO prediction: does not match'); controller.abort();
   });
   it('returns to the baseline after cleanup/reopen and ignores aborted late imports', async () => {
     const first = await open(); change(labeled(first.container, 'Example'), '4'); first.reveal();
