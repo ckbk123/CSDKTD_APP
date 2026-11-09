@@ -1,6 +1,22 @@
 # DR03 — discrete state models and scalar delay storage
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement — 9 November 2026:** linked initial-memory inspection and cached finite trajectory replay. Owner `interactivity-dr03-01a1ac7b`, fresh branch `codex/dr03-memory-exploration`, worktree `C:/Users/baokh/.codex/worktrees/dr03-memory-exploration/CSDKTD APP`, captured primary base `6af3485ef6da6f11f4979ff665896d83b99414b5` (v0.3.17). Current primary guides, TASK, existing view/math/parser/input/tests and matching atlas were inspected; own locked dependencies installed. Only this module is owned. Preview port **8815** is assigned for central browser QA; no server/browser has been launched.
+
+## Finite refinement audit and source checkpoint
+
+| Accepted finite scope | Existing evidence and current work |
+|---|---|
+| Immediate memory and input/output geometry | Original setup/reveal already computes the full construction, old-vector arithmetic and static output plot. Add an immediate Explore baseline with numeric old/next memory, selected simultaneous update and linked input/output stems. Retain the full original independently as Practice. |
+| One cached integer k | Original result already stores history/controller/observer rows with matched histories. New `exploration.ts` delegates every new experiment to original `run`; inspection/replay reads those cached rows. Prev/Next/Home/End and finite Play/Pause remain UI inspection, never mutable in-place execution. |
+| Full model/history/mapping domain | Preserve original proper order 0–2, delays 0–4, history2n+m≤8, canonical n+m≤6, all declared histories and exact-rational parser/rounding limits. Canonical maps/warnings remain original; direct feedthrough stores no state. Only declared initial memory may be edited; no arbitrary canonical or mid-trajectory state expansion. |
+| T and propagation conditioning | Every valid parameter/input edit uses original `run`. Ramp u[k]=A·k·T depends on T; T changes must recompute it. Qualified scalar roundoff withholding and canonical-local unavailability remain authoritative. No new solver or tolerance change. |
+| Drafts, accessibility and lifetime | Pending immediate view: native underflow/badInput/raw model preservation on view actions, owned coalescing/replay timers and observer cleanup, independent retained modes and partial/late mount recovery. Numeric/keyboard alternatives and readable phone stems/registers remain explicit gates. |
+| Validation and delivery | Original baseline **151 tests / 6 files** passes. First source checkpoint: **157 tests / 7 files** and `npm run check` pass, including six new snapshot/inspection fixtures. Immediate view/replay implementation, final focused/full/check/build, one reused PR, independent source acceptance and actual central browser gates remain pending. |
+
+The accepted original exercise record below is historical. New fixtures are independent checks, not newly inspected course diagrams; the external DR03 preparation record distinguishes source evidence from proposals. No source deck, shared API, dependency, shell or deployment change is included.
+
+## Historical accepted exercise delivery
 - **Assessed:** 29 October 2026. Fresh claim base 9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86, primary main v0.3.9.
 - **Worker chat:** 01a18700-cc48-7482-ba96-f9aab107f802.
 - **Branch/worktree:** codex/dr03-delay-states-f802; C:\Users\baokh\.codex\worktrees\dr03-delay-states-f802\CSDKTD APP.
