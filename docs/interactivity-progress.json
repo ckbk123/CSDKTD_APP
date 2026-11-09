@@ -4,7 +4,7 @@
   "coordinatorChat": "01a1ac7b-23ee-7530-bb2d-334ceb1752ec",
   "baseline": "cf69ad252c34c971c6d81282db9e0a471f40d846",
   "scope": "Shared interactivity fixes and CP01/CP06/DR02 pilots, then proven concept-specific refinements across all 56 bounded tools. Preserve existing mathematics/functionality; no deployment.",
-  "state": "stopping-after-current",
+  "state": "paused-by-user",
   "shared": {
     "state": "accepted",
     "changes": [
@@ -415,16 +415,15 @@
       "scope": "Immediate input/output/error exploration with local gain/type controls, original exact channel/certificate and cached sampled-time inspection",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "source-reviewed-awaiting-final-checks",
-      "source": "f3955c1c0f58808823856a776f5934b94449f423",
+      "state": "implemented-awaiting-browser",
+      "source": "f3c4851db3aeff140eebb1957296be533c61192a",
       "pr": 81,
       "evidence": [
-        "Independent complete source and focused correction reviews accepted;244 module tests /13 files and unchanged external2 pass.",
-        "TypeScript and production build pass; final full suite is finishing. Prior84ff254 passed5782 application tests /284 files.",
-        "Only final check attribution and clean partial handoff remain before stopping; actual browser gate open."
+        "Independent complete source and corrected-source reviews accepted;244 module tests /13 files and unchanged external2 pass.",
+        "5784 application tests /284 files, TypeScript and production build pass at finalf3955c1 code.",
+        "Exact clean partial QA handoff at owner's stop-after-current; actual browser gate remains open."
       ],
       "remaining": [
-        "Finish final full-check attribution and clean partial handoff",
         "Actual browser, phone, native interaction, fonts and navigation acceptance",
         "Combined integration/release only under a new explicit user scope"
       ]
@@ -436,17 +435,17 @@
       "scope": "Immediate coordinate/state/output exploration with bounded nonsingular shear/scale family, linked cached inspection and complete original arbitrary realization Practice",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "review-return",
+      "state": "implemented-awaiting-browser",
       "evidence": [
-        "Complete source reviewed with original engines/Practice preserved;141 module tests /9 files and5780 full tests /280 files pass at8a02.",
-        "Two reproduced closeout returns: fixed-deadline live preview and finite fixed-range geometry; owner is correcting only these related cases."
+        "Independent complete source and corrected-source reviews accepted;144 module tests /9 files and unchanged external2 pass.",
+        "5783 application tests /280 files, TypeScript and production build pass at finalcf60063 code.",
+        "Exact clean partial QA handoff at owner's stop-after-current; original engines/domain preserved, actual browser gate remains open."
       ],
       "remaining": [
-        "Complete finite correction, focused acceptance/full checks and clean partial handoff",
         "Actual browser, phone, native interaction, fonts and navigation acceptance",
         "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "8a02df9c08fc80fe1f14c56d12d6aa86b04dc1db",
+      "source": "297a1585ddc64ac6675af8f1773f6d9b805ebe95",
       "pr": 82
     }
   ],
@@ -583,19 +582,18 @@
     },
     {
       "id": "CF02",
-      "state": "source-reviewed-awaiting-final-checks",
+      "state": "implemented-awaiting-browser",
       "target": "Visible reference/output/error preview with one local gain slider and integrator chips; highlight integrators and selected limit factor while toggling physical vs comparator error.",
       "evidence": [
-        "Independent complete source and focused correction reviews accepted;244 module tests /13 files and unchanged external2 pass.",
-        "TypeScript and production build pass; final full suite is finishing. Prior84ff254 passed5782 application tests /284 files.",
-        "Only final check attribution and clean partial handoff remain before stopping; actual browser gate open."
+        "Independent complete source and corrected-source reviews accepted;244 module tests /13 files and unchanged external2 pass.",
+        "5784 application tests /284 files, TypeScript and production build pass at finalf3955c1 code.",
+        "Exact clean partial QA handoff at owner's stop-after-current; actual browser gate remains open."
       ],
       "remaining": [
-        "Finish final full-check attribution and clean partial handoff",
         "Actual browser, phone, native interaction, fonts and navigation acceptance",
         "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "f3955c1c0f58808823856a776f5934b94449f423",
+      "source": "f3c4851db3aeff140eebb1957296be533c61192a",
       "pr": 81
     },
     {
@@ -741,18 +739,18 @@
     },
     {
       "id": "CR03",
-      "state": "review-return",
+      "state": "implemented-awaiting-browser",
       "target": "Lead with side-by-side coordinate trajectories; single shear/scale control for a nonsingular coordinate-family experiment; cross-highlight row, state and mapped initial vector.",
       "evidence": [
-        "Complete source reviewed with original engines/Practice preserved;141 module tests /9 files and5780 full tests /280 files pass at8a02.",
-        "Two reproduced closeout returns: fixed-deadline live preview and finite fixed-range geometry; owner is correcting only these related cases."
+        "Independent complete source and corrected-source reviews accepted;144 module tests /9 files and unchanged external2 pass.",
+        "5783 application tests /280 files, TypeScript and production build pass at finalcf60063 code.",
+        "Exact clean partial QA handoff at owner's stop-after-current; original engines/domain preserved, actual browser gate remains open."
       ],
       "remaining": [
-        "Complete finite correction, focused acceptance/full checks and clean partial handoff",
         "Actual browser, phone, native interaction, fonts and navigation acceptance",
         "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "8a02df9c08fc80fe1f14c56d12d6aa86b04dc1db",
+      "source": "297a1585ddc64ac6675af8f1773f6d9b805ebe95",
       "pr": 82
     },
     {
@@ -1185,7 +1183,7 @@
     "browser": "Actual browser gates remain pending. Earlier background continuations had no private browser provider; the owner then requested stop-after-current. No further broad browser pass is authorized by this handoff.",
     "preview": "Accepted v0.3.17 remains on8787; isolated source previews/branches are preserved. No deployment."
   },
-  "sourceVerifiedAwaitingBrowser": 14,
+  "sourceVerifiedAwaitingBrowser": 16,
   "stopRequestedOn": "2026-11-09",
   "stopReason": "Owner requested finishing current work, then stopping the global goal to assess student ease of use and supply specific refinements.",
   "resumeRequiresSpecificUserScope": true
