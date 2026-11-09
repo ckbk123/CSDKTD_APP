@@ -4,11 +4,22 @@ import { readNumericInput } from '../../shared/numeric-input';
 import { calculate, derive, initialize, type DerivativeRule, type InitialMemory, type IntegralRule, type Memory, type Model, type Step } from './math';
 import { parseErrors } from './input';
 import { numberText as n, numberTex as t, polynomialTex as polynomial } from './format';
-import { samplePlots } from './plots';
+import { editFutureError } from './sequence';
+import { createWorkbench } from './workbench';
 import './style.css';
 
-export const mount: ModuleMount = ({ container, signal }) => {
+export const mount: ModuleMount = ({ container, signal: parent }) => {
+  if (parent.aborted) return;
+  const life = new AbortController(), signal = life.signal;
+  let disposed = false, releaseEditor: (() => void) | undefined, workbench: ReturnType<typeof createWorkbench> | undefined, editingError = false;
   const root = document.createElement('div'); root.className = 'pid-tool';
+  const cleanup = () => {
+    if (disposed) return; disposed = true; parent.removeEventListener('abort', cleanup); life.abort();
+    try { workbench?.destroy(); } finally { try { releaseEditor?.(); } finally { root.remove(); } }
+  };
+  parent.addEventListener('abort', cleanup, { once: true });
+  if (parent.aborted) { cleanup(); return cleanup; }
+  try {
   root.innerHTML = `
     <section class="pid-card">
       <h3>1. Set the controller and sampling rules</h3>
@@ -65,6 +76,17 @@ export const mount: ModuleMount = ({ container, signal }) => {
   const action = (name: string) => get<HTMLButtonElement>(`[data-action="${name}"]`);
   const message = get('.pid-message'), lesson = get('.pid-lesson'), derivation = get('.pid-derivation');
   const memoryPanel = get('.pid-memory'), pendingPanel = get('.pid-pending'), history = get('.pid-history');
+  const settings = document.createElement('details'); settings.className = 'pid-card pid-settings';
+  const settingsTitle = document.createElement('summary'); settingsTitle.textContent = 'Controller, sampling rules and initial memory'; settings.append(settingsTitle);
+  const settingsSections = [...root.querySelectorAll<HTMLElement>(':scope > section')]; settings.append(...settingsSections);
+  const conventions = root.querySelector(':scope > details')!; root.insertBefore(settings, conventions);
+  root.prepend(lesson);
+  const derivationCard = derivation.closest('section')!, derivationDetails = document.createElement('details'); derivationDetails.className = 'pid-card';
+  const derivationTitle = document.createElement('summary'); derivationTitle.textContent = 'Controller derivation and positional/incremental identities'; derivationDetails.append(derivationTitle, derivation); derivationCard.replaceWith(derivationDetails);
+  const executionCard = memoryPanel.closest('section')!, historyCard = history.closest('section')!;
+  executionCard.querySelector('h3')!.textContent = 'Read, calculate, then commit';
+  const live = document.createElement('div'); live.className = 'pid-live-grid'; lesson.prepend(live); live.append(executionCard);
+  const historyDetails = document.createElement('details'); historyDetails.className = 'pid-card'; const historyTitle = document.createElement('summary'); historyTitle.textContent = 'All committed sample values'; historyDetails.append(historyTitle, history); historyCard.replaceWith(historyDetails);
   let draft: EquationDraft;
   let experiment: { model: Model; initial: InitialMemory; initialMemory: Memory; errors: readonly number[] } | undefined;
   let memory: Memory | undefined, pending: Step | undefined;
@@ -74,16 +96,18 @@ export const mount: ModuleMount = ({ container, signal }) => {
   };
   const equation = (parent: HTMLElement, latex: string, label: string) => parent.append(createEquationDisplay(latex, label));
   const invalidate = () => {
+    if (disposed || signal.aborted) return; workbench?.cancel();
     experiment = undefined; memory = undefined; pending = undefined; committed = [];
     lesson.hidden = true; pendingPanel.hidden = true; pendingPanel.replaceChildren();
-    message.textContent = 'Inputs changed. Derive and initialize the new experiment.';
+    message.textContent = 'Inputs changed. Derive and initialize the new experiment.'; workbench?.refresh();
   };
   const syncRules = () => {
     input('tau').disabled = choice('derivative').value !== 'filtered';
     input('d0').disabled = choice('derivative').value === 'backward';
   };
   const errorsInput = createEquationInput({ label: 'Error samples starting at k = 1', value: '[1,1,1,1,0,0]', signal,
-    onChange: value => { draft = value; invalidate(); } });
+    tools: ['fraction', 'power', 'parentheses'], onChange: value => { if (workbench?.isDragging()) { workbench.cancel(); errorsInput.setValue(value.latex); } draft = value; invalidate(); } });
+  releaseEditor = errorsInput.destroy; if (disposed || signal.aborted) { errorsInput.destroy(); return cleanup; }
   get('.pid-errors').append(errorsInput.element); draft = errorsInput.getValue();
   const numeric = (name: string) => {
     const field = input(name);
@@ -91,7 +115,16 @@ export const mount: ModuleMount = ({ container, signal }) => {
     return readNumericInput(field, name);
   };
   for (const field of root.querySelectorAll<HTMLInputElement>('[data-number]:not([data-number="prediction"])')) field.addEventListener('input', invalidate, { signal });
-  for (const select of root.querySelectorAll<HTMLSelectElement>('[data-choice]')) select.addEventListener('change', () => { syncRules(); invalidate(); }, { signal });
+  for (const select of root.querySelectorAll<HTMLSelectElement>('[data-choice]')) select.addEventListener('change', () => {
+    if (select.dataset.choice === 'form') { if (pending) renderPrimary(pending); return; }
+    syncRules(); invalidate();
+  }, { signal });
+
+  function renderPrimary(step: Step): void {
+    let line = pendingPanel.querySelector<HTMLElement>('[data-primary-result]');
+    if (!line) { line = say(pendingPanel, ''); line.setAttribute('data-primary-result', ''); }
+    line.textContent = `Primary ${choice('form').value === 'position' ? 'positional' : 'incremental'} result: u[${step.k}]=${n(choice('form').value === 'position' ? step.position : step.incremental)}. Positional/incremental difference: ${n(step.residual)}.`;
+  }
 
   function renderDerivation(model: Model): void {
     derivation.replaceChildren();
@@ -118,14 +151,14 @@ export const mount: ModuleMount = ({ container, signal }) => {
     for (const [label, value] of [[`e[${memory.k - 1}]`, memory.ePrev], [`e[${memory.k - 2}]`, memory.eOlder], [`I[${memory.k - 1}]`, memory.integral], [`D[${memory.k - 1}]`, memory.derivative], [`u[${memory.k - 1}]`, memory.output], [`Δu[${memory.k - 1}]`, memory.delta]] as const) {
       const cell = document.createElement('div'); say(cell, label, 'span'); say(cell, n(value), 'strong'); memoryPanel.append(cell);
     }
-    action('calculate').disabled = memory.k > errors.length;
-    action('commit').disabled = !pending;
-    action('run').disabled = Boolean(pending) || memory.k > errors.length;
+    action('calculate').disabled = editingError || memory.k > errors.length;
+    action('commit').disabled = editingError || !pending;
+    action('run').disabled = editingError || Boolean(pending) || memory.k > errors.length;
   }
   function renderHistory(): void {
     if (!experiment) return;
     history.replaceChildren();
-    history.append(samplePlots(committed, experiment.initialMemory.output, experiment.initial.e0, experiment.model.period));
+    workbench?.refresh();
     const wrap = document.createElement('div'); wrap.className = 'pid-table'; wrap.tabIndex = 0;
     wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', 'Committed sample values, scroll horizontally if needed');
     const table = document.createElement('table');
@@ -141,7 +174,7 @@ export const mount: ModuleMount = ({ container, signal }) => {
     if (!experiment) return;
     memory = initialize(experiment.model, experiment.initial); committed = []; pending = undefined;
     pendingPanel.hidden = true; pendingPanel.replaceChildren(); input('prediction').value = '';
-    renderMemory(); renderHistory();
+    renderMemory(); renderHistory(); workbench?.reset();
   }
   action('derive').addEventListener('click', () => {
     if (signal.aborted) return;
@@ -166,10 +199,10 @@ export const mount: ModuleMount = ({ container, signal }) => {
       equation(pendingPanel, `D=(${t(s.derivativeMemory)})+(${t(s.derivativeChange)})=${t(s.derivative)}`, 'Derivative old-memory and error-change arithmetic');
       equation(pendingPanel, `u_{\\mathrm{position}}=${t(s.proportional)}+(${t(s.integral)})+(${t(s.derivative)})=${t(s.position)}`, 'Positional checked result');
       equation(pendingPanel, `\\Delta u=${s.incrementTerms.map(value => `(${t(value)})`).join('+')}=${t(s.increment)},\\quad u=${t(s.old.output)}+(${t(s.increment)})=${t(s.incremental)}`, 'Incremental checked result');
-      say(pendingPanel, `Primary ${choice('form').value === 'position' ? 'positional' : 'incremental'} result: u[${s.k}]=${n(choice('form').value === 'position' ? s.position : s.incremental)}. Positional/incremental difference: ${n(s.residual)}.`);
+      renderPrimary(s);
       if (input('prediction').value.trim()) {
         const prediction = numeric('prediction');
-        say(pendingPanel, Math.abs(prediction - s.position) <= 1e-7 * Math.max(1, Math.abs(s.position)) ? 'Your prediction matches within the displayed precision.' : `Your prediction differs by ${n(prediction - s.position)}. Check the highlighted old values and arithmetic.`);
+        say(pendingPanel, Math.abs(prediction - s.position) <= 1e-7 * Math.max(1, Math.abs(s.position)) ? 'Your prediction matches within the displayed precision.' : `Your prediction differs by ${n(prediction - s.position)}. Check the highlighted old values and arithmetic.`).setAttribute('data-prediction-grade', '');
       }
       renderMemory(); message.textContent = 'Result revealed. Commit shifts the error history and stores I, D, u and Δu together.';
     } catch (error) { pending = undefined; pendingPanel.hidden = true; renderMemory(); message.textContent = (error as Error).message; }
@@ -193,5 +226,34 @@ export const mount: ModuleMount = ({ container, signal }) => {
     errorsInput.setValue('[1,1,1,1,0,0]'); draft = errorsInput.getValue(); syncRules(); invalidate();
     message.textContent = 'Experiment loaded. Derive it to inspect its controller and memory.';
   }, { signal });
-  return () => { errorsInput.destroy(); root.remove(); };
+  const syncEditing = () => { settings.inert = editingError; input('prediction').disabled = editingError; action('derive').disabled = action('restart').disabled = editingError; renderMemory(); };
+  workbench = createWorkbench({ container: live, signal,
+    read: () => experiment && memory ? { model: experiment.model, initialMemory: experiment.initialMemory, errors: experiment.errors, memory, committed } : undefined,
+    edit: (k, value) => {
+      if (!experiment || !memory) throw new Error('Initialize the controller first.');
+      const next = editFutureError(experiment.errors, memory.k, k, value);
+      if (next.errors.every((error, i) => error === experiment!.errors[i])) return;
+      experiment = { ...experiment, errors: next.errors }; errorsInput.setValue(next.latex); draft = errorsInput.getValue();
+      pending = undefined; pendingPanel.hidden = true; renderMemory(); message.textContent = 'Known input changed. Stored memory and committed samples are unchanged; calculate the next output again.';
+    },
+    replay: k => {
+      const step = committed[k - 1]; if (!step) throw new Error('Select an actual committed sample to replay.');
+      memory = step.old; committed = committed.slice(0, k - 1); pending = undefined; pendingPanel.hidden = true; input('prediction').value = '';
+      renderMemory(); renderHistory(); message.textContent = 'Restored the exact old memory before sample ' + k + '. Later commits were removed; calculate and commit again.';
+    },
+    beginEdit: () => {
+      if (!experiment || !memory) throw new Error('Initialize the controller first.');
+      const saved = { errors: experiment.errors, latex: errorsInput.getValue().latex, draft, pending, hidden: pendingPanel.hidden, message: message.textContent };
+      editingError = true; syncEditing();
+      return () => { if (!experiment || disposed) return; experiment = { ...experiment, errors: saved.errors }; errorsInput.setValue(saved.latex); draft = saved.draft; pending = saved.pending; pendingPanel.hidden = saved.hidden; message.textContent = saved.message; renderMemory(); };
+    },
+    endEdit: () => { editingError = false; syncEditing(); message.textContent = pending ? 'Previous checked calculation retained; stored memory is unchanged.' : 'Input editing finished. Stored memory is unchanged; calculate and commit to advance.'; },
+  });
+  if (disposed || signal.aborted) { workbench.destroy(); return cleanup; }
+  input('prediction').addEventListener('input', () => {
+    if (pending) { const oldGrade = pendingPanel.querySelector('[data-prediction-grade]'); oldGrade?.remove(); say(pendingPanel, 'Prediction edited. Calculate again to check it.').setAttribute('data-prediction-grade', ''); }
+  }, { signal });
+  syncRules(); action('derive').click();
+  return cleanup;
+  } catch (error) { cleanup(); throw error; }
 };

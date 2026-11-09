@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationDraft, EquationInputOptions } from '../../shared/equations/input';
 import { mount } from './view';
+import * as equations from '../../shared/equations/input';
 
 vi.mock('../../shared/equations/input', () => ({
   createEquationDisplay: (latex: string, label: string) => { const node = document.createElement('div'); node.setAttribute('aria-label', label); node.textContent = latex; return node; },
@@ -13,7 +14,7 @@ vi.mock('../../shared/equations/input', () => ({
 }));
 
 const visits: (() => void)[] = [];
-afterEach(() => { visits.splice(0).forEach(cleanup => cleanup()); document.body.replaceChildren(); });
+afterEach(() => { visits.splice(0).forEach(cleanup => cleanup()); vi.restoreAllMocks(); document.body.replaceChildren(); });
 function visit() {
   const container = document.createElement('div'); container.dataset.module = 'DD04'; document.body.append(container);
   const controller = new AbortController(); const cleanup = mount({ container, signal: controller.signal });
@@ -23,6 +24,59 @@ function visit() {
   return { container, controller, button, numeric };
 }
 describe('DD04 read/calculate/commit interface (mocked presentation only)', () => {
+  it('starts with actual initialized memory and known inputs without precomputing output answers', () => {
+    const v=visit();expect(v.container.querySelector<HTMLElement>('.pid-lesson')!.hidden).toBe(false);
+    expect(v.container.querySelectorAll('.pid-timeline-chart:first-child circle')).toHaveLength(7);
+    expect(v.container.querySelectorAll('.pid-timeline-chart:last-child circle')).toHaveLength(1);
+    expect(v.container.querySelector('.pid-memory')!.textContent).toContain('u[0]0');expect(v.container.querySelector<HTMLElement>('.pid-pending')!.hidden).toBe(true);
+    expect(v.container.querySelector('.pid-settings')!.hasAttribute('open')).toBe(false);
+  });
+  it('links direct future-input edits to the original kernel while keeping commit timing and explicit replay',()=>{
+    const v=visit(),edit=(name:string,value:string)=>{const f=v.container.querySelector<HTMLInputElement>(`[aria-label="${name}"]`)!;f.value=value;f.dispatchEvent(new Event('input'));};
+    edit('Error e[k] to edit','.5');v.button('calculate').click();expect(v.container.querySelector('.pid-pending')!.textContent).toContain('u[1]=7.05');expect(v.container.querySelector('.pid-memory')!.textContent).toContain('u[0]0');
+    v.button('commit').click();edit('Select input sample k','2');edit('Error e[k] to edit','-1');v.button('calculate').click();expect(v.container.querySelector('.pid-pending')!.textContent).toContain('u[2]=-19');v.button('commit').click();
+    edit('Inspect committed sample k','1');[...v.container.querySelectorAll('button')].find(b=>b.textContent==='Replay from selected sample')!.click();
+    expect(v.container.querySelectorAll('tbody tr')).toHaveLength(0);expect(v.container.querySelector('.pid-memory')!.textContent).toContain('I[0]0');v.button('calculate').click();expect(v.container.querySelector('.pid-pending')!.textContent).toContain('u[1]=7.05');
+  });
+  it('restores the complete revealed attempt and exact source sequence when an error drag is cancelled',()=>{
+    const v=visit();v.button('calculate').click();const source=v.container.querySelector('textarea')!.value,host=v.container.querySelector<HTMLElement>('.pid-direct-plots')!;
+    host.setPointerCapture=()=>{};host.hasPointerCapture=()=>false;
+    vi.spyOn(SVGElement.prototype,'getBoundingClientRect').mockReturnValue({left:0,top:0,width:600,height:220}as DOMRect);
+    const pointer=(target:EventTarget,type:string,id:number,y=80)=>{const event=new MouseEvent(type,{bubbles:true,clientX:140,clientY:y,button:0});Object.defineProperty(event,'pointerId',{value:id});target.dispatchEvent(event);};
+    pointer(v.container.querySelector('[data-error-handle]')!,'pointerdown',7);expect(v.button('commit').disabled).toBe(true);pointer(window,'pointermove',7,110-88/3);
+    expect(v.container.querySelector<HTMLElement>('.pid-pending')!.hidden).toBe(true);document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    expect(v.container.querySelector('textarea')!.value).toBe(source);expect(v.container.querySelector<HTMLElement>('.pid-pending')!.hidden).toBe(false);expect(v.button('commit').disabled).toBe(false);
+    v.button('commit').click();expect(v.container.querySelector('.pid-memory')!.textContent).toContain('u[1]14.1');
+  });
+  it('revokes the old prediction grade without hiding valid arithmetic or committing memory',()=>{
+    const v=visit();v.numeric('prediction','14.1');v.button('calculate').click();expect(v.container.querySelector('.pid-pending')!.textContent).toContain('Your prediction matches');
+    v.numeric('prediction','0');expect(v.container.querySelector('.pid-pending')!.textContent).not.toContain('Your prediction matches');expect(v.container.querySelector('.pid-pending')!.textContent).toContain('Calculate again');expect(v.container.querySelector('.pid-memory')!.textContent).toContain('u[0]0');
+  });
+  it('replays the complete filtered controller state rather than only its output',()=>{
+    const v=visit(),choice=v.container.querySelector<HTMLSelectElement>('[data-choice="derivative"]')!;choice.value='filtered';choice.dispatchEvent(new Event('change'));
+    for(const [name,value]of[['e0','.25'],['em1','-.1'],['i0','2'],['d0','3']])v.numeric(name,value);
+    v.button('derive').click();v.button('calculate').click();v.button('commit').click();const first=v.container.querySelector('.pid-memory')!.textContent;
+    expect(first).toContain('D[1]5.25');expect(first).toContain('u[1]11.375');v.button('calculate').click();v.button('commit').click();
+    const inspect=v.container.querySelector<HTMLInputElement>('[aria-label="Inspect committed sample k"]')!;inspect.value='2';inspect.dispatchEvent(new Event('input'));[...v.container.querySelectorAll('button')].find(b=>b.textContent==='Replay from selected sample')!.click();
+    expect(v.container.querySelector('.pid-memory')!.textContent).toBe(first);expect(v.container.querySelectorAll('tbody tr')).toHaveLength(1);v.button('calculate').click();expect(v.container.querySelector('.pid-pending')!.textContent).toContain('u[2]=8.95');
+  });
+  it('switches positional/incremental inspection without reinitializing memory or recomputing the checked step',()=>{
+    const v=visit();v.button('calculate').click();v.button('commit').click();v.button('calculate').click();
+    const memory=v.container.querySelector('.pid-memory')!.textContent,form=v.container.querySelector<HTMLSelectElement>('[data-choice="form"]')!,arithmetic=v.container.querySelector('[aria-label="Incremental checked result"]');
+    form.value='incremental';form.dispatchEvent(new Event('change'));
+    expect(v.container.querySelector('.pid-memory')!.textContent).toBe(memory);expect(v.container.querySelectorAll('tbody tr')).toHaveLength(1);expect(v.container.querySelector('[aria-label="Incremental checked result"]')).toBe(arithmetic);
+    expect(v.container.querySelector('[data-primary-result]')!.textContent).toContain('Primary incremental result: u[2]=4.3');expect(v.button('commit').disabled).toBe(false);
+  });
+  it('aborts partially allocated editor resources when mounting throws with the parent still active',()=>{
+    const container=document.createElement('div'),parent=new AbortController(),listener=vi.fn();document.body.append(container);let child:AbortSignal|undefined;
+    vi.spyOn(equations,'createEquationInput').mockImplementationOnce(options=>{child=options.signal;window.addEventListener('dd04-partial-editor',listener,{signal:child});throw new Error('partial editor');});
+    expect(()=>mount({container,signal:parent.signal})).toThrow('partial editor');expect(parent.signal.aborted).toBe(false);expect(child?.aborted).toBe(true);window.dispatchEvent(new Event('dd04-partial-editor'));expect(listener).not.toHaveBeenCalled();expect(container.childElementCount).toBe(0);
+  });
+  it('adopts and destroys an editor returned after reentrant parent abort exactly once',()=>{
+    const container=document.createElement('div'),parent=new AbortController(),release=vi.fn();document.body.append(container);
+    vi.spyOn(equations,'createEquationInput').mockImplementationOnce(()=>{parent.abort();return{element:document.createElement('div'),getValue:()=>({latex:'[1]',empty:false,syntaxIssues:[],hasPlaceholders:false}),setValue:()=>{},focus:()=>{},destroy:release};});
+    const cleanup=mount({container,signal:parent.signal});expect(release).toHaveBeenCalledOnce();expect(container.childElementCount).toBe(0);if(typeof cleanup==='function')cleanup();expect(release).toHaveBeenCalledOnce();
+  });
   it('rejects e notation from the visual error list before initializing', () => {
     const { container, button } = visit();
     const field = container.querySelector('textarea')!; field.value = '[1e-2]'; field.dispatchEvent(new Event('input'));
@@ -148,8 +202,9 @@ describe('DD04 read/calculate/commit interface (mocked presentation only)', () =
     expect(container.querySelectorAll('tbody tr')).toHaveLength(0); expect(container.querySelector('.pid-memory')!.textContent).toContain('I[0]2.5');
   });
   it('aborts old controls and fresh visits restore baseline input', () => {
-    const first = visit(); first.numeric('kp', '7'); first.controller.abort(); first.button('derive').click();
-    expect((first.container.querySelector('.pid-lesson') as HTMLElement).hidden).toBe(true);
+    const first = visit(), oldDerive = first.button('derive'), oldLesson = first.container.querySelector<HTMLElement>('.pid-lesson')!;
+    first.numeric('kp', '7'); first.controller.abort(); oldDerive.click();
+    expect(oldLesson.hidden).toBe(true); expect(first.container.childElementCount).toBe(0);
     const second = visit(); expect(second.container.querySelector<HTMLInputElement>('[data-number="kp"]')!.value).toBe('4');
   });
 });
