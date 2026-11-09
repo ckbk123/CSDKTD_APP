@@ -28,4 +28,3 @@ export const mount: ModuleMount = context => {
   });
   return dispose;
 };
-
