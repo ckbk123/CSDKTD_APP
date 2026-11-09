@@ -1,7 +1,30 @@
 # DR01 implementation status
 
-- **Stage:** verified
-- **Last assessed:** 2026-10-29
+- **Stage:** implemented
+- **Last assessed:** 2026-11-09
+- **Refinement owner:** `interactivity-dr01-01a1ac7b`, branch `codex/dr01-sequence-exploration`, fresh base `6af3485ef6da6f11f4979ff665896d83b99414b5`.
+- **Refinement PR:** [#78](https://github.com/ckbk123/CSDKTD_APP/pull/78), reused for corrections and eventual browser acceptance.
+
+## Current interactivity refinement
+
+The authorized finite scope now adds immediate sequence-builder exploration beside computed stems and the transform, with direct bounded pole/delay/length controls and linked cached integer-sample inspection. The complete original inverse-transform prediction, arbitrary bounded expression, histories, table, derivation and ROC qualifications remain independently available as Practice. There is no new mathematical family or parser scope.
+
+Caller-owned immutable builder/trial snapshots and cached inspection use the original `fromSequence`, `samples`, `poles` and full-precision `transformLatex`. Only a valid T-only change reuses sample rows, because T labels kT in this exercise. A source/history/count change reruns the original bounded computation. Existing algebraic-versus-convergent DC qualifications are retained, including the conservative retained-pole exterior. The orchestration checkpoint `c82766d` received independent source acceptance and a separate five-test rerun. No original mathematical file, loader, metadata, shared file or dependency has changed.
+
+The computed baseline is visible on visit. A selected parameter keeps its actual numeric field beside a full-domain range; the square onset marker also moves directly on the sample axis. Arrow/Home/End alternatives, one-pointer ownership, full accepted-state cancellation, bounded undo and stable focus accompany these controls. Axes stay fixed through source changes; explicit triangles and a counted warning mark values outside the vertical range until Fit. The plot keeps unseen onsets visible without inventing computed future stems. Sample/history arithmetic and physical time read cached rows.
+
+Explore and the original inverse Practice remain separately mounted with independent child lifetimes and same-element raw drafts. The original Practice extraction changes only its exported name, supported fraction/power/parentheses tools and optional native prediction validation. Its full original test assertions remain, redirected to that retained view. Retry retains focus; disposal aborts all panels before releasing both, including partial allocation, reentrant abort and a throwing release. Source/inspection badInput remains intact through Fit/mode changes with zero value writes; a shorter checked horizon is reconciled separately from an invalid typed cursor. Observer and gesture continuations stop after abort.
+
+Current checks at corrected code `11e4cb553fb911c82cb0dba3ec441d666489dd74`: **139 module tests /8 files**, **5,779 application tests /281 files** (75.76 s, four workers), TypeScript, production build and whitespace checks pass. Independent full-source and corrected-source reviews accepted; the reviewer separately reran 139 module tests and all three unchanged external reproductions. New tests cover the independent orchestration fixtures, responsive linear sample geometry/44px onset slider, real source edits, direct and range cancellation/undo/foreign pointers, fixed-axis qualifications, cached inspection/T-only edits, native draft retention, original Practice independence, and partial/late/retry/observer cleanup. The first full UI source `af8ceaa` passed 5,774 application tests /281 files before the five correction regressions. This final commit changes documentation only after the tested source. Actual browser acceptance remains pending; mocked typesetting/editor tests do not establish actual font, touch or keyboard behavior.
+
+Independent complete-source review of `af8ceaa` confirmed all original mathematical files and the complete Practice are preserved and independently reran 134 tests. It reproduced three failures: an earlier shell Escape handler could navigate before drag cancellation; a cancelled native range pointer could keep publishing remaining input events; and a typesetting exception after candidate assignment could leave old transform text beside new sample data. The correction handles active Escape in capture, quarantines the cancelled range stream until release while permitting explicit keyboard actions, and prepares candidate typesetting/drawing before publishing the trial or undo history. Cancellation reuses its starting checked identity. Source fixtures cover the earlier shell listener, post-cancel continuation, atomic rendering failure and recovery. An additional geometry fixture marks both boundaries when the two history conventions exceed opposite fixed bounds. The reviewer accepted exact `11e4cb5`, with no remaining source blocker; its independent real-shell/event/rendering reproductions remain outside Git as attributed evidence.
+
+Pending actual browser gate: immediate desktop/phone visual, bounded direct controls and keyboard cancellation/undo, same-scale stems, actual fraction/power/fonts/keyboard, native partial/underflow retention through Fit/mode/inspection, original arbitrary inverse Practice, reset/reopen/rapid navigation and clean console. The private browser provider is unavailable during this background continuation, including the post-correction recheck. Source/DOM tests do not establish that gate. The own production preview is available on port8817; accepted port8787 is preserved. This is a clean partial QA handoff, not a verified/submitted/integrated refinement. No deployment.
+
+## Historical verified foundation — 29 October 2026
+
+The records below describe the original accepted implementation and its dated evidence; the current Stage above tracks the new refinement.
+
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Ownership:** `src/modules/dr01/**`; [accepted contract](TASK.md)
 - **Branch:** `codex/dr01-z-transforms-7e78`
