@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { validateLatex } from 'mathlive/ssr';
 import type { EquationDraft, EquationInputOptions } from '../../shared/equations/input';
-import { mount } from './view';
+import { mountPractice as mount } from './practice';
 
 // Caller state and generated notation only; real editor/fonts/keyboard need browser QA.
 vi.mock('../../shared/equations/input', () => ({
