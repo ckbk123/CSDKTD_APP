@@ -1,4 +1,5 @@
 [data-module="CD01"] .pid-tool { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; min-width:0; font-size:14px; line-height:1.65; }
+[data-module="CD01"] .pid-tool [hidden] { display:none !important; }
 [data-module="CD01"] .pid-tool > div, [data-module="CD01"] .pid-tool section { min-width:0; }
 [data-module="CD01"] .pid-tool section { border-bottom:1px solid var(--line); padding:10px 0 20px; }
 [data-module="CD01"] .pid-tool h3 { margin:0 0 12px; font-size:18px; font-weight:550; }
@@ -41,3 +42,46 @@
 [data-module="CD01"] .pid-dashed { fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:6 4; }
 [data-module="CD01"] .pid-dotted { fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:1 4; }
 [data-module="CD01"] .pid-longdash { fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:12 4; }
+
+[data-module="CD01"] .pid-workbench { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr); grid-template-areas:"visual controls"; gap:18px; align-items:start; min-width:0; }
+[data-module="CD01"] .pid-tool .pid-tuning-panel { grid-area:controls; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; border:1px solid var(--line); border-radius:8px; padding:12px; }
+[data-module="CD01"] .pid-primary-selectors { grid-column:1/-1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+[data-module="CD01"] .pid-tuning-panel > label:last-of-type, [data-module="CD01"] .pid-knob-note { grid-column:1/-1; }
+[data-module="CD01"] .pid-tuning-panel label { min-width:0; }
+[data-module="CD01"] .pid-tool .pid-tuning-panel :is(input,select) { box-sizing:border-box; width:100%; min-width:0; min-height:44px; font-size:14px; }
+[data-module="CD01"] .pid-tool input[type="range"] { padding:0; accent-color:var(--accent); min-height:44px; }
+[data-module="CD01"] .pid-tool .pid-live-visual { grid-area:visual; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-areas:"warning warning" "state state" "output effort" "cursor cursor" "readout readout" "summary summary"; gap:8px; border:0; padding:0; }
+[data-module="CD01"] .pid-live-warning { grid-area:warning; border-left:3px solid var(--accent); padding:8px 10px; background:var(--tint); font-size:12px; }
+[data-module="CD01"] .pid-tool .pid-preview-state { grid-area:state; margin:0; font-size:12px; color:var(--muted); }
+[data-module="CD01"] .pid-live-output { grid-area:output; min-width:0; }
+[data-module="CD01"] .pid-live-effort { grid-area:effort; min-width:0; }
+[data-module="CD01"] .pid-cursor-controls { grid-area:cursor; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; align-items:end; }
+[data-module="CD01"] .pid-cursor-controls button { grid-column:1/-1; }
+[data-module="CD01"] .pid-tool .pid-cursor-controls input { width:100%; min-height:44px; }
+[data-module="CD01"] .pid-cursor-readout { grid-area:readout; font-size:12px; }
+[data-module="CD01"] .pid-live-summary { grid-area:summary; font-size:12px; color:var(--muted); }
+[data-module="CD01"] .pid-tool :is(button,select) { min-height:44px; }
+[data-module="CD01"] .pid-tool .pid-knob-note { font-size:12px; margin:0; }
+[data-module="CD01"] .pid-knob-note:empty, [data-module="CD01"] .pid-live-warning:empty { display:none; }
+[data-module="CD01"] .pid-tool .pid-live-chart { font-size:12px; min-width:0; overflow:hidden; }
+[data-module="CD01"] .pid-native-axes { display:grid; grid-template-columns:60px minmax(0,1fr); gap:4px; min-width:0; }
+[data-module="CD01"] .pid-native-axes > svg { grid-column:2; grid-row:1; width:100%; min-width:0; height:200px; overflow:hidden; }
+[data-module="CD01"] .pid-y-axis { grid-column:1; grid-row:1; height:200px; position:relative; font-size:12px; font-variant-numeric:tabular-nums; color:var(--muted); }
+[data-module="CD01"] .pid-y-axis span { position:absolute; right:0; max-width:100%; overflow-wrap:anywhere; line-height:1.2; transform:translateY(-50%); }
+[data-module="CD01"] .pid-y-axis span:first-child { top:5%; }
+[data-module="CD01"] .pid-y-axis span:nth-child(2) { top:47.5%; }
+[data-module="CD01"] .pid-y-axis span:last-child { top:90%; }
+[data-module="CD01"] .pid-x-axis { grid-column:2; display:flex; justify-content:space-between; padding:0 1.666667%; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+[data-module="CD01"] .pid-tool .pid-axis-title { grid-column:2; margin:0; color:var(--muted); text-align:center; font-size:12px; }
+[data-module="CD01"] .pid-plot-legend { font-size:12px; color:var(--muted); }
+[data-module="CD01"] .pid-cursor { stroke:var(--text); stroke-width:1; stroke-dasharray:3 4; }
+[data-module="CD01"] .pid-guide { stroke:var(--muted); stroke-width:1; stroke-dasharray:2 4; }
+[data-module="CD01"] .pid-tool :is(button,input,select,summary):focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+[data-module="CD01"] .pid-settings, [data-module="CD01"] .pid-notes { border:1px solid var(--line); border-radius:8px; padding:12px; }
+@media(max-width:1000px) {
+  [data-module="CD01"] .pid-workbench { grid-template-columns:minmax(0,1fr); grid-template-areas:"controls" "visual"; }
+}
+@media(max-width:600px) {
+  [data-module="CD01"] .pid-tool .pid-live-visual { display:block; }
+  [data-module="CD01"] .pid-live-output, [data-module="CD01"] .pid-live-effort { margin:8px 0; }
+}

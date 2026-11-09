@@ -1,6 +1,54 @@
 # CD01 implementation status
 
-- **Stage:** verified
+- **Stage:** implemented
+- **Current finite refinement:** reason-gated controller preview with linked response/effort, 9 November 2026; owner interactivity-cd01-01a1ac7b; branch codex/cd01-pid-exploration; baseline 6af3485ef6da6f11f4979ff665896d83b99414b5 (released v0.3.17).
+- **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cd01-pid-01a1ac7b, fresh ordinary linked Git worktree and own locked npm ci (109 packages).
+- **Owned scope:** src/modules/cd01/** only; math.ts, numerics.ts, parser.ts, workspace.ts and index.ts remain authoritative. Central browser gates are pending with the integration owner; no browser launch or deployment is authorized here.
+- **Current PR:** [#72 — reason-gated controller exploration](https://github.com/ckbk123/CSDKTD_APP/pull/72). Reuse this branch and PR for source/browser corrections.
+
+## Current interaction requirement audit
+
+The actual baseline computes/records the course trial on mount, but every plot remains hidden until Reveal after the full model/requirement/gain/initial form. Draft edits remove the entire result panel. The initial and subsequent temporary note summaries expose exact steady error and peak effort before prediction. Reason gating before Apply/Derive, eight-note bounds, original prediction-edit invalidation, all controller terms/modes/matching, and comparison-failure retention are working foundations to preserve.
+
+The finite scope is a visual-first output/total-effort workbench with synchronized signed gains and active-filter controls. A chosen student reason permits coalesced draft exploration; Apply alone records one trial and clears that reason. Unrecorded previews must remain separate from the applied trial/notes/grade. Original arbitrary plant, initial memories, coefficient matching and P/PI/filtered-PD/PID semantics stay accessible. Requirement changes reassess cached runs, while a common nearest-sample cursor uses the original computed 801-sample grid. Native invalid drafts remain actual elements through view-only actions; no hidden clamping, solver downgrade or full-model replacement is included.
+
+Initial checkpoint: plots.ts presents existing signal arrays using native axes and a reusable nearest-sample marker; no response solver is added. Two independent tests pass for unchanged path/sample data through cursor movement and fixed-axis/off-view requirement-guide disclosure. All 76 original CD01 tests also pass (78 current tests in 6 files). UI implementation, type/build/full suite, independent review and actual browser evidence are not yet claimed.
+
+## Current implemented candidate — 9 November 2026
+
+The initial checked output and total control effort are visible beside compact structure/reason/parameter controls. Signed gains retain their full −100…100 domain; numeric entries remain authoritative, with a continuous range and explicit arrow/Shift/Page/Home/End keys. The filter range is logarithmic over the original active .001…10 s interval. Inactive Tf=0 stays valid in its original numeric element, with an explicit inactive-slider note. Optional settings retain every gain, arbitrary accepted plant, reference, initial memories, horizon, comparison choice, matching target and original domain explanation. Shared fraction/power/parentheses controls remain available for the actual equation grammar.
+
+A student reason is required before any changed calculation preview. An owned 80 ms coalescer calculates the latest draft; previous checked curves remain visible with an adjacent pending/rejected/unrecorded label. Apply independently checks the draft, records exactly one of the eight bounded notes, and clears the reason. Preview changes never alter the applied trial, note history or prediction grade. Requirement-only changes reassess cached runs and guides. Prediction metrics, all-mode verdicts, coefficient reasoning, exact sample values and exact note summaries remain behind the original prediction/Reveal flow; the initially visible response curves are question data. Input errors, comparison failures, coarse sampling and unavailable strict-stability conclusions remain visible beside the live curves.
+
+The common cursor uses the nearest original computed sample on output, total effort, revealed tracking error and individual P/I/D effort. It changes no path data and performs no solver calls. Requested versus nearest sample time is explicit. Accepting a shorter horizon reconciles the checked cursor independently of an invalid native time draft; the actual numeric element/raw badInput or underflow is preserved without .value writes. Fit and knob inspection likewise preserve invalid native parameter fields. Native axis labels use 12 px CSS text, and controls have 44 px minimum targets; actual desktop/phone geometry is pending rather than inferred from jsdom. Fixed vertical views qualify off-view guides and samples and clip signal drawing to the declared axis rectangle.
+
+Math, numerical propagation, parser, workspace loader and eager metadata are byte-for-byte unchanged from the recorded base. The existing all-mode/active-order, signed-gain, filtered kick, matching, conditioning, horizon, sample-count, response/work bounds and unavailable-comparison semantics remain authoritative. Owned timer/editor cleanup covers direct disposal while the parent stays active, partial allocation failure and an editor returned after reentrant abort.
+
+Current source checks with bundled Node 24.22.1 and the installed npm CLI:
+
+- `npm test -- src/modules/cd01 --reporter dot`: **99 tests / 6 files pass**, 4.30 s. Original mathematical/parser/loader fixtures remain; new fixtures cover reason/record separation, coalescing, cached requirements/cursor, fractional signed gains, inactive Tf, explicit draft synchronization, failed pending Apply, prediction edit invalidation, native raw-field preservation, typing focus, comparison failure, clipped geometry, cleanup and installed MathLive SSR notation validation.
+- `npm run check`: passes; `npm run build` also repeats type checking and passes (existing MathLive large-chunk warning only).
+- `git diff --check`: passes; changes are confined to CD01.
+- Full suite at initial checkpoint `4f6ee93b2a5eeb9d7bd3f4199621d6cd376df1ae`: **5,769 tests / 277 files pass**, 42.62 s. The typing-focus correction `c655f8b818e5434fc32b535382b1eb5d3fb5de8e` moves numeric labels only when the selected knob actually changes; its fresh full suite passes **5,770 tests / 277 files**, 56.15 s.
+- Independent source review is accepted as recorded below; actual browser gates remain pending. No real-browser result, verified stage, integration or release is claimed by these checks. Own production preview is available on port 8810 for the integration owner; no browser was launched here.
+
+### Returned native prediction correction
+
+The integration owner independently found that the optional complete-check renderer recreated prediction controls from string values on Reveal/Hide. A browser partial number can expose an empty value with badInput, so serializing that field loses its actual draft. Prediction controls and feedback now live in a retained applied-trial section outside the rebuilt optional reasoning. Reveal/Hide preserves the same elements, actual badInput/raw values and applied grade. Unrecorded draft exploration hides/inerts that retained section without changing its controls or feedback; successful Apply alone clears them for the newly recorded trial. A student edit still revokes that prediction's old grade.
+
+Two field-specific regressions preserve each actual prediction element, badInput and zero value assignments through Reveal/Hide/Fit and reason-gated preview, then verify recovery on the new Kp=6 trial with independently known u(0)=26. A third regression preserves an existing applied grade during view-only actions and a cached requirements preview, then checks its explicit new-trial reset. The current 99 module tests, TypeScript and production build pass.
+
+### Source-reviewed partial QA handoff
+
+The integration owner independently reviewed the final source `818ccb62016c40ee6e7e11fa00dbfe7ed8ace52f` and reran **99 module tests / 6 files**. The parent accepts the persistent prediction correction and the earlier full source review of the unchanged mathematics/domain, reason/Apply separation, caches, ownership and native-control policy. Its review confirms that Reveal/Hide keeps the actual prediction fields and feedback, previews hide/inert the applied-trial section without serializing drafts or mutating grading, and successful Apply alone resets that section. No source blocker remains from that independent review.
+
+Fresh final `npm test -- --reporter dot` on `818ccb62016c40ee6e7e11fa00dbfe7ed8ace52f`: **5,773 tests / 277 files pass**, 44.07 s. The same source passes `npm run check`, `npm run build` and `git diff --check`. Final delivery adds this documentation only; no mathematical/parser/solver changes were introduced by the refinement.
+
+This clean checkpoint is a **partial QA handoff**, using the current primary claim helper with reason `partial`. Stage deliberately stays **implemented**. The background browser provider remains unavailable; actual desktop/phone first-view geometry, native partial-input behavior, equation font/keyboard entry, pointer/keyboard controls, reset/leave/reopen/rapid navigation and console gates remain with the integration owner. The focused DOM/native-setter and MathLive SSR regressions are source evidence, not substitutes for those real-browser gates. Preserve this tree, branch, PR #72 and claim for their later review; no new module or deployment is started here.
+
+## Historical accepted bounded exercise
+
+The v0.3.17 delivery below is historical verification, not verification of the current finite interface refinement.
 - **Assessed:** 29 October 2026; primary base `9d923d2f9a3728bdfd6516dd68aa06c93d9e7f86` (v0.3.9).
 - **Ownership:** `src/modules/cd01/**`; [TASK.md](TASK.md), atlas CD01 and continuous exercise audit controller-design section.
 - **Worker chat:** `01a18700-78e9-7a80-af1b-4436e25b10ff`.
