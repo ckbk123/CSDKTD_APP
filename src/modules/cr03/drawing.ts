@@ -10,9 +10,10 @@ function axis(value: number) { return value !== 0 && (Math.abs(value) < .001 || 
 export function fit(checked: Checked, selected: number, pair: readonly [number, number]): Limits {
   const n = checked.experiment.model.A.length, i = Math.min(selected, Math.max(0, n - 1));
   const inv = inverse(checked.experiment.T).matrix;
+  const planeMagnitude = Math.max(0, ...[...checked.original, ...checked.changed].flatMap(p => pair.map(i => Math.abs(p.state[i] ?? 0))), ...pair.flatMap(i => pair.map(j => Math.abs(inv[i]?.[j] ?? 0))));
   return { state: extent(n ? [...checked.original.map(p => p.state[i]), ...checked.changed.map(p => p.state[i])] : [0]),
     output: extent([...checked.original.map(p => p.output), ...checked.changed.map(p => p.output)]),
-    plane: Math.max(2.5, ...[...checked.original, ...checked.changed].flatMap(p => pair.map(i => Math.abs(p.state[i] ?? 0) * 1.15)), ...pair.flatMap(i => pair.map(j => Math.abs(inv[i]?.[j] ?? 0) * 1.15))) };
+    plane: Math.max(2.5, Math.min(Number.MAX_VALUE, planeMagnitude * 1.15)) };
 }
 function frame(width: number, height: number, label: string) { return node('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': label, 'data-outer': 'true' }); }
 function text(svg: SVGSVGElement, value: string, x: number, y: number, anchor = 'start') { svg.append(node('text', { x, y, 'text-anchor': anchor, 'font-size': 12 }, value)); }
@@ -25,7 +26,20 @@ function timeline(checked: Checked, index: number, values: readonly number[][], 
   const x = (k: number) => left + (right - left) * k / (checked.original.length - 1), y = (v: number) => bottom - (bottom - top) * (v - limits[0]) / (limits[1] - limits[0]);
   clipping(svg, id, left, top, right - left, bottom - top);
   svg.append(node('path', { d: `M${left} ${top}V${bottom}H${right}`, fill: 'none', stroke: 'currentColor', opacity: .4 }));
-  values.forEach((series, i) => curve(svg, series.map((v, k) => [x(k), y(v)]), i === 1, id));
+  // Clip linear drawing segments in data coordinates, before dividing by a
+  // possibly subnormal fixed span. This never changes computed sample values.
+  values.forEach((series, dashed) => {
+    let d = '', lastIndex: number | undefined, lastValue: number | undefined;
+    for (let k = 0; k < series.length - 1; k++) {
+      const a = series[k], b = series[k + 1];
+      if ((a < limits[0] && b < limits[0]) || (a > limits[1] && b > limits[1])) { lastIndex = lastValue = undefined; continue; }
+      const clippedA = Math.max(limits[0], Math.min(limits[1], a)), clippedB = Math.max(limits[0], Math.min(limits[1], b));
+      const ka = a === clippedA ? k : k + (clippedA - a) / (b - a), kb = b === clippedB ? k + 1 : k + (clippedB - a) / (b - a);
+      if (lastIndex !== ka || lastValue !== clippedA) d += `M${x(ka)} ${y(clippedA)}`;
+      d += `L${x(kb)} ${y(clippedB)}`; lastIndex = kb; lastValue = clippedB;
+    }
+    svg.append(node('path', { d, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.8, ...(dashed ? { 'stroke-dasharray': '6 4' } : {}), 'clip-path': `url(#${id})` }));
+  });
   svg.append(node('path', { d: `M${x(index)} ${top}V${bottom}`, stroke: 'currentColor', 'stroke-dasharray': '2 3', opacity: .5 }));
   values.forEach((series, i) => { const value = series[index]; if (value >= limits[0] && value <= limits[1]) svg.append(node('circle', { cx: x(index), cy: y(value), r: i ? 5 : 3, fill: i ? 'var(--surface)' : 'currentColor', stroke: 'currentColor' })); });
   text(svg, axis(limits[1]), left - 8, top + 4, 'end'); text(svg, axis(limits[0]), left - 8, bottom + 4, 'end');
@@ -37,9 +51,9 @@ function timeline(checked: Checked, index: number, values: readonly number[][], 
 }
 function plane(checked: Checked, index: number, pair: readonly [number, number], width: number, bound: number, mapped: boolean, handles: boolean) {
   const size = Math.min(width - 72, 240), left = (width - size) / 2, top = 28, mid = left + size / 2, centerY = top + size / 2;
-  const x = (v: number) => mid + v * size / (2 * bound), y = (v: number) => centerY - v * size / (2 * bound);
+  const x = (v: number) => mid + (v / bound) * (size / 2), y = (v: number) => centerY - (v / bound) * (size / 2);
   const [i, j] = pair, symbol = mapped ? 'z' : 'x', label = `${mapped ? 'Transformed' : 'Original'} ${symbol}${i + 1}, ${symbol}${j + 1} ${checked.experiment.model.A.length > 2 ? 'projection' : 'coordinate plane'}`;
-  const svg = frame(width, size + 68, label); svg.dataset.plane = mapped ? 'z' : 'x'; svg.dataset.bound = String(bound); svg.dataset.left = String(left); svg.dataset.top = String(top); svg.dataset.size = String(size);
+  const svg = frame(width, size + 88, label); svg.dataset.plane = mapped ? 'z' : 'x'; svg.dataset.bound = String(bound); svg.dataset.left = String(left); svg.dataset.top = String(top); svg.dataset.size = String(size);
   clipping(svg, `cr03-explore-plane-${symbol}`, left, top, size, size);
   svg.append(node('path', { d: `M${left} ${centerY}H${left + size}M${mid} ${top}V${top + size}`, stroke: 'currentColor', opacity: .35 }));
   text(svg, `${symbol}${i + 1}`, left + size, centerY - 6, 'end'); text(svg, `${symbol}${j + 1}`, mid + 6, top + 5); text(svg, `±${axis(bound)} · equal scale`, mid, top + size + 23, 'middle');
@@ -50,14 +64,18 @@ function plane(checked: Checked, index: number, pair: readonly [number, number],
   else text(svg, 'Selected point outside view · Fit', mid, 15, 'middle');
   if (!mapped) {
     const Tinv = inverse(checked.experiment.T).matrix;
+    let basisClipped = false;
     for (const [k, name] of [[i, 'scale'], [j, 'shear']] as const) {
-      const px = x(Tinv[i][k]), py = y(Tinv[j][k]);
+      const bx = Tinv[i][k], by = Tinv[j][k], magnitude = Math.max(Math.abs(bx), Math.abs(by)), clipped = magnitude > bound;
+      basisClipped ||= clipped;
+      const px = x(clipped ? (bx / magnitude) * bound : bx), py = y(clipped ? (by / magnitude) * bound : by);
       svg.append(node('path', { d: `M${mid} ${centerY}L${px} ${py}`, stroke: 'currentColor', 'stroke-width': 2, opacity: .6, 'clip-path': 'url(#cr03-explore-plane-x)' }));
-      if (handles && px >= left && px <= left + size && py >= top && py <= top + size) {
+      if (handles && !clipped && px >= left && px <= left + size && py >= top && py <= top + size) {
         const group = node('g', { tabindex: 0, role: 'slider', 'aria-label': name === 'scale' ? 'Coordinate scale handle' : 'Coordinate shear handle', 'aria-valuemin': name === 'scale' ? .5 : -2, 'aria-valuemax': 2, 'data-handle': name });
         group.append(node('circle', { cx: px, cy: py, r: 22, fill: 'transparent' }), node('circle', { cx: px, cy: py, r: 6, fill: 'var(--surface)', stroke: 'currentColor', 'stroke-width': 2 })); svg.append(group);
       }
     }
+    if (basisClipped) text(svg, 'Basis outside view · Fit', mid, top + size + 42, 'middle');
   }
   return svg;
 }

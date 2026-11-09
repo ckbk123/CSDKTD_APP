@@ -19,6 +19,11 @@ function pointer(target: EventTarget, type: string, id = 7, x = 0, y = 0) { cons
 function bad(input: HTMLInputElement) { input.value = ''; Object.defineProperty(input, 'validity', { configurable: true, get: () => ({ badInput: true }) }); input.dispatchEvent(new Event('input', { bubbles: true })); const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!, writes = vi.fn(); Object.defineProperty(input, 'value', { configurable: true, get() { return descriptor.get!.call(this); }, set(v) { writes(v); descriptor.set!.call(this, v); } }); return writes; }
 const checked = (c: HTMLElement) => field(c, 'Checked coordinate transformation').textContent;
 describe('CR03 tangible coordinate exploration', () => {
+  it('publishes the latest continuous input at the original80ms deadline rather than waiting for inactivity', () => {
+    vi.useFakeTimers(); const { container: c } = visit(); const runs = vi.spyOn(math, 'samples');
+    input(c, 'Coordinate shear h', '.1'); vi.advanceTimersByTime(60); input(c, 'Coordinate shear h', '.2'); vi.advanceTimersByTime(20); expect(checked(c)).toContain('0.2'); expect(runs).toHaveBeenCalledTimes(1);
+    input(c, 'Coordinate shear h', '.3'); vi.advanceTimersByTime(60); input(c, 'Coordinate shear h', '.4'); vi.advanceTimersByTime(20); expect(checked(c)).toContain('0.4'); expect(runs).toHaveBeenCalledTimes(2);
+  });
   it('opens with real baseline output/state and cached endpoint-inclusive inspection', () => {
     const { container: c } = visit(); expect(c.querySelectorAll('.cr03-plot > svg')).toHaveLength(2); const evaluate = vi.spyOn(math, 'samples');
     input(c, 'Computed sample index k', '200'); expect(c.querySelector('.cr03-sample')!.textContent).toContain('t=5 s'); expect(c.querySelector('.cr03-sample')!.textContent).toContain('0.4932848');

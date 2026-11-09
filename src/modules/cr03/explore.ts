@@ -155,8 +155,9 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
     if (disposed || signal.aborted) return; if (record) { history.push(current); if (history.length > 20) history.shift(); } publish(next, prepared, explicit); feedback('Coordinates checked independently; the output is retained.');
   }
   function queue(nextS: number, nextH: number, pair = current.pair) {
-    pending = { ...current, s: nextS, h: nextH, pair }; if (timer) clearTimeout(timer);
-    feedback('Updating · previous checked preview'); timer = setTimeout(() => {
+    pending = { ...current, s: nextS, h: nextH, pair };
+    feedback('Updating · previous checked preview'); if (timer !== undefined) return;
+    timer = setTimeout(() => {
       timer = undefined; const next = pending; pending = undefined; if (!next || disposed || !active) return;
       try { acceptFamily(next.s, next.h, next.pair, false, !gesture); if (gesture) gesture.valid = true; } catch (e) { if (gesture) gesture.valid = false; error(e); }
     }, 80);
