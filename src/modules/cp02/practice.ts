@@ -121,7 +121,7 @@ export const mountView = ({ container, signal: parent, hooks, isActive = () => t
   function syncPlane(): void {
     const a = inspect(model); marks.replaceChildren();
     a.poles.forEach((p, i) => { drawCross(marks, p.re, p.im, { 'data-pole': i }); marks.append(svg('text', { x: px(p.re) + 14, y: py(p.im) - 10 }, `p${i + 1}${p.multiplicity === 2 ? ' ×2' : ''}`)); });
-    if (a.zero) marks.append(svg('circle', { cx: px(num(a.zero)), cy: py(0), r: 8, class: 'modes-zero', 'data-zero': 'true' }));
+    if (a.zero) { const point = { cx: px(num(a.zero)), cy: py(0) }, zero = svg('g', { class: 'modes-zero', 'data-zero': 'true', tabindex: 0, role: 'button', 'aria-label': 'Edit real numerator zero location' }); zero.append(svg('circle', { ...point, r: 8 }), svg('circle', { ...point, r: 22.5, class: 'modes-hit' })); marks.append(zero); }
     const options = a.poles.map((p, i) => [String(i), `Pole ${i + 1}: ${rootText(p)}`]); const previous = poleChoice.input.value;
     poleChoice.input.replaceChildren(...options.map(([value, text]) => { const o = el('option', text); o.value = value; return o; })); poleChoice.input.value = options.some(o => o[0] === previous) ? previous : '0'; syncCoordinates();
     const choice = free.input.value; free.input.replaceChildren(el('option', 'None')); free.input.options[0].value = 'none';
@@ -196,6 +196,7 @@ export const mountView = ({ container, signal: parent, hooks, isActive = () => t
   plane.addEventListener('pointerup', event => { if (!drag || drag.pointer !== event.pointerId) return; const candidate = drag; cancelDrag(); try { const next = candidate.type === 'pole' ? movePole(model, candidate.index, candidate.real, candidate.imaginary) : moveZero(model, candidate.real, preserveDc.input.checked); commit(next); } catch (e) { syncPlane(); error(e); } }, { signal });
   plane.addEventListener('pointercancel', event => { if (drag?.pointer === event.pointerId) { cancelDrag(); syncPlane(); } }, { signal });
   plane.addEventListener('lostpointercapture', event => { if (drag?.pointer === event.pointerId) { drag = undefined; ghost.replaceChildren(); syncPlane(); } }, { signal });
+  plane.addEventListener('keydown', event => { if ((event.key === 'Enter' || event.key === ' ') && (event.target as Element).closest('[data-zero]')) { event.preventDefault(); zeroLocation.input.focus({ preventScroll: true }); } }, { signal });
   syncPlane();
   updateAnswers(); ready = true;
   for (const input of [real.input, imaginary.input, zeroLocation.input]) input.addEventListener('input', () => { nativeDirty.add(input); cancelDrag(); }, { signal });

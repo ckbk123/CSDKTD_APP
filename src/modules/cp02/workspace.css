@@ -28,6 +28,7 @@
 [data-module="CP02"] .modes-pole { stroke: var(--accent-strong); stroke-width: 2.5; cursor: grab; touch-action: none; }
 [data-module="CP02"] .modes-hit { fill: transparent; stroke: none; }
 [data-module="CP02"] .modes-zero { fill: var(--surface); stroke: var(--text); stroke-width: 2.5; cursor: grab; touch-action: none; }
+[data-module="CP02"] .modes-zero[role="button"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 [data-module="CP02"] .modes-ghost { opacity: .55; pointer-events: none; }
 [data-module="CP02"] .modes-full-line { stroke: var(--accent-strong); stroke-width: 2.7; }
 [data-module="CP02"] .modes-component { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 4; }
