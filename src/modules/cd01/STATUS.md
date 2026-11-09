@@ -1,9 +1,10 @@
 # CD01 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Current finite refinement:** reason-gated controller preview with linked response/effort, 9 November 2026; owner interactivity-cd01-01a1ac7b; branch codex/cd01-pid-exploration; baseline 6af3485ef6da6f11f4979ff665896d83b99414b5 (released v0.3.17).
 - **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cd01-pid-01a1ac7b, fresh ordinary linked Git worktree and own locked npm ci (109 packages).
 - **Owned scope:** src/modules/cd01/** only; math.ts, numerics.ts, parser.ts, workspace.ts and index.ts remain authoritative. Central browser gates are pending with the integration owner; no browser launch or deployment is authorized here.
+- **Current PR:** [#72 — reason-gated controller exploration](https://github.com/ckbk123/CSDKTD_APP/pull/72). Reuse this branch and PR for source/browser corrections.
 
 ## Current interaction requirement audit
 
@@ -12,6 +13,23 @@ The actual baseline computes/records the course trial on mount, but every plot r
 The finite scope is a visual-first output/total-effort workbench with synchronized signed gains and active-filter controls. A chosen student reason permits coalesced draft exploration; Apply alone records one trial and clears that reason. Unrecorded previews must remain separate from the applied trial/notes/grade. Original arbitrary plant, initial memories, coefficient matching and P/PI/filtered-PD/PID semantics stay accessible. Requirement changes reassess cached runs, while a common nearest-sample cursor uses the original computed 801-sample grid. Native invalid drafts remain actual elements through view-only actions; no hidden clamping, solver downgrade or full-model replacement is included.
 
 Initial checkpoint: plots.ts presents existing signal arrays using native axes and a reusable nearest-sample marker; no response solver is added. Two independent tests pass for unchanged path/sample data through cursor movement and fixed-axis/off-view requirement-guide disclosure. All 76 original CD01 tests also pass (78 current tests in 6 files). UI implementation, type/build/full suite, independent review and actual browser evidence are not yet claimed.
+
+## Current implemented candidate — 9 November 2026
+
+The initial checked output and total control effort are visible beside compact structure/reason/parameter controls. Signed gains retain their full −100…100 domain; numeric entries remain authoritative, with a continuous range and explicit arrow/Shift/Page/Home/End keys. The filter range is logarithmic over the original active .001…10 s interval. Inactive Tf=0 stays valid in its original numeric element, with an explicit inactive-slider note. Optional settings retain every gain, arbitrary accepted plant, reference, initial memories, horizon, comparison choice, matching target and original domain explanation. Shared fraction/power/parentheses controls remain available for the actual equation grammar.
+
+A student reason is required before any changed calculation preview. An owned 80 ms coalescer calculates the latest draft; previous checked curves remain visible with an adjacent pending/rejected/unrecorded label. Apply independently checks the draft, records exactly one of the eight bounded notes, and clears the reason. Preview changes never alter the applied trial, note history or prediction grade. Requirement-only changes reassess cached runs and guides. Prediction metrics, all-mode verdicts, coefficient reasoning, exact sample values and exact note summaries remain behind the original prediction/Reveal flow; the initially visible response curves are question data. Input errors, comparison failures, coarse sampling and unavailable strict-stability conclusions remain visible beside the live curves.
+
+The common cursor uses the nearest original computed sample on output, total effort, revealed tracking error and individual P/I/D effort. It changes no path data and performs no solver calls. Requested versus nearest sample time is explicit. Accepting a shorter horizon reconciles the checked cursor independently of an invalid native time draft; the actual numeric element/raw badInput or underflow is preserved without .value writes. Fit and knob inspection likewise preserve invalid native parameter fields. Native axis labels use 12 px CSS text, and controls have 44 px minimum targets; actual desktop/phone geometry is pending rather than inferred from jsdom. Fixed vertical views qualify off-view guides and samples and clip signal drawing to the declared axis rectangle.
+
+Math, numerical propagation, parser, workspace loader and eager metadata are byte-for-byte unchanged from the recorded base. The existing all-mode/active-order, signed-gain, filtered kick, matching, conditioning, horizon, sample-count, response/work bounds and unavailable-comparison semantics remain authoritative. Owned timer/editor cleanup covers direct disposal while the parent stays active, partial allocation failure and an editor returned after reentrant abort.
+
+Current source checks with bundled Node 24.22.1 and the installed npm CLI:
+
+- `npm test -- src/modules/cd01 --reporter dot`: **95 tests / 6 files pass**, 2.38 s. Original mathematical/parser/loader fixtures remain; new fixtures cover reason/record separation, coalescing, cached requirements/cursor, fractional signed gains, inactive Tf, explicit draft synchronization, failed pending Apply, prediction edit invalidation, native raw-field preservation, comparison failure, clipped geometry, cleanup and installed MathLive SSR notation validation.
+- `npm run check`: passes; `npm run build` also repeats type checking and passes (existing MathLive large-chunk warning only).
+- `git diff --check`: passes; changes are confined to CD01.
+- Fresh full suite, independent source review and actual browser gates are pending. No real-browser result, verified stage, integration or release is claimed by these checks.
 
 ## Historical accepted bounded exercise
 

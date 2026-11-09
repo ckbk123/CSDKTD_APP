@@ -10,3 +10,8 @@ it('keeps fixed vertical axes and explicitly reports requirement guides outside 
   const p=signalPlot('Effort',[0,1],[{name:'Selected',values:[24,2],style:'pid-current'}],0,{low:0,high:30},[{value:100,label:'effort limit'}]);
   expect(p.element.textContent).toContain('Outside this fixed view: effort limit');expect(p.element.querySelector('.pid-guide')).toBeNull();expect([...p.element.querySelectorAll('.pid-y-axis span')].map(n=>n.textContent)).toEqual(['30','15','0']);
 });
+it('clips checked signal geometry to a fixed vertical view and qualifies hidden values until Fit',()=>{
+  const p=signalPlot('Effort',[0,1],[{name:'Selected',values:[24,100],style:'pid-current'}],1,{low:0,high:30});
+  expect(p.element.textContent).toContain('Some checked sample values exceed this fixed vertical view');expect(p.element.querySelector('.pid-marker')!.getAttribute('visibility')).toBe('hidden');
+  const clip=p.element.querySelector('clipPath')!,rect=clip.querySelector('rect')!;expect(p.element.querySelector('path')!.parentElement!.getAttribute('clip-path')).toBe('url(#'+clip.id+')');expect([rect.getAttribute('x'),rect.getAttribute('y'),rect.getAttribute('width'),rect.getAttribute('height')]).toEqual(['10','10','580','170']);
+});
