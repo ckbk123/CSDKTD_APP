@@ -355,16 +355,15 @@
       "scope": "Immediate causal sequence-builder exploration, direct bounded pole/delay/length controls, cached sample inspection and independent original inverse Practice",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
-      "source": "af8ceaa813b18a449747884a157bbcb5bfc58d43",
+      "state": "implemented-awaiting-browser",
+      "source": "5e1a26f2b4031dd23ca1ff9c8b92e70819aded6a",
       "pr": 78,
       "evidence": [
-        "134 module tests /8 files, TypeScript and production build pass; independent full UI review and complete application suite in progress.",
-        "First c82766d orchestration independently accepted, including original engine/caching/ROC and immutable snapshots."
+        "Independent complete source and corrected-source reviews accepted;139 module tests /8 files and three unchanged real-shell/event/rendering reproductions pass.",
+        "5779 application tests /281 files, TypeScript and production build pass at final11e4cb5 code.",
+        "Clean partial QA handoff; original mathematics/public loader unchanged; own preview8817 available, actual browser gate open."
       ],
       "remaining": [
-        "Independent complete source review",
-        "Complete final application suite",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ]
@@ -378,7 +377,71 @@
       "wave": 3,
       "state": "in-progress",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required."
+        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required.",
+        "First checked-preparation/responsive-drawing checkpoint passes62 module tests /5 files, TypeScript and whitespace checks. Complete Explore/Practice wiring and full gates remain open."
+      ],
+      "remaining": [
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "4a03567565b576aa8b5bad1dc106b9977a067fdf",
+      "pr": 79
+    },
+    {
+      "id": "DP01",
+      "agent": "/root/response_interactivity",
+      "branch": "codex/dp01-sequence-exploration",
+      "scope": "Immediate full discrete-model response and cached inspection, live independent equal-radius mode lab, complete original Practice",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "source": "d802ff895a8932788c83c7291487f63f943b689f",
+      "pr": 80,
+      "evidence": [
+        "First pure checked-model/lab checkpoint passes134 module tests /4 files and TypeScript.",
+        "Fixed G(z) and retained roots on T changes; physical ramp reruns A*k*T; original arbitrary/scaled/cancelled/repeated/zero modes and bound failures remain authoritative."
+      ],
+      "remaining": [
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "CF02",
+      "agent": "/root",
+      "branch": "codex/cf02-error-exploration",
+      "scope": "Immediate input/output/error exploration with local gain/type controls, original exact channel/certificate and cached sampled-time inspection",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "source": "41d9c78039b0fc8f50fc6208210fe6c14a00b66a",
+      "pr": 81,
+      "evidence": [
+        "First immutable checked-experiment checkpoint passes215 module tests /6 files, TypeScript and whitespace checks.",
+        "Original math/parser/rational/formatting/public workspace unchanged; exact limits remain separate from full numerical trace availability."
+      ],
+      "remaining": [
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "CR03",
+      "agent": "/root/structure_stability",
+      "branch": "codex/cr03-coordinate-exploration",
+      "scope": "Immediate coordinate/state/output exploration with bounded nonsingular shear/scale family, linked cached inspection and complete original arbitrary realization Practice",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; original0–4-state, arbitrary T/candidate, conditioning/cancellation and independent transformed-simulation scope remains required.",
+        "New basis vectors in x coordinates must use T inverse columns; higher-dimensional views remain labelled projections."
       ],
       "remaining": [
         "Complete finite implementation",
@@ -521,14 +584,20 @@
     },
     {
       "id": "CF02",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Visible reference/output/error preview with one local gain slider and integrator chips; highlight integrators and selected limit factor while toggling physical vs comparator error.",
-      "evidence": [],
+      "evidence": [
+        "First immutable checked-experiment checkpoint passes215 module tests /6 files, TypeScript and whitespace checks.",
+        "Original math/parser/rational/formatting/public workspace unchanged; exact limits remain separate from full numerical trace availability."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "41d9c78039b0fc8f50fc6208210fe6c14a00b66a",
+      "pr": 81
     },
     {
       "id": "CF03",
@@ -582,14 +651,17 @@
       "state": "in-progress",
       "target": "Use as interaction reference; show safe baseline visual immediately, lightly preview response during drag, retain explicit checked commit and cancellation; make the zero-preservation convention obvious.",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required."
+        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required.",
+        "First checked-preparation/responsive-drawing checkpoint passes62 module tests /5 files, TypeScript and whitespace checks. Complete Explore/Practice wiring and full gates remain open."
       ],
       "remaining": [
         "Complete finite implementation",
         "Independent source/full verification",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
-      ]
+      ],
+      "source": "4a03567565b576aa8b5bad1dc106b9977a067fdf",
+      "pr": 79
     },
     {
       "id": "CP03",
@@ -671,13 +743,17 @@
     },
     {
       "id": "CR03",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Lead with side-by-side coordinate trajectories; single shear/scale control for a nonsingular coordinate-family experiment; cross-highlight row, state and mapped initial vector.",
-      "evidence": [],
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; original0–4-state, arbitrary T/candidate, conditioning/cancellation and independent transformed-simulation scope remains required.",
+        "New basis vectors in x coordinates must use T inverse columns; higher-dimensional views remain labelled projections."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
       ]
     },
     {
@@ -905,14 +981,20 @@
     },
     {
       "id": "DP01",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Drag equal-radius points around unit circle with instantly changing stems; radius/angle sliders and sample-step playback; retain custom sequence inputs as advanced.",
-      "evidence": [],
+      "evidence": [
+        "First pure checked-model/lab checkpoint passes134 module tests /4 files and TypeScript.",
+        "Fixed G(z) and retained roots on T changes; physical ramp reruns A*k*T; original arbitrary/scaled/cancelled/repeated/zero modes and bound failures remain authoritative."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "d802ff895a8932788c83c7291487f63f943b689f",
+      "pr": 80
     },
     {
       "id": "DP02",
@@ -953,19 +1035,18 @@
     },
     {
       "id": "DR01",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Expose sequence-builder controls next to stems; scrub geometric pole/delay/length and immediately compare sequence and transform, with causal/ROC labels retained.",
       "evidence": [
-        "134 module tests /8 files, TypeScript and production build pass; independent full UI review and complete application suite in progress.",
-        "First c82766d orchestration independently accepted, including original engine/caching/ROC and immutable snapshots."
+        "Independent complete source and corrected-source reviews accepted;139 module tests /8 files and three unchanged real-shell/event/rendering reproductions pass.",
+        "5779 application tests /281 files, TypeScript and production build pass at final11e4cb5 code.",
+        "Clean partial QA handoff; original mathematics/public loader unchanged; own preview8817 available, actual browser gate open."
       ],
       "remaining": [
-        "Independent complete source review",
-        "Complete final application suite",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "af8ceaa813b18a449747884a157bbcb5bfc58d43",
+      "source": "5e1a26f2b4031dd23ca1ff9c8b92e70819aded6a",
       "pr": 78
     },
     {
@@ -1109,7 +1190,8 @@
     "CD02",
     "DR04",
     "DR03",
-    "CD03"
+    "CD03",
+    "DR01"
   ],
   "currentWave": 3,
   "verifiedCandidates": 0,
@@ -1118,5 +1200,5 @@
     "browser": "Private IAB provider unavailable during the current background continuation; prior tool handles ended. Actual checks already observed remain attributed to their exact source. Outstanding browser gates are pending, not replaced by DOM tests.",
     "preview": "Accepted v0.3.17 primary preview restored on port8787; no deployment."
   },
-  "sourceVerifiedAwaitingBrowser": 11
+  "sourceVerifiedAwaitingBrowser": 12
 }
