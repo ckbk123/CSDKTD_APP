@@ -1,4 +1,5 @@
 import{afterEach,describe,expect,it,vi}from'vitest';
+import{convertLatexToMarkup}from'mathlive/ssr';
 const rendering=vi.hoisted(()=>({run:undefined as undefined|(()=>void)}));
 vi.mock('../../shared/equations/input',()=>({createEquationDisplay:(text:string,label:string)=>{rendering.run?.();const e=document.createElement('div');e.textContent=text;e.setAttribute('aria-label',label);return e;}}));
 import*as math from'./math';
@@ -50,6 +51,9 @@ describe('live error exploration with original mathematics (mocked typesetting)'
   });
   it('coalesces continuous source edits to the latest candidate on the original deadline',()=>{
     visit();const run=vi.spyOn(math,'trace');set('Explore normalized gain g','8');vi.advanceTimersByTime(30);set('Explore normalized gain g','12');vi.advanceTimersByTime(10);expect(run).toHaveBeenCalledOnce();expect(limit()).toContain('\\frac{1}{6}');expect(document.body.textContent).toContain('Checked current source');
+  });
+  it('typesets a unit-leading allowed growth polynomial without joining the similarity command to t',()=>{
+    visit();button('0 integrators').click();set('Explore amplitude A','3');apply();expect(limit()).toContain('\\sim t');expect(convertLatexToMarkup(limit())).not.toContain('ML__error');
   });
   it('withholds a failed new numerical trace while retaining its independent exact certificate and recovery',()=>{
     visit();const run=vi.spyOn(math,'trace').mockImplementationOnce(()=>{throw Error('Transition unavailable');});set('Explore normalized gain g','8');apply();expect(limit()).toContain('\\frac{1}{4}');expect(document.querySelectorAll('.cf-live-plot')).toHaveLength(0);expect(document.body.textContent).toContain('Numerical trace unavailable: Transition unavailable');expect(field('Explore inspection time (s)').disabled).toBe(true);run.mockRestore();set('Explore normalized gain g','4');apply();expect(document.querySelectorAll('.cf-live-plot')).toHaveLength(2);expect(field('Explore inspection time (s)').disabled).toBe(false);

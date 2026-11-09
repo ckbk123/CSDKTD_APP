@@ -13,4 +13,8 @@ describe('independent error exploration and retained Practice',()=>{
   it('aborts a failed child before retry, retains its sibling and restores focused Retry to mode',()=>{
     const container=document.createElement('div'),parent=new AbortController(),probe=vi.fn(),other=vi.fn(),factory=vi.fn<ModuleMount>(({signal})=>{window.addEventListener('cf02-panel-probe',probe,{signal});if(factory.mock.calls.length===1)throw Error('partial');});document.body.append(container);release=mountPanels({container,signal:parent.signal},factory,other);window.dispatchEvent(new Event('cf02-panel-probe'));expect(probe).not.toHaveBeenCalled();const retry=container.querySelector('button')!;retry.focus();retry.click();expect(document.activeElement).toBe(container.querySelector('select'));expect(factory).toHaveBeenCalledTimes(2);expect(other).toHaveBeenCalledOnce();retry.click();expect(factory).toHaveBeenCalledTimes(2);
   });
+  it('stops the mode continuation when suspending an owned panel aborts its parent',()=>{
+    const container=document.createElement('div'),parent=new AbortController(),hide=vi.fn();document.body.append(container);release=mountPanels({container,signal:parent.signal},({container:host,signal})=>{host.addEventListener('cf02-suspend',()=>parent.abort(),{signal});},()=>{});vi.stubGlobal('mathVirtualKeyboard',{hide});
+    try{const mode=container.querySelector('select')!;mode.value='practice';mode.dispatchEvent(new Event('change'));expect(parent.signal.aborted).toBe(true);expect(container.children).toHaveLength(0);expect(hide).not.toHaveBeenCalled();}finally{vi.unstubAllGlobals();}
+  });
 });

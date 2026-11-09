@@ -18,7 +18,14 @@ export function mountPanels({container,signal:parent}:Parameters<ModuleMount>[0]
   }
   try{
     for(const[name,factory]of[['Explore tracking error',explore],['Practice error limits',practice]]as const){const host=document.createElement('div');root.append(host);const slot={host,name,factory};slots.push(slot);start(slot);if(disposed)return cleanup;}
-    const change=()=>{const selected=mode.value==='practice'?1:0;for(const[at,slot]of slots.entries()){if(at!==selected){slot.host.dispatchEvent(new Event('cf02-suspend'));if(slot.host.contains(document.activeElement))mode.focus({preventScroll:true});}slot.host.hidden=at!==selected;slot.host.inert=at!==selected;}window.mathVirtualKeyboard?.hide();};
+    const change=()=>{
+      if(disposed||parent.aborted)return;const selected=mode.value==='practice'?1:0;
+      for(const[at,slot]of slots.entries()){
+        if(at!==selected){slot.host.dispatchEvent(new Event('cf02-suspend'));if(disposed||parent.aborted)return;if(slot.host.contains(document.activeElement))mode.focus({preventScroll:true});if(disposed||parent.aborted)return;}
+        slot.host.hidden=at!==selected;slot.host.inert=at!==selected;
+      }
+      if(disposed||parent.aborted)return;window.mathVirtualKeyboard?.hide();
+    };
     mode.addEventListener('change',change,{signal});change();return cleanup;
   }catch(error){cleanup();throw error;}
 }
