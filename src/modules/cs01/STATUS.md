@@ -23,6 +23,12 @@ New fixtures preserve the independent baseline IVP and impulse identities; a hid
 
 Supported editing limits are visible: 0.01 family-coordinate grid, |coordinate|≤100 and every derived original-parser-validated matrix entry≤100/denominator≤10⁹. Initial states stay within ±100, horizon 0.05–30 s, cursor 0…horizon, at most 20 visit-local undo snapshots, 241–2,049 illustrative analytic samples and original growth/conditioning screens. Cursor movement reuses cached complete curves; it evaluates the selected analytic point rather than interpolating it. Samples may miss extrema and are not a controller sample period. Arbitrary matrix Practice retains its original real-rational grammar, dimensions, bounds, exact cancellation and all modes; it is never converted to a family. No new actual browser, actual touch gesture or measured latency evidence is claimed. The coordinator owns the pending browser gate on port 8806.
 
+## Source acceptance and partial QA handoff — 9 November 2026
+
+The independent stability reviewer accepted exact source `503beee65b007347e05563c505c4dbe308bc3f7e` and independently reran **123 module tests**. The coordinator also accepted the original-math/family/trace separation and observer-constructor abort correction. The implementation's own exact source checks remain **123 tests in nine files**, **5,671 full-suite tests in 270 files**, TypeScript, production build and whitespace checks as recorded above. This handoff commit changes only this evidence record.
+
+Handoff reason is **partial**: source implementation and technical review are complete, but required actual production-browser desktop/phone/font/keyboard/reset/navigation acceptance remains open. Stage stays implemented; no verified or full task-completion claim is made. Preserve this branch/worktree and PR #67 for browser recovery and any resulting corrections. Browser checks must include all three explicit families, original arbitrary Practice/fraction entry, signed handle arrows and pointer/Undo, native invalid drafts through view changes, cached time inspection, actual 12px labels/44px targets/equal nested scales and zero MathLive error nodes.
+
 ## Historical accepted exercise delivery
 
 - **Last assessed:** 2026-10-29
