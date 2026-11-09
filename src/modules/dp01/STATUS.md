@@ -1,6 +1,22 @@
 # DP01 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement — 9 November 2026:** immediate full-model sequence exploration and live independent shared-radius/angle lab. Owner `interactivity-dp01-01a1ac7b`, branch `codex/dp01-sequence-exploration`, fresh tree `C:/Users/baokh/.codex/worktrees/dp01-sequence-exploration/CSDKTD APP`, captured primary main `6af3485ef6da6f11f4979ff665896d83b99414b5` (v0.3.17). Current guides and actual TASK/STATUS/view/math/tests/plot/atlas were inspected. Own locked dependencies installed; only this module is owned. Central preview port **8819** is assigned; no server/browser launched.
+
+## Finite refinement audit and first source checkpoint
+
+| Accepted scope | Existing evidence and current work |
+|---|---|
+| Immediate full-original-model Explore | Main model/input/history results currently require Reveal; add immediate actual baseline and live checked parameter changes while retaining every supported proper first/second-order input. Preserve the original full exercise independently as Practice. |
+| Cached integer sample inspection | Existing numeric cursor replaces the whole SVG. Link one cached k to total/forced/free/input stems, recurrence/table and all retained denominator poles; no simulation on cursor/Fit/view-only changes. |
+| Independent direct mode lab | Existing equal-radius lab already draws32 samples at mount below the setup; edits clear it until Compare. Promote it to live native/keyboard/direct selected-point controls, explicit shared radius, independent A/B angles and complete rollback. Overlapping comparison points never mean scalar repeated poles. |
+| Full domain and timing | Preserve original parser/simulate/decomposition/pole/classification engines, all arbitrary models/histories and the scaled far-pole experiment. T never resamples G(z) or moves its poles; physical ramp A·k·T is recomputed. No ZOH engine, second-order reconstruction or new solver. The optional first-order builder is not required for the core direct mode-lab scope and is not introduced in this checkpoint. |
+| Failure semantics and owned lifetime | New orchestration retains valid model/root inspection when the original selected trajectory exceeds its bound; parameter/parser failures throw before publication. Pending UI work: raw native/editor preservation, fixed measured-width axes/Fit, retained Practice/grade truth, scroll/focus and owned timer/gesture/observer cleanup. |
+| Verification and delivery | Original baseline **128 tests / 3 files** passes. First source checkpoint: **134 tests / 4 files** and `npm run check` pass, including six new independent full-source/inspection/mode-lab fixtures. UI/final focused/full/check/build, one PR, independent source and actual browser gates remain pending. |
+
+Read-only preparation is retained outside Git as `dp01-interactivity-prep.json`; its inspected source evidence and proposed fixtures are distinct from browser proof or newly inspected slides. The accepted original delivery below is historical.
+
+## Historical accepted exercise delivery
 - **Last assessed:** 2026-10-29
 - **Starting revision:** `c5d1135ba8b595215dfc7007824d5bd206908152`
 - **Worker chat:** `01a18700-cc48-7482-ba96-f9aab107f802`
