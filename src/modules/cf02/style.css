@@ -34,3 +34,24 @@
   [data-module="CF02"] .cf-grid { grid-template-columns: 1fr; }
   [data-module="CF02"] .cf-card { padding: 12px; }
 }
+[data-module="CF02"].cf-panels,[data-module="CF02"] .cf-explore{display:grid;gap:12px;min-width:0}
+[data-module="CF02"] .cf-explore h2{font-size:20px;margin:0}
+[data-module="CF02"] [hidden]{display:none!important}
+[data-module="CF02"] .cf-live-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end}
+[data-module="CF02"] .cf-live-controls input,[data-module="CF02"] .cf-live-controls select,[data-module="CF02"] .cf-explore button{min-height:44px}
+[data-module="CF02"] .cf-explore input[type="range"]{accent-color:var(--accent);padding:4px;cursor:pointer}
+[data-module="CF02"] .cf-explore input[type="checkbox"]{width:24px;accent-color:var(--accent)}
+[data-module="CF02"] .cf-explore button[aria-pressed="true"]{border:2px solid var(--accent);background:var(--tint);font-weight:600}
+[data-module="CF02"] .cf-live-plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+[data-module="CF02"] .cf-live-plots>div,[data-module="CF02"] .cf-live-plot{min-width:0;max-width:100%}
+[data-module="CF02"] .cf-live-plot svg{display:block;width:100%;height:auto;overflow:visible}
+[data-module="CF02"] .cf-live-plot svg text{font:12px system-ui;fill:var(--text)}
+[data-module="CF02"] .cf-live-0{stroke:var(--accent);stroke-width:2;fill:none}
+[data-module="CF02"] .cf-live-1{stroke:var(--text);stroke-width:2.5;stroke-dasharray:7 4;fill:none}
+[data-module="CF02"] .cf-live-point.cf-live-0{fill:var(--accent)}
+[data-module="CF02"] .cf-live-point.cf-live-1{stroke-dasharray:none}
+[data-module="CF02"] .cf-live-bound{stroke-dasharray:none}
+[data-module="CF02"] .cf-live-cursor{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+[data-module="CF02"] .cf-explore summary{min-height:44px;padding:8px 0}
+[data-module="CF02"] .cf-explore .equation-display{max-width:100%;overflow:auto}
+@media(max-width:700px){[data-module="CF02"] .cf-live-plots{grid-template-columns:minmax(0,1fr)}}
