@@ -21,10 +21,11 @@ export function drawSequence(trial:SequenceTrial,k:number,axes:SequenceAxes,widt
   for(let i=0;i<trial.rows.length;i++){
     const row=trial.rows[i],zero=trial.zero[i],inside=(v:number)=>v>=axes.low&&v<=axes.high;node('line',{x1:g.x(i),x2:g.x(i),y1:g.y(0),y2:g.y(Math.max(axes.low,Math.min(axes.high,row.value))),class:i===k?'dr01-stem dr01-chosen':'dr01-stem'},undefined,stems);
     if(inside(row.value))node('circle',{cx:g.x(i),cy:g.y(row.value),r:i===k?5:3,class:'dr01-dot'},undefined,stems);if(inside(zero.value))node('circle',{cx:g.x(i),cy:g.y(zero.value),r:5,class:'dr01-zero'},undefined,stems);
-    if([row.value,zero.value].some(v=>v<axes.low||v>axes.high)){clipped++;const y=row.value>axes.high||zero.value>axes.high?g.top+3:g.bottom-3;node('path',{d:`M ${g.x(i)-4} ${y} L ${g.x(i)+4} ${y} L ${g.x(i)} ${y+(y<100?7:-7)} Z`,class:'dr01-dot'});}
+    const sides=new Set([row.value,zero.value].flatMap(v=>v<axes.low?['low']:v>axes.high?['high']:[]));
+    if(sides.size){clipped++;for(const side of sides){const y=side==='high'?g.top+3:g.bottom-3;node('path',{d:`M ${g.x(i)-4} ${y} L ${g.x(i)+4} ${y} L ${g.x(i)} ${y+(side==='high'?7:-7)} Z`,class:'dr01-dot','data-clipped':side});}}
   }
   node('line',{x1:g.x(k),x2:g.x(k),y1:g.top,y2:g.bottom,class:'dr01-inspection-line'});
-  const onset=node('g',{'data-onset':'true',role:'button',tabindex:0,'aria-label':`Sequence onset delay ${trial.draft.delay} samples. Drag horizontally, or use Left and Right arrows. Home is zero; End is twelve.`});
+  const onset=node('g',{'data-onset':'true',role:'slider',tabindex:0,'aria-valuemin':0,'aria-valuemax':12,'aria-valuenow':trial.draft.delay,'aria-orientation':'horizontal','aria-label':`Sequence onset delay ${trial.draft.delay} samples. Drag horizontally, or use Left and Right arrows. Home is zero; End is twelve.`});
   node('line',{x1:g.x(trial.draft.delay),x2:g.x(trial.draft.delay),y1:g.top,y2:253,class:'dr01-delay-guide'},undefined,onset);
   node('rect',{x:g.x(trial.draft.delay)-22,y:253,width:44,height:44,rx:6,class:'dr01-onset-target'},undefined,onset);node('text',{x:g.x(trial.draft.delay),y:280,'text-anchor':'middle'},'d',onset);
   return{svg,geometry:g,clipped};

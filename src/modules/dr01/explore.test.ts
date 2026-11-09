@@ -46,6 +46,23 @@ describe('immediate sequence exploration (mocked typesetting; actual browser sep
   it('cancels a native range gesture when its own pointer capture is lost',()=>{
     visit();const slider=field('Selected sequence parameter');pointer(slider,'pointerdown',7);slider.value='-.5';slider.dispatchEvent(new Event('input'));pointer(slider,'lostpointercapture',99);expect(field('Explore geometric pole a').value).toBe('-0.5');pointer(slider,'lostpointercapture',7);expect(field('Explore geometric pole a').value).toBe('0.8');expect(button('Undo source change').disabled).toBe(true);
   });
+  it('consumes active-gesture Escape before an earlier shell listener, then permits ordinary shell Escape',()=>{
+    const scope=new AbortController(),shell=vi.fn();window.addEventListener('keydown',shell,{signal:scope.signal});
+    try{visit();const slider=field('Selected sequence parameter');pointer(slider,'pointerdown',7);slider.value='-.5';slider.dispatchEvent(new Event('input'));slider.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));expect(shell).not.toHaveBeenCalled();expect(field('Explore geometric pole a').value).toBe('0.8');slider.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));expect(shell).toHaveBeenCalledOnce();}finally{scope.abort();}
+  });
+  it('quarantines a cancelled native pointer stream until release while fresh keyboard actions remain explicit',()=>{
+    visit();const slider=field('Selected sequence parameter');pointer(slider,'pointerdown',7);slider.value='-.5';slider.dispatchEvent(new Event('input'));slider.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    slider.value='.2';slider.dispatchEvent(new Event('input'));expect(slider.value).toBe('0.8');expect(field('Explore geometric pole a').value).toBe('0.8');expect(button('Undo source change').disabled).toBe(true);
+    slider.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));expect(field('Explore geometric pole a').value).toBe('0.81');slider.value='.2';slider.dispatchEvent(new Event('input'));expect(slider.value).toBe('0.81');
+    pointer(window,'pointerup',99);slider.value='.2';slider.dispatchEvent(new Event('input'));expect(slider.value).toBe('0.81');pointer(window,'pointerup',7);slider.value='.2';slider.dispatchEvent(new Event('input'));expect(field('Explore geometric pole a').value).toBe('0.2');
+  });
+  it('does not publish a native candidate or undo history when its typesetting fails',()=>{
+    visit();const initial=identity();rendering.onDisplay=()=>{throw Error('Typesetting failed');};set('Explore geometric pole a','-.5');expect(feedback()).toContain('last accepted');button('Fit sequence axes').click();set('Explore sample k','1');expect(identity()).toBe(initial);expect(document.body.textContent).toContain('x[k]=0.8; zero history 0.8');expect(button('Undo source change').disabled).toBe(true);
+    rendering.onDisplay=undefined;set('Explore geometric pole a','-.5');expect(document.body.textContent).toContain('x[k]=-0.5; zero history -0.5');expect(identity()).not.toBe(initial);expect(button('Undo source change').disabled).toBe(false);
+  });
+  it('retains the starting checked identity on cancellation even if later typesetting would fail',()=>{
+    visit();const initial=identity(),slider=field('Selected sequence parameter');pointer(slider,'pointerdown',7);slider.value='-.5';slider.dispatchEvent(new Event('input'));rendering.onDisplay=()=>{throw Error('Typesetting failed');};slider.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));expect(field('Explore geometric pole a').value).toBe('0.8');expect(identity()).toBe(initial);set('Explore sample k','1');expect(document.body.textContent).toContain('x[k]=0.8; zero history 0.8');expect(button('Undo source change').disabled).toBe(true);
+  });
   it('rejects finite-length overflow atomically and marks fixed-axis truncation until Fit',()=>{
     visit();choose('Explore sequence family','sum');set('Explore onset delay d (samples)','12');expect(feedback()).toContain('last nonzero');expect(document.querySelector('[data-onset]')?.getAttribute('aria-label')).toContain('delay 0');set('Explore onset delay d (samples)','0');set('Sequence gain c','100');expect(document.body.textContent).toContain('triangles mark truncation');button('Fit sequence axes').click();expect(document.body.textContent).not.toContain('triangles mark truncation');
   });
