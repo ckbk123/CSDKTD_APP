@@ -17,16 +17,18 @@ vi.mock('../../shared/equations/input', () => ({
 import { mount } from './view';
 
 const cleanup: (() => void)[] = [];
-afterEach(() => cleanup.splice(0).forEach(fn => fn()));
+afterEach(() => { cleanup.splice(0).forEach(fn => fn()); vi.useRealTimers(); });
 function open() {
   const container = document.createElement('section'); container.dataset.module = 'CP03'; document.body.append(container);
   const controller = new AbortController(), dispose = mount({ container, signal: controller.signal });
   cleanup.push(() => { controller.abort(); if (typeof dispose === 'function') dispose(); container.remove(); });
-  const button = (text: string) => [...container.querySelectorAll('button')].find(b => b.textContent === text)!;
-  const field = (text: string) => [...container.querySelectorAll('label')].find(l => l.textContent?.includes(text))!.querySelector('input')!;
+  const mode = container.querySelector<HTMLSelectElement>('[aria-label="Learning mode"]')!; mode.value = 'practice'; mode.dispatchEvent(new Event('change'));
+  const panel = container.querySelector<HTMLElement>('[data-cp03-panel="practice"]')!;
+  const button = (text: string) => [...panel.querySelectorAll('button')].find(b => b.textContent === text)!;
+  const field = (text: string) => [...panel.querySelectorAll('label')].find(l => l.textContent?.includes(text))!.querySelector('input')!;
   const change = (input: HTMLInputElement | HTMLTextAreaElement, value: string) => { input.value = value; input.dispatchEvent(new Event('input', { bubbles: true })); };
-  const apply = () => container.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-  return { container, controller, button, field, change, apply };
+  const apply = () => panel.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  return { container: panel, controller, button, field, change, apply };
 }
 
 describe('CP03 exercise flow and ownership', () => {
@@ -39,7 +41,7 @@ describe('CP03 exercise flow and ownership', () => {
     v.button('Reveal calculation and linked plots').click();
     expect(v.container.textContent).toContain('-71.565');
     expect(v.container.querySelectorAll('figure')).toHaveLength(4);
-    expect(v.container.querySelector('.cp03-message[role="status"]')?.textContent).toContain('gain 0, phase 0°');
+    expect(v.container.querySelector('.cp03-grade')?.textContent).toContain('gain 0, phase 0°');
   });
   it('invalidates stale results immediately, computes changed data and explains an improper plant', () => {
     const v = open(); v.button('Reveal calculation and linked plots').click();
@@ -100,16 +102,18 @@ describe('CP03 exercise flow and ownership', () => {
     expect(v.container.querySelector('figure')).toBeNull();
     v.change(v.field('Window start'), '0'); v.apply();
     v.change(v.field('Output amplitude marker'), '1e-999');
-    expect(v.container.querySelector('.cp03-message[role="status"]')?.textContent).toContain('nonzero but too small');
-    expect(v.container.querySelector('figure')).toBeNull();
+    expect(v.container.querySelector('.cp03-marker-error')?.textContent).toContain('nonzero but too small');
+    expect(v.container.querySelector('figure')).not.toBeNull();
     v.change(v.field('Output amplitude marker'), '0e-999');
     expect(v.container.querySelector('figure')).not.toBeNull();
-    expect(v.container.querySelector('.cp03-message[role="status"]')?.textContent).toBe('');
+    expect(v.container.querySelector('.cp03-marker-error')?.textContent).toBe('');
   });
   it('updates all three linked frequency plots without hiding a revealed comparison', () => {
+    vi.useFakeTimers();
     const v = open(); v.button('Reveal calculation and linked plots').click();
     const cursor = v.container.querySelector('input[type="range"]') as HTMLInputElement;
     v.change(cursor, '1');
+    vi.advanceTimersByTime(40);
     expect(v.field('Frequency ω').value).toBe('10');
     expect(v.container.querySelectorAll('figure')).toHaveLength(4);
     expect(v.container.querySelector('.cp03-frequency-plots')?.textContent).toContain('cursor ω=10 rad/s');
