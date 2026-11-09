@@ -106,7 +106,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
     input('d0').disabled = choice('derivative').value === 'backward';
   };
   const errorsInput = createEquationInput({ label: 'Error samples starting at k = 1', value: '[1,1,1,1,0,0]', signal,
-    tools: ['fraction', 'power', 'parentheses'], onChange: value => { if (workbench?.isDragging()) { workbench.cancel(); errorsInput.setValue(value.latex); } draft = value; invalidate(); } });
+    tools: ['fraction', 'parentheses'], onChange: value => { if (workbench?.isDragging()) { workbench.cancel(); errorsInput.setValue(value.latex); } draft = value; invalidate(); } });
   releaseEditor = errorsInput.destroy; if (disposed || signal.aborted) { errorsInput.destroy(); return cleanup; }
   get('.pid-errors').append(errorsInput.element); draft = errorsInput.getValue();
   const numeric = (name: string) => {
@@ -200,7 +200,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       equation(pendingPanel, `u_{\\mathrm{position}}=${t(s.proportional)}+(${t(s.integral)})+(${t(s.derivative)})=${t(s.position)}`, 'Positional checked result');
       equation(pendingPanel, `\\Delta u=${s.incrementTerms.map(value => `(${t(value)})`).join('+')}=${t(s.increment)},\\quad u=${t(s.old.output)}+(${t(s.increment)})=${t(s.incremental)}`, 'Incremental checked result');
       renderPrimary(s);
-      if (input('prediction').value.trim()) {
+      if (input('prediction').value.trim() || input('prediction').validity.badInput) {
         const prediction = numeric('prediction');
         say(pendingPanel, Math.abs(prediction - s.position) <= 1e-7 * Math.max(1, Math.abs(s.position)) ? 'Your prediction matches within the displayed precision.' : `Your prediction differs by ${n(prediction - s.position)}. Check the highlighted old values and arithmetic.`).setAttribute('data-prediction-grade', '');
       }

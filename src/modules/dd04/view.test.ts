@@ -31,6 +31,14 @@ describe('DD04 read/calculate/commit interface (mocked presentation only)', () =
     expect(v.container.querySelector('.pid-memory')!.textContent).toContain('u[0]0');expect(v.container.querySelector<HTMLElement>('.pid-pending')!.hidden).toBe(true);
     expect(v.container.querySelector('.pid-settings')!.hasAttribute('open')).toBe(false);
   });
+  it('curates only error-entry symbols supported by the existing scalar parser',()=>{
+    const editor=vi.spyOn(equations,'createEquationInput');visit();expect(editor.mock.calls[0][0].tools).toEqual(['fraction','parentheses']);
+  });
+  it('validates a partial native optional prediction while retaining the checked memory and raw input',()=>{
+    const v=visit(),prediction=v.container.querySelector<HTMLInputElement>('[data-number="prediction"]')!;prediction.value='';vi.spyOn(prediction,'validity','get').mockReturnValue({badInput:true}as ValidityState);
+    const memory=v.container.querySelector('.pid-memory')!.textContent,writes=vi.spyOn(prediction,'value','set');v.button('calculate').click();
+    expect(v.container.querySelector('.pid-message')!.textContent).toContain('prediction as a finite number');expect(v.container.querySelector('.pid-memory')!.textContent).toBe(memory);expect(v.button('commit').disabled).toBe(true);expect(writes).not.toHaveBeenCalled();expect(prediction.validity.badInput).toBe(true);
+  });
   it('links direct future-input edits to the original kernel while keeping commit timing and explicit replay',()=>{
     const v=visit(),edit=(name:string,value:string)=>{const f=v.container.querySelector<HTMLInputElement>(`[aria-label="${name}"]`)!;f.value=value;f.dispatchEvent(new Event('input'));};
     edit('Error e[k] to edit','.5');v.button('calculate').click();expect(v.container.querySelector('.pid-pending')!.textContent).toContain('u[1]=7.05');expect(v.container.querySelector('.pid-memory')!.textContent).toContain('u[0]0');
