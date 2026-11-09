@@ -1,6 +1,17 @@
 # CR03 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+
+## Finite coordinate-interactivity refinement — 9 November 2026
+
+Owner `interactivity-cr03-01a1ac7b`; branch `codex/cr03-coordinate-exploration`; isolated tree `C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cr03-coordinates-01a1ac7b`; base current primary `6af3485ef6da6f11f4979ff665896d83b99414b5`. One finite assignment owns only this folder. PR creation/central browser QA remain coordinator work; preview port8822 reserved.
+
+Recoverable foundation: caller-owned one-entry trajectory caches and bounded embedded-pair family, independently simulated transformed trajectories, measured equal-scale drawing, initial actual Explore preview, complete original Practice extraction, and retained independent panel lifetimes. The original `math.ts`, `parser.ts`, `index.ts` and public lazy workspace are unchanged. Practice retains the prior flow with supported quick symbols and optional native badInput validation. The first five new mathematical/cache fixtures include the independently derived constant-coordinate example and every ordered four-state pair. All original111 tests plus these five pass (116/6files,3.01s); `npm run check` passes on this checkpoint.
+
+Still open: comprehensive UI/geometry/gesture/native-draft/lifetime regressions, independent source review, final type/full/build, actual desktop/narrow/editor/browser gates and exact clean handoff. This checkpoint does not assert that the new interface is complete or accepted. Earlier verified delivery below is historical evidence for the original exercise; it is not new-refinement browser evidence.
+
+## Historical original delivery (preserved)
+
 - **Coordinator preparation:** frozen source `8319494d68d6dcf81bf44ba0ec090846564a2119` is prepared with the explicitly authorized trajectory-conditioning screen, shared TeX argument preflight, and owned deferred-view cleanup.111 module tests plus179 shared-preflight and25 native-reader tests pass (315 total), with type checking and diff validation. Stage remains implemented; coordinator browser acceptance of the integrated correction is pending.
 - **Assessed:** 2026-10-29
 - **Claim baseline:** `ecf398eb8dc32376e994a458e3bff3b666ce118a`, fresh committed primary main (v0.3.4)
