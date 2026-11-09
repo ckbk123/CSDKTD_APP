@@ -1,6 +1,20 @@
 # CD02 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+
+## Finite interactivity refinement — 9 November 2026
+
+Owner `interactivity-cd02-01a1ac7b`, branch `codex/cd02-lead-exploration`, isolated worktree `C:/Users/baokh/.codex/worktrees/cd02-lead-exploration/CSDKTD APP`; baseline primary main `6af3485ef6da6f11f4979ff665896d83b99414b5` (v0.3.17). The atomic explicit-purpose claim owns only CD02. Own locked dependencies use Node 24.22.1. The existing verified exercise acceptance below is historical; it does not verify this new interface.
+
+Requirement audit: the complete original lead-design math, scalar notation, optional prediction, angle construction, all-three-branch locus, full-mode/Routh checks, response-versus-pair comparison and qualified full-response checklist already work. Initial useful geometry requires Reveal, and full plots require a second Verify; all changes use separate submit actions. There is no direct geometric interaction, and the fixed 680-unit drawings shrink phone text. This refinement adds immediate computed Explore with constrained controller-pole/target-pair movement and complete linked model checks, while preserving the original independent Practice attempt and every mathematical bound. The original `math.ts`/parser remain authoritative; response always uses the K derived for that design, never an arbitrary inspection gain.
+
+Planned checks include independent baseline/pole/gain/cancellation/slow-mode fixtures, exact equal-axis geometry, one-pointer and complete cancellation state, keyboard/numeric alternatives, native badInput setter-write preservation, independent retained modes, material warnings and owned cleanup. Browser QA belongs to the coordinator and remains pending; no mouse/touch, font, phone-layout or latency claim is made.
+
+First implementation checkpoint: default Explore computes the baseline complex plane, angle vectors, complete three-branch locus, all cubic roots/Routh check, full-versus-pair step and four requirement rows. Controller-pole and coupled target handles use fixed equal axes, numeric/key alternatives and complete snapshot cancellation. Specs-derived targets are read-only. Geometry previews withhold the old locus and label the retained previous response beside it until the bounded complete check. Original Practice is preserved in `practice.ts` with its original tests, inside an independent retained visit panel. `math.ts`, `number-expression.ts`, `workspace.ts` and metadata are unchanged.
+
+Initial verification: `npm test -- src/modules/cd02` passes 134 tests/6 files (128 preserved exercise tests plus six new mounted-view interactions), `npm run check`, `npm run build` and `git diff --check` pass. New fixtures exercise baseline full-order outputs, coalesced changed pole, controller/target dragging, first-pointer cancellation, specification target/strict limits and native badInput preservation/recovery. Further independent drawing/mathematics and lifetime/Practice regressions, final complete suite and centralized browser QA remain pending; Stage is in-progress at this early checkpoint.
+
+## Historical exercise acceptance
 - **Assessed:** 30 October 2026, from upstream `a43989def918052cc969cbee8691ce79d8824ec9` (fetched again and unchanged before delivery).
 - **Worker chat:** `01a188d9-ee2e-7c20-bdf2-0725a50f5406`.
 - **Branch:** `codex/cd02-lead-root-locus-20261030`; ownership only `src/modules/cd02/**`.

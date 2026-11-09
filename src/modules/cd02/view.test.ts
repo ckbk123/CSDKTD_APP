@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
-import { mount } from './view';
+import { mount } from './practice';
 const resources = vi.hoisted(() => ({ calls: 0, created: 0, throwAt: 0, signals: [] as AbortSignal[] }));
 vi.mock('../../shared/equations/input', () => ({
   createEquationInput: (options: EquationInputOptions) => {
