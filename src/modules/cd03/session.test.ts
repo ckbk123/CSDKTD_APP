@@ -25,3 +25,15 @@ it('retains complete unstable/boundary roots and uncertainty without asserting a
 it('rejects ratio/corner domain crossings atomically without changing the original design', () => {
   const d = Object.freeze({ ...baselineDesign(), lag: true }); expect(() => moveCorner(d, 'p', .1)).toThrow('p<z'); expect(() => moveCorner(d, 'ratio', .0009)).toThrow(); expect(() => moveCorner(d, 'ratio', .6)).toThrow(); expect(d.p).toBe(.01); expect(d.z).toBe(.1);
 });
+it('remeasures changed H or band using the existing modal signals, without rebuilding response or roots', () => {
+  const c = check({ ...baselineDesign(), lag: true }, initialRequirements()), build = vi.spyOn(modelMath, 'model'), measure = vi.spyOn(responseMath, 'measure'), response = vi.spyOn(responseMath, 'response');
+  try { const next = check(c.design, { ...c.requirements, horizon: 10, band: .05 }, c); expect(next.baseline.signal).toBe(c.baseline.signal); expect(next.full.signal).toBe(c.full.signal); expect(measure).toHaveBeenCalledTimes(2); expect(build).not.toHaveBeenCalled(); expect(response).not.toHaveBeenCalled(); }
+  finally { vi.restoreAllMocks(); }
+});
+it('retains every characteristic mode at a canceled controller zero', () => {
+  const c = check({ ...baselineDesign(), lag: true, z: 2 }, initialRequirements()); expect(c.model.fullRoots).toHaveLength(3); expect(c.full.signal.response!.poles).toHaveLength(3); expect(c.model.fullRoots.some(root => Math.abs(root.re + 2) < 1e-10 && root.im === 0)).toBe(true);
+});
+it('caches explicit measurement failures rather than repeating them on assessment-only target changes', () => {
+  const d = { a: 4, b: 4, k: 100, lag: true, p: .01, z: .1 }, c = check(d, { ...initialRequirements(), horizon: 200 }); expect(c.model.fullRoots).toHaveLength(3); expect(c.full.metrics).toBeUndefined(); expect(c.full.issue).toContain('response-grid limit');
+  const measure = vi.spyOn(responseMath, 'measure'); try { const next = check(d, { ...c.requirements, overshoot: 40 }, c); expect(next.full).toBe(c.full); expect(next.full.issue).toBe(c.full.issue); expect(measure).not.toHaveBeenCalled(); } finally { vi.restoreAllMocks(); }
+});

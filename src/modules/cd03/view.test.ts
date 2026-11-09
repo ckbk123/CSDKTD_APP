@@ -6,7 +6,7 @@ vi.mock('../../shared/equations/input', () => ({
     return { element, setValue: (v: string) => { field.value = v; }, getValue: () => ({ latex: field.value, empty: !field.value, hasPlaceholders: field.value.includes('placeholder'), syntaxIssues: [] }), destroy: () => element.remove() };
   },
 }));
-import { mount } from './view';
+import { mount } from './practice';
 const controllers: AbortController[] = [];
 afterEach(() => { controllers.forEach(c => c.abort()); controllers.length = 0; document.body.replaceChildren(); });
 function start() {

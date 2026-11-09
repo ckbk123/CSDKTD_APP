@@ -37,7 +37,8 @@ export function polePlot(d: Design, m: Model): SVGElement {
   const s = svg('All full closed-loop poles and vectors from the chosen lag pole and zero to the original upper reference pole.');
   const points = [...m.fullRoots, ...m.baselineRoots, ...(d.lag ? [{ re: -d.z, im: 0 }, { re: -d.p, im: 0 }] : []), { re: 0, im: 0 }];
   const reMin = Math.min(...points.map(p => p.re)), reMax = Math.max(...points.map(p => p.re)), imMax = Math.max(.2, ...points.map(p => Math.abs(p.im))), reSpan = Math.max(.2, reMax - reMin);
-  const x = (re: number) => 100 + 620 * (re - reMin + .08 * reSpan) / (1.16 * reSpan), y = (im: number) => 160 - 110 * im / imMax;
+  const unit = Math.max(1.16 * reSpan / 680, 2.2 * imMax / 250), center = (reMin + reMax) / 2;
+  const x = (re: number) => 425 + (re - center) / unit, y = (im: number) => 160 - im / unit;
   line(s, 85, y(0), 765, y(0)); line(s, x(0), 35, x(0), 285);
   for (let i = 0; i <= 4; i++) { const v = reMin + reSpan * i / 4; item(s, 'text', { x: x(v), y: 307, 'text-anchor': 'middle' }, Number(v.toPrecision(3)).toString()); }
   for (const sign of [-1, 1]) item(s, 'text', { x: 74, y: y(sign * imMax) + 4, 'text-anchor': 'end' }, Number((sign * imMax).toPrecision(3)).toString());

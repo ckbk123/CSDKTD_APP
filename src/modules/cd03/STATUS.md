@@ -1,8 +1,9 @@
 # CD03 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Current finite refinement:** direct lag-corner exploration with retained full-model requirements, 9 November 2026; owner interactivity-cd03-01a1ac7b; branch codex/cd03-lag-exploration; captured primary main 6af3485ef6da6f11f4979ff665896d83b99414b5 (released v0.3.17).
 - **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cd03-lag-01a1ac7b; fresh ordinary linked Git worktree and own locked npm ci (109 packages). Only src/modules/cd03/** is owned. Parent central browser gates remain pending; future own preview is reserved on 8816. No browser launch or deployment.
+- **Current PR:** [#77 — lag-corner exploration](https://github.com/ckbk123/CSDKTD_APP/pull/77), created/attached by the coordinator at the first source checkpoint; reuse this branch/PR for corrections.
 
 ## Current refinement audit and first checkpoint
 
@@ -11,6 +12,18 @@ The original accepted exercise computes the full model correctly, but geometry a
 The bounded scope is documented in the coordinator's read-only preparation: lag initially off; explicit p/z draft, same K in both comparisons; independent and explicitly selected ratio-preserving movement; existing accuracy suggestion; equal-scale angle geometry, every full pole/Routh outcome and original conditioned response; cached assessment/time inspection; stable actual native fields; retained Practice and stale-grade invalidation; owned scheduling/pointer/panel lifetimes. No arbitrary motor model, full-locus continuation, new solver, dependency or shared API is introduced.
 
 First source checkpoint: session.ts delegates to unchanged model.ts/response.ts and holds only the caller's previous result. A change to Kv/Mp/Ts targets reuses original model/response/measurement objects; H/band changes remeasure the retained signal. Baseline signal/measurement reuse is independent of a lag edit. Every candidate still validates original design/requirement bounds; failed full stability/conditioning/transient checks retain explicit channel errors and all root/model data. Selected corner/ratio moves publish only after the original validation. All **31 original module tests plus five new independent orchestration fixtures pass (36 tests / 5 files)**, and TypeScript passes. Source engines/parser/metadata/loader are untouched. The UI, full suite/build, peer review and actual browser gates are not yet claimed.
+
+## Implemented interaction candidate
+
+Explore now opens on the actual proportional response, with lag off, explicit inactive corner glyphs and applied ratio1. Compact K/lag/p/z controls and a separately labelled logarithmic rate slider sit beside the response. The true pole/zero drawing remains a magnified linear real axis, with one explicitly selected p/z/paired handle, numeric alternatives, arrow keys and a 45-unit hit target. Moving both preserves the represented z/p; out-of-domain rate/ratio proposals reject atomically. The existing required-Kv suggestion and ÷5 experiment are explicit design actions. No hidden gain, zero, ratio or stability clamping is added.
+
+The linked response, full pole plane and comparison retain every original mode, Routh/accuracy unknown margin, cancellation, same-K reference, conditioned residue computation, refined measurement and future-tail rule. The angle plane uses equal physical scales; the original Practice plane is corrected to equal units too. Input changes coalesce through an owned80ms scheduler while an adjacent label identifies the previous checked model. Unsupported or unstable full transients leave complete geometry and qualified unavailable results. Material horizon/future-peak and numerical failure messages stay beside the response. Figures fit current measured widths with sparse 12-unit SVG axis text; actual phone font/geometry remains a pending browser gate.
+
+Target-only reassessment reuses checked model, modal signal and measurement objects; H/band edits reuse signals and remeasure; prior failed measurements remain cached for target-only changes. The continuous time cursor evaluates cached original Response.value functions without root solving, measurement or path replacement. A shorter accepted H reconciles the checked cursor while preserving an actual invalid native field and its error with no .value assignments. Fit, resize and retained-mode visits preserve native drafts and field identity.
+
+Practice retains the original independent plant/controls/prediction/Check/plots/full reasoning. Its equation quick tools match the accepted fraction/power/parentheses grammar; changed predictions revoke the old grade without removing valid results. Child scopes, failed attempts, retry focus, late disposers/editors, all-panel cleanup, timer suspension, single-pointer ownership and Escape rollback are caller-owned. No account, persistence, additional model, solver, global API, dependency or deployment change is included.
+
+Current candidate checks: `npm test -- src/modules/cd03 --reporter dot` passes **63 tests / 8 files**, 1.67s; all31 original tests remain. `npm run check`, `npm run build` (including TypeScript) and `git diff --check` pass; the build has only the existing MathLive chunk warning. New fixtures verify independent baseline/lag values, all retained modes/limits, cache reuse/failure caching, same-element badInput and cursor reconciliation, repeated key focus/full numeric precision, paired-pointer rollback, inactive draft meaning, Practice grade revocation/isolation, equal-scale/letterbox geometry and child/observer/editor cleanup. Final full suite, independent source review and actual browser gates remain pending; implemented is not verified/browser acceptance.
 
 ## Historical accepted bounded exercise
 
