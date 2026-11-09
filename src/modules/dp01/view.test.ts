@@ -13,7 +13,7 @@ vi.mock('../../shared/equations/input', () => ({
       setValue: (value: string) => { field.value = value; }, destroy: () => element.remove() };
   },
 }));
-import { mount } from './view';
+import { mount } from './practice';
 
 let dispose: (() => void) | undefined;
 let controller: AbortController;
