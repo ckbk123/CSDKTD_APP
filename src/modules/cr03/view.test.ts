@@ -114,4 +114,3 @@ describe('CR03 exercise state and representation flow', () => {
     } finally { Object.defineProperty(window, 'mathVirtualKeyboard', { value: previous, configurable: true }); }
   });
 });
-

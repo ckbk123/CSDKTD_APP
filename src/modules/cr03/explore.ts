@@ -1,21 +1,32 @@
 import type { ModuleContext } from '../../core/module';
 import { createEquationDisplay, createEquationInput, type EquationInput } from '../../shared/equations/input';
 import { readNumericInput } from '../../shared/numeric-input';
-import { canonical, formatNumber as fmt, identity, matrixLatex, norm, physical, type Matrix, type StateModel } from './math';
+import { canonical, formatNumber as fmt, identity, latexNumber, matrixLatex, norm, physical, transferLatex, transferOf, type Matrix, type StateModel } from './math';
 import { parseOde, parseTransfer } from './parser';
 import { baseline, createSession, family, inspect, type Checked, type Experiment } from './session';
 import { draw, fit, type Limits } from './drawing';
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text = '', cls = '') { const n = document.createElement(tag); n.textContent = text; n.className = cls; return n; }
 interface View { checked: Checked; s: number; h: number; pair: [number, number]; family: boolean }
-interface Gesture { id: number; target: Element; start: View; sRaw: string; hRaw: string; handle?: 'scale' | 'shear' }
+interface Gesture { id: number; target: Element; start: View; sRaw: string; hRaw: string; handle?: 'scale' | 'shear'; valid: boolean; rollback: PreparedView }
+interface PreparedView { plots: ReturnType<typeof draw>; eq: HTMLElement; component: number; index: number }
 export function mountExplore({ container, signal: parent }: ModuleContext): () => void {
+  if (parent.aborted) return () => {};
   const scope = new AbortController(), signal = scope.signal, root = el('div', '', 'cr03-explore'); container.append(root);
   let disposed = false, timer: ReturnType<typeof setTimeout> | undefined, observer: ResizeObserver | undefined;
   let gesture: Gesture | undefined, quarantined: number | undefined, pending: View | undefined;
-  const session = createSession(); let current: View = { checked: session.evaluate(baseline()), s: 1, h: 0, pair: [0, 1], family: true };
-  let k = 0, selected = 0, width = 620, limits = fit(current.checked, selected, current.pair), active = true;
   const history: View[] = [], editors: EquationInput[] = [], issues = new Map<HTMLInputElement, string>();
+  function dispose() {
+    if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); if (timer) clearTimeout(timer); timer = undefined; pending = undefined;
+    const g = gesture; gesture = undefined; if (g) { try { if (g.target.hasPointerCapture(g.id)) g.target.releasePointerCapture(g.id); } catch { /* already released */ } }
+    scope.abort(); let failure: unknown; try { observer?.disconnect(); } catch (e) { failure = e; }
+    try { for (const editor of editors) { try { editor.destroy(); } catch (e) { failure ??= e; } } } finally { root.remove(); } if (failure) throw failure;
+  }
+  parent.addEventListener('abort', dispose, { once: true });
+  try {
+  const session = createSession(); let current: View = { checked: session.evaluate(baseline()), s: 1, h: 0, pair: [0, 1], family: true };
+  if (disposed) return dispose;
+  let k = 0, selected = 0, width = 620, limits = fit(current.checked, selected, current.pair), active = true;
   const on = (target: EventTarget, event: string, callback: EventListener, capture = false) => target.addEventListener(event, callback, { signal, capture });
   const button = (label: string, action: () => void) => { const b = el('button', label); b.type = 'button'; on(b, 'click', () => action()); return b; };
   const field = (label: string, value: number) => { const wrap = el('label', label), input = el('input'); input.type = 'number'; input.step = 'any'; input.value = String(value); input.setAttribute('aria-label', label); wrap.append(input); return { wrap, input }; };
@@ -33,23 +44,26 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
   const familyButton = button('Use shear/scale family', () => { cancel(); try { acceptFamily(1, 0, current.pair, true); } catch (e) { error(e); } });
   const undo = button('Undo coordinate change', () => {
     cancel(); const prior = history.at(-1); if (!prior) return;
-    try { const prepared = prepare(prior, limits); history.pop(); publish(prior, prepared, true); feedback('Previous checked coordinates restored.'); } catch (e) { error(e); }
+    try { const prepared = prepare(prior, limits); if (disposed) return; history.pop(); publish(prior, prepared, true); feedback('Previous checked coordinates restored.'); } catch (e) { error(e); }
   });
-  const fitButton = button('Fit checked trajectories', () => { try { const next = fit(current.checked, selected, current.pair); const prepared = prepare(current, next); limits = next; publish(current, prepared); feedback('View fitted to the checked samples.'); } catch (e) { error(e); } });
-  controls.append(s.wrap, h.wrap, iSelect.wrap, jSelect.wrap, stateSelect.wrap);
-  const actions = el('div', '', 'cr03-actions'); actions.append(familyButton, button('Identity coordinates', () => { cancel(); try { const next = { ...current, checked: session.evaluate({ ...current.checked.experiment, T: identity(current.checked.experiment.model.A.length) }), family: true, s: 1, h: 0 }; accept(next, true); } catch (e) { error(e); } }), undo, fitButton);
+  const fitButton = button('Fit checked trajectories', () => { cancel(); try { const next = fit(current.checked, selected, current.pair); const prepared = prepare(current, next); if (disposed) return; limits = next; publish(current, prepared); feedback('View fitted to the checked samples.'); } catch (e) { error(e); } });
+  controls.append(s.wrap, h.wrap);
+  const selectionControls = el('div', '', 'cr03-controls'); selectionControls.append(iSelect.wrap, jSelect.wrap, stateSelect.wrap);
+  const secondary = el('div', '', 'cr03-actions'); secondary.append(familyButton, undo);
+  const actions = el('div', '', 'cr03-actions'); actions.append(button('Identity coordinates', () => { cancel(); try { const next = { ...current, checked: session.evaluate({ ...current.checked.experiment, T: identity(current.checked.experiment.model.A.length) }), family: true, s: 1, h: 0 }; accept(next, true, true); } catch (e) { error(e); } }), fitButton);
   const title = el('h3', 'Change coordinates, retain the output'), stateHost = el('div', '', 'cr03-plot'), outputHost = el('div', '', 'cr03-plot'), planes = el('div', '', 'cr03-planes');
   stateHost.dataset.explorePlot = 'state'; outputHost.dataset.explorePlot = 'output';
   const identityHost = el('div'), sample = el('p', '', 'cr03-sample'), cursorControls = el('div', '', 'cr03-controls'), cursor = field('Computed sample index k', 0), range = el('input');
   cursor.input.step = '1'; cursor.input.min = '0'; range.type = 'range'; range.min = '0'; range.step = '1'; range.setAttribute('aria-label', 'Computed sample range'); cursorControls.append(cursor.wrap, range);
   const legend = el('p', 'Solid: original x or y. Dashed: transformed z or y. Curves join computed samples; coordinate units can differ.', 'cr03-muted');
-  const planeIntro = el('p', 'New coordinate basis in the original x plane: columns of T⁻¹. Drag the scale or shear endpoint, or use their numbers and arrow keys. Both axes have equal scale.', 'cr03-muted');
+  const planeIntro = el('p', 'New coordinate basis in the original x plane: columns of T⁻¹. Drag an endpoint, or use numbers/arrow keys. Both axes have equal scale. The bounded pair family is zᵢ=sxᵢ+hxⱼ, zⱼ=xⱼ/s, with s0.5–2,h−2–2; detT=1, condition≤16. General model/trajectory screens still apply.', 'cr03-muted');
   const table = el('details'), tableHost = el('div', '', 'cr03-local-scroll'); table.append(el('summary', 'All checked state and output samples'), tableHost);
-  root.append(title, controls, actions, status, notice, stateHost, legend, cursorControls, sample, outputHost, planeIntro, planes, identityHost, table);
+  root.append(title, controls, actions, notice, status, stateHost, legend, selectionControls, secondary, cursorControls, sample, outputHost, planeIntro, planes, identityHost, table);
   const settings = el('details'); settings.append(el('summary', 'Model, general coordinate matrix and experiment')); root.append(settings);
   const source = select('Explore given form'); for (const [value, label] of [['tf', 'Transfer function'], ['ode', 'Linear ODE'], ['matrix', 'State matrices']]) { const option = el('option', label); option.value = value; source.input.append(option); }
-  const tfHost = el('div'), odeHost = el('div'), tf = createEquationInput({ label: 'Explore transfer function', value: String.raw`G(s)=\frac1{s^2+3s+2}`, tools: ['fraction', 'power', 'parentheses'], description: 'Real proper rational polynomials in s, through order four.', signal, onChange: () => feedback('Unapplied source draft. The checked preview is retained.') }); editors.push(tf); tfHost.append(tf.element);
-  const ode = createEquationInput({ label: 'Explore linear ODE', value: "y''+3y'+2y=u", tools: ['fraction', 'parentheses'], description: 'Linear constant-coefficient derivatives through order four; use primes.', signal, onChange: () => feedback('Unapplied source draft. The checked preview is retained.') }); editors.push(ode); odeHost.append(ode.element); odeHost.hidden = true;
+  function own(editor: EquationInput) { if (disposed || signal.aborted) { editor.destroy(); throw new Error('The view was closed during editor creation.'); } editors.push(editor); return editor; }
+  const tfHost = el('div'), odeHost = el('div'), tf = own(createEquationInput({ label: 'Explore transfer function', value: String.raw`G(s)=\frac1{s^2+3s+2}`, tools: ['fraction', 'power', 'parentheses'], description: 'Real proper rational polynomials in s, through order four.', signal, onChange: () => feedback('Unapplied source draft. The checked preview is retained.') })); tfHost.append(tf.element);
+  const ode = own(createEquationInput({ label: 'Explore linear ODE', value: "y''+3y'+2y=u", tools: ['fraction', 'parentheses'], description: 'Linear constant-coefficient derivatives through order four; use primes.', signal, onChange: () => feedback('Unapplied source draft. The checked preview is retained.') })); odeHost.append(ode.element); odeHost.hidden = true;
   const size = select('Explore matrix dimension'); for (let n = 0; n <= 4; n++) { const o = el('option', n ? `${n} states` : 'Static gain'); o.value = String(n); size.input.append(o); }
   const matrixHost = el('div', '', 'cr03-matrices'), initialHost = el('div', '', 'cr03-matrices'), T = el('div', '', 'cr03-matrices');
   let matrixFields: HTMLInputElement[][][] = [], initialFields: HTMLInputElement[] = [], tFields: HTMLInputElement[][] = [];
@@ -67,7 +81,7 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
   }
   modelFields(current.checked.experiment.model); coordinateFields(current.checked.experiment);
   const command = field('Explore constant command u', 1), horizon = field('Explore horizon H (s)', 5), count = field('Explore computed points', 201); count.input.step = '1';
-  function read(input: HTMLInputElement, label: string, max = 1e6) { const v = readNumericInput(input, label); if (Math.abs(v) > max) throw new Error(`${label}: magnitude must be at most ${max}.`); return v; }
+  function read(input: HTMLInputElement, label: string, max = 1e6) { try { const v = readNumericInput(input, label); if (Math.abs(v) > max) throw new Error(`${label}: magnitude must be at most ${max}.`); issues.delete(input); return v; } catch (e) { issues.set(input, e instanceof Error ? e.message : `Check ${label}.`); throw e; } }
   const matrixRead = (fields: HTMLInputElement[][]) => fields.map(row => row.map(f => read(f, f.getAttribute('aria-label')!)));
   function readModel(): StateModel { return { A: matrixRead(matrixFields[0]), B: matrixRead(matrixFields[1]).map(r => r[0]), C: matrixFields[2].length ? matrixRead(matrixFields[2])[0] : [], D: read(matrixFields[3][0][0], 'Explore D') }; }
   const draft = (editor: EquationInput) => { const value = editor.getValue(); if (value.empty || value.hasPlaceholders || value.syntaxIssues.length) throw new Error('Complete the source equation first.'); return value.latex; };
@@ -76,6 +90,7 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
       const model = source.input.value === 'matrix' ? readModel() : canonical(source.input.value === 'ode' ? parseOde(draft(ode)) : parseTransfer(draft(tf)));
       const exp = { ...current.checked.experiment, model, initial: Array(model.A.length).fill(0) as number[], T: identity(model.A.length) }, pair: [number, number] = [0, model.A.length > 1 ? 1 : 0];
       const next: View = { checked: session.evaluate(exp), s: 1, h: 0, pair, family: true }, nextLimits = fit(next.checked, 0, pair), prepared = prepare(next, nextLimits, 0, 0);
+      if (disposed) return;
       selected = 0; k = 0; limits = nextLimits; history.length = 0; publish(next, prepared, true); coordinateFields(exp); feedback('Source applied; initial state and T reset. Candidate Practice remains independent.');
     } catch (e) { error(e); }
   }), el('h4', 'General coordinate draft: z = T x'), T, button('Copy checked T to draft cells', () => { T.replaceChildren(); tFields = grid(T, 'Explore T draft', current.checked.experiment.T); feedback('Checked T copied explicitly to the matrix draft.'); }), button('Apply general T', () => {
@@ -91,12 +106,17 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
   on(source.input, 'change', () => { tfHost.hidden = source.input.value !== 'tf'; odeHost.hidden = source.input.value !== 'ode'; feedback('Source choice is an unapplied draft.'); });
   on(size.input, 'change', () => { const n = Number(size.input.value); modelFields({ A: identity(n).map(row => row.map(() => 0)), B: Array(n).fill(0) as number[], C: Array(n).fill(0) as number[], D: 0 }); feedback('New matrix dimensions are an unapplied draft.'); });
 
-  function feedback(message: string) { status.textContent = `${message}${issues.size ? ` ${[...issues.values()].join(' ')}` : ''}`; }
+  function feedback(message: string) { if (disposed) return; for (const input of issues.keys()) if (!root.contains(input)) issues.delete(input); status.textContent = `${message}${issues.size ? ` ${[...issues.values()].join(' ')}` : ''}`; }
   function error(e: unknown) { feedback(`${e instanceof Error ? e.message : 'Check the model and coordinates.'} Previous checked preview retained.`); }
-  function prepare(view: View, nextLimits: Limits, nextK = k, component = selected) {
+  function prepare(view: View, nextLimits: Limits, nextK = k, component = selected): PreparedView {
+    const display = (latex: string, label: string) => { if (disposed) throw new Error('The view was closed.'); const node = createEquationDisplay(latex, label); if (disposed) throw new Error('The view was closed.'); return node; };
     const n = view.checked.experiment.model.A.length; component = Math.min(component, Math.max(0, n - 1)); nextK = Math.min(nextK, view.checked.original.length - 1);
     const plots = draw(view.checked, nextK, component, view.pair, width, nextLimits, view.family);
-    const eq = createEquationDisplay(`z=Tx,\\quad T=${matrixLatex(view.checked.experiment.T)}`, 'Checked coordinate transformation');
+    const eq = el('div'), model = view.checked.experiment.model, mapped = view.checked.transformed.model, depth = el('details');
+    eq.append(display(`z=Tx,\\quad T=${matrixLatex(view.checked.experiment.T)}`, 'Checked coordinate transformation'), display(transferLatex(transferOf(model)), 'Checked original transfer function'));
+    depth.append(el('summary', 'Checked original and transformed matrices'), el('p', 'Displayed coefficients round to seven significant digits. Full values govern computation. The original characteristic denominator is retained; transfer agreement alone does not prove internal stability.'));
+    for (const [m, name] of [[model, 'x'], [mapped, 'z']] as const) depth.append(display(`A_${name}=${matrixLatex(m.A)},\\quad B_${name}=${matrixLatex(m.B.map(v => [v]))}`, `Checked ${name} state matrices`), display(`C_${name}=${matrixLatex(m.A.length ? [m.C] : [])},\\quad D_${name}=${latexNumber(m.D)}`, `Checked ${name} output matrices`));
+    eq.append(depth);
     return { plots, eq, component, index: nextK };
   }
   function renderSample() {
@@ -114,55 +134,60 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
     for (const control of [s.input, h.input, sRange, hRange]) control.disabled = !current.family || !n;
     familyButton.disabled = !n; undo.disabled = !history.length;
     sRange.value = String(current.s); hRange.value = String(current.h); sRange.setAttribute('aria-valuetext', `Scale ${current.s}`); hRange.setAttribute('aria-valuetext', `Shear ${current.h}`);
-    if (explicit) { s.input.value = String(current.s); h.input.value = String(current.h); issues.delete(s.input); issues.delete(h.input); }
+    if (explicit) { if (!issues.has(s.input)) s.input.value = String(current.s); if (!issues.has(h.input)) h.input.value = String(current.h); }
     cursor.input.max = range.max = String(current.checked.original.length - 1); range.value = String(k); range.setAttribute('aria-valuetext', `Sample ${k}, time ${fmt(current.checked.original[k].t)} seconds`);
     if (!issues.has(cursor.input)) cursor.input.value = String(k);
     root.querySelectorAll('[data-handle]').forEach(handle => { const isScale = (handle as HTMLElement).dataset.handle === 'scale'; handle.setAttribute('aria-valuenow', String(isScale ? current.s : current.h)); handle.setAttribute('aria-valuetext', `${isScale ? 'Scale' : 'Shear'} ${isScale ? current.s : current.h}`); });
   }
-  function publish(view: View, prepared: ReturnType<typeof prepare>, explicit = false) {
+  function publish(view: View, prepared: PreparedView, explicit = false) {
+    if (disposed || signal.aborted) return;
     const focusedHandle = root.contains(document.activeElement) ? (document.activeElement as HTMLElement)?.dataset.handle : undefined;
     current = view; k = prepared.index; selected = prepared.component;
     stateHost.replaceChildren(...prepared.plots.state.childNodes); outputHost.replaceChildren(...prepared.plots.output.childNodes); planes.replaceChildren(...prepared.plots.planes.childNodes); identityHost.replaceChildren(prepared.eq); sync(explicit); renderSample();
     if (focusedHandle) root.querySelector<SVGElement>(`[data-handle="${focusedHandle}"]`)?.focus({ preventScroll: true });
   }
-  function accept(next: View, record = false) {
-    const prepared = prepare(next, limits); if (record) { history.push(current); if (history.length > 20) history.shift(); } publish(next, prepared);
+  function accept(next: View, record = false, explicit = false) {
+    const prepared = prepare(next, limits); if (disposed || signal.aborted) return; if (record) { history.push(current); if (history.length > 20) history.shift(); } publish(next, prepared, explicit);
   }
   function acceptFamily(nextS: number, nextH: number, pair: [number, number], explicit = false, record = true) {
     const n = current.checked.experiment.model.A.length, exp = { ...current.checked.experiment, T: family(n, pair[0], pair[1], nextS, nextH) };
     const next: View = { checked: session.evaluate(exp), s: nextS, h: nextH, pair, family: true }; const prepared = prepare(next, limits);
-    if (record) { history.push(current); if (history.length > 20) history.shift(); } publish(next, prepared, explicit); feedback('Coordinates checked independently; the output is retained.');
+    if (disposed || signal.aborted) return; if (record) { history.push(current); if (history.length > 20) history.shift(); } publish(next, prepared, explicit); feedback('Coordinates checked independently; the output is retained.');
   }
   function queue(nextS: number, nextH: number, pair = current.pair) {
     pending = { ...current, s: nextS, h: nextH, pair }; if (timer) clearTimeout(timer);
     feedback('Updating · previous checked preview'); timer = setTimeout(() => {
       timer = undefined; const next = pending; pending = undefined; if (!next || disposed || !active) return;
-      try { acceptFamily(next.s, next.h, next.pair, false, !gesture); } catch (e) { error(e); }
+      try { acceptFamily(next.s, next.h, next.pair, false, !gesture); if (gesture) gesture.valid = true; } catch (e) { if (gesture) gesture.valid = false; error(e); }
     }, 80);
   }
   function stopPending() { if (timer) clearTimeout(timer); timer = undefined; pending = undefined; }
   function release(g: Gesture) { try { if (g.target.hasPointerCapture(g.id)) g.target.releasePointerCapture(g.id); } catch { /* already released */ } }
   function cancel() {
     stopPending(); const g = gesture; if (!g) return; gesture = undefined; quarantined = g.id; release(g);
-    try { const prepared = prepare(g.start, limits); publish(g.start, prepared); s.input.value = g.sRaw; h.input.value = g.hRaw; feedback('Coordinate gesture cancelled; starting checked coordinates restored.'); } catch (e) { error(e); }
+    publish(g.start, g.rollback); if (!issues.has(s.input)) s.input.value = g.sRaw; if (!issues.has(h.input)) h.input.value = g.hRaw; feedback('Coordinate gesture cancelled; starting checked coordinates restored.');
   }
   function start(event: PointerEvent, target: Element, handle?: 'scale' | 'shear') {
     if (gesture || event.button !== 0 || !current.family) return false;
-    stopPending(); quarantined = undefined; gesture = { id: event.pointerId, target, start: current, sRaw: s.input.value, hRaw: h.input.value, handle };
+    const cloneHost = (host: HTMLElement) => { const result = el('div'); for (const child of host.childNodes) result.append(child.cloneNode(true)); return result; };
+    const rollback: PreparedView = { plots: { state: cloneHost(stateHost), output: cloneHost(outputHost), planes: cloneHost(planes) }, eq: identityHost.firstElementChild!.cloneNode(true) as HTMLElement, component: selected, index: k };
+    stopPending(); quarantined = undefined; gesture = { id: event.pointerId, target, start: current, sRaw: s.input.value, hRaw: h.input.value, handle, valid: true, rollback };
     try { target.setPointerCapture(event.pointerId); } catch { /* window terminal listeners also own release */ } return true;
   }
   function end(event: PointerEvent, cancelled: boolean) {
     if (gesture?.id === event.pointerId) {
       if (cancelled) cancel(); else {
         const g = gesture, next = pending; stopPending();
-        if (next) { try { acceptFamily(next.s, next.h, next.pair, false, false); } catch (e) { error(e); } }
-        gesture = undefined; release(g); if (current !== g.start) { history.push(g.start); if (history.length > 20) history.shift(); } sync();
+        if (next) { try { acceptFamily(next.s, next.h, next.pair, false, false); g.valid = true; } catch (e) { g.valid = false; error(e); } }
+        if (!g.valid) { cancel(); feedback('Candidate rejected; starting checked coordinates restored.'); return; }
+        gesture = undefined; release(g); if (JSON.stringify(current.checked.experiment.T) !== JSON.stringify(g.start.checked.experiment.T)) { history.push(g.start); if (history.length > 20) history.shift(); } sync();
       }
     }
     if (quarantined === event.pointerId) quarantined = undefined;
   }
   on(window, 'pointerup', event => end(event as PointerEvent, false)); on(window, 'pointercancel', event => end(event as PointerEvent, true));
   on(window, 'lostpointercapture', event => { const e = event as PointerEvent; if (gesture?.id === e.pointerId) cancel(); });
+  on(window, 'blur', () => { if (active) cancel(); });
   on(window, 'keydown', event => { const e = event as KeyboardEvent; if (e.key === 'Escape' && gesture) { e.preventDefault(); e.stopImmediatePropagation(); cancel(); } }, true);
   function parameter(name: 'scale' | 'shear', value: number, explicit = false) {
     const base = pending ?? current, nextS = name === 'scale' ? value : base.s, nextH = name === 'shear' ? value : base.h;
@@ -172,7 +197,7 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
   function keyValue(e: KeyboardEvent, name: 'scale' | 'shear') {
     const base = pending ?? current, min = name === 'scale' ? .5 : -2, max = 2, old = name === 'scale' ? base.s : base.h, step = (name === 'scale' ? .05 : .1) * (e.shiftKey ? 10 : 1);
     const value = e.key === 'Home' ? min : e.key === 'End' ? max : ['ArrowRight', 'ArrowUp', 'PageUp'].includes(e.key) ? old + step * (e.key === 'PageUp' ? 10 : 1) : ['ArrowLeft', 'ArrowDown', 'PageDown'].includes(e.key) ? old - step * (e.key === 'PageDown' ? 10 : 1) : undefined;
-    if (value === undefined) return; e.preventDefault(); parameter(name, Math.min(max, Math.max(min, Number(value.toPrecision(14)))), true);
+    if (value === undefined) return; e.preventDefault(); parameter(name, Math.min(max, Math.max(min, value)), true);
   }
   for (const [name, number, slider, low] of [['scale', s.input, sRange, .5], ['shear', h.input, hRange, -2]] as const) {
     on(number, 'input', () => { try { const value = readNumericInput(number, `Coordinate ${name}`); if (value < low || value > 2) throw new Error(`Coordinate ${name} must be ${low}–2.`); issues.delete(number); parameter(name, value); } catch (e) { issues.set(number, e instanceof Error ? e.message : 'Check the coordinate number.'); error(e); } });
@@ -186,7 +211,7 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
     const e = event as PointerEvent, g = gesture; if (!g || g.id !== e.pointerId || !g.handle) return;
     const svg = planes.querySelector<SVGSVGElement>('[data-plane="x"]'); if (!svg) return;
     const rect = svg.getBoundingClientRect(); if (!rect.width) return;
-    const px = (e.clientX - rect.left) * width / rect.width, py = (e.clientY - rect.top) * Number(svg.viewBox.baseVal.height) / rect.height;
+    const px = (e.clientX - rect.left) * width / rect.width, py = (e.clientY - rect.top) * Number(svg.getAttribute('viewBox')!.split(' ')[3]) / rect.height;
     const size = Number(svg.dataset.size), left = Number(svg.dataset.left), top = Number(svg.dataset.top), bound = Number(svg.dataset.bound);
     const x = (px - left - size / 2) * 2 * bound / size, y = (top + size / 2 - py) * 2 * bound / size;
     if (g.handle === 'scale') parameter('scale', Math.min(2, Math.max(.5, x > 0 ? 1 / x : 2)), true);
@@ -199,22 +224,19 @@ export function mountExplore({ container, signal: parent }: ModuleContext): () =
   });
   on(stateSelect.input, 'change', () => { try { const next = Number(stateSelect.input.value), prepared = prepare(current, limits, k, next); selected = next; publish(current, prepared); feedback('Selected component changed using checked samples.'); } catch (e) { error(e); } });
   function setIndex(index: number, explicit = false) {
-    try { inspect(current.checked, index); const prepared = prepare(current, limits, index); if (explicit) { issues.delete(cursor.input); cursor.input.value = String(index); } publish(current, prepared); feedback('Inspecting the same computed sample in each view.'); } catch (e) { error(e); }
+    try { inspect(current.checked, index); const prepared = prepare(current, limits, index); if (disposed) return; if (explicit) { issues.delete(cursor.input); cursor.input.value = String(index); } publish(current, prepared); feedback('Inspecting the same computed sample in each view.'); } catch (e) { error(e); }
   }
   on(cursor.input, 'input', () => { try { const value = readNumericInput(cursor.input, 'Sample index'); inspect(current.checked, value); issues.delete(cursor.input); setIndex(value); } catch (e) { issues.set(cursor.input, e instanceof Error ? e.message : 'Check the sample index.'); error(e); } });
   on(range, 'input', () => setIndex(Number(range.value), true));
-  const deactivate = () => { active = false; cancel(); }; on(container, 'cr03-deactivate', deactivate); on(container, 'cr03-activate', () => { active = true; });
-  function dispose() {
-    if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); stopPending(); const g = gesture; gesture = undefined; if (g) release(g); scope.abort(); observer?.disconnect();
-    try { for (const editor of editors) editor.destroy(); } finally { root.remove(); }
-  }
-  parent.addEventListener('abort', dispose, { once: true });
-  try {
+  const deactivate = () => { active = false; cancel(); feedback('Exploration paused; checked preview and unapplied drafts retained.'); }; on(container, 'cr03-deactivate', deactivate); on(container, 'cr03-activate', () => { active = true; });
+    const measured = stateHost.getBoundingClientRect().width; if (measured > 0) width = Math.max(200, Math.min(960, measured));
     publish(current, prepare(current, limits)); feedback('Live checked coordinate experiment. Change s or h; compare state values and the common output.');
-    if (typeof ResizeObserver !== 'undefined') { observer = new ResizeObserver(entries => {
-      if (disposed || !active) return; const next = entries[0]?.contentRect.width; if (!next || Math.abs(next - width) < .5) return;
-      const old = width; width = Math.max(260, Math.min(960, next)); try { publish(current, prepare(current, limits)); } catch (e) { width = old; error(e); }
-    }); if (disposed) observer.disconnect(); else observer.observe(stateHost); }
+    const resize = (measured = stateHost.getBoundingClientRect().width) => {
+      if (disposed || !active || !measured) return; const next = Math.max(200, Math.min(960, measured)); if (Math.abs(next - width) < .5) return;
+      cancel(); const old = width; width = next; try { publish(current, prepare(current, limits)); } catch (e) { width = old; error(e); }
+    };
+    on(window, 'resize', () => resize());
+    if (typeof ResizeObserver !== 'undefined') { observer = new ResizeObserver(entries => resize(entries[0]?.contentRect.width)); if (disposed) observer.disconnect(); else observer.observe(stateHost); }
     if (parent.aborted) dispose(); return dispose;
   } catch (e) { dispose(); throw e; }
 }
