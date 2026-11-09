@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as original from './math';
-import { baseline, compute, computeLab, inspect, labBaseline, moveLab } from './exploration';
+import { baseline, compute, computeLab, inspect, labBaseline, moveLab, nudgeLabRadius } from './exploration';
 describe('DP01 checked source and independent live mode comparison', () => {
+  it('reaches declared key endpoints without relaxing native comparison bounds', () => {
+    let radius = .8; for (let i = 0; i < 70; i++) radius = computeLab({ ...labBaseline(), radius: nudgeLabRadius(radius, .01) }).radius; expect(radius).toBe(1.5);
+    radius = .8; for (let i = 0; i < 80; i++) radius = computeLab({ ...labBaseline(), radius: nudgeLabRadius(radius, -.01) }).radius; expect(radius).toBe(0);
+    expect(() => computeLab({ ...labBaseline(), radius: nudgeLabRadius(0, -.01) })).toThrow('shared radius'); expect(() => computeLab({ ...labBaseline(), radius: nudgeLabRadius(1.5, .01) })).toThrow('shared radius');
+    expect(computeLab({ ...labBaseline(), radius: 1.5 }).radius).toBe(1.5); expect(() => computeLab({ ...labBaseline(), radius: 1.5000000000000002 })).toThrow('shared radius');
+  });
   it('retains the original delayed baseline and reads cached arithmetic without rerunning simulation', () => {
     const checked = compute(baseline()), run = vi.spyOn(original, 'simulate'); try { expect(checked.rows!.slice(0, 4).map(row => Number(row.y.toFixed(6)))).toEqual([0, .2, .36, .488]); const selected = inspect(checked, 3); expect(selected.row).toBe(checked.rows![3]); expect(selected.output).toEqual([{ index: 2, weight: .8, value: .36000000000000004 }]); expect(selected.input[1]).toEqual({ index: 2, weight: .2, value: 1 }); for (let k = 0; k < 41; k++) inspect(checked, k); expect(run).not.toHaveBeenCalled(); } finally { run.mockRestore(); }
   });

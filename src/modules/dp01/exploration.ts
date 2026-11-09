@@ -31,6 +31,12 @@ export interface LabDraft { readonly radius: number; readonly angleA: number; re
 export interface Lab extends LabDraft { readonly a: readonly number[]; readonly b: readonly number[] }
 export type LabPoint = 'a' | 'b';
 export const labBaseline = (): LabDraft => ({ radius: .8, angleA: 0, angleB: 180 });
+/** Reconcile only a derived key step's few-ulp error at the declared endpoints.
+ * Native entries and computeLab validation remain exact and unchanged. */
+export function nudgeLabRadius(radius: number, delta: number): number {
+  const next = radius + delta, tolerance = 8 * Number.EPSILON * Math.max(1, Math.abs(radius), Math.abs(next));
+  return Math.abs(next) <= tolerance ? 0 : Math.abs(next - 1.5) <= tolerance ? 1.5 : next;
+}
 export function computeLab(draft: LabDraft): Lab {
   if (!Number.isFinite(draft.radius) || draft.radius < 0 || draft.radius > 1.5 || ![draft.angleA, draft.angleB].every(value => Number.isFinite(value) && value >= 0 && value <= 180)) throw new Error('Use shared radius 0–1.5 and angles 0–180 degrees per sample.');
   return { ...draft, a: modalSamples(draft.radius, draft.angleA * Math.PI / 180, 32), b: modalSamples(draft.radius, draft.angleB * Math.PI / 180, 32) };
