@@ -1,6 +1,20 @@
 # CD03 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Current finite refinement:** direct lag-corner exploration with retained full-model requirements, 9 November 2026; owner interactivity-cd03-01a1ac7b; branch codex/cd03-lag-exploration; captured primary main 6af3485ef6da6f11f4979ff665896d83b99414b5 (released v0.3.17).
+- **Current worktree:** C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cd03-lag-01a1ac7b; fresh ordinary linked Git worktree and own locked npm ci (109 packages). Only src/modules/cd03/** is owned. Parent central browser gates remain pending; future own preview is reserved on 8816. No browser launch or deployment.
+
+## Current refinement audit and first checkpoint
+
+The original accepted exercise computes the full model correctly, but geometry and response appear only after Check below the complete setup form. Corner placement has no direct handles, a fixed 820-unit drawing and a separate time button. Its strong foundations are the same-K proportional reference, explicit inactive p/z draft, exact accuracy ratio and complete cubic/Routh/mode/response checks with retained transient targets. The angle-vector display currently uses unequal scales. Prediction selector edits can leave old agreement text until the next Check. This refinement preserves the original mathematical contract and independent Practice, makes the actual proportional baseline useful immediately, and adds direct selected corner/ratio movement with truthful current/previous-result feedback.
+
+The bounded scope is documented in the coordinator's read-only preparation: lag initially off; explicit p/z draft, same K in both comparisons; independent and explicitly selected ratio-preserving movement; existing accuracy suggestion; equal-scale angle geometry, every full pole/Routh outcome and original conditioned response; cached assessment/time inspection; stable actual native fields; retained Practice and stale-grade invalidation; owned scheduling/pointer/panel lifetimes. No arbitrary motor model, full-locus continuation, new solver, dependency or shared API is introduced.
+
+First source checkpoint: session.ts delegates to unchanged model.ts/response.ts and holds only the caller's previous result. A change to Kv/Mp/Ts targets reuses original model/response/measurement objects; H/band changes remeasure the retained signal. Baseline signal/measurement reuse is independent of a lag edit. Every candidate still validates original design/requirement bounds; failed full stability/conditioning/transient checks retain explicit channel errors and all root/model data. Selected corner/ratio moves publish only after the original validation. All **31 original module tests plus five new independent orchestration fixtures pass (36 tests / 5 files)**, and TypeScript passes. Source engines/parser/metadata/loader are untouched. The UI, full suite/build, peer review and actual browser gates are not yet claimed.
+
+## Historical accepted bounded exercise
+
+The verified delivery below is historical evidence for the original exercise, not acceptance of the current interface refinement.
 - **Last assessed:** 2026-10-30 (local); contribution started 29 October
 - **Original scaffold assessment:** `e0b7ddb`; contribution baseline primary-main `9d923d2`
 - **Goal and acceptance contract:** [TASK.md](TASK.md)
