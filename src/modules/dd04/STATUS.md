@@ -1,6 +1,19 @@
+# DD04 interactivity refinement
+
+- **Stage:** in-progress
+- **Finite assignment:** Memory-first digital PID workspace, editable uncommitted error stems and linked committed-sample inspection/replay; owner interactivity-dd04-01a1ac7b, branch codex/dd04-memory-exploration.
+- **Baseline/worktree:** Fresh latest-primary 6af3485ef6da6f11f4979ff665896d83b99414b5 (v0.3.17), C:/Users/baokh/.codex/worktrees/dd04-memory-exploration/CSDKTD APP. Ordinary Git fallback and isolated locked npm ci; no prior tree reused.
+- **Preserved contract:** Original math.ts/input.ts/format.ts/loader/metadata and all controller/filter/initial-memory domains remain authoritative. The completed bounded exercise is retained; this Stage describes the separate finite interaction refinement.
+- **Checkpoint checks:** 116 module tests / 5 files and TypeScript pass. Four new independent error-editing fixtures pass through the unchanged parser/controller kernel. No new UI, full-suite or browser completion claim is made.
+
+The first checkpoint adds only the presentation policy for direct error editing. A current/future sample can change without rewriting committed input history or advancing stored controller memory. Full decimal digits must round-trip through the existing visual-list grammar before publication; unsupported magnitude or entry-resource cases reject atomically. Original equation entry stays available. Independent fixtures verify e1=.5 gives u1=7.05 and changing e2 to -1 after the original first commit gives u2=-23.9 with the first stored output unchanged at14.1.
+
+Remaining work: put the baseline memory/sample view first; expose a bounded selected-error stem handle with numeric/keyboard alternatives and explicit committed-history locks; link a read-only committed-sample cursor and optional explicit replay; retain Calculate versus Commit timing, all original settings/derivation and changed-input errors; make plots readable at phone widths; verify gestures/native drafts/lifetimes, independent review, full checks and actual desktop/phone behavior. Browser gates remain pending while the background private provider is unavailable. No deployment.
+
+## Historical accepted bounded exercise
 # DD04 implementation status
 
-- **Stage:** verified
+Historical exercise stage: verified
 - **Assessed:** 2026-10-29, starting primary main ae7daf3
 - **Owned scope:** src/modules/dd04/**; [accepted contract](TASK.md)
 - **Worker chat:** 01a186d1-a367-78f1-98f5-e1cf147ef306
