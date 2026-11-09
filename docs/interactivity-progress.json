@@ -295,15 +295,15 @@
       "scope": "Immediate checked sampled graph, direct intermediate sampler/hold selection and actual-drawing ordered trace selection with original complete editor/Mason/audit mathematics",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
-      "source": "7370cd6c4e6f93a38ca02c9f78b94f96efc34e79",
+      "state": "implemented-awaiting-browser",
+      "source": "e1e64fb45231b10fd63c90108873b1cb0d5d4015",
       "pr": 75,
       "evidence": [
-        "110 module tests /5 files, 5760 application tests /277 files, TypeScript and production build pass at7370cd6.",
-        "Source tests retain original geometry, exact whole/split fixtures, connected ordered traces, focus/scroll/native drafts and partial/late row cleanup."
+        "Independent complete source and correction reviews accepted;115 module tests /5 files and three unchanged independent external regressions pass.",
+        "5765 application tests /277 files, TypeScript and production build pass at correcteddb06ad9 code.",
+        "Clean partial QA handoff; original mathematical files unchanged; own preview8813 available, actual browser gate open."
       ],
       "remaining": [
-        "Independent source review",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ]
@@ -315,18 +315,17 @@
       "scope": "Immediate memory/register trajectory, linked integer-k inspection and bounded nonmutating replay with original full models and histories",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; cursor/replay may cache, but T changes rerun T-dependent input sequences.",
-        "First orchestration checkpoint passes157 module tests /7 files and TypeScript; UI implementation and full review gates remain open."
+        "Independent complete source and correction reviews accepted;182 module tests /9 files and four independent external reproductions pass.",
+        "5781 application tests /279 files, TypeScript and production build pass at final6be91c1 code.",
+        "Original engines/public workspace preserved; no post-abort replay/editor continuation, panned memory lanes retained; clean partial QA handoff, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "a69e077d526b540110bea72587d9e92b43d73eb8",
+      "source": "158285fd5aff0860a7ceb43a58ab0eef5474b6c7",
       "pr": 76
     },
     {
@@ -336,19 +335,57 @@
       "scope": "Immediate proportional baseline, explicit inactive lag drafts, direct bounded corner/ratio exploration and full original response/Practice",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
+      "state": "implemented-awaiting-browser",
+      "evidence": [
+        "Independent complete source review accepted original lag engines/domains, off-by-default draft, ratio precision, cache/unknown-tail decisions and retained Practice;63 module tests /8 files pass.",
+        "5782 application tests /280 files, TypeScript and production build pass at final66946c6 code.",
+        "Clean partial QA handoff; own preview8816 available, actual browser gate open."
+      ],
+      "remaining": [
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "2bc3a1a7392d6f379c82f4bdb8652d494ddbac42",
+      "pr": 77
+    },
+    {
+      "id": "DR01",
+      "agent": "/root",
+      "branch": "codex/dr01-sequence-exploration",
+      "scope": "Immediate causal sequence-builder exploration, direct bounded pole/delay/length controls, cached sample inspection and independent original inverse Practice",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
+      "state": "in-progress",
+      "source": "af8ceaa813b18a449747884a157bbcb5bfc58d43",
+      "pr": 78,
+      "evidence": [
+        "134 module tests /8 files, TypeScript and production build pass; independent full UI review and complete application suite in progress.",
+        "First c82766d orchestration independently accepted, including original engine/caching/ROC and immutable snapshots."
+      ],
+      "remaining": [
+        "Independent complete source review",
+        "Complete final application suite",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ]
+    },
+    {
+      "id": "CP02",
+      "agent": "/root/design_interactivity",
+      "branch": "codex/cp02-mode-exploration",
+      "scope": "Immediate pole/zero/modal response exploration with equal-scale linked views and complete independent original Practice",
+      "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
+      "wave": 3,
       "state": "in-progress",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original lag model/response/parser and conditioning/future-tail qualifications remain authoritative.",
-        "First cache/atomic-corner checkpoint passes36 module tests /5 files and TypeScript; UI implementation and full review gates remain open."
+        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required."
       ],
       "remaining": [
         "Complete finite implementation",
         "Independent source/full verification",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
-      ],
-      "source": "b2fd845aa0b1b68aac541b8267af6d63f642e4e4",
-      "pr": 77
+      ]
     }
   ],
   "modules": [
@@ -386,19 +423,18 @@
     },
     {
       "id": "CD03",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Put near-origin pole/zero handles and a ratio-lock toggle on a persistent placement view; show tracking-error and full-response changes together, with numerical envelope/horizon qualifications preserved.",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original lag model/response/parser and conditioning/future-tail qualifications remain authoritative.",
-        "First cache/atomic-corner checkpoint passes36 module tests /5 files and TypeScript; UI implementation and full review gates remain open."
+        "Independent complete source review accepted original lag engines/domains, off-by-default draft, ratio precision, cache/unknown-tail decisions and retained Practice;63 module tests /8 files pass.",
+        "5782 application tests /280 files, TypeScript and production build pass at final66946c6 code.",
+        "Clean partial QA handoff; own preview8816 available, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "b2fd845aa0b1b68aac541b8267af6d63f642e4e4",
+      "source": "2bc3a1a7392d6f379c82f4bdb8652d494ddbac42",
       "pr": 77
     },
     {
@@ -543,13 +579,16 @@
     },
     {
       "id": "CP02",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Use as interaction reference; show safe baseline visual immediately, lightly preview response during drag, retain explicit checked commit and cancellation; make the zero-preservation convention obvious.",
-      "evidence": [],
+      "evidence": [
+        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
+        "Complete finite implementation",
+        "Independent source/full verification",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
       ]
     },
     {
@@ -914,14 +953,20 @@
     },
     {
       "id": "DR01",
-      "state": "planned",
+      "state": "in-progress",
       "target": "Expose sequence-builder controls next to stems; scrub geometric pole/delay/length and immediately compare sequence and transform, with causal/ROC labels retained.",
-      "evidence": [],
+      "evidence": [
+        "134 module tests /8 files, TypeScript and production build pass; independent full UI review and complete application suite in progress.",
+        "First c82766d orchestration independently accepted, including original engine/caching/ROC and immutable snapshots."
+      ],
       "remaining": [
-        "Implement finite concept-specific refinement",
-        "Relevant regression and real-browser verification",
-        "Independent review and integration"
-      ]
+        "Independent complete source review",
+        "Complete final application suite",
+        "Complete the explicitly pending actual browser gate",
+        "Combined integration/release"
+      ],
+      "source": "af8ceaa813b18a449747884a157bbcb5bfc58d43",
+      "pr": 78
     },
     {
       "id": "DR02",
@@ -940,35 +985,34 @@
     },
     {
       "id": "DR03",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Put register/state/output views together and add time scrub or bounded replay with linked highlights; make mapped histories visibly move through each delay.",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; cursor/replay may cache, but T changes rerun T-dependent input sequences.",
-        "First orchestration checkpoint passes157 module tests /7 files and TypeScript; UI implementation and full review gates remain open."
+        "Independent complete source and correction reviews accepted;182 module tests /9 files and four independent external reproductions pass.",
+        "5781 application tests /279 files, TypeScript and production build pass at final6be91c1 code.",
+        "Original engines/public workspace preserved; no post-abort replay/editor continuation, panned memory lanes retained; clean partial QA handoff, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "a69e077d526b540110bea72587d9e92b43d73eb8",
+      "source": "158285fd5aff0860a7ceb43a58ab0eef5474b6c7",
       "pr": 76
     },
     {
       "id": "DR04",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Make sample/hold boundaries select directly on pipeline and show changed topology/source vs split sampling together; select graph paths in the actual drawing rather than a remote branch list.",
       "evidence": [
-        "110 module tests /5 files, 5760 application tests /277 files, TypeScript and production build pass at7370cd6.",
-        "Source tests retain original geometry, exact whole/split fixtures, connected ordered traces, focus/scroll/native drafts and partial/late row cleanup."
+        "Independent complete source and correction reviews accepted;115 module tests /5 files and three unchanged independent external regressions pass.",
+        "5765 application tests /277 files, TypeScript and production build pass at correcteddb06ad9 code.",
+        "Clean partial QA handoff; original mathematical files unchanged; own preview8813 available, actual browser gate open."
       ],
       "remaining": [
-        "Independent source review",
         "Complete the explicitly pending actual browser gate",
         "Combined integration/release"
       ],
-      "source": "7370cd6c4e6f93a38ca02c9f78b94f96efc34e79",
+      "source": "e1e64fb45231b10fd63c90108873b1cb0d5d4015",
       "pr": 75
     },
     {
@@ -1063,7 +1107,9 @@
     "CD01",
     "DS01",
     "CD02",
-    "DR04"
+    "DR04",
+    "DR03",
+    "CD03"
   ],
   "currentWave": 3,
   "verifiedCandidates": 0,
@@ -1072,5 +1118,5 @@
     "browser": "Private IAB provider unavailable during the current background continuation; prior tool handles ended. Actual checks already observed remain attributed to their exact source. Outstanding browser gates are pending, not replaced by DOM tests.",
     "preview": "Accepted v0.3.17 primary preview restored on port8787; no deployment."
   },
-  "sourceVerifiedAwaitingBrowser": 8
+  "sourceVerifiedAwaitingBrowser": 11
 }
