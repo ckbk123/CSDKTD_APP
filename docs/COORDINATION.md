@@ -1,5 +1,9 @@
 # Coordinator: ten-worker delivery and handoff
 
+## Owner stop-after-current — 9 November 2026
+
+The owner explicitly requested wrapping up current work and stopping the global interactivity goal so they can evaluate student ease of use and provide specific changes. All contributing agents were instructed to start no further module or preparation. Only the already active CF02/DP01/CR03 source-review/correction/check handoffs are being closed; prior candidates remain preserved. Pending browser QA is not acceptance. Do not integrate that queue, start a broad browser pass, change versions, deploy or automatically resume the 56-tool extension. Future work needs a new explicit user scope. The accepted app remains v0.3.17 with seven accepted concept refinements; later source candidates remain separate. See the refinement ledger for exact branches, PRs, evidence and remaining gates.
+
 ## Authorized interactivity refinement — 6 November 2026
 
 The owner asked chat `01a1ac7b-23ee-7530-bb2d-334ceb1752ec` to implement the reviewed global interaction plan: shared fixes and three contrasting pilots first, then extend demonstrated patterns across all tools. The owner explicitly permits contributing subagents in this chat. This is a new finite refinement programme; the old ten-worker stop remains the history of its completed exercise batch. See [interactivity-progress.json](interactivity-progress.json) for active assignments and honest completion evidence.

@@ -4,7 +4,7 @@
   "coordinatorChat": "01a1ac7b-23ee-7530-bb2d-334ceb1752ec",
   "baseline": "cf69ad252c34c971c6d81282db9e0a471f40d846",
   "scope": "Shared interactivity fixes and CP01/CP06/DR02 pilots, then proven concept-specific refinements across all 56 bounded tools. Preserve existing mathematics/functionality; no deployment.",
-  "state": "in-progress",
+  "state": "stopping-after-current",
   "shared": {
     "state": "accepted",
     "changes": [
@@ -375,18 +375,17 @@
       "scope": "Immediate pole/zero/modal response exploration with equal-scale linked views and complete independent original Practice",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required.",
-        "First checked-preparation/responsive-drawing checkpoint passes62 module tests /5 files, TypeScript and whitespace checks. Complete Explore/Practice wiring and full gates remain open."
+        "Independent complete source and focused correction reviews accepted;88 module tests /7 files and unchanged external3 pass.",
+        "5783 application tests /280 files, TypeScript and production build pass at final53ed7e5 code.",
+        "Exact clean partial QA handoff; original mathematics retained, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "4a03567565b576aa8b5bad1dc106b9977a067fdf",
+      "source": "3c31df8d002a8239983d3daf98334fe1215184b3",
       "pr": 79
     },
     {
@@ -396,18 +395,17 @@
       "scope": "Immediate full discrete-model response and cached inspection, live independent equal-radius mode lab, complete original Practice",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
-      "source": "d802ff895a8932788c83c7291487f63f943b689f",
+      "state": "implemented-awaiting-browser",
+      "source": "850c8187625d706de6166c35aa171c76b5d6ad03",
       "pr": 80,
       "evidence": [
-        "First pure checked-model/lab checkpoint passes134 module tests /4 files and TypeScript.",
-        "Fixed G(z) and retained roots on T changes; physical ramp reruns A*k*T; original arbitrary/scaled/cancelled/repeated/zero modes and bound failures remain authoritative."
+        "Independent complete source and derived-key/selection correction reviews accepted;166 module tests /7 files and independent external4 pass.",
+        "5788 application tests /280 files, TypeScript and production build pass at final194c5ba code.",
+        "Exact clean partial QA handoff; original arbitrary/scaled/cancelled model and ramp timing scope retained, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
       ]
     },
     {
@@ -417,18 +415,18 @@
       "scope": "Immediate input/output/error exploration with local gain/type controls, original exact channel/certificate and cached sampled-time inspection",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
-      "source": "41d9c78039b0fc8f50fc6208210fe6c14a00b66a",
+      "state": "source-reviewed-awaiting-final-checks",
+      "source": "f3955c1c0f58808823856a776f5934b94449f423",
       "pr": 81,
       "evidence": [
-        "First immutable checked-experiment checkpoint passes215 module tests /6 files, TypeScript and whitespace checks.",
-        "Original math/parser/rational/formatting/public workspace unchanged; exact limits remain separate from full numerical trace availability."
+        "Independent complete source and focused correction reviews accepted;244 module tests /13 files and unchanged external2 pass.",
+        "TypeScript and production build pass; final full suite is finishing. Prior84ff254 passed5782 application tests /284 files.",
+        "Only final check attribution and clean partial handoff remain before stopping; actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
+        "Finish final full-check attribution and clean partial handoff",
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
       ]
     },
     {
@@ -438,17 +436,18 @@
       "scope": "Immediate coordinate/state/output exploration with bounded nonsingular shear/scale family, linked cached inspection and complete original arbitrary realization Practice",
       "base": "6af3485ef6da6f11f4979ff665896d83b99414b5",
       "wave": 3,
-      "state": "in-progress",
+      "state": "review-return",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original0–4-state, arbitrary T/candidate, conditioning/cancellation and independent transformed-simulation scope remains required.",
-        "New basis vectors in x coordinates must use T inverse columns; higher-dimensional views remain labelled projections."
+        "Complete source reviewed with original engines/Practice preserved;141 module tests /9 files and5780 full tests /280 files pass at8a02.",
+        "Two reproduced closeout returns: fixed-deadline live preview and finite fixed-range geometry; owner is correcting only these related cases."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
-      ]
+        "Complete finite correction, focused acceptance/full checks and clean partial handoff",
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
+      ],
+      "source": "8a02df9c08fc80fe1f14c56d12d6aa86b04dc1db",
+      "pr": 82
     }
   ],
   "modules": [
@@ -584,19 +583,19 @@
     },
     {
       "id": "CF02",
-      "state": "in-progress",
+      "state": "source-reviewed-awaiting-final-checks",
       "target": "Visible reference/output/error preview with one local gain slider and integrator chips; highlight integrators and selected limit factor while toggling physical vs comparator error.",
       "evidence": [
-        "First immutable checked-experiment checkpoint passes215 module tests /6 files, TypeScript and whitespace checks.",
-        "Original math/parser/rational/formatting/public workspace unchanged; exact limits remain separate from full numerical trace availability."
+        "Independent complete source and focused correction reviews accepted;244 module tests /13 files and unchanged external2 pass.",
+        "TypeScript and production build pass; final full suite is finishing. Prior84ff254 passed5782 application tests /284 files.",
+        "Only final check attribution and clean partial handoff remain before stopping; actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
+        "Finish final full-check attribution and clean partial handoff",
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "41d9c78039b0fc8f50fc6208210fe6c14a00b66a",
+      "source": "f3955c1c0f58808823856a776f5934b94449f423",
       "pr": 81
     },
     {
@@ -648,19 +647,18 @@
     },
     {
       "id": "CP02",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Use as interaction reference; show safe baseline visual immediately, lightly preview response during drag, retain explicit checked commit and cancellation; make the zero-preservation convention obvious.",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original exact rational roots/cancellation, full stepAt/Taylor authority and bounded normalization remain required.",
-        "First checked-preparation/responsive-drawing checkpoint passes62 module tests /5 files, TypeScript and whitespace checks. Complete Explore/Practice wiring and full gates remain open."
+        "Independent complete source and focused correction reviews accepted;88 module tests /7 files and unchanged external3 pass.",
+        "5783 application tests /280 files, TypeScript and production build pass at final53ed7e5 code.",
+        "Exact clean partial QA handoff; original mathematics retained, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "4a03567565b576aa8b5bad1dc106b9977a067fdf",
+      "source": "3c31df8d002a8239983d3daf98334fe1215184b3",
       "pr": 79
     },
     {
@@ -743,18 +741,19 @@
     },
     {
       "id": "CR03",
-      "state": "in-progress",
+      "state": "review-return",
       "target": "Lead with side-by-side coordinate trajectories; single shear/scale control for a nonsingular coordinate-family experiment; cross-highlight row, state and mapped initial vector.",
       "evidence": [
-        "Fresh finite claim/tree from accepted main; original0–4-state, arbitrary T/candidate, conditioning/cancellation and independent transformed-simulation scope remains required.",
-        "New basis vectors in x coordinates must use T inverse columns; higher-dimensional views remain labelled projections."
+        "Complete source reviewed with original engines/Practice preserved;141 module tests /9 files and5780 full tests /280 files pass at8a02.",
+        "Two reproduced closeout returns: fixed-deadline live preview and finite fixed-range geometry; owner is correcting only these related cases."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
-      ]
+        "Complete finite correction, focused acceptance/full checks and clean partial handoff",
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
+      ],
+      "source": "8a02df9c08fc80fe1f14c56d12d6aa86b04dc1db",
+      "pr": 82
     },
     {
       "id": "CR04",
@@ -981,19 +980,18 @@
     },
     {
       "id": "DP01",
-      "state": "in-progress",
+      "state": "implemented-awaiting-browser",
       "target": "Drag equal-radius points around unit circle with instantly changing stems; radius/angle sliders and sample-step playback; retain custom sequence inputs as advanced.",
       "evidence": [
-        "First pure checked-model/lab checkpoint passes134 module tests /4 files and TypeScript.",
-        "Fixed G(z) and retained roots on T changes; physical ramp reruns A*k*T; original arbitrary/scaled/cancelled/repeated/zero modes and bound failures remain authoritative."
+        "Independent complete source and derived-key/selection correction reviews accepted;166 module tests /7 files and independent external4 pass.",
+        "5788 application tests /280 files, TypeScript and production build pass at final194c5ba code.",
+        "Exact clean partial QA handoff; original arbitrary/scaled/cancelled model and ramp timing scope retained, actual browser gate open."
       ],
       "remaining": [
-        "Complete finite implementation",
-        "Independent source/full verification",
-        "Complete the explicitly pending actual browser gate",
-        "Combined integration/release"
+        "Actual browser, phone, native interaction, fonts and navigation acceptance",
+        "Combined integration/release only under a new explicit user scope"
       ],
-      "source": "d802ff895a8932788c83c7291487f63f943b689f",
+      "source": "850c8187625d706de6166c35aa171c76b5d6ad03",
       "pr": 80
     },
     {
@@ -1179,26 +1177,16 @@
   ],
   "completedModuleRefinements": 7,
   "remainingModuleRefinements": 49,
-  "nextWave": [
-    "CS01",
-    "CF01",
-    "CP03",
-    "DS03",
-    "DD04",
-    "CD01",
-    "DS01",
-    "CD02",
-    "DR04",
-    "DR03",
-    "CD03",
-    "DR01"
-  ],
+  "nextWave": [],
   "currentWave": 3,
   "verifiedCandidates": 0,
   "verificationEnvironment": {
     "observedOn": "2026-11-09",
-    "browser": "Private IAB provider unavailable during the current background continuation; prior tool handles ended. Actual checks already observed remain attributed to their exact source. Outstanding browser gates are pending, not replaced by DOM tests.",
-    "preview": "Accepted v0.3.17 primary preview restored on port8787; no deployment."
+    "browser": "Actual browser gates remain pending. Earlier background continuations had no private browser provider; the owner then requested stop-after-current. No further broad browser pass is authorized by this handoff.",
+    "preview": "Accepted v0.3.17 remains on8787; isolated source previews/branches are preserved. No deployment."
   },
-  "sourceVerifiedAwaitingBrowser": 12
+  "sourceVerifiedAwaitingBrowser": 14,
+  "stopRequestedOn": "2026-11-09",
+  "stopReason": "Owner requested finishing current work, then stopping the global goal to assess student ease of use and supply specific refinements.",
+  "resumeRequiresSpecificUserScope": true
 }
