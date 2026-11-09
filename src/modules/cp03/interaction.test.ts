@@ -23,6 +23,7 @@ function pointer(target: EventTarget, type: string, x: number, y = 100, id = 7) 
 function rectangles() { vi.spyOn(SVGElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: SVGElement) { const parts = this.getAttribute('viewBox')!.split(' ').map(Number); return { left: 0, top: 0, width: parts[2], height: parts[3] } as DOMRect; }); }
 function handle(root: HTMLElement, key: string, plot = 'time') { return active(root).querySelector<SVGElement>(`figure[data-plot="${plot}"] [data-cp03-handle="${key}"]`)!; }
 function timeX(root: HTMLElement, t: number) { const width = Number(active(root).querySelector('figure[data-plot="time"] > svg')!.getAttribute('viewBox')!.split(' ')[2]); return 78 + (width - 28 - 78) * (t - 8) / (6 * Math.PI); }
+function frequencyX(root: HTMLElement, w: number) { const width = Number(active(root).querySelector('figure[data-plot="phase"] > svg')!.getAttribute('viewBox')!.split(' ')[2]); return 78 + (width - 28 - 78) * (Math.log10(w) + 2) / 4; }
 afterEach(() => { visits.splice(0).forEach(dispose => dispose()); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals(); editorState.fail = false; editorState.abort = undefined; editorState.resource.mockClear(); });
 
 describe('CP03 live measurement workbench — DOM evidence only', () => {
@@ -54,6 +55,43 @@ describe('CP03 live measurement workbench — DOM evidence only', () => {
     const { root } = open(); handle(root, 'frequency', 'phase').focus(); const focus = vi.spyOn(SVGElement.prototype, 'focus');
     for (let i = 0; i < 2; i++) { handle(root, 'frequency', 'phase').dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true })); expect(document.activeElement).toBe(handle(root, 'frequency', 'phase')); expect(focus).toHaveBeenLastCalledWith({ preventScroll: true }); }
     expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBeCloseTo(10 ** .04, 12); expect(active(root).querySelectorAll('figure')).toHaveLength(4);
+  });
+  it.each(['host Escape', 'body Escape', 'Fit', 'mode suspension'])('restores the entire checked trial after frequency cancellation via %s', action => {
+    vi.useFakeTimers(); const { root } = open(); rectangles(); click(root, 'Check marker measurement');
+    const peak = field<HTMLInputElement>(root, 'Output peak tᵧ (s)'), draft = peak.value, oldMax = peak.max, qualification = active(root).querySelector('.cp03-qualification')!.textContent, grade = active(root).querySelector('.cp03-grade')!.textContent;
+    pointer(handle(root, 'frequency', 'phase'), 'pointerdown', frequencyX(root, 1)); pointer(window, 'pointermove', frequencyX(root, 10)); vi.advanceTimersByTime(32);
+    expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBeCloseTo(10, 12); expect(peak.checkValidity()).toBe(false); expect(peak.max).not.toBe(oldMax);
+    if (action === 'host Escape') active(root).querySelector('.cp03-frequency-plots')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    else if (action === 'body Escape') document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    else if (action === 'Fit') click(root, 'Fit time axes');
+    else { set(root, 'Learning mode', 'practice', 'change'); set(root, 'Learning mode', 'explore', 'change'); }
+    expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').value).toBe('1'); const cursor = field<HTMLInputElement>(root, 'Linked frequency cursor · 0.01–100 rad/s (logarithmic)'); expect(cursor.valueAsNumber).toBe(0); expect(cursor.getAttribute('aria-valuetext')).toBe('1 rad/s');
+    expect(peak.value).toBe(draft); expect(peak.max).toBe(oldMax); expect(peak.valueAsNumber).toBeCloseTo(9 * Math.PI / 2, 12); expect(Number(peak.max)).toBeCloseTo(8 + 6 * Math.PI, 12); expect(peak.checkValidity()).toBe(true);
+    expect(active(root).querySelector('.cp03-qualification')!.textContent).toBe(qualification); expect(active(root).querySelector('.cp03-grade')!.textContent).toBe(grade); expect(active(root).querySelector('.cp03-marker-error')!.textContent).toBe(''); expect(handle(root, 'ty')).not.toBeNull(); expect(active(root).textContent).toContain('Calculated |G(jω)|=0.31623');
+  });
+  it('restores actual-trace availability and material warnings after an unavailable low-frequency preview is canceled', () => {
+    vi.useFakeTimers(); const { root } = open(); rectangles(); click(root, 'Window start = 0'); vi.advanceTimersByTime(40); const transient = field<HTMLInputElement>(root, 'Reveal zero-state response and transient'); expect(transient.disabled).toBe(false);
+    pointer(handle(root, 'frequency', 'phase'), 'pointerdown', frequencyX(root, 1)); pointer(window, 'pointermove', frequencyX(root, .01)); vi.advanceTimersByTime(32);
+    expect(transient.disabled).toBe(true); expect(active(root).querySelector('.cp03-material')!.textContent).toContain('Actual trace unavailable');
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })); expect(transient.disabled).toBe(false); expect(active(root).querySelector('.cp03-material')!.textContent).not.toContain('Actual trace unavailable'); expect(field<HTMLInputElement>(root, 'Output peak tᵧ (s)').checkValidity()).toBe(true);
+  });
+  it('preserves arbitrary numeric/SVG frequencies on the continuous log slider and supplies bounded keyboard steps', () => {
+    vi.useFakeTimers(); const { root } = open(); rectangles(); const cursor = field<HTMLInputElement>(root, 'Linked frequency cursor · 0.01–100 rad/s (logarithmic)');
+    set(root, 'Frequency ω (rad/s)', '3'); vi.advanceTimersByTime(40); expect(cursor.step).toBe('any'); expect(cursor.valueAsNumber).toBe(Math.log10(3)); expect(cursor.validity.stepMismatch).toBe(false); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').value).toBe('3');
+    pointer(handle(root, 'frequency', 'phase'), 'pointerdown', frequencyX(root, 3)); pointer(window, 'pointermove', frequencyX(root, 7)); vi.advanceTimersByTime(32); pointer(window, 'pointerup', frequencyX(root, 7)); expect(cursor.valueAsNumber).toBeCloseTo(Math.log10(7), 14); expect(cursor.validity.stepMismatch).toBe(false); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBeCloseTo(7, 12);
+    const press = (key: string, shiftKey = false) => { const event = new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }); cursor.dispatchEvent(event); expect(event.defaultPrevented).toBe(true); vi.advanceTimersByTime(40); };
+    press('ArrowRight'); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBeCloseTo(7 * 10 ** .02, 12); press('ArrowDown', true); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBeCloseTo(7 * 10 ** -.18, 12);
+    press('Home'); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBe(.01); press('ArrowLeft'); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBe(.01); press('End'); press('ArrowUp'); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBe(100); expect(cursor.getAttribute('aria-valuetext')).toBe('100 rad/s');
+  });
+  it('reads a newly entered range value before canceling a previous SVG gesture', () => {
+    vi.useFakeTimers(); const { root } = open(); rectangles(); pointer(handle(root, 'frequency', 'phase'), 'pointerdown', frequencyX(root, 1)); pointer(window, 'pointermove', frequencyX(root, 10)); vi.advanceTimersByTime(32);
+    set(root, 'Linked frequency cursor · 0.01–100 rad/s (logarithmic)', String(Math.log10(3))); vi.advanceTimersByTime(40); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').valueAsNumber).toBeCloseTo(3, 12); expect(field<HTMLInputElement>(root, 'Linked frequency cursor · 0.01–100 rad/s (logarithmic)').valueAsNumber).toBe(Math.log10(3));
+  });
+  it('restores derived controls while leaving a new native marker partial untouched during frequency cancellation', () => {
+    vi.useFakeTimers(); const { root } = open(); rectangles(); pointer(handle(root, 'frequency', 'phase'), 'pointerdown', frequencyX(root, 1)); pointer(window, 'pointermove', frequencyX(root, 10)); vi.advanceTimersByTime(32);
+    const peak = field<HTMLInputElement>(root, 'Output peak tᵧ (s)'); peak.value = ''; const validity = vi.spyOn(peak, 'validity', 'get').mockReturnValue({ badInput: true } as ValidityState), writes = vi.spyOn(peak, 'value', 'set'); peak.dispatchEvent(new Event('input', { bubbles: true }));
+    set(root, 'Learning mode', 'practice', 'change'); set(root, 'Learning mode', 'explore', 'change'); expect(field(root, 'Output peak tᵧ (s)')).toBe(peak); expect(writes).not.toHaveBeenCalled(); expect(Number(peak.max)).toBeCloseTo(8 + 6 * Math.PI, 12); expect(field<HTMLInputElement>(root, 'Frequency ω (rad/s)').value).toBe('1'); expect(active(root).textContent).toContain('Calculated |G(jω)|=0.31623'); expect(active(root).querySelector('.cp03-marker-error')!.textContent).toContain('finite number');
+    validity.mockRestore(); writes.mockRestore(); set(root, 'Output peak tᵧ (s)', String(9 * Math.PI / 2)); expect(peak.checkValidity()).toBe(true); expect(handle(root, 'ty')).not.toBeNull(); expect(active(root).querySelector('.cp03-marker-error')!.textContent).toBe('');
   });
   it('preserves native source partial drafts without setter writes through view and mode actions', () => {
     vi.useFakeTimers(); const { root } = open(); const input = field<HTMLInputElement>(root, 'Frequency ω (rad/s)'); input.value = '';

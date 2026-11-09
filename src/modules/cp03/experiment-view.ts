@@ -32,7 +32,7 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
   let sweep: ReturnType<typeof frequencySweep> = [], sweepKey = '';
   const drawings = new Map<string, { geometry: Geometry; image: SVGSVGElement }>();
   type Key = Handle['key'];
-  let gesture: { key: Key; plot: string; pointer: number; base: string; trial: Trial; revealed: boolean; geometry: Geometry; box: DOMRect; value?: number } | undefined;
+  let gesture: { key: Key; plot: string; pointer: number; base: string; trial: Trial; revealed: boolean; graded: boolean; geometry: Geometry; box: DOMRect; value?: number } | undefined;
   const cancelTimer = () => { if (timer !== undefined) window.clearTimeout(timer); timer = undefined; };
   function dispose() { if (disposed) return; disposed = true; parent.removeEventListener('abort', dispose); cancelTimer(); releasePointer(); observer?.disconnect(); life.abort(); editor?.destroy(); root.remove(); }
   parent.addEventListener('abort', dispose, { once: true }); if (parent.aborted) { dispose(); return dispose; }
@@ -41,7 +41,8 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
   const qualification = node('p', '', 'cp03-qualification'), timeHost = node('div', '', 'cp03-time-host'), material = node('p', '', 'cp03-material'), feedback = node('p', '', 'cp03-message'), analytic = node('p', '', 'cp03-analytic');
   timeHost.tabIndex = -1; timeHost.setAttribute('aria-label', 'Time traces and measurement markers'); feedback.setAttribute('role', 'status'); material.setAttribute('role', 'status'); visual.append(qualification, timeHost, material, analytic, feedback);
   const sourceFields = node('div', '', 'cp03-fields'); controls.append(sourceFields);
-  const omega = numeric(sourceFields, 'Frequency ω (rad/s)', '1', .01, 100), cursor = numeric(sourceFields, 'Linked frequency cursor · 0.01–100 rad/s (logarithmic)', '0', -2, 2, true); cursor.step = '.01';
+  const omega = numeric(sourceFields, 'Frequency ω (rad/s)', '1', .01, 100), cursor = numeric(sourceFields, 'Linked frequency cursor · 0.01–100 rad/s (logarithmic)', '0', -2, 2, true);
+  cursor.setAttribute('aria-description', 'Arrow keys move 0.02 decades; Shift moves ten steps. Home and End use the frequency limits.');
   const amplitude = numeric(sourceFields, 'Input amplitude A', '1', .01, 100), start = numeric(sourceFields, 'Window start (s)', '8', 0, 1000);
   const markerFields = node('fieldset', '', 'cp03-markers'); markerFields.append(node('legend', 'Your measurement markers')); controls.append(markerFields);
   const tu = numeric(markerFields, 'Input peak tᵤ (s)', '0', 0, 3000), ty = numeric(markerFields, 'Output peak tᵧ (s)', '0', 0, 3000), B = numeric(markerFields, 'Output amplitude marker B', '.5', 0, 1e8);
@@ -88,14 +89,18 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
     try {
       const source = readSource(), next = prepare(source.plant, source.w, source.A, source.t0); trial = next; dirty = false; revealed = mode === 'explore' || keepReveal && revealed; graded = false;
       const key = JSON.stringify([source.plant, source.w]); if (key !== sweepKey) { sweep = frequencySweep(source.plant, source.w); sweepKey = key; }
-      cursor.value = String(Math.log10(source.w)); cursor.setAttribute('aria-valuetext', `${fmt(source.w)} rad/s`);
-      for (const input of [tu, ty]) { input.min = String(next.t0); input.max = String(next.t1); }
       if (!initialized) { const peak = (Math.ceil((source.w * source.t0 - Math.PI / 2) / (2 * Math.PI)) * 2 * Math.PI + Math.PI / 2) / source.w; tu.value = ty.value = String(peak); B.value = String(Math.min(1e8, source.A / 2)); initialized = true; }
-      transient.disabled = !next.actual; reveal.disabled = false; [tu, ty, B].forEach(input => input.disabled = false);
-      qualification.textContent = `${next.e.classification}. ` + (!next.e.stable ? 'The sinusoid is a formal particular solution; the actual response need not approach it. Do not report a steady-state trace measurement.' : next.settled ? 'The transient tail is bounded below 1% throughout this window (absolute floor 10⁻⁹). Peak measurements are steady-state approximations.' : `Not settled: the conservative transient tail bound is ${fmt(next.bound)} output units. Move the window later before interpreting actual peaks as a steady-state frequency result.`);
-      feedback.textContent = mode === 'practice' && !revealed ? 'Place your markers, then reveal the calculation.' : 'Current experiment checked. Move frequency or measurement markers to compare.';
+      synchronizeTrial(next);
       drawTime(); renderChecked(); updateMeasurement();
     } catch (error) { trial = undefined; dirty = true; clearResults(); reveal.disabled = false; [tu, ty, B].forEach(input => input.disabled = true); report(error); }
+  }
+  // Restore checked-trial properties without serializing any native draft value.
+  function synchronizeTrial(next: Trial) {
+    cursor.value = String(Math.log10(next.w)); cursor.setAttribute('aria-valuetext', `${fmt(next.w)} rad/s`);
+    for (const input of [tu, ty]) { input.min = String(next.t0); input.max = String(next.t1); }
+    transient.disabled = !next.actual; reveal.disabled = false; [tu, ty, B].forEach(input => input.disabled = false);
+    qualification.textContent = `${next.e.classification}. ` + (!next.e.stable ? 'The sinusoid is a formal particular solution; the actual response need not approach it. Do not report a steady-state trace measurement.' : next.settled ? 'The transient tail is bounded below 1% throughout this window (absolute floor 10⁻⁹). Peak measurements are steady-state approximations.' : `Not settled: the conservative transient tail bound is ${fmt(next.bound)} output units. Move the window later before interpreting actual peaks as a steady-state frequency result.`);
+    feedback.textContent = mode === 'practice' && !revealed ? 'Place your markers, then reveal the calculation.' : 'Current experiment checked. Move frequency or measurement markers to compare.';
   }
   function readMarkers() {
     return { inputTime: read(tu, 'input peak time'), outputTime: read(ty, 'output peak time'), b: read(B, 'output amplitude') };
@@ -153,7 +158,7 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
 
   // Stable hosts own capture/focus while sampled SVG children are replaced.
   function releasePointer() { const id = gesture?.pointer; gesture = undefined; if (id !== undefined && root.hasPointerCapture?.(id)) root.releasePointerCapture(id); }
-  function cancelGesture(preserve?: HTMLInputElement) { if (!gesture) return; cancelTimer(); const old = gesture; releasePointer(); const input = old.key === 'frequency' ? omega : old.key === 'tu' ? tu : old.key === 'ty' ? ty : B; if (input !== preserve) input.value = old.base; trial = old.trial; revealed = old.revealed; if (!preserve) { dirty = false; drawTime(); renderChecked(); updateMeasurement(); } }
+  function cancelGesture(preserve?: HTMLInputElement) { if (!gesture) return; cancelTimer(); const old = gesture; releasePointer(); const input = old.key === 'frequency' ? omega : old.key === 'tu' ? tu : old.key === 'ty' ? ty : B; if (input !== preserve) input.value = old.base; trial = old.trial; revealed = old.revealed; graded = old.graded; dirty = false; synchronizeTrial(trial); drawTime(); renderChecked(); updateMeasurement(); }
   function applyGesture(value: number) {
     if (!gesture || !isActive()) return;
     if (gesture.key === 'frequency') { omega.value = String(value); compute(gesture.revealed); }
@@ -165,7 +170,7 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
     if (!isActive() || gesture || !trial || dirty || event.button !== 0) return;
     const handle = (event.target as Element).closest('[data-cp03-handle]'), plot = handle?.closest<HTMLElement>('figure[data-plot]')?.dataset.plot; if (!handle || !plot) return;
     const key = handle.getAttribute('data-cp03-handle') as Key, drawing = drawings.get(plot), input = key === 'frequency' ? omega : key === 'tu' ? tu : key === 'ty' ? ty : B; if (!drawing) return;
-    try { readSource(); read(input, 'marker placement'); gesture = { key, plot, pointer: event.pointerId, base: input.value, trial, revealed, geometry: drawing.geometry, box: drawing.image.getBoundingClientRect() }; root.setPointerCapture?.(event.pointerId); event.preventDefault(); (plot === 'time' ? timeHost : frequencyHost).focus({ preventScroll: true }); } catch (error) { report(error); }
+    try { readSource(); read(input, 'marker placement'); gesture = { key, plot, pointer: event.pointerId, base: input.value, trial, revealed, graded, geometry: drawing.geometry, box: drawing.image.getBoundingClientRect() }; root.setPointerCapture?.(event.pointerId); event.preventDefault(); (plot === 'time' ? timeHost : frequencyHost).focus({ preventScroll: true }); } catch (error) { report(error); }
   }, { signal });
   window.addEventListener('pointermove', event => {
     if (!isActive() || !gesture || event.pointerId !== gesture.pointer) return; event.preventDefault();
@@ -202,7 +207,16 @@ export function mountExperiment({ container, signal: parent, mode, hooks, isActi
   for (const input of [omega, amplitude, start]) input.addEventListener('input', () => changed(input), { signal });
   for (const input of [tu, ty, B]) input.addEventListener('input', () => { cancelGesture(input); graded = false; updateMeasurement(); drawTime(); if (revealed) grade.textContent = 'Markers edited. Check again to compare; the calculated response remains valid.'; }, { signal });
   transient.addEventListener('change', () => { cancelGesture(); drawTime(); }, { signal });
-  cursor.addEventListener('input', () => { try { readSource(); cancelGesture(); omega.value = String(Number((10 ** readNumericInput(cursor, 'frequency slider')).toPrecision(8))); changed(undefined, revealed); } catch (error) { report(error); } }, { signal });
+  function moveCursor(logFrequency: number) {
+    readSource(); if (!Number.isFinite(logFrequency) || logFrequency < -2 || logFrequency > 2) throw new Error('Keep the frequency cursor between 0.01 and 100 rad/s.');
+    const next = 10 ** logFrequency; cancelGesture(); omega.value = String(next); cursor.value = String(logFrequency); cursor.setAttribute('aria-valuetext', `${fmt(next)} rad/s`); changed(undefined, revealed);
+  }
+  cursor.addEventListener('input', () => { if (!isActive()) return; try { moveCursor(readNumericInput(cursor, 'frequency slider')); } catch (error) { report(error); } }, { signal });
+  cursor.addEventListener('keydown', event => {
+    if (!isActive() || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    try { const current = Math.log10(readSource().w), direction = event.key === 'ArrowLeft' || event.key === 'ArrowDown' ? -1 : 1; moveCursor(event.key === 'Home' ? -2 : event.key === 'End' ? 2 : Math.max(-2, Math.min(2, current + direction * (event.shiftKey ? .2 : .02)))); } catch (error) { report(error); }
+  }, { signal });
   const resize = () => { if (disposed || !isActive()) return; const next = timeHost.getBoundingClientRect().width; if (next > 0 && Math.abs(next - width) > 1) { cancelGesture(); width = next; drawTime(); renderChecked(); } };
   observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(resize); if (disposed || signal.aborted) observer?.disconnect(); else observer?.observe(timeHost); window.addEventListener('resize', resize, { signal });
   hooks.suspend = () => { pending ||= timer !== undefined && !gesture; cancelGesture(); cancelTimer(); }; hooks.resume = () => { resize(); if (pending) { pending = false; changed(); } };
