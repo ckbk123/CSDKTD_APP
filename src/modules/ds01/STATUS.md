@@ -47,6 +47,15 @@ A final self-audit found that saying e_m next to the displayed real A could misi
 
 Final wording candidate: **152 module tests / 7 files**, `npm run check`, `npm run build` and `git diff --check` pass; math/index remain unchanged from the base. Its fresh full suite is pending below.
 
+## Final source acceptance and partial browser-QA handoff — 9 November 2026
+
+- **Frozen application source:** `99abdd6c0214a9e6dfb584c02ccc4915add4ec5e`, same [PR #73](https://github.com/ckbk123/CSDKTD_APP/pull/73). Only this module changed. `math.ts` and metadata `index.ts` remain identical to base `6af3485`; original parser/classification/certification/sample computation and all accepted modal-row domains remain authoritative.
+- **Attributed independent source review:** the stability agent inspected the complete `0857640` source and narrow `2ccc4bb` editor-affordance return, then accepted the final `99abdd6` initial-coordinate correction. It independently reran **152 tests / 7 files** on the final source (1.93 s) and reported no remaining source blocker. It confirmed the complete row domain, hidden/Jordan/independent distinctions, unchanged near-circle certification, T/cache separation, owned lifetimes, raw draft handling, corrected same-row focus and real-coordinate initial-state convention. This is source/DOM acceptance, not a browser claim.
+- **Fresh final full suite:** `npm test -- --reporter dot --maxWorkers 4` — **5,789 tests passed / 281 files**, 79.37 s, on `99abdd6`. Log retained outside Git as `ds01-coordinate-full-tests.log`. Earlier full runs of 5,786 on `f39dd415` and 5,788 on `2ccc4bb` remain historical checkpoint evidence; they do not substitute for this final run.
+- **Other final checks:** owned module **152/7**, `npm run check`, `npm run build` and `git diff --check` pass. The build retains the existing bundled MathLive large-chunk advisory. Generated output/dependencies are not committed; the final acceptance record is documentation-only after these source checks.
+- **Partial disposition:** Stage stays **implemented**. Actual production browser checks remain unavailable in the coordinator's current provider session and are queued centrally on assigned port **8811**. No browser or server was launched by this worker. Actual pointer/numeric/keyboard edits, font/math-keyboard behavior, narrow geometry/overflow, reset/leave/reopen/rapid navigation and console checks still require their own observed evidence. No touch, measured latency or actual mid-native-drag Escape verification is claimed.
+- **Recovery:** preserve this branch/worktree and the same PR for central QA and any scoped returns; claim handoff reason is `partial`, with its exact clean documentation HEAD recorded by the current helper. No merge, version change or deployment is included. DR03 has read-only preparation only, with no new claim/tree/implementation.
+
 ## Historical accepted exercise delivery
 
 - **Assessed:** 2026-10-29, against [TASK.md](TASK.md); starting revision `c5d1135`.
