@@ -26,10 +26,11 @@ Math, numerical propagation, parser, workspace loader and eager metadata are byt
 
 Current source checks with bundled Node 24.22.1 and the installed npm CLI:
 
-- `npm test -- src/modules/cd01 --reporter dot`: **95 tests / 6 files pass**, 2.38 s. Original mathematical/parser/loader fixtures remain; new fixtures cover reason/record separation, coalescing, cached requirements/cursor, fractional signed gains, inactive Tf, explicit draft synchronization, failed pending Apply, prediction edit invalidation, native raw-field preservation, comparison failure, clipped geometry, cleanup and installed MathLive SSR notation validation.
+- `npm test -- src/modules/cd01 --reporter dot`: **96 tests / 6 files pass**, 3.35 s. Original mathematical/parser/loader fixtures remain; new fixtures cover reason/record separation, coalescing, cached requirements/cursor, fractional signed gains, inactive Tf, explicit draft synchronization, failed pending Apply, prediction edit invalidation, native raw-field preservation, typing focus, comparison failure, clipped geometry, cleanup and installed MathLive SSR notation validation.
 - `npm run check`: passes; `npm run build` also repeats type checking and passes (existing MathLive large-chunk warning only).
 - `git diff --check`: passes; changes are confined to CD01.
-- Fresh full suite, independent source review and actual browser gates are pending. No real-browser result, verified stage, integration or release is claimed by these checks.
+- Fresh full suite at checkpoint `4f6ee93b2a5eeb9d7bd3f4199621d6cd376df1ae`: **5,769 tests / 277 files pass**, 42.62 s. A later focused correction moves numeric labels only when the selected knob actually changes, preserving typing focus and actual badInput in active and optional gain fields; its 96-test module check and build pass, with the fresh full-suite repeat pending.
+- Independent source review and actual browser gates are pending. No real-browser result, verified stage, integration or release is claimed by these checks. Own production preview is available on port 8810 for the integration owner; no browser was launched here.
 
 ## Historical accepted bounded exercise
 

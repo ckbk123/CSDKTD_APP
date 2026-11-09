@@ -96,7 +96,7 @@ export const mount:ModuleMount=({container,signal:parent})=>{
   const notesDetails=el('details');notesDetails.className='pid-notes';notesDetails.append(el('summary','Applied trial notes (up to eight)'),history);
   root.append(workbench,actions,status,settings,notesDetails,view);
   function syncKnob():void{
-    const name=knobPicker.value,input=knobs[name];for(const candidate of Object.values(knobs))if(candidate!==input)gainRow.append(candidate.parentElement!);knobNumber.append(input.parentElement!);
+    const name=knobPicker.value,input=knobs[name];for(const candidate of Object.values(knobs))if(candidate!==input&&candidate.parentElement!.parentElement!==gainRow)gainRow.append(candidate.parentElement!);if(input.parentElement!.parentElement!==knobNumber)knobNumber.append(input.parentElement!);
     const source=preview?.controller??appliedController;let value:number,issue='';
     try{value=readNumericInput(input,input.getAttribute('aria-label')??name);if(name!=='tf'&&Math.abs(value)>100)throw new Error('Gain magnitude must not exceed 100.');}catch(error){value=source[name as 'kp'|'ki'|'kd'|'tf'];issue=error instanceof Error?error.message:'Complete the numeric parameter.';}
     gainRange.min=name==='tf'?'-3':'-100';gainRange.max=name==='tf'?'1':'100';

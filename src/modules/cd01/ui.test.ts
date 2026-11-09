@@ -90,6 +90,11 @@ describe('reason-gated controller exploration',()=>{
     slider.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));expect(v.input('kp').value).toBe('5.25');
     v.choose('kind','P');v.set('kp','-1');vi.advanceTimersByTime(80);expect(v.root.querySelector('.pid-live-summary')!.textContent).toContain('Preview P: Kp=-1');expect(v.root.querySelector('.pid-preview-state')!.textContent).not.toContain('Rejected');
   });
+  it('retains typing focus and actual badInput in both the active and optional gain fields',()=>{
+    const v=open(),active=v.input('kp');active.focus();v.set('kp','4.25');expect(document.activeElement).toBe(active);
+    active.value='';const validity=vi.spyOn(active,'validity','get').mockReturnValue({badInput:true}as ValidityState),writes=vi.spyOn(active,'value','set');active.dispatchEvent(new Event('input',{bubbles:true}));expect(document.activeElement).toBe(active);expect(active.validity.badInput).toBe(true);expect(writes).not.toHaveBeenCalled();validity.mockRestore();
+    (v.root.querySelector('.pid-settings')as HTMLDetailsElement).open=true;const secondary=v.input('ki');secondary.focus();v.set('ki','2.25');expect(document.activeElement).toBe(secondary);expect(v.input('ki')).toBe(secondary);
+  });
   it('retains inactive Tf zero and exact original input elements while switching knobs',()=>{
     vi.useFakeTimers();const v=open(),kp=v.input('kp'),tf=v.input('tf');v.choose('reason','structure');v.set('kd','0');v.set('tf','0');vi.advanceTimersByTime(80);v.choose('activeKnob','tf');
     expect(v.input('tf')).toBe(tf);expect(tf.value).toBe('0');expect(v.input('gainSlider').disabled).toBe(true);expect(v.root.querySelector('.pid-knob-note')!.textContent).toContain('inactive');v.action('apply').click();v.action('reveal').click();expect(v.root.textContent).toContain('active PI');expect(v.root.querySelector('[aria-label="Individual active controller contributions"]')!.textContent).toContain('u_D=0');
