@@ -56,7 +56,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
       if (!result) return;
       const pair = normalizedAt(result.pair.response, currentTime), full = normalizedAt(result.full.response, currentTime), finalValue = result.full.response.finalValue;
       responseDrawing?.cursor(currentTime);
-      q('.cf1-inspection').textContent = timeIssue || 'At t=' + f(currentTime) + ' s: pair y=' + f(pair.value * finalValue) + ', full y=' + f(full.value * finalValue) + ' output units. Normalized pair=' + f(pair.value) + ', full=' + f(full.value) + '; common final value=' + f(finalValue) + '.';
+      q('.cf1-inspection').textContent = timeIssue ? timeIssue + ' Last checked cursor: t=' + f(currentTime) + ' s within the accepted 0–' + f(result.full.horizon) + ' s horizon.' : 'At t=' + f(currentTime) + ' s: pair y=' + f(pair.value * finalValue) + ', full y=' + f(full.value * finalValue) + ' output units. Normalized pair=' + f(pair.value) + ', full=' + f(full.value) + '; common final value=' + f(finalValue) + '.';
     }
     function inspect() {
       if (!result || disposed) return;
@@ -96,7 +96,7 @@ export const mount: ModuleMount = ({ container, signal: parent }) => {
         if (candidate) field!.setValue(candidate.latex);
         for (const [name, value] of [['damping', pair.response.damping], ['frequency', pair.response.naturalFrequency]] as const) { input(name).value = String(value); input(name + '-range').value = String(value); }
         input('time').max = input('time-range').max = String(horizon);
-        if (!timeIssue && currentTime > horizon) { currentTime = horizon / 2; input('time').value = String(currentTime); input('time-range').value = String(currentTime); }
+        if (currentTime > horizon) { currentTime = horizon / 2; if(!timeIssue)input('time').value = String(currentTime); input('time-range').value = String(currentTime); }
         if (fit || !window) window = fitPoles(full, targets);
         renderResponse(); renderPole(); updateState();
         status.textContent = 'Computed both responses over 0…' + f(horizon) + ' s. Measurement values/markers stay hidden until Reveal. Fixed pole axes retain their scale during edits; Fit changes the view only.';

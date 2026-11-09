@@ -29,7 +29,7 @@ The workbench now opens on the actual normalized response with compact damping/f
 
 Independent fixtures retain the accepted baseline overshoot16.303353%, peak1.813799s, rise.818786s and refined 2% settling4.038174s versus guideline4s. New wiring fixtures include doubled ωn=4 at unchanged ζ=.5/DC1 with measured settling2.019087s; unchanged target pair with a slow pole; H1.21 in-band endpoint without established settling; critical pair settling5.833922s, triple pole7.516604s, inverse y(1)=1−3/e≈−.1036383; and common-factor retention. Range/keyboard/drag tests cover coalescing, repeated key accumulation, exact snapshot restoration, zero-gap rejection, full coefficient round-trip, invalid browser badInput drafts and direct/partial cleanup. Installed MathLive SSR validates actual generated baseline/scientific-result equations; mocked equation controls/SSR are not browser evidence.
 
-Local verification under Node24.22.1 and isolated locked dependencies:
+Local verification of e2daf8036743d3bfdb3fe40bddb60b423780e97b under Node24.22.1 and isolated locked dependencies:
 
 - node node_modules/vitest/vitest.mjs run src/modules/cf01: 70 tests / 7 files passed.
 - npm run check: passed.
@@ -38,6 +38,13 @@ Local verification under Node24.22.1 and isolated locked dependencies:
 - git diff --check: passed. response.ts, measure.ts, input.ts, workspace.ts and index.ts remain unchanged from aaeda5e. All changes are owned CF01 files.
 
 Independent technical review and central real-browser editing/fonts/keyboard/desktop/phone/reset/reopen/rapid-navigation acceptance remain pending. Stage is implemented, not verified. The integration owner creates/attaches the draft PR and owns final acceptance/integration; no main merge, version/dependency changes or deployment are part of this worker contribution.
+## Independent source return: invalid time draft and shortened horizon
+
+The integration owner independently reran the 70 tests at e2daf803 and accepted the preserved mathematical domain and DC-preserving round-trip policy, then identified a cursor-coherence defect. If checked t=5 was followed by an invalid native time draft and a new H=1.21, the old condition skipped checked-cursor reconciliation; the native range clamped its thumb while the curve cursor remained outside the new horizon.
+
+The correction reconciles the checked cursor to H/2 whenever its previous time is beyond the accepted horizon, independently of native draft validity. It updates the checked range/plot geometry and leaves the same invalid numeric element untouched, with no value assignment. The inspection message keeps the native error and explicitly states the last checked in-horizon cursor. Separate underflow and browser-owned badInput regressions verify zero native value writes, the same element/raw draft, range max1.21/checked time.605, in-view cursor at the drawing midpoint and ordinary recovery at t=.5.
+
+Corrected-source node node_modules/vitest/vitest.mjs run src/modules/cf01 passes 72 tests / 7 files; npm run build -- --logLevel warn passes including TypeScript; git diff --check passes. The full 5,653-test record above is independently attributed to e2daf803. Per coordinator instruction no extra full-suite run is required until source settles. Stage remains implemented pending final source and actual browser acceptance; the coordinator reports the browser provider is currently unavailable. No measurement/horizon policy or mathematical source changed.
 ## Historical accepted bounded exercise
 
 The v0.3.16 implementation below is preserved historical verification; it does not certify the current interface refinement.

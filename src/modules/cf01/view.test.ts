@@ -164,3 +164,17 @@ it('accumulates keyboard pair movement while coalescing and links revealed measu
   const measures=vi.spyOn(measurement,'measure'),button=[...v.container.querySelectorAll('button')].find(n=>n.textContent==='Inspect detected peak')!;button.click();
   expect(Number(v.container.querySelector<HTMLInputElement>('[name="time"]')!.value)).toBeCloseTo(1.8137993642342178,7);expect(measures).not.toHaveBeenCalled();expect(v.container.querySelector('.cf1-table')!.textContent).toContain('4.038174 s');
 });
+
+it.each(['underflow','badInput'])('reconciles the checked cursor after a shorter horizon while preserving the %s native draft',kind=>{
+  const v=visit(),native=v.container.querySelector<HTMLInputElement>('[name="time"]')!,range=v.container.querySelector<HTMLInputElement>('[name="time-range"]')!;
+  expect(native.value).toBe('5');
+  native.value=kind==='underflow'?'1e-999':'';
+  const validity=kind==='badInput'?vi.spyOn(native,'validity','get').mockReturnValue({badInput:true} as ValidityState):undefined;
+  native.dispatchEvent(new Event('input'));const writes=vi.spyOn(native,'value','set'),raw=native.value;
+  v.input('horizon','1.21');v.click('compute');
+  expect(v.container.querySelector('[name="time"]')).toBe(native);expect(native.value).toBe(raw);expect(writes).not.toHaveBeenCalled();if(validity)expect(native.validity.badInput).toBe(true);
+  expect(range.max).toBe('1.21');expect(range.valueAsNumber).toBeCloseTo(.605,14);
+  const cursor=v.container.querySelector('.cf1-response .cf1-cursor')!;expect(Number(cursor.getAttribute('x1'))).toBeCloseTo(300,12);expect(cursor.getAttribute('x2')).toBe(cursor.getAttribute('x1'));
+  expect(v.container.querySelector('.cf1-inspection')!.textContent).toContain('Last checked cursor: t=0.605 s within the accepted 0–1.21 s horizon.');expect(v.container.querySelector('.cf1-inspection')!.textContent).toContain(kind==='underflow'?'nonzero but too small':'finite number');
+  validity?.mockRestore();v.input('time','.5');expect(range.valueAsNumber).toBe(.5);expect(v.container.querySelector('.cf1-inspection')!.textContent).toContain('At t=0.5 s:');expect(v.container.querySelector('.cf1-inspection')!.textContent).not.toContain('Last checked cursor');
+});
