@@ -21,4 +21,5 @@ it('lists every repeated pole and the actual RHP zero without cancelling denomin
   const m=measure(buildResponse({g:1,a1:2,a0:1,pole:1,zero:-1}),15),p=polePlot(m,deriveTargets(20,4,2));
   expect(p.element.querySelectorAll('path.cf1-line')).toHaveLength(3);expect(p.element.querySelectorAll('.cf1-zero')).toHaveLength(1);
   expect(p.element.textContent).toContain('Retained poles (s⁻¹): -1; -1; -1. Zero: 1.');expect(p.element.querySelector('[data-handle^="pair-"]')).toBeNull();
+  expect(p.element.querySelector('[aria-label="Retained pole multiplicity 3"]')?.textContent).toBe('×3');
 });

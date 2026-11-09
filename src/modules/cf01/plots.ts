@@ -62,6 +62,9 @@ export function polePlot(full: Measurement, targets: Targets, window = fitPoles(
     if (i < 2 && r.damping < 1 && value.im !== 0) handle(value.im > 0 ? 'pair-upper' : 'pair-lower', value, 'Move target conjugate pair from its ' + (value.im > 0 ? 'upper' : 'lower') + ' pole');
     if (i === 2) handle('pole', value, 'Move added stable real pole');
   });
+  const multiplicities=new Map<string,{value:Complex;count:number}>();
+  for(const value of r.poles){const key=value.re+','+value.im,previous=multiplicities.get(key);if(previous)previous.count++;else multiplicities.set(key,{value,count:1});}
+  for(const {value,count} of multiplicities.values())if(count>1&&Math.abs(value.re)<=extent&&Math.abs(value.im)<=extent){const badge=node('span','×'+count,'cf1-pole-multiplicity');badge.setAttribute('aria-label','Retained pole multiplicity '+count);badge.style.left=X(value.re)/3+'%';badge.style.top=Y(value.im)/3+'%';p.stage.append(badge);}
   if (r.model.zero !== undefined) { const value = { re: -r.model.zero, im: 0 }; if (Math.abs(value.re) <= extent) { p.add('circle', { cx: X(value.re), cy: Y(0), r: 6, class: 'cf1-zero' }); handle('zero', value, 'Move added real zero'); } else clipped = true; }
   const list = node('p', 'Retained poles (s⁻¹): ' + r.poles.map(v => f(v.re) + (v.im ? (v.im < 0 ? ' − j' : ' + j') + f(Math.abs(v.im)) : '')).join('; ') + (r.model.zero !== undefined ? '. Zero: ' + f(-r.model.zero) + '.' : '.'), 'cf1-muted'); p.figure.append(list);
   if (r.damping >= 1) p.figure.append(node('p', 'Critical and overdamped real pairs use the full ζ and ωn controls above the response.', 'cf1-muted'));

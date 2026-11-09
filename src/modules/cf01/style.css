@@ -47,6 +47,7 @@
 [data-module="CF01"] .cf1-marker, [data-module="CF01"] .cf1-zero { fill:var(--surface); stroke:var(--accent); stroke-width:2; }
 [data-module="CF01"] .cf1-pole-handle { position:absolute; width:44px; height:44px; padding:0; transform:translate(-50%,-50%); border:1px solid transparent; border-radius:50%; background:transparent; cursor:grab; }
 [data-module="CF01"] .cf1-pole-handle:hover, [data-module="CF01"] .cf1-pole-handle:focus-visible { border-color:var(--accent); background:transparent; }
+[data-module="CF01"] .cf1-pole-multiplicity { position:absolute; transform:translate(10px,-25px); font-size:12px; pointer-events:none; color:var(--text); }
 [data-module="CF01"] table { width:100%; min-width:680px; border-collapse:collapse; font-size:13px; }
 [data-module="CF01"] td, [data-module="CF01"] th { padding:9px; border-bottom:1px solid var(--line); text-align:left; }
 [data-module="CF01"] summary { cursor:pointer; font-weight:550; }
