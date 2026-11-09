@@ -27,6 +27,14 @@ The accepted exercise already supports one to four distinct real/conjugate rows,
 - Current checks: `npm exec -- vitest run src/modules/ds01 --reporter dot --maxWorkers 4` — **149 passed / 7 files**; `npm run check` — pass; `npm run build` — pass (existing shared MathLive chunk-size warning); `git diff --check` — pass; `math.ts` and `index.ts` match the captured base. Full-suite and independent source results will be recorded separately.
 - Pending central browser gate: actual pointer/numeric/keyboard edits, reset/leave/reopen, retained Practice, narrow overflow/equal geometry/12 px text, equation fonts/keyboard and clean console. No measured latency, actual touch or real mid-native-drag Escape claim is made. Browser unavailability permits an honest partial QA handoff only, not a verified Stage.
 
+### Focused keyboard review return
+
+The first frozen source `f39dd4155337fa508e2358fd3c27f02a723c10de` passed the fresh full suite: **5,786 tests / 281 files**, 75.23 s with four workers. It was then held for source/browser review. A separate external read-only fixture reproduced a lower-conjugate focus failure: Im=.01, lower-handle ArrowUp to Im=0 removed mirror=−1 and left focus on `document.body`. That failing fixture is retained outside Git as `ds01-focus-review.test.ts`; it is review evidence, not a passing source check.
+
+The focused correction falls back to the same row's surviving primary handle when its mirror disappears. A row-2 fixture checks consecutive arrows through the conjugate→real→conjugate transition, retained row identity, correct 3→2→3 full-state counts, continued focus and an unchanged other row. The interface explains that Im=0 chooses a real row while nonzero Im chooses a conjugate row with twice the real dimension per copy; this follows the unchanged original Mode/realization convention. Original mathematics, classification and boundary certification are unchanged. Fresh focused/check/build results and independent source acceptance will be recorded with the returned candidate; the earlier full run remains separately attributed.
+
+Returned-candidate checks: **150 module tests / 7 files**, external reproduced-focus regression **1/1 now passes**, `npm run check`, `npm run build` and `git diff --check` pass. `math.ts` and `index.ts` still match the captured base. Independent source review and one fresh full suite after source settles remain pending; actual browser verification remains deferred.
+
 ## Historical accepted exercise delivery
 
 - **Assessed:** 2026-10-29, against [TASK.md](TASK.md); starting revision `c5d1135`.
