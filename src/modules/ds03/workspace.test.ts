@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { EquationInputOptions } from '../../shared/equations/input';
 import { mount } from './workspace';
 import * as ui from './ui';
+import * as equations from '../../shared/equations/input';
 
 // Tests caller-owned drafts and lifecycle only. Interactive MathLive needs browser QA.
 vi.mock('../../shared/equations/input', () => ({
@@ -29,11 +30,37 @@ async function open(abortImmediately = false) {
 }
 function click(root: HTMLElement, text: string) {
   const button = Array.from(root.querySelectorAll('button')).find(b => b.textContent === text);
-  expect(button, text).toBeDefined(); button!.click();
+  expect(button, text).toBeDefined(); const details = button!.closest('details'); if (details) details.open = true; button!.click();
 }
+const field = (root: HTMLElement, label: string) => root.querySelector<HTMLInputElement>(`[aria-label="${label}"]`)!;
+const selected = (root: HTMLElement) => root.querySelector('.ds-map-readout')!.textContent!.replace('Last checked point · ', '');
 function edit(field: HTMLInputElement | HTMLTextAreaElement, value: string) { field.value = value; field.dispatchEvent(new Event('input', { bubbles: true })); }
 
 describe('DS03 exercise and visit state', () => {
+  it('opens on independent linked point views while keeping polynomial answers behind the exercise', async () => {
+    const { container } = await open();
+    expect(container.querySelector('.ds-exercise')?.hasAttribute('open')).toBe(false);
+    expect(container.querySelectorAll('.ds-mapping svg')).toHaveLength(2);
+    expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
+    expect(container.querySelector('.ds-root')).toBeNull();
+    expect(container.textContent).toContain('Selected z = 0 + 1j');
+  });
+  it('revokes an old prediction grade without changing the checked polynomial or revealing a new grade', async () => {
+    const { container } = await open(); const prediction = container.querySelector('select')!;
+    prediction.value = 'strictly stable'; click(container, 'Check and reveal'); expect(container.textContent).toContain('Your prediction agrees');
+    prediction.value = 'unstable'; prediction.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(container.textContent).not.toContain('Your prediction agrees'); expect(container.textContent).not.toContain('Compare your prediction');
+    expect(container.textContent).toContain('Computed check: at K = 1');
+    click(container, 'Check and reveal'); expect(container.textContent).toContain('Compare your prediction');
+  });
+  it('releases its own partially mounted resources when equation setup throws with the parent still active', () => {
+    const controller = new AbortController(), container = document.createElement('div'), listener = vi.fn(); document.body.append(container);
+    let child: AbortSignal | undefined;
+    vi.spyOn(equations, 'createEquationInput').mockImplementationOnce(options => { child = options.signal; window.addEventListener('ds03-ui-partial', listener, { signal: child }); throw new Error('partial editor'); });
+    expect(() => ui.mountUI({ container, signal: controller.signal })).toThrow('partial editor');
+    expect(controller.signal.aborted).toBe(false); expect(child?.aborted).toBe(true); expect(container.childElementCount).toBe(0);
+    window.dispatchEvent(new Event('ds03-ui-partial')); expect(listener).not.toHaveBeenCalled(); controller.abort(); container.remove();
+  });
   it('keeps the derivation hidden until checking, then reveals a computed strict interval', async () => {
     const { container } = await open();
     expect(container.textContent).not.toContain('0 < K < 2.5');
@@ -55,20 +82,20 @@ describe('DS03 exercise and visit state', () => {
     expect(container.querySelectorAll('.ds-root')).toHaveLength(0);
   });
   it('rejects empty/out-of-range gain and unfinished equation drafts', async () => {
-    const { container } = await open(); const k = container.querySelector('input')!;
+    const { container } = await open(); const k = field(container, 'Selected gain K (−100 to 100)');
     edit(k, ''); click(container, 'Check and reveal'); expect(container.textContent).toContain('Selected gain K as a finite number');
     edit(k, '101'); click(container, 'Check and reveal'); expect(container.textContent).toContain('finite gain K');
     edit(k, '0'); edit(container.querySelector('textarea')!, ''); click(container, 'Check and reveal'); expect(container.textContent).toContain('Complete the visual polynomial');
   });
   it('exposes the exceptional mapping point and rejects malformed point input', async () => {
-    const { container } = await open(); const angle = container.querySelectorAll('input')[1];
+    const { container } = await open(); const angle = field(container, 'Unit-circle angle θ (degrees)');
     edit(angle, '180'); expect(container.textContent).toContain('w is at infinity');
     edit(angle, ''); expect(container.textContent).toContain('Unit-circle angle θ (degrees) as a finite number');
-    edit(container.querySelectorAll('input')[3], '6'); expect(container.textContent).toContain('finite real and imaginary');
+    edit(field(container, 'Selected Re z (−5 to 5)'), '6'); expect(container.textContent).toContain('finite real and imaginary');
   });
   it.each(['1e-999', '-1e-999'])('rejects nonzero native gain underflow %s without revealing zero-gain results', async raw => {
     const { container } = await open(); click(container, 'Check and reveal');
-    const gain = container.querySelector('input')!;
+    const gain = field(container, 'Selected gain K (−100 to 100)');
     edit(gain, raw);
     expect(container.textContent).toContain('nonzero but too small');
     expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
@@ -77,7 +104,7 @@ describe('DS03 exercise and visit state', () => {
     expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
   });
   it('accepts native zero and exponent gains without changing the visual parser grammar', async () => {
-    const { container } = await open(); const gain = container.querySelector('input')!;
+    const { container } = await open(); const gain = field(container, 'Selected gain K (−100 to 100)');
     for (const raw of ['0e-999', '-0']) {
       edit(gain, raw); click(container, 'Check and reveal');
       expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toContain('at K = 0,');
@@ -88,38 +115,38 @@ describe('DS03 exercise and visit state', () => {
     expect(container.querySelector('[aria-label="Checked derivation"]')!.textContent).toBe('');
   });
   it('rejects angle underflow instead of silently mapping it to zero degrees', async () => {
-    const { container } = await open(); const angle = container.querySelectorAll('input')[1];
-    const previous = container.querySelector('.ds-planes')!.parentElement!.textContent;
+    const { container } = await open(); const angle = field(container, 'Unit-circle angle θ (degrees)');
+    const previous = selected(container);
     edit(angle, '1e-999');
     expect(container.textContent).toContain('Unit-circle angle θ (degrees) is nonzero but too small');
-    expect(container.querySelector('.ds-planes')!.parentElement!.textContent).toBe(previous);
+    expect(selected(container)).toBe(previous);
     edit(angle, '0e-999');
-    expect(container.textContent).toContain('Selected z = 1; |z| = 1. w = 0.');
+    expect(container.textContent).toContain('Selected z = 1; |z| = 1');
   });
   it('rejects coordinate underflow without changing the selected point or inventing infinity', async () => {
-    const { container } = await open(); const controls = container.querySelectorAll('input');
-    edit(controls[3], '-1');
-    const previous = container.querySelector('.ds-planes')!.parentElement!.textContent;
-    edit(controls[4], '1e-999');
+    const { container } = await open(); const controls = [field(container, 'Selected Re z (−5 to 5)'), field(container, 'Selected Im z (−5 to 5)')];
+    edit(controls[0], '-1');
+    const previous = selected(container);
+    edit(controls[1], '1e-999');
     expect(container.textContent).toContain('Selected Im z is nonzero but too small');
-    expect(container.querySelector('.ds-planes')!.parentElement!.textContent).toBe(previous);
+    expect(selected(container)).toBe(previous);
     expect(container.textContent).not.toContain('w is at infinity: z = −1');
-    edit(controls[4], '1'); edit(controls[3], '-1e-999');
+    edit(controls[1], '1'); edit(controls[0], '-1e-999');
     expect(container.textContent).toContain('Selected Re z is nonzero but too small');
-    edit(controls[3], '1e-2'); edit(controls[4], '0e-999');
+    edit(controls[0], '1e-2'); edit(controls[1], '0e-999');
     expect(container.textContent).toContain('Selected z = 0.01;');
-    expect(container.querySelector('.ds-section [role="status"]')!.textContent).toBe('');
+    expect(container.querySelector('.ds-map-status')!.textContent).toBe('');
   });
   it('shows the reviewed near-pole value without turning it into a boundary point', async () => {
     const { container } = await open();
-    edit(container.querySelectorAll('input')[3], '-1');
-    edit(container.querySelectorAll('input')[4], '0.00000001');
+    edit(field(container, 'Selected Re z (−5 to 5)'), '-1');
+    edit(field(container, 'Selected Im z (−5 to 5)'), '0.00000001');
     expect(container.textContent).toContain('w = 1 + 200000000j.');
     expect(container.textContent).toContain('outside this view');
   });
   it('checks a prediction and uses the original roots for zero-row cases', async () => {
     const { container } = await open();
-    edit(container.querySelector('textarea')!, 'z^2+Kz+1'); edit(container.querySelector('input')!, '0');
+    edit(container.querySelector('textarea')!, 'z^2+Kz+1'); edit(field(container, 'Selected gain K (−100 to 100)'), '0');
     container.querySelector('select')!.value = 'boundary'; click(container, 'Check and reveal'); click(container, 'Reveal all steps');
     expect(container.textContent).toContain('Your prediction agrees'); expect(container.textContent).toContain('auxiliary polynomial');
     expect(container.textContent).toContain('No strictly stable gain');
