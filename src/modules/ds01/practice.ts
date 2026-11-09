@@ -117,7 +117,7 @@ export const mountPractice = ({ container, signal }: Parameters<ModuleMount>[0],
   function appendRow(value: string, structureValue: Structure = 'simple', visibleValue = true): void {
     const index = rows.length, wrapper = el('div', undefined, 'ds-row');
     const listeners = new AbortController();
-    const input = createEquationInput({ label: `Pole ${index + 1} (a + bj)`, value, signal, onChange: draft => { rows[index].draft = draft; invalidate(); } });
+    const input = createEquationInput({ label: `Pole ${index + 1} (a + bj)`, value, tools: ['fraction', 'parentheses'], description: 'Enter a decimal or numeric fraction, with an optional imaginary part, such as −0.8 or 0.6 + 0.8j. Functions, powers and symbolic constants are unsupported.', signal, onChange: draft => { rows[index].draft = draft; invalidate(); } });
     const options = el('div', undefined, 'ds-row-options'), structureLabel = el('label', `Structure for pole ${index + 1}`), structure = el('select');
     for (const [id, text] of structures) structure.append(new Option(text, id)); structure.value = structureValue; structureLabel.append(structure);
     const visibleLabel = el('label', undefined, 'ds-inline'), visible = el('input'); visible.type = 'checkbox'; visible.checked = visibleValue; visibleLabel.append(visible, document.createTextNode(`Pole ${index + 1} contributes to the output`));

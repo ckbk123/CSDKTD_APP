@@ -35,6 +35,10 @@ The focused correction falls back to the same row's surviving primary handle whe
 
 Returned-candidate checks: **150 module tests / 7 files**, external reproduced-focus regression **1/1 now passes**, `npm run check`, `npm run build` and `git diff --check` pass. `math.ts` and `index.ts` still match the captured base. Independent source review and one fresh full suite after source settles remain pending; actual browser verification remains deferred.
 
+The stability reviewer independently reran 150 tests at `0857640a5b919541175fb84688982258db4b8bd2` and found the core domain/cache/boundary/hidden/Jordan/ownership and corrected lower-handle focus sound. Its narrow affordance return, authorized by the coordinator, limits quick-insert tools to fraction/parentheses for Explore and every retained Practice pole entry and adds supported decimal/fraction a+bj guidance. Typing remains available and the original parser, row domain and all output mathematics are unchanged. A configuration fixture checks all created Explore/Practice entries, including an added Practice row. This small UI-option correction is the sole change to the original Practice exercise after extraction. Final focused acceptance/full results remain separately recorded below.
+
+Quick-tool return checks: **151 module tests / 7 files**, `npm run check`, `npm run build` and `git diff --check` pass. The build retains only the existing shared MathLive chunk-size advisory. This candidate remains implemented pending independent focused acceptance and actual central browser verification.
+
 ## Historical accepted exercise delivery
 
 - **Assessed:** 2026-10-29, against [TASK.md](TASK.md); starting revision `c5d1135`.
