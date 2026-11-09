@@ -1,6 +1,23 @@
 # CF02 implementation status
 
-- **Stage:** verified
+- **Stage:** in-progress
+- **Last assessed:** 2026-11-09.
+- **Refinement owner:** `interactivity-cf02-01a1ac7b`, branch `codex/cf02-error-exploration`, fresh base `6af3485ef6da6f11f4979ff665896d83b99414b5`.
+
+## Current interactivity refinement
+
+The authorized finite scope adds immediate reference/output/error exploration, direct local gain and origin-integrator controls, the derived selected channel and full-loop certificate, and cached sampled-time inspection. The complete original exact linear equation/prediction/derivation exercise remains independently available as Practice. No original mathematical, parser, rational-arithmetic, formatting/plot, public workspace or metadata file has changed at this checkpoint.
+
+The first checkpoint adds an immutable caller-owned parameter/experiment layer through the unchanged `makeModel`, `analyseLimit`, `constants` and `trace`. Its parameterized plant is the same original bounded family. Both comparator and physical-error limits are computed from the declared channel before any type-table interpretation. Changing only the selected error reuses its original checked trace/model. The cursor selects the nearest original computed timestamp and never claims an interpolated continuous solution. A numerical trace failure retains the independently valid exact certificate while exposing the numerical failure and withholding cursor data.
+
+First checks: **215 module tests /6 files**, TypeScript and whitespace checks pass. Five new independent fixtures cover exact baseline/doubled-gain/nonunity/channel values, the original sampled ramp's closed form, full-loop stability versus zero-source identities and type-two boundary/stable models, selected-error/cursor caching, separate numerical failure, immutable snapshots, and original underflow/domain/time-window failures. UI implementation, complete source review, full suite/build and actual browser acceptance remain open.
+
+The pending UI retains all original resource/notation/domain qualifications below, especially final-value conditions, zero-input/channel identities, trace truncation and resolution warnings. Quick tools will match this linear grammar (fraction/parentheses only). Native raw drafts, coalesced full computations, atomic source publication, fixed readable axes/Fit, keyboard alternatives, active-only Escape cancellation, native-pointer quarantine and child lifetime recovery are explicit implementation gates. Own future preview8821; preserve accepted8787 and other workers. The private browser provider is currently unavailable; source/DOM checks do not establish browser, font or phone acceptance. No deployment or dependency changes.
+
+## Historical verified foundation — 29 October 2026
+
+The following records the original accepted implementation and its dated evidence; the current Stage above tracks the new refinement.
+
 - **Assessed:** 2026-10-29, fresh primary-main baseline `0b199d44b5a83d2c4fbf08e3e7c8dec1117da31d` (v0.3.3).
 - **Worker chat:** `01a186d1-f1f0-7393-88e7-377fbac7299a` (host `local`).
 - **Ownership:** `src/modules/cf02/**`; [TASK](TASK.md).
