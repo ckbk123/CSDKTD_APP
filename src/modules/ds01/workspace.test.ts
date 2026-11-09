@@ -27,7 +27,7 @@ function start() {
   const cleanup = mount({ container: root, signal: abort.signal }) || (() => {});
   const visit = { root, abort, cleanup }; visits.push(visit); return visit;
 }
-async function open() { const visit = start(); await vi.waitFor(() => expect(visit.root.querySelector('textarea')).not.toBeNull()); return visit; }
+async function open() { const visit = start(); await vi.waitFor(() => expect(visit.root.querySelector('textarea')).not.toBeNull()); button(visit.root, 'Practice').click(); const panel = visit.root.querySelector<HTMLElement>('[data-learning-mode="practice"]')!; await vi.waitFor(() => expect(panel.querySelector('textarea')).not.toBeNull()); return { ...visit, root: panel }; }
 function button(root: HTMLElement, text: string) { const found = Array.from(root.querySelectorAll('button')).find(b => b.textContent === text); expect(found).toBeDefined(); return found!; }
 function experiment(root: HTMLElement, value: string) {
   const select = root.querySelector<HTMLSelectElement>('.ds-controls select')!; select.value = value; button(root, 'Load experiment').click();
@@ -37,7 +37,7 @@ afterEach(() => { for (const v of visits.splice(0)) { v.abort.abort(); v.cleanup
 describe('DS01 teaching flow and isolation', () => {
   it('keeps a visible error and removes partial controls when editor mounting fails', async () => {
     mockState.failNext = true; const { root } = start();
-    await vi.waitFor(() => expect(root.textContent).toContain('Equation controls could not load'));
+    await vi.waitFor(() => expect(root.textContent).toContain('Visual inputs could not load'));
     expect(root.querySelector('.ds01')).toBeNull();
     expect(root.querySelector('textarea')).toBeNull();
   });

@@ -23,9 +23,9 @@
 [data-module="DS01"] figure { margin: 0; min-width: 0; max-width: 100%; }
 [data-module="DS01"] .ds-plot-scroll { min-width: 0; max-width: 100%; overflow-x: auto; }
 [data-module="DS01"] figcaption { font-size: 12px; line-height: 1.55; color: var(--muted); }
-[data-module="DS01"] svg { display: block; width: 100%; min-width: 400px; height: auto; color: var(--text); overflow: visible; }
-[data-module="DS01"] svg.ds-sequence { min-width: 480px; }
-[data-module="DS01"] svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+[data-module="DS01"] .ds01 svg { display: block; width: 100%; min-width: 400px; height: auto; color: var(--text); overflow: visible; }
+[data-module="DS01"] .ds01 svg.ds-sequence { min-width: 480px; }
+[data-module="DS01"] .ds01 svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
 [data-module="DS01"] .ds-scroll { max-width: 100%; overflow-x: auto; }
 [data-module="DS01"] .ds-samples { max-height: 260px; overflow: auto; }
 [data-module="DS01"] table { border-collapse: collapse; width: 100%; font-size: 12px; }
@@ -38,4 +38,48 @@
   [data-module="DS01"] .ds-plots, [data-module="DS01"] .ds-row { grid-template-columns: minmax(0, 1fr); }
   [data-module="DS01"] .ds-card { padding: 14px; }
   [data-module="DS01"] .ds-controls > label { max-width: 100%; }
+}
+
+[data-module="DS01"] .ds01-modes,
+[data-module="DS01"] .ds01-explore { display: grid; gap: 14px; min-width: 0; }
+[data-module="DS01"] .ds01-modes [hidden] { display: none !important; }
+[data-module="DS01"] .ds01-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+[data-module="DS01"] .ds01-actions button { min-height: 44px; }
+[data-module="DS01"] .ds01-actions [aria-pressed="true"] { border-color: var(--accent); color: var(--accent-strong); background: var(--tint); }
+[data-module="DS01"] .ds01-verdict { padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--tint); }
+[data-module="DS01"] .ds01-verdict strong,
+[data-module="DS01"] .ds01-verdict span { display: block; font-size: 13px; line-height: 1.6; }
+[data-module="DS01"] .ds01-explore .ds01-state { margin: 0; font-size: 12px; color: var(--muted); }
+[data-module="DS01"] .ds01-visuals { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 14px; min-width: 0; }
+[data-module="DS01"] .ds01-responsive-plane,
+[data-module="DS01"] .ds01-responsive-sequence { min-width: 0; width: 100%; }
+/* Only outer SVGs are responsive. Nested data viewports keep their square/plot dimensions. */
+[data-module="DS01"] .ds01-responsive-plane > svg,
+[data-module="DS01"] .ds01-responsive-sequence > svg { display: block; width: 100%; min-width: 0; height: auto; color: var(--text); overflow: visible; }
+[data-module="DS01"] .ds01-responsive-plane text { font-family: inherit; fill: var(--muted); font-size: var(--ds01-axis-font, 12px); }
+[data-module="DS01"] .ds01-responsive-sequence text { font-family: inherit; fill: var(--muted); }
+[data-module="DS01"] .ds01-axis { fill: none; stroke: var(--line); vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-unit-disk { fill: var(--tint); }
+[data-module="DS01"] .ds01-unit-circle { fill: none; stroke: var(--muted); stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-cross { fill: none; stroke: var(--text); stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-picked .ds01-cross { stroke: var(--accent); stroke-width: 3; }
+[data-module="DS01"] .ds01-hidden-ring { fill: none; stroke: var(--text); stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-hit { cursor: grab; touch-action: none; }
+[data-module="DS01"] [data-row-handle]:focus-visible .ds01-hit { fill: var(--tint); stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-stem { stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-stem-dot { fill: var(--accent); }
+[data-module="DS01"] .ds01-envelope { stroke: var(--text); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-sample-cursor { stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-cursor-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="DS01"] .ds01-compact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; min-width: 0; }
+[data-module="DS01"] .ds01-compact input,
+[data-module="DS01"] .ds01-compact select { width: 100%; box-sizing: border-box; min-height: 44px; }
+[data-module="DS01"] .ds01-compact input[type="range"] { accent-color: var(--accent); padding: 0; }
+[data-module="DS01"] .ds01-readout { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+[data-module="DS01"] .ds01-note { color: var(--muted); font-size: 12px; line-height: 1.55; }
+[data-module="DS01"] .ds01-warning { color: var(--accent-strong); overflow-wrap: anywhere; }
+[data-module="DS01"] .ds01-inspector { display: grid; gap: 12px; }
+@media (max-width: 760px) {
+  [data-module="DS01"] .ds01-visuals { grid-template-columns: minmax(0, 1fr); }
+  [data-module="DS01"] .ds01-explore .ds-card { padding: 12px; }
 }
