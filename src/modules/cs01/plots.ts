@@ -42,7 +42,7 @@ export function rootPlane(analysis: Analysis, handles: readonly Handle[], chosen
 export function timePlot(times: readonly number[], series: Series, axis: Axis, title: string, width: number) {
   const host = document.createElement('div'); host.className = 'cs01-time-drawing';
   if (series.error || !times.length || !series.curves.length) { const message = document.createElement('p'); message.className = 'cs01-warning'; message.textContent = series.error ?? 'This component is unavailable.'; host.append(message); return { element: host, clipped: false, select: (_t: number, _values: readonly number[] = []) => undefined }; }
-  width = Math.max(240, width); const left = 70, right = width - 16, bottom = 210, top = 30, horizon = times.at(-1)!;
+  width = Math.max(180, width); const left = 70, right = width - 16, bottom = 210, top = 30, horizon = times.at(-1)!;
   const root = svg('svg', { viewBox: `0 0 ${width} 262`, role: 'img', 'aria-label': title }), x = (t: number) => left + (right - left) * t / horizon, y = (value: number) => bottom - (bottom - top) * (value - axis.low) / (axis.high - axis.low);
   const viewport = svg('svg', { x: left, y: top, width: right - left, height: bottom - top, viewBox: `${left} ${top} ${right - left} ${bottom - top}`, overflow: 'hidden' });
   root.append(svg('path', { d: `M${left} ${top}V${bottom}H${right}`, class: 'cs01-axis' }));

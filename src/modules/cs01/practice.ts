@@ -88,7 +88,7 @@ export function mountPractice({ container, signal }: ModuleContext, { createEqua
   const dirty = (): void => { if (signal.aborted) return; clearResult(); message.textContent = 'Inputs changed. Analyze again to reveal the new result.'; };
   const fields = ['A (2 × 2)', 'B (2 × 1)', 'C (1 × 2)', 'D (scalar)'].map((label, i) => {
     const f = fixtures[0], value = [matrix(f.a), matrix(f.b), matrix(f.c), '0'][i];
-    const field = createEquationInput({ label, value, signal, onChange: draft => { drafts[i] = draft; dirty(); } }); equations.append(field.element); return field;
+    const field = createEquationInput({ label, value, signal, tools: ['fraction'], description: 'Edit the real numeric entries using integers, decimals or simple fractions. Keep the displayed matrix shape; powers and functions are unsupported.', onChange: draft => { drafts[i] = draft; dirty(); } }); equations.append(field.element); return field;
   });
   drafts = fields.map(f => f.getValue());
   root.append(createEquationDisplay(String.raw`\dot{x}=Ax+Bu,\qquad y=Cx+Du`, 'State and output conventions'));
