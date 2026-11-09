@@ -1,18 +1,43 @@
 # CF01 implementation status
 
-- **Stage:** in-progress
+- **Stage:** implemented
 - **Current finite refinement:** linked transient response, target-pair controls and constrained pole exploration, 8 November 2026; owner interactivity-cf01-01a1ac7b; baseline aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c (released v0.3.16).
 - **Current branch/worktree:** codex/cf01-transient-exploration; C:/Users/baokh/AppData/Local/ControlStudio/worktrees/cf01-transients-01a1ac7b. Fresh ordinary Git fallback, own locked npm ci installation (109 packages).
+- **Refinement PR:** [#66](https://github.com/ckbk123/CSDKTD_APP/pull/66), reused for the current finite refinement and any review corrections.
 - **Owned finite scope:** src/modules/cf01/** only. Preserve response.ts, measure.ts, input.ts, index.ts and the existing mathematical/conditioning/horizon domain. No shared/dependency/deployment changes. Central browser acceptance belongs to the integration owner.
 
 ## Current interaction requirement audit
 
-The actual released view computes the baseline immediately, but places its response/pole plots after the full equation, requirements, factors, horizon and refinement form. Inputs clear the plots and require Calculate again. Inspection redraws the entire response SVG; target changes recompute both responses. The answer table is revealable, while detected response markers and full settling text currently appear before Reveal. Prediction-selector edits have no grading invalidation listener. Both plots require an 820 px local canvas. Existing response/measurement/parser/lifecycle tests and the accepted mathematical domain will be preserved.
+The inspected v0.3.16 baseline view computed the baseline immediately, but places its response/pole plots after the full equation, requirements, factors, horizon and refinement form. Inputs clear the plots and require Calculate again. Inspection redraws the entire response SVG; target changes recompute both responses. The answer table is revealable, while detected response markers and full settling text currently appear before Reveal. Prediction-selector edits have no grading invalidation listener. Both plots require an 820 px local canvas. Existing response/measurement/parser/lifecycle tests and the accepted mathematical domain will be preserved.
 
 The finite refinement will lead with real linked response and pole region, numeric/range damping and natural-frequency controls plus a constrained conjugate-pair handle, real-axis optional factor handles, cached target/cursor updates, coalesced full runs with an adjacent pending label, clear reveal/grading semantics, readable native axes and one owned pointer with cancellation. The original arbitrary supported equation remains accessible and authoritative; critical/overdamped cases retain their full numeric path. Pair changes explicitly preserve positive DC gain and reject unsupported resulting numerators atomically.
 
 Initial checkpoint: presentation-only parameters.ts serializes full Number round-trip decimal coefficients, independently parses them with the existing parser, checks them with the existing response builder and rejects changes outside accepted bounds before writing UI state. Four tests pass: known DC gain preservation, actual conjugate geometry, critical/overdamped numeric paths, coefficient digit round-trip and rejected DC-preserving overflow without source mutation. No new UI, full-suite, type/build or browser verification is claimed at this checkpoint. Implementation remains in progress.
 
+## Delivered interaction candidate — 9 November 2026
+
+The workbench now opens on the actual normalized response with compact damping/frequency numeric and range controls, a short adjacent live/pending label, and the linked equal-unit pole-region view. The original equation, horizon, band, rise definition and tolerance remain accessible below it. Formula/metric tables remain intentional Reveal results. The measured curve and axes are the question data; detected crossing/peak/settling markers, metric table and checked target verdict are absent before Reveal. Material conditioning/horizon feedback remains visible. No separate Practice mode or replacement solver was introduced.
+
+| Finite refinement requirement | Current source and check evidence |
+|---|---|
+| Pair edits with explicit DC policy | parameters.ts expands full Number decimal digits without display rounding, parses the actual generated equation and validates it with the existing response builder before publication. ζ/ωn edits preserve positive g/a₀; unsupported resulting numerator/conditioning rejects atomically. The original arbitrary supported model remains editable. |
+| Constrained geometry and complete family | Complex pair handles map the actual left-half-plane conjugates; numeric ζ=.02–3/ωn=.05–20 retains critical/overdamped cases. Extra stable pole/real zero handles stay on the real axis, retain every denominator factor, and reject the forbidden |z|<.02 gap or implicit side crossing. Keyboard arrows/numeric/range controls provide alternatives. |
+| Cached lightweight exploration | Target changes call deriveTargets and redraw the guideline against cached measurements; time numeric/range/tap/drag and revealed metric shortcuts call normalizedAt and move the existing cursor without measure/buildResponse. Full changes coalesce in one owned 80 ms timer, retain explicitly qualified old curves, and run the unchanged refinement settings and limits. |
+| Attempt and checked reasoning | Reveal retains original measured/pair-guideline table, complete cascade/retained modes, derivative/crossing/envelope qualifications and targets. Edits remove stale derived answers/markers. Prediction input/change revokes old grading while retaining valid revealed measurements. A short in-band endpoint remains not established. |
+| Pointer/draft/lifecycle ownership | One pointer owns a complete checked snapshot and capture. Foreign pointer down/cancel/lost-capture are ignored; Escape, owned cancellation or blur restores the snapshot and releases capture. Native rejected drafts survive Fit/cursor view actions without value writes. Child-owned listeners/timer release on direct cleanup and partial editor allocation failure while parent remains active. |
+| Responsive geometry and entry | Native 12 CSS px axes outside responsive signal drawings, fixed equal-unit square pole plane, explicit fit, 44 CSS px HTML pole-handle hit boxes and controls. No 820 px minimum plot remains. Equation quick tools are limited to supported fraction/power/parentheses. Actual phone rendering/first-screen/MathLive interaction is pending central browser verification. |
+
+Independent fixtures retain the accepted baseline overshoot16.303353%, peak1.813799s, rise.818786s and refined 2% settling4.038174s versus guideline4s. New wiring fixtures include doubled ωn=4 at unchanged ζ=.5/DC1 with measured settling2.019087s; unchanged target pair with a slow pole; H1.21 in-band endpoint without established settling; critical pair settling5.833922s, triple pole7.516604s, inverse y(1)=1−3/e≈−.1036383; and common-factor retention. Range/keyboard/drag tests cover coalescing, repeated key accumulation, exact snapshot restoration, zero-gap rejection, full coefficient round-trip, invalid browser badInput drafts and direct/partial cleanup. Installed MathLive SSR validates actual generated baseline/scientific-result equations; mocked equation controls/SSR are not browser evidence.
+
+Local verification under Node24.22.1 and isolated locked dependencies:
+
+- node node_modules/vitest/vitest.mjs run src/modules/cf01: 70 tests / 7 files passed.
+- npm run check: passed.
+- npm test: 5,653 tests / 265 files passed (44.15 s).
+- npm run build -- --logLevel warn: passed, including TypeScript; existing shared MathLive chunk-size advisory remains.
+- git diff --check: passed. response.ts, measure.ts, input.ts, workspace.ts and index.ts remain unchanged from aaeda5e. All changes are owned CF01 files.
+
+Independent technical review and central real-browser editing/fonts/keyboard/desktop/phone/reset/reopen/rapid-navigation acceptance remain pending. Stage is implemented, not verified. The integration owner creates/attaches the draft PR and owns final acceptance/integration; no main merge, version/dependency changes or deployment are part of this worker contribution.
 ## Historical accepted bounded exercise
 
 The v0.3.16 implementation below is preserved historical verification; it does not certify the current interface refinement.
