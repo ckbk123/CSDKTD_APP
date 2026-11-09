@@ -17,12 +17,23 @@ export function targetFromSpecs(overshoot: number, settling: number): { sigma: n
   const sigma = 4 / settling, omega = -Math.PI * sigma / Math.log(overshoot / 100);
   bound(omega, .1, 20, 'Derived target imaginary part (rad/s)'); return { sigma, omega };
 }
+/** Error-free pair sums retain low bits before the three-term cancellation.
+ * The final addition rounds the compensated result; no boundary is snapped or
+ * tolerated. Inputs have already passed the finite, bounded design checks. */
+export function remainingDecay(a: number, pole: number, sigma: number): number {
+  const twoSum = (x: number, y: number): [number, number] => {
+    const high = x + y, yHigh = high - x;
+    return [high, (x - (high - yHigh)) + (y - yHigh)];
+  };
+  const [sum, low] = twoSum(a, pole), [remaining, cancellationLow] = twoSum(sum, -2 * sigma);
+  return remaining + (low + cancellationLow);
+}
 export function design(input: Inputs): Design {
   const { g, a, sigma, omega, pole } = input;
   bound(g, .05, 20, 'Plant numerator g'); bound(a, .1, 20, 'Plant pole parameter a (1/s)');
   bound(sigma, .1, 10, 'Target decay σ (1/s)'); bound(omega, .1, 20, 'Target imaginary part ω (rad/s)');
   bound(pole, .2, 50, 'Compensator pole distance p (1/s)');
-  const remaining = a + pole - 2 * sigma;
+  const remaining = remainingDecay(a, pole, sigma);
   if (remaining < .02) throw new Error(`The remaining closed-loop pole is ${-remaining} (1/s). Choose p so a+p−2σ ≥ 0.02; the target pair alone does not ensure a stable, resolved design.`);
   const q = sigma * sigma + omega * omega, loopGain = q + 2 * sigma * remaining - a * pole;
   if (loopGain <= .0001) throw new Error('This target/pole choice needs nonpositive or poorly resolved gain. Change the chosen pole or target.');
