@@ -1,7 +1,30 @@
 # DR04 implementation status
 
-- **Stage:** verified
-- **Last assessed:** 2026-10-30.
+- **Stage:** implemented
+- **Last assessed:** 2026-11-09.
+- **Refinement owner:** `interactivity-dr04-01a1ac7b`, branch `codex/dr04-direct-boundaries`, fresh base `6af3485ef6da6f11f4979ff665896d83b99414b5`.
+- **Refinement PR:** [#75](https://github.com/ckbk123/CSDKTD_APP/pull/75), reused for corrections and pending browser acceptance.
+
+## Current interactivity refinement
+
+The checked source graph now appears immediately at visit/reset, before any Mason answer. The compact physical cascade has a directly selectable intermediate sampler/hold and a visible current exact P0 identity beside it. Switching it uses every current source draft through the original exact converter; invalid drafts remain intact and the old graph/result are withheld. The existing full pipeline, source controls, presets, endpoint/gain editor, prediction and complex audit remain available in optional detail.
+
+Branch labels in the actual drawing are focusable controls, with Enter/Space and the original equivalent row Trace buttons. Both build the same ordered branch list and use the unchanged connectivity/product check. A changed selection revokes its old trace proof. Drawing redraws preserve branch focus, inner scroll and actual numeric/equation attempts; selecting a trace does not rerun or replace the full Mason result. At the declared minimum 800 px inner graph width each label target is at least 44 CSS px in both dimensions. This is a source geometry check, not actual phone acceptance.
+
+The graph retains its exact original node/path geometry and independent connectivity. Optional conversion comparisons still distinguish a continuous cascade from separately sampled integrators. Source, edited-discrete and authored-discrete-only provenance remain explicit. All original exact algebra, parser, physical conversion, Mason enumeration, numeric audit and sample computations are unchanged. Module styles now use the existing shared Indigo/slate tokens; no new palette, dependencies or mathematical scope.
+
+Owned row scopes are tracked before editor construction, including a constructor that registers a resource and then throws. A late editor returned after reentrant abort is destroyed rather than attached. Cleanup aborts all scopes before releasing editors and removes the root even if one editor release fails. Quick equation tools are restricted to the fraction, integer-power and parentheses grammar already supported by this module.
+
+Current checks at corrected code `db06ad9967feb1c0df7b70dd2acecc6e8529f130`: **115 module tests /5 files**, **5,765 application tests /277 files** (77.56 s, four workers), TypeScript, production build and whitespace checks pass. Independent complete source and correction reviews accepted; the reviewer separately reran 115 module tests and its unchanged external three regressions now pass. The first source `7370cd6` passed 5,760 application tests /277 files before the five correction regressions. This final commit changes documentation only after the tested source. Unit/DOM tests use mocked editors and do not establish MathLive/font/phone behavior.
+
+Independent source review of `7370cd6` reran 110 tests and confirmed the original mathematical files are unchanged. It returned two reproducible failures: answer Highlight path/loop actions retained a separate old trace proof, and runtime Add branch could leave a partial editor scope active after constructor failure. Corrections clear/relabel every selected-trace proof on Highlight, release a failing row locally, and release all newly allocated rows on a failed runtime multi-row rebuild. The parent visit and original source drafts remain usable for recovery. Five additional regressions cover both highlight directions, Add branch and rebuild recovery, and the visible physical-boundary consequence. The reviewer accepted these fixes and the actual P0 data at `db06ad9`, with no remaining source blocker. Its original external fixtures remain outside Git as independent evidence.
+
+Actual browser acceptance remains open: initial desktop/phone hierarchy and graph scroll; direct boundary switch and original exact changed-data values; branch pointer and keyboard selection/focus/panning; actual fraction/power entry; invalid native partial/underflow recovery without value writes; original full graph editor/prediction/audit; reset, leave/reopen, rapid navigation, local fonts and console. The private browser provider was unavailable during this background continuation, including the post-checkpoint recheck. The own production preview is available on port8813 for the eventual gate; port8787 remains the accepted release. This is a clean partial QA handoff, not a verified/submitted/integrated refinement. The historical browser evidence below belongs to the earlier foundation and is not new refinement acceptance. No deployment.
+
+## Historical verified foundation — 30 October 2026
+
+The following records the accepted pre-refinement implementation and its original evidence; the current Stage above tracks the new refinement gates.
+
 - **Base:** `a43989def918052cc969cbee8691ce79d8824ec9`.
 - **Contract:** [TASK.md](TASK.md), unchanged; index metadata unchanged.
 - **Owner:** external contributor `ckbk456`, branch `codex/dr04-sampled-mason-20261030`.
