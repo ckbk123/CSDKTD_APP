@@ -18,7 +18,7 @@ vi.mock('../../shared/equations/input', () => ({
   },
   createEquationDisplay: (latex: string, label: string) => { const node = document.createElement('div'); node.setAttribute('aria-label', label); node.textContent = latex; return node; },
 }));
-import { mount } from './workspace';
+import { mountPractice as mount } from './practice';
 
 const cleanups: (() => void)[] = [];
 afterEach(() => { cleanups.splice(0).forEach(fn => fn()); document.body.replaceChildren(); state.fail = false; state.beforeThrow = state.onCreated = undefined; });
