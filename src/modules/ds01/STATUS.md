@@ -39,6 +39,14 @@ The stability reviewer independently reran 150 tests at `0857640a5b919541175fb84
 
 Quick-tool return checks: **151 module tests / 7 files**, `npm run check`, `npm run build` and `git diff --check` pass. The build retains only the existing shared MathLive chunk-size advisory. This candidate remains implemented pending independent focused acceptance and actual central browser verification.
 
+### Final initial-state description qualification
+
+The stability reviewer independently accepted `2ccc4bb6e0459ee4d4d7bcd8de6431ba25e4e8ca` after its full `0857640` source review and focused affordance inspection, rerunning **151 tests / 7 files**. The fresh full suite on `2ccc4bb` passed **5,788 tests / 281 files**, 80.81 s with four workers. These are source/DOM results; actual browser acceptance remains pending.
+
+A final self-audit found that saying e_m next to the displayed real A could misidentify the initial coordinate for a complex Jordan chain. The coordinator authorized a wording correction that states the actual real coordinate `1+(m−1)·(Im(p)≠0?2:1)`, with 1 there and zeros elsewhere; two independent copies initialize only the first representative copy. The original `samples` computation is unchanged. An independent complex-Jordan2 fixture constructs A explicitly and checks A·[0,0,1,0]ᵀ=[1,0,.6,.8]ᵀ against the displayed coordinate 3, first sample and √2 norm; complex Jordan3 additionally displays real coordinate 5. Focused/full/check/build results for this final wording source will be recorded separately.
+
+Final wording candidate: **152 module tests / 7 files**, `npm run check`, `npm run build` and `git diff --check` pass; math/index remain unchanged from the base. Its fresh full suite is pending below.
+
 ## Historical accepted exercise delivery
 
 - **Assessed:** 2026-10-29, against [TASK.md](TASK.md); starting revision `c5d1135`.
