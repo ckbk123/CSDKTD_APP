@@ -1,12 +1,26 @@
 # CP03 implementation status
 
+## Finite interactivity refinement — 9 November 2026
+
+Current owner: interactivity-cp03-01a1ac7b; branch `codex/cp03-sinusoidal-exploration`; isolated worktree `C:/Users/baokh/.codex/worktrees/cp03-sinusoidal-exploration/CSDKTD APP`. The explicit assignment captured primary main `aaeda5e42d96e9359c648bb2dc49ebd5d4095a7c` (v0.3.16) while the coordinator finalized v0.3.17; this recorded baseline is retained without merging/rebasing. Only CP03 is owned. Locked dependencies were installed in this tree with Node 24.22.1. Earlier exercise acceptance below is historical evidence, not browser verification of the new interface.
+
+Requirement audit before editing: original mathematics/notation/zero-state transient limits already work; initial traces compute but sit after the full setup. Ordinary frequency/amplitude/start edits require Apply, the linked range is live only through rerendering, peak placement is click/numeric, and rerenders recreate attempts. Bode/Nyquist are reveal-only and narrow plots force 560px scrolling. This finite scope preserves all accepted mathematics while adding visual-first live Explore, linked frequency/peak/amplitude manipulation and independent retained Practice state.
+
+First implementation checkpoint: the unchanged `math.ts` remains the solver/parser. A local calculation wrapper retains the original 901/12001-point policy and exposes its existing material warnings. Static native/equation controls preserve drafts while SVG children change. Independent Explore/Practice panels are hidden/inert on suspension and keep visit-local controls/attempt state; their signals own timers, observers, capture and editors. Explore opens actual time/Bode/Nyquist results immediately. Practice shows the waveforms and student-marker estimate, with analytic values, checked points and derivation gated by Reveal. Plant and all original limits/conventions remain available in optional depth.
+
+Time peak handles move horizontally, the amplitude marker vertically, and both Bode handles share the physical frequency cursor. Numeric/key alternatives, fixed time axes/Fit, one-pointer ownership, cancellation and originating-plot focus are implemented. The responsive renderer uses sparse labels, native-size SVG text, 45-unit hit circles, null curve gaps and equal complex-plane units per pixel. Actual font/hit sizing remains a real-browser gate.
+
+Initial checks: `npm test -- src/modules/cp03` passes 101 tests/6 files and `npm run check` passes. Existing parser/math/loader/flow coverage is retained; six independent calculation/drawing fixtures cover baseline partial fractions/tail, amplitude invariance, omitted unreliable actual traces, physical pointer mapping, gaps/hit geometry and equal-aspect units. The original marker-invalid behavior is deliberately refined: valid source waveforms remain visible while a bad marker draft has feedback and no stale measurement. Tests are DOM/source evidence with mocked equation controls, not real MathLive/browser evidence.
+
+Remaining before freeze: focused live/drag/keyboard/native-badInput/mode/lifetime regressions, independent review, full application/build checks and centralized actual browser QA. No browser, measured latency or touch claim is made. PR and preview provenance will be recorded when created; assigned preview port is 8809. No solver/dependency/global/sibling changes are included.
+
 ## Prepared coordinator integration — 29 October 2026
 
 Frozen source `3a8f79e4715a1d9b34bdd3b0635d83a9093007ab` is merged with its history into the isolated integration branch. The shared numeric reader replaces the equivalent local underflow guard while retaining field lengths, HTML bounds and existing invalid-result recovery. Shared TeX argument preflight precedes whitespace/delimiter normalization and covers Unicode blank and nested malformed delimiter arguments; complete boxed fractions remain unchanged.
 
 The deferred view now owns a child signal and host. Partial mount failure aborts signal-owned resources before visible recovery; standalone and parent disposal are idempotent, and a disposer returned after reentrant parent abort is released immediately. Added regressions preserve the ordinary teaching flow, native zero/underflow handling and argument semantics. Integration checks: 95 module tests, TypeScript and diff checks pass. Prior independent mathematics and worker browser evidence remain applicable; final combined/browser acceptance belongs to the coordinator and is pending. Stage remains implemented.
 
-- **Stage:** verified
+- **Stage:** implemented
 - Accepted bounded implementation and returned invisible-group correction complete; automated and actual-browser evidence recorded. Independent integration review remains separate.
 - **Assessment:** 2026-10-29; final delivery revision; the claim records the exact tested HEAD
 - **Ownership:** `src/modules/cp03/**`; [accepted contract](TASK.md)

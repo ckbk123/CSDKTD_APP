@@ -43,5 +43,40 @@
   [data-module="CP03"] .cp03-card { padding: 13px; }
   [data-module="CP03"] .cp03-fields { grid-template-columns: 1fr; gap: 10px; }
   [data-module="CP03"] .cp03-plot { padding: 5px; overflow-x: auto; }
-  [data-module="CP03"] .cp03-plot > svg { min-width: 560px; }
+  [data-module="CP03"] .cp03-plot > svg { min-width: 0; }
+}
+[data-module="CP03"] .cp03-mode { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px; margin-bottom: 10px; }
+[data-module="CP03"] .cp03-mode select { max-width: 100%; padding: 8px; background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 7px; }
+[data-module="CP03"] .cp03-laboratory { display: grid; grid-template-columns: minmax(0, 1fr) 265px; align-items: start; gap: 20px; min-width: 0; }
+[data-module="CP03"] .cp03-visual, [data-module="CP03"] .cp03-controls, [data-module="CP03"] .cp03-time-host { min-width: 0; }
+[data-module="CP03"] .cp03-controls .cp03-fields { grid-template-columns: 1fr; margin: 0 0 12px; gap: 9px; }
+[data-module="CP03"] .cp03-plot { padding: 0; overflow: hidden; margin: 0 0 12px; }
+[data-module="CP03"] .cp03-plot figcaption { padding: 7px 9px 0; }
+[data-module="CP03"] .cp03-plot > svg text { font-size: 12.2px; }
+[data-module="CP03"] .cp03-plot .cp03-legend { padding: 0 8px; font-size: 12px; }
+[data-module="CP03"] .cp03-frequency-plots { display: grid; gap: 18px; min-width: 0; }
+[data-module="CP03"] .cp03-frequency-plots > p { grid-column: 1 / -1; }
+[data-module="CP03"] .cp03-qualification { font-size: 12px; margin: 0 0 8px; }
+[data-module="CP03"] .cp03-material { font-size: 12px; padding: 8px; border-left: 3px solid var(--accent); background: var(--tint); }
+[data-module="CP03"] .cp03-material:empty { display: none; }
+[data-module="CP03"] .cp03-analytic, [data-module="CP03"] .cp03-measurement { font-size: 12px; padding: 8px; border: 1px solid var(--line); border-radius: 6px; }
+[data-module="CP03"] .cp03-analytic:empty, [data-module="CP03"] .cp03-measurement:empty { display: none; }
+[data-module="CP03"] .cp03-small { font-size: 12px; color: var(--muted); }
+[data-module="CP03"] .cp03-markers { min-width: 0; padding: 10px; margin: 0; border: 1px solid var(--line); border-radius: 7px; }
+[data-module="CP03"] .cp03-markers legend { font-size: 12px; }
+[data-module="CP03"] .cp03-markers .cp03-field { margin-bottom: 9px; }
+[data-module="CP03"] input, [data-module="CP03"] select, [data-module="CP03"] button { box-sizing: border-box; min-height: 44px; }
+[data-module="CP03"] .cp03-check input { min-height: 0; }
+[data-module="CP03"] .cp03-handle, [data-module="CP03"] .cp03-handle * { touch-action: none; }
+[data-module="CP03"] .cp03-handle { cursor: ew-resize; outline: none; }
+[data-module="CP03"] .cp03-handle[data-cp03-handle="B"] { cursor: ns-resize; }
+[data-module="CP03"] .cp03-hit { fill: transparent; }
+[data-module="CP03"] .cp03-dot { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+[data-module="CP03"] .cp03-handle:focus .cp03-dot { fill: var(--accent); stroke: var(--text); stroke-width: 3; }
+[data-module="CP03"] :is(button,input,select,summary,.cp03-time-host,.cp03-frequency-plots):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[data-module="CP03"] [hidden] { display: none !important; }
+@media (max-width: 720px) {
+  [data-module="CP03"] .cp03-laboratory { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  [data-module="CP03"] .cp03-controls .cp03-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-module="CP03"] .cp03-card { padding: 10px; }
 }
