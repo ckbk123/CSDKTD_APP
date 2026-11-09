@@ -11,8 +11,8 @@
 [data-module="DP01"] .dp-small { font-size: 12px; color: var(--muted); }
 [data-module="DP01"] .dp-notice { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--tint); }
 [data-module="DP01"] .dp-plot { min-width: 0; overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; margin: 12px 0; }
-[data-module="DP01"] svg { width: 100%; min-width: 560px; height: auto; display: block; }
-[data-module="DP01"] svg text { fill: var(--muted); font-size: 12px; }
+[data-module="DP01"] .dp01 svg { width: 100%; min-width: 560px; height: auto; display: block; }
+[data-module="DP01"] .dp01 svg text { fill: var(--muted); font-size: 12px; }
 [data-module="DP01"] .dp-grid { stroke: var(--line); stroke-width: 0.8; }
 [data-module="DP01"] .dp-axis { stroke: var(--muted); stroke-width: 1; }
 [data-module="DP01"] .dp-primary { stroke: var(--accent); fill: var(--accent); stroke-width: 1.5; }
@@ -25,4 +25,56 @@
 @media (max-width: 500px) {
   [data-module="DP01"] .dp-controls { grid-template-columns: minmax(0, 1fr); }
   [data-module="DP01"] .dp-actions .button { flex: 1 1 110px; }
+}
+
+[data-module="DP01"].dp01-modes,
+[data-module="DP01"].dp01-explore,
+[data-module="DP01"].dp01-lab { display: grid; gap: 12px; min-width: 0; }
+[data-module="DP01"] .dp01-modes [hidden] { display: none !important; }
+[data-module="DP01"] .dp01-card { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); }
+[data-module="DP01"] .dp01-visual-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 12px; min-width: 0; }
+[data-module="DP01"] .dp01-compact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; min-width: 0; }
+[data-module="DP01"] .dp01-compact input,
+[data-module="DP01"] .dp01-compact select { min-height: 44px; box-sizing: border-box; }
+[data-module="DP01"] .dp01-compact input[type="range"] { accent-color: var(--accent); padding: 0; }
+[data-module="DP01"] .dp01-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+[data-module="DP01"] .dp01-actions button { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--text); font: inherit; font-size: 12px; }
+[data-module="DP01"] .dp01-actions [aria-pressed="true"] { border-color: var(--accent); background: var(--tint); color: var(--accent); }
+[data-module="DP01"] .dp01-check-state,
+[data-module="DP01"] .dp01-natural-verdict { margin: 0; font-size: 13px; overflow-wrap: anywhere; }
+[data-module="DP01"] .dp01-sample-readout,
+[data-module="DP01"] .dp01-lab-readout { padding: 8px 12px; margin: 0; border-radius: 7px; border: 1px solid var(--line); background: var(--tint); font-size: 13px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+[data-module="DP01"] .dp01-feedback { padding: 9px 12px; border-left: 3px solid var(--accent); background: var(--tint); font-size: 13px; overflow-wrap: anywhere; }
+[data-module="DP01"] .dp01-warning { font-size: 13px; overflow-wrap: anywhere; margin: 0; }
+[data-module="DP01"] .dp01-warning:empty { display: none; }
+[data-module="DP01"] .dp01-note { font-size: 12px; line-height: 1.6; color: var(--muted); }
+[data-module="DP01"] .dp01-responsive-plane,
+[data-module="DP01"] .dp01-responsive-sequence { width: 100%; min-width: 0; }
+/* Outer drawings scale; nested equal/data viewports keep their own dimensions. */
+[data-module="DP01"] .dp01-responsive-plane > svg,
+[data-module="DP01"] .dp01-responsive-sequence > svg { display: block; width: 100%; min-width: 0; height: auto; overflow: visible; }
+[data-module="DP01"] .dp01-responsive-plane text { fill: var(--muted); font-family: inherit; font-size: var(--dp01-axis-font, 12px); }
+[data-module="DP01"] .dp01-responsive-sequence text { fill: var(--muted); font-family: inherit; }
+[data-module="DP01"] .dp01-live-axis { fill: none; stroke: var(--line); vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-unit-disk { fill: var(--tint); }
+[data-module="DP01"] .dp01-unit-circle { fill: none; stroke: var(--muted); stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-root-cross { fill: none; stroke: var(--muted); stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-selected-root .dp01-root-cross { stroke: var(--accent); stroke-width: 3; }
+[data-module="DP01"] .dp01-ghost-root { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; pointer-events: none; }
+[data-module="DP01"] .dp01-lab-hit { fill: transparent; stroke: none; cursor: grab; touch-action: none; }
+[data-module="DP01"] [data-lab-handle]:focus-visible .dp01-lab-hit { fill: var(--tint); stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-live-primary { stroke: var(--accent); fill: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-live-secondary { stroke: var(--muted); fill: var(--surface); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-held-guide { fill: none; opacity: .7; }
+[data-module="DP01"] .dp01-live-cursor { stroke: var(--accent); stroke-width: 1; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-cursor-marker { fill: var(--surface); stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+[data-module="DP01"] .dp01-arithmetic .equation-display,
+[data-module="DP01"] .dp01-model-settings .equation-display { max-width: 100%; overflow-x: auto; padding: 10px 2px; }
+[data-module="DP01"] .dp01-model-settings { margin-top: 12px; padding: 10px 0; min-width: 0; }
+[data-module="DP01"] .dp01-model-settings summary { cursor: pointer; min-height: 32px; font-size: 13px; }
+[data-module="DP01"] .dp01-sample-table { max-height: 300px; max-width: 100%; min-width: 0; overflow: auto; }
+[data-module="DP01"] .dp01-current-sample { background: var(--tint); }
+[data-module="DP01"] :is(.dp01-explore,.dp01-lab) :is(input,select,button,summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 760px) {
+  [data-module="DP01"] .dp01-visual-grid { grid-template-columns: minmax(0, 1fr); }
 }
